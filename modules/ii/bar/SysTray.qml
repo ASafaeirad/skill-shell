@@ -69,8 +69,8 @@ Item {
         id: gridLayout
         columns: root.vertical ? 1 : -1
         anchors.fill: parent
-        rowSpacing: 8
-        columnSpacing: 15
+        rowSpacing: 0
+        columnSpacing: 8
 
         RippleButton {
             id: trayOverflowButton

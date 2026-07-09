@@ -30,7 +30,7 @@ MouseArea {
             if (item.hasMenu)
                 if (menu.active && menu.item && typeof menu.item.close === "function")
                     menu.item.close();
-                else 
+                else
                     menu.open();
             break;
         }
@@ -68,13 +68,19 @@ MouseArea {
         }
     }
 
+    // Symbolic tray icons are drawn edge-to-edge with no built-in padding, so
+    // they render larger than typical app icons (which bake a margin into the
+    // artwork). Inset only those so their visual size matches the others.
+    readonly property bool symbolicIcon: (root.item.icon ?? "").includes("symbolic")
+    property real iconPadding: symbolicIcon ? 3 : 0
+
     IconImage {
         id: trayIcon
         visible: !Config.options.tray.monochromeIcons
         source: root.item.icon
         anchors.centerIn: parent
-        width: parent.width
-        height: parent.height
+        width: parent.width - root.iconPadding * 2
+        height: parent.height - root.iconPadding * 2
     }
 
     Loader {
