@@ -12,10 +12,12 @@ import qs.modules.ii.notificationPopup
 import qs.modules.ii.onScreenDisplay
 import qs.modules.ii.onScreenKeyboard
 import qs.modules.ii.overview
+import qs.modules.ii.pinentry
 import qs.modules.ii.polkit
 import qs.modules.ii.regionSelector
 import qs.modules.ii.screenCorners
 import qs.modules.ii.screenTranslator
+import qs.modules.ii.selector
 import qs.modules.ii.sessionScreen
 import qs.modules.ii.sidebarRight
 import qs.modules.ii.overlay
@@ -34,10 +36,12 @@ Scope {
     PanelLoader { component: OnScreenKeyboard {} }
     PanelLoader { component: Overlay {} }
     PanelLoader { component: Overview {} }
+    PanelLoader { component: Pinentry {} }
     PanelLoader { component: Polkit {} }
     PanelLoader { component: RegionSelector {} }
     PanelLoader { component: ScreenCorners {} }
     PanelLoader { component: ScreenTranslator {} }
+    PanelLoader { component: Selector {} }
     PanelLoader { component: SessionScreen {} }
     PanelLoader { component: SidebarRight {} }
     PanelLoader { extraCondition: Config.options.bar.vertical; component: VerticalBar {} }
