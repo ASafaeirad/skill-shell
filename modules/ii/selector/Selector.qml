@@ -102,8 +102,16 @@ Scope {
                 right: true
             }
 
-            mask: Region {
-                item: content
+            // Full-window scrim like Pinentry: dim everything behind the dialog
+            // and capture clicks outside it to dismiss.
+            Rectangle {
+                anchors.fill: parent
+                color: Appearance.colors.colScrim
+                opacity: content.opacity
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.finish("")
+                }
             }
 
             Component.onCompleted: GlobalFocusGrab.addDismissable(panelWindow)

@@ -120,17 +120,12 @@ Item {
         root.selected(entry.item, entry.index);
     }
 
-    StyledRectangularShadow {
-        target: background
-    }
     Rectangle {
         id: background
         anchors.fill: parent
         anchors.margins: Appearance.sizes.elevationMargin
-        color: Appearance.colors.colLayer0
-        border.width: 1
-        border.color: Appearance.colors.colLayer0Border
-        radius: Appearance.rounding.normal
+        color: Appearance.m3colors.m3surfaceContainerHigh // Match Pinentry dialog surface
+        radius: Appearance.rounding.large
 
         ColumnLayout {
             anchors.fill: parent
