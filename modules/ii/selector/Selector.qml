@@ -152,12 +152,12 @@ Scope {
         }
         // Set the input label / placeholder shown in the search field. Persists
         // until changed; call before setItems/run/open. e.g.
-        //   qs -c ii ipc call selector setPrompt 'Pick an action'
+        //   qs -c skill ipc call selector setPrompt 'Pick an action'
         function setPrompt(label: string): void {
             root.prompt = label;
         }
         // Pass the choices directly as an argument, pipe-separated. e.g.
-        //   qs -c ii ipc call selector setItems 'Reboot|Shutdown|Suspend|Lock|Log out'
+        //   qs -c skill ipc call selector setItems 'Reboot|Shutdown|Suspend|Lock|Log out'
         // The qs ipc CLI mangles commas, so '|' (not ',') is the separator.
         function setItems(pipeSeparated: string): void {
             const list = pipeSeparated.split("|").map(s => s.trim()).filter(s => s.length > 0);
@@ -167,7 +167,7 @@ Scope {
 
         // dmenu-style: read choices from a file, one item per line. e.g.
         //   printf 'Reboot\nShutdown\nSuspend\n' > /tmp/menu
-        //   qs -c ii ipc call selector fromFile /tmp/menu
+        //   qs -c skill ipc call selector fromFile /tmp/menu
         function fromFile(path: string): void {
             itemsFile.path = path;
             itemsFile.reload();
@@ -176,7 +176,7 @@ Scope {
         // Full round-trip: show pipe-separated items and write the chosen line
         // (or an empty line if cancelled) to fifoPath. Pair with a reader:
         //   fifo=$(mktemp -u); mkfifo "$fifo"
-        //   qs -c ii ipc call selector run 'A|B|C' "$fifo"
+        //   qs -c skill ipc call selector run 'A|B|C' "$fifo"
         //   choice=$(cat "$fifo"); rm "$fifo"
         function run(pipeSeparated: string, fifoPath: string): void {
             const list = pipeSeparated.split("|").map(s => s.trim()).filter(s => s.length > 0);

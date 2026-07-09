@@ -3,7 +3,7 @@
 A recreation of Windoes. It's WIP!
 
 - If you install illogical-impulse fully, you can press Super+Alt+W to switch to this style.
-- If you're just copying the Quickshell config, run the config as usual (`qs -c ii`) then run `qs -c ii ipc call panelFamily cycle`
+- If you're just copying the Quickshell config, run the config as usual (`qs -c skill`) then run `qs -c skill ipc call panelFamily cycle`
 
 ## From EWW version to Quickshell
 
@@ -34,4 +34,3 @@ Just a reflection, in case anyone's interested. My blog is probably a better pla
   > Fluent system icons are literal metaphors and are named for the shape or object they represent, not the functionality they provide
 
   "sync" is functionality.
-
