@@ -287,11 +287,6 @@ Item { // Bar content region
                 Layout.alignment: Qt.AlignVCenter
             }
 
-            Item {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-            }
-
             // Weather
             Loader {
                 Layout.leftMargin: 4
@@ -300,6 +295,11 @@ Item { // Bar content region
                 sourceComponent: BarGroup {
                     WeatherBar {}
                 }
+            }
+
+            Item {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
             }
         }
     }
