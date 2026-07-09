@@ -304,6 +304,14 @@ switch() {
     fi
 
     matugen "${matugen_args[@]}"
+
+    # Generate a solid 8x8 background from the telegram palette's color0 (tracks wallpaper)
+    tg_palette="$STATE_DIR/user/generated/telegram/colors.tdesktop-palette"
+    if [[ -f "$tg_palette" ]] && command -v magick >/dev/null 2>&1; then
+        tg_bg="$(grep -m1 '^color0:' "$tg_palette" | grep -oE '#[0-9a-fA-F]{6}')"
+        [[ -n "$tg_bg" ]] && magick -size 8x8 "xc:$tg_bg" "$STATE_DIR/user/generated/telegram/background.png"
+    fi
+
     source "$(eval echo $ILLOGICAL_IMPULSE_VIRTUAL_ENV)/bin/activate"
     python3 "$SCRIPT_DIR/generate_colors_material.py" "${generate_colors_material_args[@]}" \
         > "$STATE_DIR"/user/generated/material_colors.scss
