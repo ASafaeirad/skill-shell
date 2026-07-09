@@ -295,4 +295,27 @@ Singleton {
             }
         );
     }
+
+    // Latin letter -> Unicode small-capital glyph
+    readonly property var smallCapsMap: ({
+        a: "ᴀ", b: "ʙ", c: "ᴄ", d: "ᴅ", e: "ᴇ", f: "ꜰ", g: "ɢ",
+        h: "ʜ", i: "ɪ", j: "ᴊ", k: "ᴋ", l: "ʟ", m: "ᴍ", n: "ɴ",
+        o: "ᴏ", p: "ᴘ", q: "ꞯ", r: "ʀ", s: "ꜱ", t: "ᴛ", u: "ᴜ",
+        v: "ᴠ", w: "ᴡ", x: "x", y: "ʏ", z: "ᴢ"
+    })
+
+    /**
+     * Converts letters to their Unicode small-capital equivalents (e.g. "us" -> "ᴜꜱ").
+     * Non-letter characters are left unchanged.
+     * @param { string } str
+     * @returns { string }
+     */
+    function toSmallCaps(str) {
+        if (!str)
+            return "";
+        return String(str).split("").map(ch => {
+            const lower = ch.toLowerCase();
+            return root.smallCapsMap.hasOwnProperty(lower) ? root.smallCapsMap[lower] : ch;
+        }).join("");
+    }
 }

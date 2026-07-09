@@ -1,6 +1,7 @@
 import QtQuick
 import qs.services
 import qs.modules.common
+import qs.modules.common.functions
 import qs.modules.common.widgets
 
 Loader {
@@ -13,7 +14,7 @@ Loader {
     function abbreviateLayoutCode(fullCode) {
     return fullCode.split(':').map(layout => {
             const baseLayout = layout.split('-')[0];
-            return baseLayout.slice(0, 4);
+            return StringUtils.toSmallCaps(baseLayout.slice(0, 4));
         }).join('\n');
     }
 
@@ -24,6 +25,9 @@ Loader {
         StyledText {
             id: layoutCodeText
             anchors.centerIn: parent
+            // Small-caps glyphs sit on the baseline with empty ascender space above,
+            // so nudge up slightly for optical centering
+            anchors.verticalCenterOffset: -1
             horizontalAlignment: Text.AlignHCenter
             text: abbreviateLayoutCode(HyprlandXkb.currentLayoutCode)
             font.pixelSize: text.includes("\n") ? Appearance.font.pixelSize.smallie : Appearance.font.pixelSize.small
