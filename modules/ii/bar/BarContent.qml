@@ -143,19 +143,8 @@ Item { // Bar content region
                 id: rightCenterGroupContent
                 anchors.fill: parent
 
-                ClockWidget {
-                    showDate: (Config.options.bar.verbose && root.useShortenedForm < 2)
-                    Layout.alignment: Qt.AlignVCenter
-                    Layout.fillWidth: true
-                }
-
                 UtilButtons {
                     visible: (Config.options.bar.verbose && root.useShortenedForm === 0)
-                    Layout.alignment: Qt.AlignVCenter
-                }
-
-                BatteryIndicator {
-                    visible: (root.useShortenedForm < 2 && Battery.available)
                     Layout.alignment: Qt.AlignVCenter
                 }
             }
@@ -265,6 +254,12 @@ Item { // Bar content region
                             id: notificationUnreadCount
                         }
                     }
+                    BatteryIndicator {
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.rightMargin: indicatorsRowLayout.realSpacing
+                        Layout.preferredHeight: Appearance.font.pixelSize.larger
+                        visible: Battery.available
+                    }
                     MaterialSymbol {
                         text: Network.materialSymbol
                         iconSize: Appearance.font.pixelSize.larger
@@ -285,6 +280,11 @@ Item { // Bar content region
                 Layout.fillWidth: false
                 Layout.fillHeight: true
                 invertSide: Config?.options.bar.bottom
+            }
+
+            ClockWidget {
+                showDate: (Config.options.bar.verbose && root.useShortenedForm < 2)
+                Layout.alignment: Qt.AlignVCenter
             }
 
             Item {
