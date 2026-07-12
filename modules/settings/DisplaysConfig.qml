@@ -9,20 +9,21 @@ ContentPage {
     id: root
     forceWidth: true
 
-    // Build "name, rule" strings from the current live Hyprland state and persist them.
+    function rulesFromCards() {
+        let rules = [];
+        for (let i = 0; i < monitorRepeater.count; i++) {
+            const card = monitorRepeater.itemAt(i);
+            if (!card)
+                continue;
+            rules.push(card.rule());
+        }
+        return rules;
+    }
+
     function saveAll() {
-        const rules = Monitors.list.map(m => {
-            if (m.disabled)
-                return `${m.name}, disable`;
-            let rule = `${m.name}, ${m.width}x${m.height}@${m.refreshRate.toFixed(2)}, ${m.x}x${m.y}, ${m.scale}`;
-            if (m.transform && m.transform !== 0)
-                rule += `, transform, ${m.transform}`;
-            if (m.mirrorOf && m.mirrorOf !== "none")
-                rule += `, mirror, ${m.mirrorOf}`;
-            if (m.vrr)
-                rule += `, vrr, 1`;
-            return rule;
-        });
+        const rules = rulesFromCards();
+        for (const rule of rules)
+            Monitors.applyRule(rule);
         Monitors.persist(rules);
     }
 
@@ -33,7 +34,7 @@ ContentPage {
         NoticeBox {
             Layout.fillWidth: true
             materialIcon: "bolt"
-            text: Translation.tr("Apply changes a monitor live. Save current layout writes what you see now to ~/.config/hypr/monitors.conf. To load it on startup, add this line to hyprland.conf once: source = ~/.config/hypr/monitors.conf")
+            text: Translation.tr("Save all changes applies every display card and writes the layout to ~/.config/hypr/monitors.conf. To load it on startup, add this line to hyprland.conf once: source = ~/.config/hypr/monitors.conf")
         }
 
         RowLayout {
@@ -42,7 +43,7 @@ ContentPage {
 
             RippleButtonWithIcon {
                 materialIcon: "save"
-                mainText: Translation.tr("Save current layout")
+                mainText: Translation.tr("Save all changes")
                 onClicked: root.saveAll()
             }
             RippleButtonWithIcon {
@@ -55,6 +56,7 @@ ContentPage {
     }
 
     Repeater {
+        id: monitorRepeater
         model: Monitors.list
 
         delegate: Rectangle {
@@ -129,8 +131,8 @@ ContentPage {
                 return opts;
             }
 
-            function applyThis() {
-                Monitors.apply(card.modelData.name, {
+            function rule() {
+                return Monitors.buildRule(card.modelData.name, {
                     disabled: !card.selEnabled,
                     mode: `${card.selRes}@${card.selRefresh}`,
                     position: `${card.posX}x${card.posY}`,
@@ -290,12 +292,6 @@ ContentPage {
                         checked: card.selVrr
                         enabled: card.selEnabled
                         onCheckedChanged: card.selVrr = checked
-                    }
-                    Item { Layout.fillWidth: true }
-                    RippleButtonWithIcon {
-                        materialIcon: "check"
-                        mainText: Translation.tr("Apply")
-                        onClicked: card.applyThis()
                     }
                 }
             }
