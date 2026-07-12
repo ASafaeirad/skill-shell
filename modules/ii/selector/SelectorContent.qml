@@ -81,13 +81,16 @@ Item {
     property real listContentHeight: filtered.length * itemHeight + Math.max(0, filtered.length - 1) * itemSpacing
     property real visibleListHeight: Math.min(listContentHeight, maxListHeight)
 
+    // Animate the list height itself (implicitHeight derives from it), so the
+    // container and the ListView resize in lockstep and the list never pokes
+    // out of the background mid-transition.
+    Behavior on visibleListHeight {
+        animation: Appearance.animation.elementMove.numberAnimation.createObject(this)
+    }
+
     implicitWidth: 500
     // Grow with the number of results, up to maxListHeight, then scroll.
     implicitHeight: 2 * Appearance.sizes.elevationMargin + 2 * 12 + searchField.implicitHeight + 8 + visibleListHeight
-
-    Behavior on implicitHeight {
-        animation: Appearance.animation.elementMove.numberAnimation.createObject(this)
-    }
 
     // --- Filtering ---------------------------------------------------------
     // Each filtered entry keeps the item and its original index so the
