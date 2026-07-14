@@ -18,7 +18,7 @@ PanelWindow {
     color: "transparent"
     WlrLayershell.namespace: "quickshell:regionSelector"
     WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+    WlrLayershell.keyboardFocus: phase === RegionSelection.Phase.Select ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
     exclusionMode: ExclusionMode.Ignore
     anchors {
         left: true
@@ -292,6 +292,10 @@ PanelWindow {
         if (root.action == RegionSelection.SnipAction.Record || root.action == RegionSelection.SnipAction.RecordWithSound) {
             root.phase = RegionSelection.Phase.Post
             root.selectionMode = RegionSelection.SelectionMode.RectCorners
+            // Remap the surface: the compositor won't return keyboard focus to the
+            // window below on an interactivity change alone, only on unmap
+            root.visible = false
+            Qt.callLater(() => root.visible = true)
         } else {
             root.dismiss();
         }
