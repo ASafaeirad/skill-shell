@@ -21,9 +21,12 @@ RippleButton {
     property var iconType: entry?.iconType
     property string iconName: entry?.iconName ?? ""
     property var itemExecute: entry?.execute
+    // The monospace font renders Arabic-script text with broken, fixed-width glyphs;
+    // the main family falls back to the proper Persian font instead
+    property bool hasArabicScript: /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(entry?.name ?? "")
     property var fontType: switch(entry?.fontType) {
         case LauncherSearchResult.FontType.Monospace:
-            return "monospace"
+            return root.hasArabicScript ? "main" : "monospace"
         case LauncherSearchResult.FontType.Normal:
             return "main"
         default:
