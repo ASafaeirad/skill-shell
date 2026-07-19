@@ -368,6 +368,11 @@ Singleton {
                 property bool materialShapeChars: true
             }
 
+            property JsonObject keyDisplay: JsonObject {
+                property int timeout: 2500 // ms before shown keys fade out
+                property int maxKeys: 6 // max number of keystroke chips on screen
+            }
+
             property JsonObject media: JsonObject {
                 // Attempt to remove dupes (the aggregator playerctl one and browsers' native ones when there's plasma browser integration)
                 property bool filterDuplicatePlayers: true
