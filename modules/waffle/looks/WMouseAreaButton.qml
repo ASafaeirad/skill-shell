@@ -27,6 +27,8 @@ MouseArea {
     }
     property Item background
 
+    hoverEnabled: true
+
     background: Rectangle {
         id: bgRect
 
@@ -38,5 +40,4 @@ MouseArea {
         border.width: 1
     }
 
-    hoverEnabled: true
 }

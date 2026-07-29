@@ -7,11 +7,12 @@ Item {
     default property Item contentItem
     property Item shadow
 
+    implicitWidth: contentItem.implicitWidth
+    implicitHeight: contentItem.implicitHeight
+    children: [shadow, contentItem]
+
     shadow: WRectangularShadow {
         target: contentItem
     }
 
-    implicitWidth: contentItem.implicitWidth
-    implicitHeight: contentItem.implicitHeight
-    children: [shadow, contentItem]
 }

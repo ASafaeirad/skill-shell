@@ -45,7 +45,8 @@ Canvas {
         }
         if (!root.live)
             root.smoothPoints.fill(0);
- // If not playing, show no points
+
+        // If not playing, show no points
         ctx.beginPath();
         ctx.moveTo(0, h);
         for (var i = 0; i < n; ++i) {

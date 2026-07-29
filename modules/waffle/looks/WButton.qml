@@ -53,17 +53,6 @@ Button {
     property alias horizontalAlignment: buttonText.horizontalAlignment
     property bool shouldShowTooltip: false
     property Timer hoverTimer
-
-    hoverTimer: Timer {
-        id: hoverTimer
-
-        running: root.hovered
-        interval: root.ToolTip.delay
-        onTriggered: {
-            root.hoverTimedOut();
-        }
-    }
-
     property alias monochromeIcon: buttonIcon.monochrome
     property alias buttonSpacing: contentLayout.spacing
     property bool forceShowIcon: false
@@ -100,6 +89,7 @@ Button {
     verticalPadding: 6
     implicitHeight: contentItem.implicitHeight + verticalPadding * 2 + topInset + bottomInset
     implicitWidth: contentItem.implicitWidth + horizontalPadding * 2 + leftInset + rightInset
+
     font {
         family: Looks.font.family.ui
         pixelSize: Looks.font.pixelSize.large
@@ -119,6 +109,16 @@ Button {
             if (event.button === Qt.MiddleButton)
                 root.middleClickAction();
 
+        }
+    }
+
+    hoverTimer: Timer {
+        id: hoverTimer
+
+        running: root.hovered
+        interval: root.ToolTip.delay
+        onTriggered: {
+            root.hoverTimedOut();
         }
     }
 

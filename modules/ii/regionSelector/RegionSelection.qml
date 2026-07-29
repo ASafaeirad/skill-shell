@@ -29,7 +29,7 @@ PanelWindow {
 
     // Modes
     // TODO: Ask: sidebar AI
-    enum SnipAction { Copy, Edit, Search, CharRecognition, Record, RecordWithSound } 
+    enum SnipAction { Copy, Edit, Search, CharRecognition, Record, RecordWithSound }
     enum SelectionMode { RectCorners, Circle }
     enum Phase { Select, Post }
     property var action: RegionSelection.SnipAction.Copy
@@ -220,10 +220,10 @@ PanelWindow {
 
     Process {
         id: imageDetectionProcess
-        command: ["bash", "-c", `${Directories.scriptPath}/images/find-regions-venv.sh ` 
-            + `--hyprctl ` 
-            + `--image '${StringUtils.shellSingleQuoteEscape(root.screenshotPath)}' ` 
-            + `--max-width ${Math.round(root.screen.width * root.falsePositivePreventionRatio)} ` 
+        command: ["bash", "-c", `${Directories.scriptPath}/images/find-regions-venv.sh `
+            + `--hyprctl `
+            + `--image '${StringUtils.shellSingleQuoteEscape(root.screenshotPath)}' `
+            + `--max-width ${Math.round(root.screen.width * root.falsePositivePreventionRatio)} `
             + `--max-height ${Math.round(root.screen.height * root.falsePositivePreventionRatio)} `]
         stdout: StdioCollector {
             id: imageDimensionCollector
@@ -275,14 +275,14 @@ PanelWindow {
         if (root.action === RegionSelection.SnipAction.Copy || root.action === RegionSelection.SnipAction.Edit) {
             root.action = root.mouseButton === Qt.RightButton ? RegionSelection.SnipAction.Edit : RegionSelection.SnipAction.Copy;
         }
-        
+
         const screenshotDir = Config.options.screenSnip.savePath !== "" ? //
             Config.options.screenSnip.savePath : "";
         var screenshotAction = root.getScreenshotAction();
         const command = ScreenshotAction.getCommand(
             root.regionX * root.monitorScale, //
             root.regionY * root.monitorScale, //
-            root.regionWidth * root.monitorScale,// 
+            root.regionWidth * root.monitorScale,//
             root.regionHeight * root.monitorScale, //
             root.screenshotPath, //
             screenshotAction, //
@@ -370,7 +370,7 @@ PanelWindow {
             root.dragDiffY = mouse.y - root.dragStartY;
             root.points.push({ x: mouse.x, y: mouse.y });
         }
-        
+
         Loader {
             z: 2
             anchors.fill: parent
@@ -455,7 +455,7 @@ PanelWindow {
                 required property var modelData
                 clientDimensions: modelData
                 targeted: !root.draggedAway &&
-                    (root.targetedRegionX === modelData.at[0] 
+                    (root.targetedRegionX === modelData.at[0]
                     && root.targetedRegionY === modelData.at[1]
                     && root.targetedRegionWidth === modelData.size[0]
                     && root.targetedRegionHeight === modelData.size[1])
@@ -484,7 +484,7 @@ PanelWindow {
                 required property var modelData
                 clientDimensions: modelData
                 targeted: !root.draggedAway &&
-                    (root.targetedRegionX === modelData.at[0] 
+                    (root.targetedRegionX === modelData.at[0]
                     && root.targetedRegionY === modelData.at[1]
                     && root.targetedRegionWidth === modelData.size[0]
                     && root.targetedRegionHeight === modelData.size[1])
@@ -541,6 +541,6 @@ PanelWindow {
                 }
             }
         }
-        
+
     }
 }

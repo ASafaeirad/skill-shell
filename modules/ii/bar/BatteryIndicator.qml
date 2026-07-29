@@ -28,17 +28,11 @@ MouseArea {
         highlightColor: {
             if (root.isCritical)
                 return criticalPulse.bright ? Appearance.m3colors.m3error : ColorUtils.transparentize(Appearance.m3colors.m3error, 0.35);
+
             if (root.isLow)
                 return Appearance.m3colors.m3error;
-            return Appearance.colors.colOnSecondaryContainer;
-        }
 
-        Behavior on highlightColor {
-            ColorAnimation {
-                duration: Appearance.animation.elementMoveFast.duration
-                easing.type: Appearance.animation.elementMoveFast.type
-                easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
-            }
+            return Appearance.colors.colOnSecondaryContainer;
         }
 
         Item {
@@ -89,17 +83,32 @@ MouseArea {
 
         }
 
+        Behavior on highlightColor {
+            ColorAnimation {
+                duration: Appearance.animation.elementMoveFast.duration
+                easing.type: Appearance.animation.elementMoveFast.type
+                easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+            }
+
+        }
+
     }
 
     // Active pulse while critically low and unplugged
     Timer {
         id: criticalPulse
+
         property bool bright: true
+
         interval: Appearance.animation.elementMoveFast.duration * 3
         running: root.isCritical
         repeat: true
         onTriggered: bright = !bright
-        onRunningChanged: if (!running) bright = true
+        onRunningChanged: {
+            if (!running) {
+                bright = true;
+            }
+        }
     }
 
     BatteryPopup {

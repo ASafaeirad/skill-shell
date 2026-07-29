@@ -22,7 +22,6 @@ Canvas {
         ctx.lineWidth = root.borderWidth;
         if (root.gapLength > 0)
             ctx.setLineDash([root.dashLength, root.gapLength]); // Set dash pattern
-
         ctx.strokeRect(root.borderWidth / 2, root.borderWidth / 2, width - root.borderWidth, height - root.borderWidth); // Draw it
         ctx.restore();
     }

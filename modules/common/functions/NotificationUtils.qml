@@ -9,8 +9,6 @@ Singleton {
      * @returns { string }
      */
     function findSuitableMaterialSymbol(summary = "") {
-        // Declarative startsWith check
-
         const defaultType = 'chat';
         if (summary.length === 0)
             return defaultType;

@@ -31,9 +31,16 @@ MouseArea {
         highlightColor: {
             if (root.isCritical)
                 return criticalPulse.bright ? Appearance.m3colors.m3error : ColorUtils.transparentize(Appearance.m3colors.m3error, 0.35);
+
             if (root.isLow)
                 return Appearance.m3colors.m3error;
+
             return Appearance.colors.colOnSecondaryContainer;
+        }
+
+        font {
+            pixelSize: 13
+            weight: Font.DemiBold
         }
 
         Behavior on highlightColor {
@@ -42,11 +49,7 @@ MouseArea {
                 easing.type: Appearance.animation.elementMoveFast.type
                 easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
             }
-        }
 
-        font {
-            pixelSize: 13
-            weight: Font.DemiBold
         }
 
         textMask: Item {
@@ -66,10 +69,13 @@ MouseArea {
                     text: {
                         if (root.isCritical)
                             return "battery_alert";
+
                         if (batteryProgress.value == 1)
                             return "check";
+
                         if (root.isCharging)
                             return "bolt";
+
                         return Icons.getBatteryIcon(Battery.percentage * 100);
                     }
                     iconSize: Appearance.font.pixelSize.normal
@@ -91,12 +97,18 @@ MouseArea {
 
     Timer {
         id: criticalPulse
+
         property bool bright: true
+
         interval: Appearance.animation.elementMoveFast.duration * 3
         running: root.isCritical
         repeat: true
         onTriggered: bright = !bright
-        onRunningChanged: if (!running) bright = true
+        onRunningChanged: {
+            if (!running) {
+                bright = true;
+            }
+        }
     }
 
     Bar.BatteryPopup {

@@ -20,6 +20,15 @@ StyledPopup {
         }
 
         StyledPopupValueRow {
+            function formatTime(seconds) {
+                var h = Math.floor(seconds / 3600);
+                var m = Math.floor((seconds % 3600) / 60);
+                if (h > 0)
+                    return `${h}h, ${m}m`;
+                else
+                    return `${m}m`;
+            }
+
             visible: {
                 let timeValue = Battery.isCharging ? Battery.timeToFull : Battery.timeToEmpty;
                 let power = Battery.energyRate;
@@ -33,16 +42,6 @@ StyledPopup {
                 else
                     return formatTime(Battery.timeToEmpty);
             }
-
-            function formatTime(seconds) {
-                var h = Math.floor(seconds / 3600);
-                var m = Math.floor((seconds % 3600) / 60);
-                if (h > 0)
-                    return `${h}h, ${m}m`;
-                else
-                    return `${m}m`;
-            }
-
         }
 
         StyledPopupValueRow {

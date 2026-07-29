@@ -12,6 +12,11 @@ RippleButton {
     property string mainText: "Button text"
     property Component mainContentComponent
 
+    implicitHeight: 35
+    horizontalPadding: 10
+    buttonRadius: Appearance.rounding.small
+    colBackground: Appearance.colors.colLayer2
+
     mainContentComponent: Component {
         StyledText {
             visible: text !== ""
@@ -21,11 +26,6 @@ RippleButton {
         }
 
     }
-
-    implicitHeight: 35
-    horizontalPadding: 10
-    buttonRadius: Appearance.rounding.small
-    colBackground: Appearance.colors.colLayer2
 
     contentItem: RowLayout {
         Item {
