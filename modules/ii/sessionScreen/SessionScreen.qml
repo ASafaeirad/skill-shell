@@ -70,8 +70,31 @@ Scope {
                 spacing: 15
 
                 Keys.onPressed: event => {
-                    if (event.key === Qt.Key_Escape) {
+                    switch (event.key) {
+                    case Qt.Key_S:
+                        sessionShutdown.forceActiveFocus();
+                        event.accepted = true;
+                        break;
+                    case Qt.Key_R:
+                        sessionReboot.forceActiveFocus();
+                        event.accepted = true;
+                        break;
+                    case Qt.Key_X:
+                        sessionLogout.forceActiveFocus();
+                        event.accepted = true;
+                        break;
+                    case Qt.Key_L:
+                        sessionLock.forceActiveFocus();
+                        event.accepted = true;
+                        break;
+                    case Qt.Key_H:
+                        sessionHibernate.forceActiveFocus();
+                        event.accepted = true;
+                        break;
+                    case Qt.Key_Escape:
                         sessionRoot.hide();
+                        event.accepted = true;
+                        break;
                     }
                 }
 
@@ -95,7 +118,7 @@ Scope {
                         Layout.alignment: Qt.AlignHCenter
                         horizontalAlignment: Text.AlignHCenter
                         font.pixelSize: Appearance.font.pixelSize.normal
-                        text: Translation.tr("Arrow keys to navigate, Enter to select\nEsc or click anywhere to cancel")
+                        text: Translation.tr("Arrow keys or S/R/E/L/H to navigate, Enter to select\nEsc or click anywhere to cancel")
                     }
                 }
 
