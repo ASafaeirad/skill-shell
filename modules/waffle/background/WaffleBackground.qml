@@ -1,21 +1,11 @@
 pragma ComponentBehavior: Bound
 
 import qs
-import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
-import qs.modules.common.widgets.widgetCanvas
 import QtQuick
-import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
 import Quickshell
-import Quickshell.Io
 import Quickshell.Wayland
-import Quickshell.Hyprland
-
-import qs.modules.ii.background.widgets
-import qs.modules.ii.background.widgets.clock
-import qs.modules.ii.background.widgets.weather
 
 Variants {
     id: root
