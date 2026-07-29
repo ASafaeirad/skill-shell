@@ -15,21 +15,25 @@ Item {
     property alias colBackground: background.color
     property alias spacing: toolbarLayout.spacing
     default property alias toolbarData: toolbarLayout.data
+    property alias radius: background.radius
+
     implicitWidth: background.implicitWidth
     implicitHeight: background.implicitHeight
-    property alias radius: background.radius
 
     Loader {
         active: root.enableShadow
         anchors.fill: background
+
         sourceComponent: StyledRectangularShadow {
             target: background
             anchors.fill: undefined
         }
+
     }
 
     Rectangle {
         id: background
+
         anchors.fill: parent
         color: Appearance.m3colors.m3surfaceContainer
         implicitHeight: 56
@@ -38,11 +42,16 @@ Item {
 
         RowLayout {
             id: toolbarLayout
+
             spacing: 4
+
             anchors {
                 fill: parent
                 margins: root.padding
             }
+
         }
+
     }
+
 }

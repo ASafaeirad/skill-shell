@@ -1,7 +1,7 @@
-import qs.modules.common
 import QtQuick
-import QtQuick.Controls.Material
 import QtQuick.Controls
+import QtQuick.Controls.Material
+import qs.modules.common
 
 ProgressBar {
     indeterminate: true

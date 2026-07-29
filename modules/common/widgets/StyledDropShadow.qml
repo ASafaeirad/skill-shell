@@ -1,9 +1,10 @@
-import QtQuick
 import Qt5Compat.GraphicalEffects
+import QtQuick
 import qs.modules.common
 
 DropShadow {
     required property var target
+
     source: target
     anchors.fill: source
     radius: 8

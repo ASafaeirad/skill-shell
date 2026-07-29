@@ -1,10 +1,34 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.services
 
 ContentPage {
+    // There's no update indicator in ii for now so we shouldn't show this yet
+    // ContentSection {
+    //     icon: "deployed_code_update"
+    //     title: Translation.tr("System updates (Arch only)")
+    //     ConfigSwitch {
+    //         text: Translation.tr("Enable update checks")
+    //         checked: Config.options.updates.enableCheck
+    //         onCheckedChanged: {
+    //             Config.options.updates.enableCheck = checked;
+    //         }
+    //     }
+    //     ConfigSpinBox {
+    //         icon: "av_timer"
+    //         text: Translation.tr("Check interval (mins)")
+    //         value: Config.options.updates.checkInterval
+    //         from: 60
+    //         to: 1440
+    //         stepSize: 60
+    //         onValueChanged: {
+    //             Config.options.updates.checkInterval = value;
+    //         }
+    //     }
+    // }
+
     forceWidth: true
 
     ContentSection {
@@ -22,6 +46,7 @@ ContentPage {
                 Config.options.musicRecognition.timeout = value;
             }
         }
+
         ConfigSpinBox {
             icon: "av_timer"
             text: Translation.tr("Polling interval (s)")
@@ -33,6 +58,7 @@ ContentPage {
                 Config.options.musicRecognition.interval = value;
             }
         }
+
     }
 
     ContentSection {
@@ -48,6 +74,7 @@ ContentPage {
                 Config.options.networking.userAgent = text;
             }
         }
+
     }
 
     ContentSection {
@@ -65,7 +92,7 @@ ContentPage {
                 Config.options.resources.updateInterval = value;
             }
         }
-        
+
     }
 
     ContentSection {
@@ -81,7 +108,7 @@ ContentPage {
                 Config.options.screenRecord.savePath = text;
             }
         }
-        
+
         MaterialTextArea {
             Layout.fillWidth: true
             placeholderText: Translation.tr("Screenshot Path (leave empty to just copy)")
@@ -91,6 +118,7 @@ ContentPage {
                 Config.options.screenSnip.savePath = text;
             }
         }
+
     }
 
     ContentSection {
@@ -103,15 +131,19 @@ ContentPage {
             onCheckedChanged: {
                 Config.options.search.sloppy = checked;
             }
+
             StyledToolTip {
                 text: Translation.tr("Could be better if you make a ton of typos,\nbut results can be weird and might not work with acronyms\n(e.g. \"GIMP\" might not give you the paint program)")
             }
+
         }
 
         ContentSubsection {
             title: Translation.tr("Prefixes")
+
             ConfigRow {
                 uniform: true
+
                 MaterialTextArea {
                     Layout.fillWidth: true
                     placeholderText: Translation.tr("Action")
@@ -121,6 +153,7 @@ ContentPage {
                         Config.options.search.prefix.action = text;
                     }
                 }
+
                 MaterialTextArea {
                     Layout.fillWidth: true
                     placeholderText: Translation.tr("Clipboard")
@@ -130,6 +163,7 @@ ContentPage {
                         Config.options.search.prefix.clipboard = text;
                     }
                 }
+
                 MaterialTextArea {
                     Layout.fillWidth: true
                     placeholderText: Translation.tr("Emojis")
@@ -139,10 +173,12 @@ ContentPage {
                         Config.options.search.prefix.emojis = text;
                     }
                 }
+
             }
 
             ConfigRow {
                 uniform: true
+
                 MaterialTextArea {
                     Layout.fillWidth: true
                     placeholderText: Translation.tr("Math")
@@ -152,6 +188,7 @@ ContentPage {
                         Config.options.search.prefix.math = text;
                     }
                 }
+
                 MaterialTextArea {
                     Layout.fillWidth: true
                     placeholderText: Translation.tr("Shell command")
@@ -161,6 +198,7 @@ ContentPage {
                         Config.options.search.prefix.shellCommand = text;
                     }
                 }
+
                 MaterialTextArea {
                     Layout.fillWidth: true
                     placeholderText: Translation.tr("Web search")
@@ -170,10 +208,14 @@ ContentPage {
                         Config.options.search.prefix.webSearch = text;
                     }
                 }
+
             }
+
         }
+
         ContentSubsection {
             title: Translation.tr("Web search")
+
             MaterialTextArea {
                 Layout.fillWidth: true
                 placeholderText: Translation.tr("Base URL")
@@ -183,38 +225,15 @@ ContentPage {
                     Config.options.search.engineBaseUrl = text;
                 }
             }
+
         }
+
     }
-
-    // There's no update indicator in ii for now so we shouldn't show this yet
-    // ContentSection {
-    //     icon: "deployed_code_update"
-    //     title: Translation.tr("System updates (Arch only)")
-
-    //     ConfigSwitch {
-    //         text: Translation.tr("Enable update checks")
-    //         checked: Config.options.updates.enableCheck
-    //         onCheckedChanged: {
-    //             Config.options.updates.enableCheck = checked;
-    //         }
-    //     }
-
-    //     ConfigSpinBox {
-    //         icon: "av_timer"
-    //         text: Translation.tr("Check interval (mins)")
-    //         value: Config.options.updates.checkInterval
-    //         from: 60
-    //         to: 1440
-    //         stepSize: 60
-    //         onValueChanged: {
-    //             Config.options.updates.checkInterval = value;
-    //         }
-    //     }
-    // }
 
     ContentSection {
         icon: "weather_mix"
         title: Translation.tr("Weather")
+
         ConfigRow {
             ConfigSwitch {
                 buttonIcon: "assistant_navigation"
@@ -224,6 +243,7 @@ ContentPage {
                     Config.options.bar.weather.enableGPS = checked;
                 }
             }
+
             ConfigSwitch {
                 buttonIcon: "thermometer"
                 text: Translation.tr("Fahrenheit unit")
@@ -231,12 +251,15 @@ ContentPage {
                 onCheckedChanged: {
                     Config.options.bar.weather.useUSCS = checked;
                 }
+
                 StyledToolTip {
                     text: Translation.tr("It may take a few seconds to update")
                 }
+
             }
+
         }
-        
+
         MaterialTextArea {
             Layout.fillWidth: true
             placeholderText: Translation.tr("City name")
@@ -246,6 +269,7 @@ ContentPage {
                 Config.options.bar.weather.city = text;
             }
         }
+
         ConfigSpinBox {
             icon: "av_timer"
             text: Translation.tr("Polling interval (m)")
@@ -257,5 +281,7 @@ ContentPage {
                 Config.options.bar.weather.fetchInterval = value;
             }
         }
+
     }
+
 }

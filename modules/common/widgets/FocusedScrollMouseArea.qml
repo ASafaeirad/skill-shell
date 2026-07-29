@@ -1,11 +1,8 @@
 import QtQuick
 
-MouseArea { // Right side | scroll to change volume
+// Right side | scroll to change volume
+MouseArea {
     id: root
-
-    signal scrollUp(delta: int)
-    signal scrollDown(delta: int)
-    signal movedAway()
 
     property bool hovered: false
     property real lastScrollX: 0
@@ -13,19 +10,20 @@ MouseArea { // Right side | scroll to change volume
     property bool trackingScroll: false
     property real moveThreshold: 20
 
+    signal scrollUp(int delta)
+    signal scrollDown(int delta)
+    signal movedAway()
+
     acceptedButtons: Qt.LeftButton
     hoverEnabled: true
-
     onEntered: {
         root.hovered = true;
     }
-
     onExited: {
         root.hovered = false;
         root.trackingScroll = false;
     }
-
-    onWheel: event => {
+    onWheel: (event) => {
         if (event.angleDelta.y < 0)
             root.scrollDown(event.angleDelta.y);
         else if (event.angleDelta.y > 0)
@@ -35,8 +33,7 @@ MouseArea { // Right side | scroll to change volume
         root.lastScrollY = event.y;
         root.trackingScroll = true;
     }
-
-    onPositionChanged: mouse => {
+    onPositionChanged: (mouse) => {
         if (root.trackingScroll) {
             const dx = mouse.x - root.lastScrollX;
             const dy = mouse.y - root.lastScrollY;
@@ -46,7 +43,6 @@ MouseArea { // Right side | scroll to change volume
             }
         }
     }
-
     onContainsMouseChanged: {
         if (!root.containsMouse && root.trackingScroll) {
             root.movedAway();

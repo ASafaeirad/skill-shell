@@ -3,19 +3,22 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import qs
-import qs.services
 import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.waffle.looks
+import qs.services
 
 WBarAttachedPanelContent {
     id: root
+
     required property string iconName
     property real value
     property bool showNumber: true
+    property Timer timer
 
-    property Timer timer: Timer {
+    timer: Timer {
         id: autoCloseTimer
+
         running: true
         interval: Config.options.osd.timeout
         repeat: false
@@ -36,9 +39,9 @@ WBarAttachedPanelContent {
 
             RowLayout {
                 id: contentRow
+
                 anchors.fill: parent
                 anchors.margins: 12
-
                 spacing: 12
 
                 FluentIcon {
@@ -49,6 +52,7 @@ WBarAttachedPanelContent {
 
                 WProgressBar {
                     id: progressBar
+
                     value: root.value
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignVCenter
@@ -62,7 +66,11 @@ WBarAttachedPanelContent {
                     implicitWidth: 16
                     horizontalAlignment: Text.AlignHCenter
                 }
+
             }
+
         }
+
     }
+
 }

@@ -1,13 +1,12 @@
-pragma Singleton
 import Quickshell
+pragma Singleton
 
 Singleton {
     id: root
 
     function getFirstDayOfWeek(date, firstDay = 1) {
         const d = new Date(date); // Copy
-        const day = d.getDay();   // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-
+        const day = d.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
         // Calculate difference to firstDay
         const diff = (day - firstDay + 7) % 7;
         d.setDate(d.getDate() - diff);
@@ -24,4 +23,5 @@ Singleton {
         targetDate.setDate(firstDayDate.getDate() + i);
         return targetDate;
     }
+
 }

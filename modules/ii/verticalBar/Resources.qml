@@ -1,18 +1,21 @@
-import qs.services
-import qs.modules.common
 import QtQuick
 import QtQuick.Layouts
+import qs.modules.common
 import qs.modules.ii.bar as Bar
+import qs.services
 
 MouseArea {
     id: root
+
     property bool alwaysShowAllResources: false
+
     implicitHeight: columnLayout.implicitHeight
     implicitWidth: columnLayout.implicitWidth
     hoverEnabled: !Config.options.bar.tooltips.clickToShow
 
     ColumnLayout {
         id: columnLayout
+
         spacing: 10
         anchors.fill: parent
 
@@ -42,4 +45,5 @@ MouseArea {
     Bar.ResourcesPopup {
         hoverTarget: root
     }
+
 }

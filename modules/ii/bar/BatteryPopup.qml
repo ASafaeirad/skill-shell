@@ -1,14 +1,15 @@
+import QtQuick
+import QtQuick.Layouts
 import qs.modules.common
 import qs.modules.common.widgets
 import qs.services
-import QtQuick
-import QtQuick.Layouts
 
 StyledPopup {
     id: root
-    
+
     ColumnLayout {
         id: columnLayout
+
         anchors.centerIn: parent
         spacing: 4
 
@@ -27,39 +28,39 @@ StyledPopup {
             icon: "schedule"
             label: Battery.isCharging ? Translation.tr("Time to full:") : Translation.tr("Time to empty:")
             value: {
-                function formatTime(seconds) {
-                    var h = Math.floor(seconds / 3600);
-                    var m = Math.floor((seconds % 3600) / 60);
-                    if (h > 0)
-                        return `${h}h, ${m}m`;
-                    else
-                        return `${m}m`;
-                }
                 if (Battery.isCharging)
                     return formatTime(Battery.timeToFull);
                 else
                     return formatTime(Battery.timeToEmpty);
             }
+
+            function formatTime(seconds) {
+                var h = Math.floor(seconds / 3600);
+                var m = Math.floor((seconds % 3600) / 60);
+                if (h > 0)
+                    return `${h}h, ${m}m`;
+                else
+                    return `${m}m`;
+            }
+
         }
 
         StyledPopupValueRow {
-            visible:  !(Battery.chargeState != 4 && Battery.energyRate == 0)
+            visible: !(Battery.chargeState != 4 && Battery.energyRate == 0)
             icon: "bolt"
             label: {
-                if (Battery.chargeState == 4) {
+                if (Battery.chargeState == 4)
                     return Translation.tr("Fully charged");
-                } else if (Battery.chargeState == 1) {
+                else if (Battery.chargeState == 1)
                     return Translation.tr("Charging:");
-                } else {
+                else
                     return Translation.tr("Discharging:");
-                }
             }
             value: {
-                if (Battery.chargeState == 4) {
+                if (Battery.chargeState == 4)
                     return "";
-                } else {
+                else
                     return `${Battery.energyRate.toFixed(2)}W`;
-                }
             }
         }
 
@@ -68,5 +69,7 @@ StyledPopup {
             label: Translation.tr("Health:")
             value: `${(Battery.health).toFixed(1)}%`
         }
+
     }
+
 }

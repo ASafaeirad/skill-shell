@@ -15,14 +15,11 @@ Item {
 
     opacity: shown ? 1 : 0
     visible: opacity > 0
+
     anchors {
         fill: parent
         topMargin: -30 * (1 - opacity)
         bottomMargin: 30 * (1 - opacity)
-    }
-
-    Behavior on opacity {
-        animation: Appearance.animation.elementMoveEnter.numberAnimation.createObject(this)
     }
 
     ColumnLayout {
@@ -31,25 +28,32 @@ Item {
 
         MaterialShapeWrappedMaterialSymbol {
             id: shapeWidget
+
             Layout.alignment: Qt.AlignHCenter
             padding: 12
             iconSize: 56
             rotation: -30 * (1 - root.opacity)
         }
+
         StyledText {
             id: widgetNameText
+
             visible: title !== ""
             Layout.alignment: Qt.AlignHCenter
+            color: Appearance.m3colors.m3outline
+            horizontalAlignment: Text.AlignHCenter
+
             font {
                 family: Appearance.font.family.title
                 pixelSize: Appearance.font.pixelSize.larger
                 variableAxes: Appearance.font.variableAxes.title
             }
-            color: Appearance.m3colors.m3outline
-            horizontalAlignment: Text.AlignHCenter
+
         }
+
         StyledText {
             id: widgetDescriptionText
+
             visible: description !== ""
             Layout.fillWidth: true
             font.pixelSize: Appearance.font.pixelSize.small
@@ -57,5 +61,11 @@ Item {
             horizontalAlignment: Text.AlignLeft
             wrapMode: Text.Wrap
         }
+
     }
+
+    Behavior on opacity {
+        animation: Appearance.animation.elementMoveEnter.numberAnimation.createObject(this)
+    }
+
 }

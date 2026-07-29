@@ -1,13 +1,15 @@
-pragma Singleton
 import Quickshell
-import qs.services
 import qs.modules.common
+import qs.services
+pragma Singleton
 
 Singleton {
     id: root
 
     function closeAllWindows() {
-        HyprlandData.windowList.map(w => w.pid).forEach(pid => {
+        HyprlandData.windowList.map((w) => {
+            return w.pid;
+        }).forEach((pid) => {
             Quickshell.execDetached(["kill", pid]);
         });
     }
@@ -51,4 +53,5 @@ Singleton {
         closeAllWindows();
         Quickshell.execDetached(["bash", "-c", `systemctl reboot --firmware-setup || loginctl reboot --firmware-setup`]);
     }
+
 }

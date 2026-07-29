@@ -1,22 +1,28 @@
+import QtQuick
 import qs.modules.common
 import qs.modules.common.widgets
-import QtQuick
 
 RippleButton {
     id: button
+
     property string buttonText: ""
     property string tooltipText: ""
 
     implicitHeight: 30
     implicitWidth: implicitHeight
+    buttonRadius: Appearance.rounding.small
+
+    StyledToolTip {
+        text: tooltipText
+        extraVisibleCondition: tooltipText.length > 0
+    }
 
     Behavior on implicitWidth {
         SmoothedAnimation {
             velocity: Appearance.animation.elementMove.velocity
         }
-    }
 
-    buttonRadius: Appearance.rounding.small
+    }
 
     contentItem: StyledText {
         text: buttonText
@@ -25,8 +31,4 @@ RippleButton {
         color: Appearance.colors.colOnLayer1
     }
 
-    StyledToolTip {
-        text: tooltipText
-        extraVisibleCondition: tooltipText.length > 0
-    }
 }

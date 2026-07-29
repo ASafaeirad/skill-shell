@@ -3,9 +3,12 @@ import QtQuick.Controls
 
 TextInput {
     id: root
+
     renderType: Text.NativeRendering
     verticalAlignment: Text.AlignVCenter
     color: Looks.colors.fg
+    selectionColor: Looks.colors.selection
+    selectedTextColor: Looks.colors.selectionFg
 
     font {
         hintingPreference: Font.PreferFullHinting
@@ -14,6 +17,4 @@ TextInput {
         weight: Looks.font.weight.regular
     }
 
-    selectionColor: Looks.colors.selection
-    selectedTextColor: Looks.colors.selectionFg
 }

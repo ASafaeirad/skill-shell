@@ -8,8 +8,8 @@ TabButton {
     implicitWidth: 38
     implicitHeight: 32
     padding: 0
-
     background: null
+
     contentItem: Item {
         FluentIcon {
             anchors.centerIn: parent
@@ -17,5 +17,7 @@ TabButton {
             color: root.icon.color
             implicitSize: 18
         }
+
     }
+
 }

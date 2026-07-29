@@ -1,14 +1,14 @@
+import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
-import qs.services
-import qs.modules.common
-import qs.modules.common.functions
-import qs.modules.waffle.looks
-import qs.modules.waffle.bar
 import Quickshell
 import Quickshell.Wayland
+import qs.modules.common
+import qs.modules.common.functions
+import qs.modules.waffle.bar
+import qs.modules.waffle.looks
+import qs.services
 
 Button {
     id: root
@@ -16,24 +16,28 @@ Button {
     required property var toplevel
     property real previewWidthConstraint: 200
     property real previewHeightConstraint: 110
+
     padding: 5
     Layout.fillHeight: true
-
     onClicked: {
         root.toplevel.activate(); // TODO: make this work with those who disable focus on activate because telegram is abusive
     }
 
     background: Rectangle {
         id: background
+
         radius: Looks.radius.medium
         color: root.down ? Looks.colors.bg2Active : (root.hovered ? Looks.colors.bg2Hover : ColorUtils.transparentize(Looks.colors.bg2))
+
         Behavior on color {
             animation: Looks.transition.color.createObject(this)
         }
+
     }
 
     contentItem: ColumnLayout {
         id: contentItem
+
         anchors.fill: parent
         anchors.margins: root.padding
         spacing: 5
@@ -45,6 +49,7 @@ Button {
 
             WAppIcon {
                 id: appIcon
+
                 Layout.leftMargin: Looks.radius.large - root.padding + 2
                 Layout.alignment: Qt.AlignVCenter
                 iconName: AppSearch.guessIcon(root.toplevel.appId)
@@ -53,11 +58,14 @@ Button {
 
             Item {
                 id: appTitleContainer
+
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 implicitHeight: closeButton.implicitHeight // Enforce height, because closeButton doesn't contribute when it's invisible
+
                 WText {
                     id: appTitleText
+
                     anchors.fill: parent
                     text: root.toplevel.title
                     elide: Text.ElideRight
@@ -65,11 +73,13 @@ Button {
                     font.weight: Looks.font.weight.thin
                     color: Looks.colors.fg1
                 }
+
             }
 
             WindowCloseButton {
                 id: closeButton
             }
+
         }
 
         Item {
@@ -82,13 +92,16 @@ Button {
 
             ScreencopyView {
                 id: screencopyView
+
                 anchors.centerIn: parent
                 captureSource: root.toplevel
                 live: true
                 paintCursor: true
                 constraintSize: Qt.size(root.previewWidthConstraint, root.previewHeightConstraint)
             }
+
         }
+
     }
 
     component WindowCloseButton: CloseButton {
@@ -101,4 +114,5 @@ Button {
             root.toplevel.close();
         }
     }
+
 }

@@ -8,27 +8,27 @@ import qs.modules.waffle.looks
 WButton {
     id: root
 
-    colBackground: Looks.colors.bg1
-    colBackgroundHover: Looks.colors.bg1Hover
-    colBackgroundActive: Looks.colors.bg1Active
     property color colBackgroundBorder
     property color color
     property alias border: background.border
     property alias shinyColor: background.borderColor
 
+    colBackground: Looks.colors.bg1
+    colBackgroundHover: Looks.colors.bg1Hover
+    colBackgroundActive: Looks.colors.bg1Active
     colBackgroundBorder: ColorUtils.transparentize(color, (root.checked || root.hovered) ? Looks.backgroundTransparency : 0)
     color: {
-        if (root.down) {
-            return root.colBackgroundActive
-        } else if ((root.hovered && !root.down) || root.checked) {
-            return root.colBackgroundHover
-        } else {
-            return root.colBackground
-        }
+        if (root.down)
+            return root.colBackgroundActive;
+        else if ((root.hovered && !root.down) || root.checked)
+            return root.colBackgroundHover;
+        else
+            return root.colBackground;
     }
 
     background: AcrylicRectangle {
         id: background
+
         shiny: ((root.hovered && !root.down) || root.checked)
         color: root.color
         radius: Looks.radius.medium
@@ -38,5 +38,7 @@ WButton {
         Behavior on border.color {
             animation: Looks.transition.color.createObject(this)
         }
+
     }
+
 }

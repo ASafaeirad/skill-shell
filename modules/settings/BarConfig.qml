@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.services
 
 ContentPage {
     forceWidth: true
@@ -10,6 +10,7 @@ ContentPage {
     ContentSection {
         icon: "notifications"
         title: Translation.tr("Notifications")
+
         ConfigSwitch {
             buttonIcon: "counter_2"
             text: Translation.tr("Unread indicator: show count")
@@ -18,8 +19,9 @@ ContentPage {
                 Config.options.bar.indicators.notifications.showUnreadCount = checked;
             }
         }
+
     }
-    
+
     ContentSection {
         icon: "spoke"
         title: Translation.tr("Positioning")
@@ -30,89 +32,86 @@ ContentPage {
                 Layout.fillWidth: true
 
                 ConfigSelectionArray {
+                    // bottom: false, vertical: false
+                    // bottom: false, vertical: true
+                    // bottom: true, vertical: false
+                    // bottom: true, vertical: true
+
                     currentValue: (Config.options.bar.bottom ? 1 : 0) | (Config.options.bar.vertical ? 2 : 0)
-                    onSelected: newValue => {
+                    onSelected: (newValue) => {
                         Config.options.bar.bottom = (newValue & 1) !== 0;
                         Config.options.bar.vertical = (newValue & 2) !== 0;
                     }
-                    options: [
-                        {
-                            displayName: Translation.tr("Top"),
-                            icon: "arrow_upward",
-                            value: 0 // bottom: false, vertical: false
-                        },
-                        {
-                            displayName: Translation.tr("Left"),
-                            icon: "arrow_back",
-                            value: 2 // bottom: false, vertical: true
-                        },
-                        {
-                            displayName: Translation.tr("Bottom"),
-                            icon: "arrow_downward",
-                            value: 1 // bottom: true, vertical: false
-                        },
-                        {
-                            displayName: Translation.tr("Right"),
-                            icon: "arrow_forward",
-                            value: 3 // bottom: true, vertical: true
-                        }
-                    ]
+                    options: [{
+                        "displayName": Translation.tr("Top"),
+                        "icon": "arrow_upward",
+                        "value": 0
+                    }, {
+                        "displayName": Translation.tr("Left"),
+                        "icon": "arrow_back",
+                        "value": 2
+                    }, {
+                        "displayName": Translation.tr("Bottom"),
+                        "icon": "arrow_downward",
+                        "value": 1
+                    }, {
+                        "displayName": Translation.tr("Right"),
+                        "icon": "arrow_forward",
+                        "value": 3
+                    }]
                 }
+
             }
+
             ContentSubsection {
                 title: Translation.tr("Automatically hide")
                 Layout.fillWidth: false
 
                 ConfigSelectionArray {
                     currentValue: Config.options.bar.autoHide.enable
-                    onSelected: newValue => {
+                    onSelected: (newValue) => {
                         Config.options.bar.autoHide.enable = newValue; // Update local copy
                     }
-                    options: [
-                        {
-                            displayName: Translation.tr("No"),
-                            icon: "close",
-                            value: false
-                        },
-                        {
-                            displayName: Translation.tr("Yes"),
-                            icon: "check",
-                            value: true
-                        }
-                    ]
+                    options: [{
+                        "displayName": Translation.tr("No"),
+                        "icon": "close",
+                        "value": false
+                    }, {
+                        "displayName": Translation.tr("Yes"),
+                        "icon": "check",
+                        "value": true
+                    }]
                 }
+
             }
+
         }
 
         ConfigRow {
-            
             ContentSubsection {
                 title: Translation.tr("Corner style")
                 Layout.fillWidth: true
 
                 ConfigSelectionArray {
                     currentValue: Config.options.bar.cornerStyle
-                    onSelected: newValue => {
+                    onSelected: (newValue) => {
                         Config.options.bar.cornerStyle = newValue; // Update local copy
                     }
-                    options: [
-                        {
-                            displayName: Translation.tr("Hug"),
-                            icon: "line_curve",
-                            value: 0
-                        },
-                        {
-                            displayName: Translation.tr("Float"),
-                            icon: "page_header",
-                            value: 1
-                        },
-                        {
-                            displayName: Translation.tr("Rect"),
-                            icon: "toolbar",
-                            value: 2
-                        }
-                    ]
+                    options: [{
+                        "displayName": Translation.tr("Hug"),
+                        "icon": "line_curve",
+                        "value": 0
+                    }, {
+                        "displayName": Translation.tr("Float"),
+                        "icon": "page_header",
+                        "value": 1
+                    }, {
+                        "displayName": Translation.tr("Rect"),
+                        "icon": "toolbar",
+                        "value": 2
+                    }]
                 }
+
             }
 
             ContentSubsection {
@@ -121,24 +120,24 @@ ContentPage {
 
                 ConfigSelectionArray {
                     currentValue: Config.options.bar.borderless
-                    onSelected: newValue => {
+                    onSelected: (newValue) => {
                         Config.options.bar.borderless = newValue; // Update local copy
                     }
-                    options: [
-                        {
-                            displayName: Translation.tr("Pills"),
-                            icon: "location_chip",
-                            value: false
-                        },
-                        {
-                            displayName: Translation.tr("Line-separated"),
-                            icon: "split_scene",
-                            value: true
-                        }
-                    ]
+                    options: [{
+                        "displayName": Translation.tr("Pills"),
+                        "icon": "location_chip",
+                        "value": false
+                    }, {
+                        "displayName": Translation.tr("Line-separated"),
+                        "icon": "split_scene",
+                        "value": true
+                    }]
                 }
+
             }
+
         }
+
     }
 
     ContentSection {
@@ -153,7 +152,7 @@ ContentPage {
                 Config.options.tray.invertPinnedItems = checked;
             }
         }
-        
+
         ConfigSwitch {
             buttonIcon: "colors"
             text: Translation.tr('Tint icons')
@@ -162,6 +161,7 @@ ContentPage {
                 Config.options.tray.monochromeIcons = checked;
             }
         }
+
     }
 
     ContentSection {
@@ -170,6 +170,7 @@ ContentPage {
 
         ConfigRow {
             uniform: true
+
             ConfigSwitch {
                 buttonIcon: "content_cut"
                 text: Translation.tr("Screen snip")
@@ -178,6 +179,7 @@ ContentPage {
                     Config.options.bar.utilButtons.showScreenSnip = checked;
                 }
             }
+
             ConfigSwitch {
                 buttonIcon: "colorize"
                 text: Translation.tr("Color picker")
@@ -186,9 +188,12 @@ ContentPage {
                     Config.options.bar.utilButtons.showColorPicker = checked;
                 }
             }
+
         }
+
         ConfigRow {
             uniform: true
+
             ConfigSwitch {
                 buttonIcon: "keyboard"
                 text: Translation.tr("Keyboard toggle")
@@ -197,6 +202,7 @@ ContentPage {
                     Config.options.bar.utilButtons.showKeyboardToggle = checked;
                 }
             }
+
             ConfigSwitch {
                 buttonIcon: "mic"
                 text: Translation.tr("Mic toggle")
@@ -205,9 +211,12 @@ ContentPage {
                     Config.options.bar.utilButtons.showMicToggle = checked;
                 }
             }
+
         }
+
         ConfigRow {
             uniform: true
+
             ConfigSwitch {
                 buttonIcon: "dark_mode"
                 text: Translation.tr("Dark/Light toggle")
@@ -216,6 +225,7 @@ ContentPage {
                     Config.options.bar.utilButtons.showDarkModeToggle = checked;
                 }
             }
+
             ConfigSwitch {
                 buttonIcon: "speed"
                 text: Translation.tr("Performance Profile toggle")
@@ -224,9 +234,12 @@ ContentPage {
                     Config.options.bar.utilButtons.showPerformanceProfileToggle = checked;
                 }
             }
+
         }
+
         ConfigRow {
             uniform: true
+
             ConfigSwitch {
                 buttonIcon: "videocam"
                 text: Translation.tr("Record")
@@ -235,12 +248,15 @@ ContentPage {
                     Config.options.bar.utilButtons.showScreenRecord = checked;
                 }
             }
+
         }
+
     }
 
     ContentSection {
         icon: "cloud"
         title: Translation.tr("Weather")
+
         ConfigSwitch {
             buttonIcon: "check"
             text: Translation.tr("Enable")
@@ -249,6 +265,7 @@ ContentPage {
                 Config.options.bar.weather.enable = checked;
             }
         }
+
     }
 
     ContentSection {
@@ -311,33 +328,32 @@ ContentPage {
 
             ConfigSelectionArray {
                 currentValue: JSON.stringify(Config.options.bar.workspaces.numberMap)
-                onSelected: newValue => {
-                    Config.options.bar.workspaces.numberMap = JSON.parse(newValue)
+                onSelected: (newValue) => {
+                    Config.options.bar.workspaces.numberMap = JSON.parse(newValue);
                 }
-                options: [
-                    {
-                        displayName: Translation.tr("Normal"),
-                        icon: "timer_10",
-                        value: '[]'
-                    },
-                    {
-                        displayName: Translation.tr("Han chars"),
-                        icon: "square_dot",
-                        value: '["一","二","三","四","五","六","七","八","九","十","十一","十二","十三","十四","十五","十六","十七","十八","十九","二十"]'
-                    },
-                    {
-                        displayName: Translation.tr("Roman"),
-                        icon: "account_balance",
-                        value: '["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV","XVI","XVII","XVIII","XIX","XX"]'
-                    }
-                ]
+                options: [{
+                    "displayName": Translation.tr("Normal"),
+                    "icon": "timer_10",
+                    "value": '[]'
+                }, {
+                    "displayName": Translation.tr("Han chars"),
+                    "icon": "square_dot",
+                    "value": '["一","二","三","四","五","六","七","八","九","十","十一","十二","十三","十四","十五","十六","十七","十八","十九","二十"]'
+                }, {
+                    "displayName": Translation.tr("Roman"),
+                    "icon": "account_balance",
+                    "value": '["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV","XVI","XVII","XVIII","XIX","XX"]'
+                }]
             }
+
         }
+
     }
 
     ContentSection {
         icon: "tooltip"
         title: Translation.tr("Tooltips")
+
         ConfigSwitch {
             buttonIcon: "ads_click"
             text: Translation.tr("Click to show")
@@ -346,5 +362,7 @@ ContentPage {
                 Config.options.bar.tooltips.clickToShow = checked;
             }
         }
+
     }
+
 }

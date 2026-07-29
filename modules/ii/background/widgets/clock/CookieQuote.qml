@@ -1,8 +1,7 @@
+import Qt5Compat.GraphicalEffects
+import QtQuick
 import qs.modules.common
 import qs.modules.common.widgets
-import QtQuick
-import Qt5Compat.GraphicalEffects
-
 
 Item {
     id: root
@@ -13,7 +12,7 @@ Item {
     implicitHeight: quoteBox.implicitHeight
 
     DropShadow {
-        source: quoteBox 
+        source: quoteBox
         anchors.fill: quoteBox
         horizontalOffset: 0
         verticalOffset: 2
@@ -22,7 +21,7 @@ Item {
         color: Appearance.colors.colShadow
         transparentBorder: true
     }
-    
+
     Rectangle {
         id: quoteBox
 
@@ -33,27 +32,36 @@ Item {
 
         Row {
             id: quoteRow
+
             anchors.centerIn: parent
             spacing: 4
-            
+
             MaterialSymbol {
                 id: quoteIcon
+
                 anchors.top: parent.top
                 iconSize: Appearance.font.pixelSize.huge
                 text: "format_quote"
                 color: Appearance.colors.colOnSecondaryContainer
             }
+
             StyledText {
                 id: quoteStyledText
+
                 horizontalAlignment: Text.AlignLeft
                 text: Config.options.background.widgets.clock.quote.text
                 color: Appearance.colors.colOnSecondaryContainer
+
                 font {
                     family: Appearance.font.family.reading
                     pixelSize: Appearance.font.pixelSize.large
                     weight: Font.Normal
                 }
+
             }
+
         }
+
     }
+
 }

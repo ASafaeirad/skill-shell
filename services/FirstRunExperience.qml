@@ -1,12 +1,12 @@
-pragma Singleton
-
-import qs.modules.common
-import qs.modules.common.functions
 import Quickshell
 import Quickshell.Io
+import qs.modules.common
+import qs.modules.common.functions
+pragma Singleton
 
 Singleton {
     id: root
+
     property string firstRunFilePath: `${Directories.state}/user/first_run.txt`
     property string firstRunFileContent: "This file is just here to confirm you've been greeted :>"
     property string firstRunNotifSummary: "Welcome!"
@@ -15,29 +15,32 @@ Singleton {
     property string welcomeQmlPath: FileUtils.trimFileProtocol(Quickshell.shellPath("welcome.qml"))
 
     function load() {
-        firstRunFileView.reload()
+        firstRunFileView.reload();
     }
 
     function enableNextTime() {
-        Quickshell.execDetached(["rm", "-f", root.firstRunFilePath])
+        Quickshell.execDetached(["rm", "-f", root.firstRunFilePath]);
     }
+
     function disableNextTime() {
-        Quickshell.execDetached(["bash", "-c", `echo '${root.firstRunFileContent}' > '${root.firstRunFilePath}'`])
+        Quickshell.execDetached(["bash", "-c", `echo '${root.firstRunFileContent}' > '${root.firstRunFilePath}'`]);
     }
 
     function handleFirstRun() {
-        Quickshell.execDetached([Directories.wallpaperSwitchScriptPath, root.defaultWallpaperPath])
-        Quickshell.execDetached(["bash", "-c", `qs -p '${root.welcomeQmlPath}'`])
+        Quickshell.execDetached([Directories.wallpaperSwitchScriptPath, root.defaultWallpaperPath]);
+        Quickshell.execDetached(["bash", "-c", `qs -p '${root.welcomeQmlPath}'`]);
     }
 
     FileView {
         id: firstRunFileView
+
         path: Qt.resolvedUrl(firstRunFilePath)
         onLoadFailed: (error) => {
             if (error == FileViewError.FileNotFound) {
-                firstRunFileView.setText(root.firstRunFileContent)
-                root.handleFirstRun()
+                firstRunFileView.setText(root.firstRunFileContent);
+                root.handleFirstRun();
             }
         }
     }
+
 }

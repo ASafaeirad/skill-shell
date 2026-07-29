@@ -6,6 +6,7 @@ Text {
     renderType: Text.NativeRendering
     verticalAlignment: Text.AlignVCenter
     color: Looks.colors.fg
+    linkColor: Looks.colors.link
 
     font {
         hintingPreference: Font.PreferDefaultHinting
@@ -15,5 +16,4 @@ Text {
         variableAxes: Looks.font.variableAxes.ui
     }
 
-    linkColor: Looks.colors.link
 }

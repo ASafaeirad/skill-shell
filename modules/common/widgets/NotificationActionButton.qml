@@ -1,10 +1,11 @@
-import qs.modules.common
-import qs.services
 import QtQuick
 import Quickshell.Services.Notifications
+import qs.modules.common
+import qs.services
 
 RippleButton {
     id: button
+
     property string buttonText
     property string urgency
 
@@ -21,4 +22,5 @@ RippleButton {
         text: buttonText
         color: (urgency == NotificationUrgency.Critical) ? Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
     }
+
 }

@@ -1,10 +1,11 @@
-import qs.modules.common
-import qs.modules.common.widgets
 import QtQuick
 import QtQuick.Layouts
+import qs.modules.common
+import qs.modules.common.widgets
 
 Rectangle {
     id: root
+
     property alias materialIcon: icon.text
     property alias text: noticeText.text
     default property alias boxData: buttonRow.data
@@ -16,12 +17,14 @@ Rectangle {
 
     RowLayout {
         id: mainRowLayout
+
         anchors.fill: parent
         anchors.margins: 8
         spacing: 8
 
         MaterialSymbol {
             id: icon
+
             Layout.fillWidth: false
             Layout.alignment: Qt.AlignTop
             text: "info"
@@ -35,6 +38,7 @@ Rectangle {
 
             StyledText {
                 id: noticeText
+
                 Layout.fillWidth: true
                 text: "Notice message"
                 color: Appearance.colors.colOnPrimaryContainer
@@ -43,9 +47,13 @@ Rectangle {
 
             RowLayout {
                 id: buttonRow
+
                 visible: children.length > 0
-                Layout.fillWidth: true 
+                Layout.fillWidth: true
             }
+
         }
+
     }
+
 }

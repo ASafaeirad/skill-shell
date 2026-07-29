@@ -1,5 +1,5 @@
-pragma Singleton
 import Quickshell
+pragma Singleton
 
 Singleton {
     id: root
@@ -14,13 +14,11 @@ Singleton {
     function colorWithHueOf(color1, color2) {
         var c1 = Qt.color(color1);
         var c2 = Qt.color(color2);
-
         // Qt.color hsvHue/hsvSaturation/hsvValue/alpha return 0-1
         var hue = c2.hsvHue;
         var sat = c1.hsvSaturation;
         var val = c1.hsvValue;
         var alpha = c1.a;
-
         return Qt.hsva(hue, sat, val, alpha);
     }
 
@@ -34,12 +32,10 @@ Singleton {
     function colorWithSaturationOf(color1, color2) {
         var c1 = Qt.color(color1);
         var c2 = Qt.color(color2);
-
         var hue = c1.hsvHue;
         var sat = c2.hsvSaturation;
         var val = c1.hsvValue;
         var alpha = c1.a;
-
         return Qt.hsva(hue, sat, val, alpha);
     }
 
@@ -77,12 +73,10 @@ Singleton {
     function adaptToAccent(color1, color2) {
         var c1 = Qt.color(color1);
         var c2 = Qt.color(color2);
-
         var hue = c2.hslHue;
         var sat = c2.hslSaturation;
         var light = c1.hslLightness;
         var alpha = c1.a;
-
         return Qt.hsla(hue, sat, light, alpha);
     }
 
@@ -163,12 +157,11 @@ Singleton {
     function solveOverlayColor(baseColor, targetColor, overlayOpacity) {
         const bc = Qt.color(baseColor);
         const tc = Qt.color(targetColor);
-        let invA = 1.0 - overlayOpacity;
-
+        let invA = 1 - overlayOpacity;
         let r = (tc.r - bc.r * invA) / overlayOpacity;
         let g = (tc.g - bc.g * invA) / overlayOpacity;
         let b = (tc.b - bc.b * invA) / overlayOpacity;
-
         return Qt.rgba(clamp01(r), clamp01(g), clamp01(b), overlayOpacity);
     }
+
 }

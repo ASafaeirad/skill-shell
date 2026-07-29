@@ -1,20 +1,22 @@
+import QtQuick
 import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.widgets
-import QtQuick
 
 Item {
     id: root
+
     required property string iconName
     required property double percentage
     property int warningThreshold: 100
+    property bool warning: percentage * 100 >= warningThreshold
+
     implicitHeight: resourceProgress.implicitHeight
     implicitWidth: Appearance.sizes.verticalBarWidth
 
-    property bool warning: percentage * 100 >= warningThreshold
-
     ClippedFilledCircularProgress {
         id: resourceProgress
+
         anchors.centerIn: parent
         value: percentage
         enableAnimation: false
@@ -28,13 +30,16 @@ Item {
             iconSize: 13
             color: Appearance.colors.colOnSecondaryContainer
         }
+
     }
 
     MouseArea {
         id: mouseArea
+
         anchors.fill: parent
         hoverEnabled: true
         acceptedButtons: Qt.NoButton
         enabled: root.visible
     }
+
 }

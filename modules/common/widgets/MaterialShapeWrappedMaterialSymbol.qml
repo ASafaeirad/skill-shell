@@ -4,6 +4,7 @@ import qs.modules.common.widgets
 
 MaterialShape {
     id: root
+
     property alias text: symbol.text
     property alias iconSize: symbol.iconSize
     property alias font: symbol.font
@@ -17,7 +18,9 @@ MaterialShape {
 
     MaterialSymbol {
         id: symbol
+
         anchors.centerIn: parent
         color: root.colSymbol
     }
+
 }

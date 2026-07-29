@@ -1,7 +1,7 @@
 import QtQuick
-import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.services
 
 ContentPage {
     forceWidth: true
@@ -18,6 +18,7 @@ ContentPage {
                 Config.options.appearance.wallpaperTheming.enableAppsAndShell = checked;
             }
         }
+
         ConfigSwitch {
             buttonIcon: "tv_options_input_settings"
             text: Translation.tr("Qt apps")
@@ -25,10 +26,13 @@ ContentPage {
             onCheckedChanged: {
                 Config.options.appearance.wallpaperTheming.enableQtApps = checked;
             }
+
             StyledToolTip {
                 text: Translation.tr("Shell & utilities theming must also be enabled")
             }
+
         }
+
         ConfigSwitch {
             buttonIcon: "terminal"
             text: Translation.tr("Terminal")
@@ -36,23 +40,30 @@ ContentPage {
             onCheckedChanged: {
                 Config.options.appearance.wallpaperTheming.enableTerminal = checked;
             }
+
             StyledToolTip {
                 text: Translation.tr("Shell & utilities theming must also be enabled")
             }
+
         }
+
         ConfigRow {
             uniform: true
+
             ConfigSwitch {
                 buttonIcon: "dark_mode"
                 text: Translation.tr("Force dark mode in terminal")
                 checked: Config.options.appearance.wallpaperTheming.terminalGenerationProps.forceDarkMode
                 onCheckedChanged: {
-                     Config.options.appearance.wallpaperTheming.terminalGenerationProps.forceDarkMode= checked;
+                    Config.options.appearance.wallpaperTheming.terminalGenerationProps.forceDarkMode = checked;
                 }
+
                 StyledToolTip {
                     text: Translation.tr("Ignored if terminal theming is not enabled")
                 }
+
             }
+
         }
 
         ConfigSpinBox {
@@ -66,6 +77,7 @@ ContentPage {
                 Config.options.appearance.wallpaperTheming.terminalGenerationProps.harmony = value / 100;
             }
         }
+
         ConfigSpinBox {
             icon: "gradient"
             text: Translation.tr("Terminal: Harmonize threshold")
@@ -77,6 +89,7 @@ ContentPage {
                 Config.options.appearance.wallpaperTheming.terminalGenerationProps.harmonizeThreshold = value;
             }
         }
+
         ConfigSpinBox {
             icon: "format_color_text"
             text: Translation.tr("Terminal: Foreground boost (%)")
@@ -88,8 +101,7 @@ ContentPage {
                 Config.options.appearance.wallpaperTheming.terminalGenerationProps.termFgBoost = value / 100;
             }
         }
+
     }
-
-
 
 }

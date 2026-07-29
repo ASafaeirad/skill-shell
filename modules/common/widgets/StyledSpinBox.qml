@@ -1,7 +1,7 @@
-import qs.modules.common
-import qs.modules.common.functions
 import QtQuick
 import QtQuick.Controls
+import qs.modules.common
+import qs.modules.common.functions
 
 /**
  * Material 3 styled SpinBox component.
@@ -12,8 +12,8 @@ SpinBox {
     property real baseHeight: 35
     property real radius: Appearance.rounding.small
     property real innerButtonRadius: Appearance.rounding.unsharpen
-    editable: true
 
+    editable: true
     opacity: root.enabled ? 1 : 0.4
 
     background: Rectangle {
@@ -27,6 +27,7 @@ SpinBox {
 
         StyledTextInput {
             id: labelText
+
             anchors.centerIn: parent
             text: root.value // displayText would make the numbers weird like 1,000 instead of 1000
             color: Appearance.colors.colOnLayer2
@@ -38,25 +39,21 @@ SpinBox {
                 root.value = parseFloat(text);
             }
         }
+
     }
 
     down.indicator: Rectangle {
-        anchors {
-            verticalCenter: parent.verticalCenter
-            left: parent.left
-        }
         implicitHeight: root.baseHeight
         implicitWidth: root.baseHeight
         topLeftRadius: root.radius
         bottomLeftRadius: root.radius
         topRightRadius: root.innerButtonRadius
         bottomRightRadius: root.innerButtonRadius
+        color: root.down.pressed ? Appearance.colors.colLayer2Active : root.down.hovered ? Appearance.colors.colLayer2Hover : ColorUtils.transparentize(Appearance.colors.colLayer2)
 
-        color: root.down.pressed ? Appearance.colors.colLayer2Active : 
-            root.down.hovered ? Appearance.colors.colLayer2Hover : 
-            ColorUtils.transparentize(Appearance.colors.colLayer2)
-        Behavior on color {
-            animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
+        anchors {
+            verticalCenter: parent.verticalCenter
+            left: parent.left
         }
 
         MaterialSymbol {
@@ -65,25 +62,25 @@ SpinBox {
             iconSize: 20
             color: Appearance.colors.colOnLayer2
         }
+
+        Behavior on color {
+            animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
+        }
+
     }
 
     up.indicator: Rectangle {
-        anchors {
-            verticalCenter: parent.verticalCenter
-            right: parent.right
-        }
         implicitHeight: root.baseHeight
         implicitWidth: root.baseHeight
         topRightRadius: root.radius
         bottomRightRadius: root.radius
         topLeftRadius: root.innerButtonRadius
         bottomLeftRadius: root.innerButtonRadius
+        color: root.up.pressed ? Appearance.colors.colLayer2Active : root.up.hovered ? Appearance.colors.colLayer2Hover : ColorUtils.transparentize(Appearance.colors.colLayer2)
 
-        color: root.up.pressed ? Appearance.colors.colLayer2Active : 
-            root.up.hovered ? Appearance.colors.colLayer2Hover : 
-            ColorUtils.transparentize(Appearance.colors.colLayer2)
-        Behavior on color {
-            animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
+        anchors {
+            verticalCenter: parent.verticalCenter
+            right: parent.right
         }
 
         MaterialSymbol {
@@ -92,5 +89,11 @@ SpinBox {
             iconSize: 20
             color: Appearance.colors.colOnLayer2
         }
+
+        Behavior on color {
+            animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
+        }
+
     }
+
 }

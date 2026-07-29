@@ -1,10 +1,9 @@
-pragma Singleton
-
-import qs.modules.common
-import qs.modules.common.functions
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.modules.common
+import qs.modules.common.functions
+pragma Singleton
 
 Singleton {
     id: root
@@ -23,6 +22,7 @@ Singleton {
 
     Process {
         id: detectPackageManagerProc
+
         command: ["bash", "-c", "pidof yay paru dnf zypper apt apx xbps snap apk yum epsi pikman || ls /var/lib/pacman/db.lck"]
         onExited: (exitCode, exitStatus) => {
             root.packageManagerRunning = (exitCode === 0);
@@ -31,9 +31,11 @@ Singleton {
 
     Process {
         id: detectDownloadProc
+
         command: ["bash", "-c", "pidof curl wget aria2c yt-dlp || ls ~/Downloads | grep -E '\.crdownload$|\.part$'"]
         onExited: (exitCode, exitStatus) => {
             root.downloadRunning = (exitCode === 0);
         }
     }
+
 }

@@ -8,8 +8,10 @@ import qs.modules.waffle.looks
 AcrylicButton {
     id: root
 
-    property var altAction: () => {}
-    property var middleClickAction: () => {}
+    property var altAction: () => {
+    }
+    property var middleClickAction: () => {
+    }
 
     Layout.fillHeight: true
     topInset: 4
@@ -17,7 +19,6 @@ AcrylicButton {
     leftInset: 0
     rightInset: 0
     horizontalPadding: 8
-
     colBackground: ColorUtils.transparentize(Looks.colors.bg1)
 
     MouseArea {
@@ -30,9 +31,15 @@ AcrylicButton {
             root.down = false;
         }
         onClicked: (event) => {
-            if (event.button === Qt.LeftButton) root.clicked();
-            if (event.button === Qt.RightButton) root.altAction();
-            if (event.button === Qt.MiddleButton) root.middleClickAction();
+            if (event.button === Qt.LeftButton)
+                root.clicked();
+
+            if (event.button === Qt.RightButton)
+                root.altAction();
+
+            if (event.button === Qt.MiddleButton)
+                root.middleClickAction();
+
         }
     }
 

@@ -5,8 +5,10 @@ import qs.modules.common.widgets
 
 Row {
     id: root
+
     required property var icon
     required property var label
+
     spacing: 5
 
     MaterialSymbol {
@@ -21,10 +23,13 @@ Row {
     StyledText {
         anchors.verticalCenter: parent.verticalCenter
         text: root.label
+        color: Appearance.colors.colOnSurfaceVariant
+
         font {
             weight: Font.DemiBold
             pixelSize: Appearance.font.pixelSize.normal
         }
-        color: Appearance.colors.colOnSurfaceVariant
+
     }
+
 }

@@ -1,33 +1,44 @@
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import qs
-import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.services
 
 Scope {
     id: root
 
-    Connections {
-        target: GlobalStates
+    function toggleOpen() {
+        GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen;
+    }
 
+    Connections {
         function onSidebarRightOpenChanged() {
-            if (GlobalStates.sidebarRightOpen) panelLoader.active = true;
+            if (GlobalStates.sidebarRightOpen)
+                panelLoader.active = true;
+
         }
+
+        target: GlobalStates
     }
 
     Loader {
         id: panelLoader
+
         active: GlobalStates.sidebarRightOpen
+
         sourceComponent: PanelWindow {
             id: panelWindow
+
             exclusiveZone: 0
             WlrLayershell.namespace: "quickshell:wNotificationCenter"
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
             color: "transparent"
+            implicitWidth: content.implicitWidth
+            implicitHeight: content.implicitHeight
 
             anchors {
                 bottom: true
@@ -35,51 +46,50 @@ Scope {
                 right: true
             }
 
-            implicitWidth: content.implicitWidth
-            implicitHeight: content.implicitHeight
-
             HyprlandFocusGrab {
                 id: focusGrab
+
                 active: true
                 windows: [panelWindow]
-                onCleared: content.close();
+                onCleared: content.close()
             }
 
             Connections {
-                target: GlobalStates
                 function onSidebarRightOpenChanged() {
-                    if (!GlobalStates.sidebarRightOpen) content.close();
+                    if (!GlobalStates.sidebarRightOpen)
+                        content.close();
+
                 }
+
+                target: GlobalStates
             }
 
             NotificationCenterContent {
                 id: content
-                anchors.fill: parent
 
+                anchors.fill: parent
                 onClosed: {
                     GlobalStates.sidebarRightOpen = false;
                     panelLoader.active = false;
                 }
             }
-        }
-    }
 
-    function toggleOpen() {
-        GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen;
+        }
+
     }
 
     IpcHandler {
-        target: "sidebarRight"
-
         function toggle() {
             root.toggleOpen();
         }
+
+        target: "sidebarRight"
     }
 
     GlobalShortcut {
         name: "sidebarRightToggle"
         description: "Toggles notification center on press"
-
-        onPressed: root.toggleOpen();
+        onPressed: root.toggleOpen()
     }
+
 }

@@ -16,14 +16,17 @@ ScrollBar {
         implicitHeight: root.visualSize
         radius: width / 2
         color: Appearance.colors.colOnSurfaceVariant
-        
-        opacity: root.policy === ScrollBar.AlwaysOn || (root.active && root.size < 1.0) ? 0.5 : 0
+        opacity: root.policy === ScrollBar.AlwaysOn || (root.active && root.size < 1) ? 0.5 : 0
+
         Behavior on opacity {
             NumberAnimation {
                 duration: 350
                 easing.type: Appearance.animation.elementMoveFast.type
                 easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
             }
+
         }
+
     }
+
 }

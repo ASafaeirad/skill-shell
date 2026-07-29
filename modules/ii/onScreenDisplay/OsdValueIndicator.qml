@@ -1,11 +1,12 @@
-import qs.modules.common
-import qs.modules.common.widgets
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Widgets
+import qs.modules.common
+import qs.modules.common.widgets
 
 Item {
     id: root
+
     required property real value
     required property string icon
     required property string name
@@ -13,7 +14,6 @@ Item {
     property bool scaleIcon: false
     property alias from: valueProgressBar.from
     property alias to: valueProgressBar.to
-
     property real valueIndicatorVerticalPadding: 9
     property real valueIndicatorLeftPadding: 10
     property real valueIndicatorRightPadding: 20 // An icon is circle ish, a column isn't, hence the extra padding
@@ -24,20 +24,24 @@ Item {
     StyledRectangularShadow {
         target: valueIndicator
     }
+
     Rectangle {
         id: valueIndicator
+
+        radius: Appearance.rounding.full
+        color: Appearance.colors.colLayer0
+        implicitWidth: valueRow.implicitWidth
+        implicitHeight: valueRow.implicitHeight
+
         anchors {
             fill: parent
             margins: Appearance.sizes.elevationMargin
         }
-        radius: Appearance.rounding.full
-        color: Appearance.colors.colLayer0
 
-        implicitWidth: valueRow.implicitWidth
-        implicitHeight: valueRow.implicitHeight
-
-        RowLayout { // Icon on the left, stuff on the right
+        // Icon on the left, stuff on the right
+        RowLayout {
             id: valueRow
+
             Layout.margins: 10
             anchors.fill: parent
             spacing: 10
@@ -50,33 +54,39 @@ Item {
                 Layout.topMargin: valueIndicatorVerticalPadding
                 Layout.bottomMargin: valueIndicatorVerticalPadding
 
-                MaterialSymbol { // Icon
-                    anchors {
-                        centerIn: parent
-                        alignWhenCentered: !root.rotateIcon
-                    }
+                // Icon
+                MaterialSymbol {
                     color: Appearance.colors.colOnLayer0
                     renderType: Text.QtRendering
-
                     text: root.icon
                     iconSize: 20 + 10 * (root.scaleIcon ? value : 1)
                     rotation: 180 * (root.rotateIcon ? value : 0)
 
+                    anchors {
+                        centerIn: parent
+                        alignWhenCentered: !root.rotateIcon
+                    }
+
                     Behavior on iconSize {
                         animation: Appearance.animation.elementMoveEnter.numberAnimation.createObject(this)
                     }
+
                     Behavior on rotation {
                         animation: Appearance.animation.elementMoveEnter.numberAnimation.createObject(this)
                     }
-                
+
                 }
+
             }
-            ColumnLayout { // Stuff
+            // Stuff
+
+            ColumnLayout {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.rightMargin: valueIndicatorRightPadding
                 spacing: 5
 
-                RowLayout { // Name fill left, value on the right end
+                // Name fill left, value on the right end
+                RowLayout {
                     Layout.leftMargin: valueProgressBar.height / 2 // Align text with progressbar radius curve's left end
                     Layout.rightMargin: valueProgressBar.height / 2 // Align text with progressbar radius curve's left end
 
@@ -93,14 +103,20 @@ Item {
                         Layout.fillWidth: false
                         text: Math.round(root.value * 100)
                     }
+
                 }
-                
+
                 StyledProgressBar {
                     id: valueProgressBar
+
                     Layout.fillWidth: true
                     value: root.value
                 }
+
             }
+
         }
+
     }
+
 }

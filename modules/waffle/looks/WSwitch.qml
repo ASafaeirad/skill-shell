@@ -1,23 +1,23 @@
 import QtQuick
-import QtQuick.Layouts
 import QtQuick.Controls
+import QtQuick.Layouts
 import qs.modules.common
 import qs.modules.waffle.looks
 
 Switch {
     id: root
 
-    implicitWidth: 40
-    implicitHeight: 20
     property real indicatorHeight: 12
     property real indicatorPressedHeight: 14
     property real indicatorPressedWidth: 17
     property color checkedColor: Looks.colors.accent
     property color uncheckedColor: Looks.colors.bg1
     property color borderColor: Looks.colors.controlBgInactive
-
     readonly property real indicatorPressedWidthDiff: indicatorPressedWidth - indicatorHeight
-    
+
+    implicitWidth: 40
+    implicitHeight: 20
+
     background: Rectangle {
         width: parent.width
         height: parent.height
@@ -29,9 +29,11 @@ Switch {
         Behavior on color {
             animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
         }
+
         Behavior on border.color {
             animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
         }
+
     }
 
     // Custom thumb styling
@@ -43,24 +45,28 @@ Switch {
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         anchors.leftMargin: {
-            if (root.checked) {
+            if (root.checked)
                 return 24 - (root.pressed || root.down ? root.indicatorPressedWidthDiff : 0);
-            } else {
+            else
                 return (root.pressed || root.down) ? 3 : (Config.options.waffles.tweaks.switchHandlePositionFix ? 4 : 3);
-            }
         }
 
         Behavior on anchors.leftMargin {
             animation: Looks.transition.enter.createObject(this)
         }
+
         Behavior on implicitWidth {
             animation: Looks.transition.resize.createObject(this)
         }
+
         Behavior on implicitHeight {
             animation: Looks.transition.resize.createObject(this)
         }
+
         Behavior on color {
             animation: Looks.transition.color.createObject(this)
         }
+
     }
+
 }

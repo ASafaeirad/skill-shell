@@ -1,6 +1,6 @@
+import QtQuick
 import qs.modules.common
 import qs.modules.common.widgets
-import QtQuick
 
 RippleButton {
     id: button
@@ -11,5 +11,4 @@ RippleButton {
     implicitHeight: Math.max(content.implicitHeight, 26, content.implicitHeight)
     implicitWidth: implicitHeight
     contentItem: content
-
 }

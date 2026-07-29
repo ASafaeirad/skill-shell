@@ -4,12 +4,12 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.Pipewire
 import qs
-import qs.services
 import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.widgets
-import qs.modules.waffle.looks
 import qs.modules.waffle.actionCenter
+import qs.modules.waffle.looks
+import qs.services
 
 RowLayout {
     id: root
@@ -23,6 +23,7 @@ RowLayout {
 
     FluentIcon {
         id: iconWidget
+
         visible: !!root.iconName
         Layout.leftMargin: 12
         Layout.topMargin: 4
@@ -46,13 +47,16 @@ RowLayout {
             font.pixelSize: Looks.font.pixelSize.large
             text: root.name
         }
+
         // Description
         WText {
             id: descriptionText
+
             Layout.fillWidth: true
             wrapMode: Text.Wrap
             color: Looks.colors.subfg
         }
+
     }
 
     MouseArea {
@@ -65,6 +69,7 @@ RowLayout {
 
         Row {
             id: switchRow
+
             spacing: 12
 
             WTextWithFixedWidth {
@@ -72,11 +77,15 @@ RowLayout {
                 text: switchWidget.checked ? Translation.tr("On") : Translation.tr("Off")
                 font.pixelSize: Looks.font.pixelSize.large
             }
-            
+
             WSwitch {
                 id: switchWidget
+
                 Layout.alignment: Qt.AlignVCenter
             }
+
         }
+
     }
+
 }

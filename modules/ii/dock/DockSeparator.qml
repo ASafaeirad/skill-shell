@@ -1,6 +1,6 @@
-import qs.modules.common
 import QtQuick
 import QtQuick.Layouts
+import qs.modules.common
 
 Rectangle {
     Layout.topMargin: Appearance.sizes.elevationMargin + dockRow.padding + Appearance.rounding.normal

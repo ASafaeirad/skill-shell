@@ -5,13 +5,13 @@ import qs.services
 
 QuickToggleModel {
     id: root
+
     name: Translation.tr("Game mode")
     toggled: !confOpt.value
     icon: "gamepad"
-
     mainAction: () => {
         root.toggled = !root.toggled;
-        if (root.toggled) {
+        if (root.toggled)
             HyprlandConfig.setMany({
                 "animations:enabled": 0,
                 "decoration:shadow:enabled": 0,
@@ -22,24 +22,15 @@ QuickToggleModel {
                 "decoration:rounding": 0,
                 "general:allow_tearing": 1
             });
-        } else {
-            HyprlandConfig.resetMany([ //
-                "animations:enabled", //
-                "decoration:shadow:enabled", //
-                "decoration:blur:enabled", //
-                "general:gaps_in", //
-                "general:gaps_out", //
-                "general:border_size", //
-                "decoration:rounding", //
-                "general:allow_tearing", //
-            ]);
-        }
+        else
+            HyprlandConfig.resetMany(["animations:enabled", "decoration:shadow:enabled", "decoration:blur:enabled", "general:gaps_in", "general:gaps_out", "general:border_size", "decoration:rounding", "general:allow_tearing"]);
     }
+    tooltipText: Translation.tr("Game mode")
 
     HyprlandConfigOption {
         id: confOpt
+
         key: "animations:enabled"
     }
 
-    tooltipText: Translation.tr("Game mode")
 }

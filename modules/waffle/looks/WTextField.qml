@@ -1,11 +1,11 @@
-import qs.modules.common
 import QtQuick
-import QtQuick.Controls.FluentWinUI3
 import QtQuick.Controls
+import QtQuick.Controls.FluentWinUI3
+import qs.modules.common
 
 TextField {
     id: root
-    
+
     clip: true
     renderType: Text.NativeRendering
     verticalAlignment: Text.AlignVCenter
@@ -28,4 +28,5 @@ TextField {
         hoverEnabled: true
         cursorShape: Qt.IBeamCursor
     }
+
 }

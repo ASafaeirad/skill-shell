@@ -1,16 +1,18 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import qs.services
 import qs.modules.common
-import qs.modules.common.widgets
 import qs.modules.common.functions
+import qs.modules.common.widgets
 import qs.modules.waffle.looks
+import qs.services
 
 WBorderlessButton {
     id: root
-    Layout.fillWidth: false
+
     property real implicitSize: 16
+
+    Layout.fillWidth: false
     implicitWidth: implicitSize
     implicitHeight: implicitSize
     color: "transparent"
@@ -27,5 +29,7 @@ WBorderlessButton {
             icon: root.icon.name
             color: root.colForeground
         }
+
     }
+
 }

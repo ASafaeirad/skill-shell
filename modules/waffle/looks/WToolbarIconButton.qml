@@ -4,7 +4,9 @@ import qs.modules.common
 
 WToolbarButton {
     id: root
+
     implicitWidth: height
+
     contentItem: Item {
         FluentIcon {
             anchors.centerIn: parent
@@ -12,5 +14,7 @@ WToolbarButton {
             implicitSize: 18
             color: root.fgColor
         }
+
     }
+
 }

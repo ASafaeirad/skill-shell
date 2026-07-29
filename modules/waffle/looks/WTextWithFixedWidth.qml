@@ -15,17 +15,22 @@ Item {
 
     TextMetrics {
         id: longestTextMetrics
+
         text: root.longestText
+
         font {
             family: Looks.font.family.ui
             pixelSize: Looks.font.pixelSize.large
             weight: Looks.font.weight.regular
         }
+
     }
 
     WText {
         id: textItem
+
         anchors.fill: parent
         font.pixelSize: Looks.font.pixelSize.large
     }
+
 }

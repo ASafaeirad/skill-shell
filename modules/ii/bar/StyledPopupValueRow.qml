@@ -5,9 +5,11 @@ import qs.modules.common.widgets
 
 RowLayout {
     id: root
+
     required property string icon
     required property string label
     required property string value
+
     spacing: 4
 
     MaterialSymbol {
@@ -15,10 +17,12 @@ RowLayout {
         color: Appearance.colors.colOnSurfaceVariant
         iconSize: Appearance.font.pixelSize.large
     }
+
     StyledText {
         text: root.label
         color: Appearance.colors.colOnSurfaceVariant
     }
+
     StyledText {
         Layout.fillWidth: true
         horizontalAlignment: Text.AlignRight
@@ -26,4 +30,5 @@ RowLayout {
         color: Appearance.colors.colOnSurfaceVariant
         text: root.value
     }
+
 }

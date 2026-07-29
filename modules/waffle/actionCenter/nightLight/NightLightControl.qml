@@ -1,17 +1,17 @@
+import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Bluetooth
 import qs
-import qs.services
-import qs.services.network
 import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.widgets
-import qs.modules.waffle.looks
 import qs.modules.waffle.actionCenter
+import qs.modules.waffle.looks
+import qs.services
+import qs.services.network
 
 Item {
     id: root
@@ -19,6 +19,7 @@ Item {
     Component.onCompleted: {
         if (Bluetooth.defaultAdapter.enabled)
             Bluetooth.defaultAdapter.discovering = true;
+
     }
     Component.onDestruction: {
         Bluetooth.defaultAdapter.discovering = false;
@@ -38,32 +39,39 @@ Item {
 
                 HeaderRow {
                     id: headerRow
+
                     Layout.fillWidth: true
                     title: Translation.tr("Eye protection")
                 }
 
                 StyledFlickable {
                     id: flickable
+
                     Layout.fillHeight: true
                     Layout.fillWidth: true
-
                     contentHeight: contentLayout.implicitHeight
                     contentWidth: width
                     clip: true
-
                     bottomMargin: 12
 
                     NightLightOptions {
                         id: contentLayout
+
                         width: flickable.width
                     }
+
                 }
+
             }
+
         }
 
-        WPanelSeparator {}
+        WPanelSeparator {
+        }
 
-        FooterRectangle {}
+        FooterRectangle {
+        }
+
     }
 
     component NightLightOptions: ColumnLayout {
@@ -110,6 +118,7 @@ Item {
                 Config.options.light.antiFlashbang.enable = checked;
             }
         }
+
     }
 
     component IntensityEntry: RowLayout {
@@ -117,6 +126,7 @@ Item {
 
         FluentIcon {
             id: iconWidget
+
             Layout.leftMargin: 12
             Layout.topMargin: 4
             Layout.bottomMargin: 4
@@ -124,6 +134,7 @@ Item {
             icon: "temperature"
             implicitSize: 18
         }
+
         ColumnLayout {
             Layout.fillWidth: true
             // Layout.leftMargin: 40
@@ -133,17 +144,21 @@ Item {
             ColumnLayout {
                 Layout.fillWidth: true
                 spacing: 0
+
                 WText {
                     Layout.fillWidth: true
                     text: Translation.tr("Intensity")
                     font.pixelSize: Looks.font.pixelSize.large
                 }
+
                 WText {
                     Layout.fillWidth: true
                     text: Translation.tr("Adjust the color temperature")
                     color: Looks.colors.subfg
                 }
+
             }
+
             WSlider {
                 Layout.fillWidth: true
                 from: 6500
@@ -152,6 +167,9 @@ Item {
                 onMoved: Config.options.light.night.colorTemperature = value
                 tooltipContent: Math.round((value - from) / (to - from) * 100)
             }
+
         }
+
     }
+
 }

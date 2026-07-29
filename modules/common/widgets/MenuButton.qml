@@ -1,5 +1,5 @@
-import qs.modules.common
 import QtQuick
+import qs.modules.common
 
 RippleButton {
     id: root
@@ -10,6 +10,7 @@ RippleButton {
 
     contentItem: StyledText {
         id: buttonTextWidget
+
         anchors.fill: parent
         anchors.leftMargin: 14
         anchors.rightMargin: 14
@@ -21,6 +22,7 @@ RippleButton {
         Behavior on color {
             animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
         }
+
     }
 
 }

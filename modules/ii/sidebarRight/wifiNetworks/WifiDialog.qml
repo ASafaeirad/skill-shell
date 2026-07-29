@@ -1,22 +1,25 @@
-import qs
-import qs.services
-import qs.services.network
-import qs.modules.common
-import qs.modules.common.widgets
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import qs
+import qs.modules.common
+import qs.modules.common.widgets
+import qs.services
+import qs.services.network
 
 WindowDialog {
     id: root
+
     backgroundHeight: 600
 
     WindowDialogTitle {
         text: Translation.tr("Connect to Wi-Fi")
     }
+
     WindowDialogSeparator {
         visible: !Network.wifiScanning
     }
+
     StyledIndeterminateProgressBar {
         visible: Network.wifiScanning
         Layout.fillWidth: true
@@ -25,6 +28,7 @@ WindowDialog {
         Layout.leftMargin: -Appearance.rounding.large
         Layout.rightMargin: -Appearance.rounding.large
     }
+
     ListView {
         Layout.fillHeight: true
         Layout.fillWidth: true
@@ -32,20 +36,25 @@ WindowDialog {
         Layout.bottomMargin: -16
         Layout.leftMargin: -Appearance.rounding.large
         Layout.rightMargin: -Appearance.rounding.large
-
         clip: true
         spacing: 0
 
         model: ScriptModel {
             values: Network.friendlyWifiNetworks
         }
+
         delegate: WifiNetworkItem {
             required property WifiAccessPoint modelData
+
             wifiNetwork: modelData
             width: ListView.view.width
         }
+
     }
-    WindowDialogSeparator {}
+
+    WindowDialogSeparator {
+    }
+
     WindowDialogButtonRow {
         DialogButton {
             buttonText: Translation.tr("Details")
@@ -63,5 +72,7 @@ WindowDialog {
             buttonText: Translation.tr("Done")
             onClicked: root.dismiss()
         }
+
     }
+
 }

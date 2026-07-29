@@ -4,6 +4,7 @@ import qs.modules.common.functions
 
 Canvas {
     id: root
+
     property color color: "#ffffff"
     property int dashLength: 6
     property int gapLength: 4
@@ -19,9 +20,9 @@ Canvas {
         ctx.save();
         ctx.strokeStyle = root.color;
         ctx.lineWidth = root.borderWidth;
-        if (root.gapLength > 0) {
+        if (root.gapLength > 0)
             ctx.setLineDash([root.dashLength, root.gapLength]); // Set dash pattern
-        }
+
         ctx.strokeRect(root.borderWidth / 2, root.borderWidth / 2, width - root.borderWidth, height - root.borderWidth); // Draw it
         ctx.restore();
     }

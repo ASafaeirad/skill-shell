@@ -1,10 +1,10 @@
 import QtQuick
 import Quickshell
 import qs
-import qs.services
 import qs.modules.common
-import qs.modules.waffle.looks
 import qs.modules.waffle.bar
+import qs.modules.waffle.looks
+import qs.services
 
 BarButton {
     id: root
@@ -20,6 +20,12 @@ BarButton {
 
     implicitWidth: 32
 
+    BarToolTip {
+        id: tooltip
+
+        extraVisibleCondition: root.shouldShowTooltip && text !== ""
+    }
+
     contentItem: Item {
         anchors.centerIn: parent
         implicitWidth: iconContent.implicitWidth
@@ -27,15 +33,13 @@ BarButton {
 
         FluentIcon {
             id: iconContent
+
             anchors.centerIn: parent
             implicitSize: 16
             icon: root.iconName
             monochrome: false
         }
+
     }
 
-    BarToolTip {
-        id: tooltip
-        extraVisibleCondition: root.shouldShowTooltip && text !== ""
-    }
 }

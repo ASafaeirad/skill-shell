@@ -2,12 +2,12 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import qs
-import qs.services
 import qs.modules.common
-import qs.modules.common.models
 import qs.modules.common.functions
+import qs.modules.common.models
 import qs.modules.common.widgets
 import qs.modules.waffle.looks
+import qs.services
 
 WChoiceButton {
     id: root
@@ -17,29 +17,36 @@ WChoiceButton {
 
     signal requestFocus()
 
-    checked: focus
-    animateChoiceHighlight: false
-    implicitWidth: contentLayout.implicitWidth + leftPadding + rightPadding
-    implicitHeight: contentLayout.implicitHeight + topPadding + bottomPadding
-
-    onClicked: {
-        execute();
-    }
-
     function execute() {
         GlobalStates.searchOpen = false;
         root.entry.execute();
     }
 
+    checked: focus
+    animateChoiceHighlight: false
+    implicitWidth: contentLayout.implicitWidth + leftPadding + rightPadding
+    implicitHeight: contentLayout.implicitHeight + topPadding + bottomPadding
+    onClicked: {
+        execute();
+    }
     horizontalPadding: 0
     verticalPadding: 0
 
+    MouseArea {
+        anchors.fill: parent
+        // hoverEnabled: true
+        acceptedButtons: Qt.NoButton
+        cursorShape: Qt.PointingHandCursor
+    }
+
     contentItem: RowLayout {
         id: contentLayout
+
         spacing: 0
 
         WButton {
             id: launchButton
+
             Layout.fillWidth: true
             Layout.fillHeight: true
             horizontalPadding: 10
@@ -49,34 +56,44 @@ WChoiceButton {
             topRightRadius: 0
             bottomRightRadius: 0
             onClicked: root.click()
+
             contentItem: Item {
                 RowLayout {
                     id: entryContentRow
+
+                    spacing: 8
+
                     anchors {
                         left: parent.left
                         right: parent.right
                         verticalCenter: parent.verticalCenter
                     }
-                    spacing: 8
 
                     SearchEntryIcon {
                         entry: root.entry
                         iconSize: 24
                     }
+
                     EntryNameColumn {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignVCenter
                     }
+
                 }
+
             }
+
         }
+
         Rectangle {
             id: separator
+
             opacity: (root.hovered && !root.checked) ? 1 : 0
             Layout.fillHeight: true
             implicitWidth: 1
             color: ColorUtils.transparentize(Looks.colors.fg, 0.75)
         }
+
         WButton {
             visible: !root.checked
             Layout.fillHeight: true
@@ -84,14 +101,18 @@ WChoiceButton {
             topLeftRadius: 0
             bottomLeftRadius: 0
             onClicked: root.requestFocus()
+
             contentItem: Item {
                 FluentIcon {
                     anchors.centerIn: parent
                     icon: "chevron-right"
                     implicitSize: 14
                 }
+
             }
+
         }
+
     }
 
     component EntryNameColumn: ColumnLayout {
@@ -113,12 +134,7 @@ WChoiceButton {
             color: Looks.colors.accentUnfocused
             elide: Text.ElideRight
         }
+
     }
 
-    MouseArea {
-        anchors.fill: parent
-        // hoverEnabled: true
-        acceptedButtons: Qt.NoButton
-        cursorShape: Qt.PointingHandCursor
-    }
 }

@@ -1,5 +1,5 @@
-pragma Singleton
 import Quickshell
+pragma Singleton
 
 Singleton {
     id: root
@@ -11,7 +11,9 @@ Singleton {
      */
     function trimFileProtocol(str) {
         let s = str;
-        if (typeof s !== "string") s = str.toString(); // Convert to string if it's an url or whatever
+        if (typeof s !== "string")
+            s = str.toString();
+ // Convert to string if it's an url or whatever
         return s.startsWith("file://") ? s.slice(7) : s;
     }
 
@@ -21,7 +23,9 @@ Singleton {
      * @returns {string}
      */
     function fileNameForPath(str) {
-        if (typeof str !== "string") return "";
+        if (typeof str !== "string")
+            return "";
+
         const trimmed = trimFileProtocol(str);
         return trimmed.split(/[\\/]/).pop();
     }
@@ -32,11 +36,15 @@ Singleton {
      * @returns {string}
      */
     function folderNameForPath(str) {
-        if (typeof str !== "string") return "";
+        if (typeof str !== "string")
+            return "";
+
         const trimmed = trimFileProtocol(str);
         // Remove trailing slash if present
         const noTrailing = trimmed.endsWith("/") ? trimmed.slice(0, -1) : trimmed;
-        if (!noTrailing) return "";
+        if (!noTrailing)
+            return "";
+
         return noTrailing.split(/[\\/]/).pop();
     }
 
@@ -46,12 +54,14 @@ Singleton {
      * @returns {string}
      */
     function trimFileExt(str) {
-        if (typeof str !== "string") return "";
+        if (typeof str !== "string")
+            return "";
+
         const trimmed = trimFileProtocol(str);
         const lastDot = trimmed.lastIndexOf(".");
-        if (lastDot > -1 && lastDot > trimmed.lastIndexOf("/")) {
+        if (lastDot > -1 && lastDot > trimmed.lastIndexOf("/"))
             return trimmed.slice(0, lastDot);
-        }
+
         return trimmed;
     }
 
@@ -61,11 +71,16 @@ Singleton {
      * @returns {string}
      */
     function parentDirectory(str) {
-        if (typeof str !== "string") return "";
+        if (typeof str !== "string")
+            return "";
+
         const trimmed = trimFileProtocol(str);
         const parts = trimmed.split(/[\\/]/);
-        if (parts.length <= 1) return "";
+        if (parts.length <= 1)
+            return "";
+
         parts.pop();
         return parts.join("/");
     }
+
 }
