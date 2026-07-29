@@ -37,6 +37,11 @@ Two switchable "panel families" exist: **ii** (the main one) and **waffle** (Win
 
 Import scheme: `import qs.services`, `import qs.modules.common`, `import qs.modules.common.widgets`, etc. Services are `pragma Singleton` — reference them directly (`Audio.sink`, `Network.materialSymbol`).
 
+## Widget Catalog
+
+You can find widgets in [widget catalog](./widget-catalog.html).
+Please keep it updated after making changes.
+
 ## Theming rules (non-negotiable)
 
 Colors come from **matugen** (Material You from the wallpaper) → `~/.local/state/quickshell/user/generated/colors.json` → the `Appearance` singleton. The palette changes whenever the wallpaper does, so:
