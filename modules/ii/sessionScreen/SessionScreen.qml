@@ -100,7 +100,7 @@ Scope {
                 }
 
                 GridLayout {
-                    columns: 4
+                    columns: 3
                     columnSpacing: 15
                     rowSpacing: 15
 
@@ -149,23 +149,8 @@ Scope {
                                 sessionRoot.subtitle = buttonText;
                         }
                         KeyNavigation.left: sessionSleep
-                        KeyNavigation.right: sessionTaskManager
                         KeyNavigation.down: sessionReboot
-                    }
-                    SessionActionButton {
-                        id: sessionTaskManager
-                        buttonIcon: "browse_activity"
-                        buttonText: Translation.tr("Task Manager")
-                        onClicked: {
-                            Session.launchTaskManager();
-                            sessionRoot.hide();
-                        }
-                        onFocusChanged: {
-                            if (focus)
-                                sessionRoot.subtitle = buttonText;
-                        }
-                        KeyNavigation.left: sessionLogout
-                        KeyNavigation.down: sessionFirmwareReboot
+                        KeyNavigation.right: sessionHibernate
                     }
 
                     SessionActionButton {
@@ -212,23 +197,7 @@ Scope {
                                 sessionRoot.subtitle = buttonText;
                         }
                         KeyNavigation.left: sessionShutdown
-                        KeyNavigation.right: sessionFirmwareReboot
                         KeyNavigation.up: sessionLogout
-                    }
-                    SessionActionButton {
-                        id: sessionFirmwareReboot
-                        buttonIcon: "settings_applications"
-                        buttonText: Translation.tr("Reboot to firmware settings")
-                        onClicked: {
-                            Session.rebootToFirmware();
-                            sessionRoot.hide();
-                        }
-                        onFocusChanged: {
-                            if (focus)
-                                sessionRoot.subtitle = buttonText;
-                        }
-                        KeyNavigation.up: sessionTaskManager
-                        KeyNavigation.left: sessionReboot
                     }
                 }
 
