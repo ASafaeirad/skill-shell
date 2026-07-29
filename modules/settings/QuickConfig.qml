@@ -104,7 +104,15 @@ ContentPage {
                     Layout.fillWidth: true
                     materialIcon: "wallpaper"
                     onClicked: {
-                        Quickshell.execDetached(`${Directories.wallpaperSwitchScriptPath}`);
+                        Quickshell.execDetached([
+                            "qs",
+                            "-p",
+                            Quickshell.shellPath(""),
+                            "ipc",
+                            "call",
+                            "wallpaperSelector",
+                            "toggle"
+                        ]);
                     }
 
                     StyledToolTip {
