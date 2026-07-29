@@ -7,7 +7,7 @@ import qs.services
 QuickToggleButton {
     id: nightLightButton
 
-    toggled: Hyprsunset.temperatureActive
+    toggled: Config.options.light.night.automatic || Hyprsunset.temperatureActive
     buttonIcon: Config.options.light.night.automatic ? "night_sight_auto" : "bedtime"
     onClicked: {
         Hyprsunset.toggleTemperature();
@@ -20,7 +20,11 @@ QuickToggleButton {
     }
 
     StyledToolTip {
-        text: Translation.tr("Night Light | Right-click to toggle Auto mode")
+        text: `${Translation.tr("Night Light")} · ${
+            Config.options.light.night.automatic ? Translation.tr("Automatic") : Translation.tr("Manual")
+        } · ${
+            Hyprsunset.temperatureActive ? Translation.tr("Enabled now") : Translation.tr("Disabled now")
+        }`
     }
 
 }

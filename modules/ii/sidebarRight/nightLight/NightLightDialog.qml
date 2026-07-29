@@ -20,7 +20,7 @@ WindowDialog {
     WindowDialogTitle {
         text: Translation.tr("Eye protection")
     }
-    
+
     WindowDialogSectionHeader {
         text: Translation.tr("Night Light")
     }
@@ -43,7 +43,13 @@ WindowDialog {
             }
             iconSize: Appearance.font.pixelSize.larger
             buttonIcon: "check"
-            text: Translation.tr("Enable now")
+            text: Hyprsunset.temperatureActive
+                ? (Config.options.light.night.automatic
+                    ? `${Translation.tr("Enabled now")} · ${Translation.tr("Automatic")}`
+                    : Translation.tr("Enabled now"))
+                : (Config.options.light.night.automatic
+                    ? `${Translation.tr("Disabled now")} · ${Translation.tr("Automatic")}`
+                    : Translation.tr("Disabled"))
             checked: Hyprsunset.temperatureActive
             onCheckedChanged: {
                 Hyprsunset.toggleTemperature(checked)
@@ -188,7 +194,7 @@ WindowDialog {
             tooltipContent: `${Math.round(value * 100)}%`
         }
     }
-    
+
     WindowDialogButtonRow {
         Layout.fillWidth: true
 

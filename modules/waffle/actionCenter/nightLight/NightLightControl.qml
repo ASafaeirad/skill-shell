@@ -83,7 +83,9 @@ Item {
 
         ToggleItem {
             name: Translation.tr("Automatic")
-            description: Translation.tr("Turn on from sunset to sunrise")
+            description: Hyprsunset.temperatureActive
+                ? Translation.tr("Night Light is enabled now")
+                : Translation.tr("Night Light is disabled now")
             iconName: "auto"
             checked: Config.options.light.night.automatic
             onCheckedChanged: {
@@ -92,8 +94,10 @@ Item {
         }
 
         ToggleItem {
-            name: Translation.tr("Enable now")
-            description: Translation.tr("More comfortable viewing at night")
+            name: Hyprsunset.temperatureActive ? Translation.tr("Enabled now") : Translation.tr("Disabled now")
+            description: Config.options.light.night.automatic
+                ? Translation.tr("Automatic mode is on")
+                : Translation.tr("Automatic mode is off")
             iconName: WIcons.nightLightIcon
             checked: Hyprsunset.temperatureActive
             onCheckedChanged: {
