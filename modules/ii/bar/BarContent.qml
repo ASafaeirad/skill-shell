@@ -83,22 +83,6 @@ Item { // Bar content region
         }
         spacing: 4
 
-        BarGroup {
-            id: leftCenterGroup
-            anchors.verticalCenter: parent.verticalCenter
-            implicitWidth: root.centerSideModuleWidth
-
-            Resources {
-                alwaysShowAllResources: root.useShortenedForm === 2
-                Layout.fillWidth: root.useShortenedForm === 2
-            }
-
-            Media {
-                visible: root.useShortenedForm < 2
-                Layout.fillWidth: true
-            }
-        }
-
         VerticalBarSeparator {
             visible: Config.options?.bar.borderless
         }
@@ -121,31 +105,6 @@ Item { // Bar content region
                             GlobalStates.overviewOpen = !GlobalStates.overviewOpen;
                         }
                     }
-                }
-            }
-        }
-
-        VerticalBarSeparator {
-            visible: Config.options?.bar.borderless
-        }
-
-        MouseArea {
-            id: rightCenterGroup
-            anchors.verticalCenter: parent.verticalCenter
-            implicitWidth: root.centerSideModuleWidth
-            implicitHeight: rightCenterGroupContent.implicitHeight
-
-            onPressed: {
-                GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen;
-            }
-
-            BarGroup {
-                id: rightCenterGroupContent
-                anchors.fill: parent
-
-                UtilButtons {
-                    visible: (Config.options.bar.verbose && root.useShortenedForm === 0)
-                    Layout.alignment: Qt.AlignVCenter
                 }
             }
         }
@@ -294,6 +253,16 @@ Item { // Bar content region
 
                 sourceComponent: BarGroup {
                     WeatherBar {}
+                }
+            }
+
+            BarGroup {
+                id: mediaGroup
+                Layout.alignment: Qt.AlignVCenter
+
+                Media {
+                    visible: root.useShortenedForm < 2
+                    Layout.preferredWidth: Math.min(implicitWidth, root.centerSideModuleWidth)
                 }
             }
 
