@@ -50,32 +50,51 @@ Singleton {
     })()
 
 
-    onIsLowAndNotChargingChanged: {
-        if (!root.available || !isLowAndNotCharging) return;
+    function notifyLowBattery() {
         Quickshell.execDetached([
-            "notify-send", 
-            Translation.tr("Low battery"), 
-            Translation.tr("Consider plugging in your device"), 
+            "notify-send",
+            Translation.tr("Low battery"),
+            Translation.tr("Consider plugging in your device (%1%)").arg(Math.round(percentage * 100)),
             "-u", "critical",
             "-a", "Shell",
-            "--hint=int:transient:1",
+            "-h", "string:desktop-entry:illogical-impulse",
+            "-h", "string:x-canonical-private-synchronous:battery-low",
         ])
-
         if (root.soundEnabled) Audio.playSystemSound("dialog-warning");
+    }
+
+    function notifyCriticalBattery() {
+        // expire-time 0 → popup stays until dismissed; no transient → kept in notification list
+        Quickshell.execDetached([
+            "notify-send",
+            Translation.tr("Critically low battery"),
+            Translation.tr("Please charge! Battery at %1%.\nAutomatic suspend triggers at %2%").arg(Math.round(percentage * 100)).arg(Config.options.battery.suspend),
+            "-u", "critical",
+            "-a", "Shell",
+            "-t", "0",
+            "-h", "string:desktop-entry:illogical-impulse",
+            "-h", "string:x-canonical-private-synchronous:battery-critical",
+        ]);
+        if (root.soundEnabled) Audio.playSystemSound("suspend-error");
+    }
+
+    onIsLowAndNotChargingChanged: {
+        if (!root.available || !isLowAndNotCharging || isCriticalAndNotCharging) return;
+        notifyLowBattery();
     }
 
     onIsCriticalAndNotChargingChanged: {
         if (!root.available || !isCriticalAndNotCharging) return;
-        Quickshell.execDetached([
-            "notify-send", 
-            Translation.tr("Critically low battery"), 
-            Translation.tr("Please charge!\nAutomatic suspend triggers at %1%").arg(Config.options.battery.suspend), 
-            "-u", "critical",
-            "-a", "Shell",
-            "--hint=int:transient:1",
-        ]);
+        notifyCriticalBattery();
+    }
 
-        if (root.soundEnabled) Audio.playSystemSound("suspend-error");
+    Component.onCompleted: {
+        // Fire once if already low/critical when the shell starts (property-changed won't)
+        Qt.callLater(() => {
+            if (!root.available) return;
+            if (root.isCriticalAndNotCharging) notifyCriticalBattery();
+            else if (root.isLowAndNotCharging) notifyLowBattery();
+        });
     }
 
     onIsSuspendingAndNotChargingChanged: {
