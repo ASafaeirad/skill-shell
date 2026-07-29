@@ -1,0 +1,1339 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Interactive catalog of the QML widgets in the illogical-impulse Quickshell configuration."
+    />
+    <title>illogical-impulse · Widget atlas</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #111217;
+        --surface: #191a20;
+        --surface-high: #22232b;
+        --surface-bright: #2b2c35;
+        --line: #44454f;
+        --text: #e4e1e9;
+        --muted: #c7c4cf;
+        --primary: #d0bcff;
+        --on-primary: #381e72;
+        --primary-container: #4f378b;
+        --secondary: #ccc2dc;
+        --tertiary: #efb8c8;
+        --danger: #ffb4ab;
+        --round: 24px;
+        --round-small: 13px;
+        --shadow: 0 18px 60px rgb(0 0 0 / 0.28);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background:
+          radial-gradient(
+            circle at 90% -10%,
+            rgb(79 55 139 / 0.3),
+            transparent 30rem
+          ),
+          radial-gradient(
+            circle at -10% 25%,
+            rgb(91 67 81 / 0.22),
+            transparent 26rem
+          ),
+          var(--bg);
+        color: var(--text);
+        font:
+          15px/1.5 Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+      button {
+        color: inherit;
+      }
+      a {
+        color: var(--primary);
+      }
+      :focus-visible {
+        outline: 3px solid var(--primary);
+        outline-offset: 3px;
+      }
+
+      .shell {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr);
+      }
+      .rail {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        padding: 28px 18px;
+        border-right: 1px solid rgb(255 255 255 / 0.08);
+        background: rgb(17 18 23 / 0.78);
+        backdrop-filter: blur(22px);
+        z-index: 3;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 10px 25px;
+      }
+      .brand-mark {
+        width: 42px;
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+        border-radius: 50% 50% 42% 58% / 48% 42% 58% 52%;
+        background: var(--primary);
+        color: var(--on-primary);
+        font-weight: 900;
+        transform: rotate(-8deg);
+      }
+      .brand b,
+      .brand small {
+        display: block;
+      }
+      .brand small {
+        color: var(--muted);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .nav-label {
+        margin: 20px 12px 8px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .filter {
+        width: 100%;
+        border: 0;
+        border-radius: 30px;
+        padding: 11px 14px;
+        background: transparent;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: 0.18s ease;
+      }
+      .filter:hover {
+        background: var(--surface-high);
+      }
+      .filter.active {
+        background: var(--secondary);
+        color: #332d41;
+        font-weight: 750;
+      }
+      .filter span:last-child {
+        font-size: 12px;
+        opacity: 0.72;
+      }
+      .rail-note {
+        position: absolute;
+        inset: auto 18px 22px;
+        padding: 14px;
+        border: 1px solid rgb(255 255 255 / 0.09);
+        border-radius: 18px;
+        background: var(--surface);
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      main {
+        min-width: 0;
+        padding: 48px clamp(22px, 5vw, 72px) 80px;
+      }
+      .eyebrow {
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+      h1 {
+        max-width: 780px;
+        margin: 12px 0;
+        font-size: clamp(38px, 6vw, 78px);
+        line-height: 0.98;
+        letter-spacing: -0.055em;
+      }
+      .lede {
+        max-width: 720px;
+        margin: 22px 0 30px;
+        color: var(--muted);
+        font-size: 17px;
+      }
+      .stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 28px;
+      }
+      .stat {
+        padding: 9px 14px;
+        border-radius: 18px;
+        background: var(--surface-high);
+        color: var(--muted);
+      }
+      .stat b {
+        color: var(--text);
+      }
+      .toolbar {
+        position: sticky;
+        top: 12px;
+        z-index: 2;
+        display: flex;
+        gap: 10px;
+        margin: 0 0 28px;
+      }
+      .search-wrap {
+        flex: 1;
+        min-width: 170px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 16px;
+        border: 1px solid rgb(255 255 255 / 0.1);
+        border-radius: 24px;
+        background: rgb(34 35 43 / 0.88);
+        backdrop-filter: blur(18px);
+        box-shadow: 0 10px 30px rgb(0 0 0 / 0.2);
+      }
+      .search-wrap svg {
+        width: 20px;
+        fill: var(--muted);
+      }
+      #search {
+        width: 100%;
+        padding: 14px 0;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: var(--text);
+      }
+      #search::placeholder {
+        color: #9896a0;
+      }
+      .view-button {
+        border: 1px solid rgb(255 255 255 / 0.1);
+        border-radius: 22px;
+        padding: 0 17px;
+        background: rgb(34 35 43 / 0.88);
+        cursor: pointer;
+        backdrop-filter: blur(18px);
+      }
+      .result-line {
+        margin: 0 0 13px 4px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 18px;
+      }
+      .grid.list {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        min-width: 0;
+        border: 1px solid rgb(255 255 255 / 0.085);
+        border-radius: var(--round);
+        background: linear-gradient(
+          145deg,
+          rgb(34 35 43 / 0.96),
+          rgb(25 26 32 / 0.96)
+        );
+        overflow: clip;
+        box-shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset;
+        transition:
+          transform 0.2s ease,
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      .card:hover {
+        transform: translateY(-4px);
+        border-color: rgb(208 188 255 / 0.4);
+        box-shadow: var(--shadow);
+      }
+      .preview {
+        min-height: 180px;
+        padding: 22px;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        background:
+          linear-gradient(rgb(255 255 255 / 0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgb(255 255 255 / 0.025) 1px, transparent 1px),
+          radial-gradient(
+            circle at 50% 40%,
+            rgb(208 188 255 / 0.1),
+            transparent 55%
+          );
+        background-size:
+          24px 24px,
+          24px 24px,
+          auto;
+      }
+      .card-body {
+        padding: 20px;
+      }
+      .meta-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .chip {
+        padding: 4px 9px;
+        border-radius: 20px;
+        background: rgb(208 188 255 / 0.12);
+        color: var(--primary);
+        font-size: 11px;
+        font-weight: 750;
+      }
+      .scope-dot {
+        width: 8px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: var(--tertiary);
+        box-shadow: 0 0 0 4px rgb(239 184 200 / 0.1);
+      }
+      .card h2 {
+        margin: 13px 0 8px;
+        font-size: 20px;
+        letter-spacing: -0.02em;
+        overflow-wrap: anywhere;
+      }
+      .purpose {
+        min-height: 66px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .path {
+        margin-top: 14px;
+        color: #9997a2;
+        font:
+          11px/1.4 ui-monospace,
+          SFMono-Regular,
+          Consolas,
+          monospace;
+        overflow-wrap: anywhere;
+      }
+      .more {
+        width: 100%;
+        margin-top: 16px;
+        padding: 10px 14px;
+        border: 0;
+        border-radius: 18px;
+        background: var(--surface-bright);
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .more:hover {
+        background: var(--primary-container);
+      }
+      .grid.list .card {
+        display: grid;
+        grid-template-columns: minmax(220px, 32%) 1fr;
+      }
+      .grid.list .preview {
+        min-height: 240px;
+      }
+
+      /* Representative demos */
+      .demo-button {
+        position: relative;
+        overflow: hidden;
+        border: 0;
+        border-radius: 18px;
+        padding: 12px 20px;
+        background: var(--primary);
+        color: var(--on-primary);
+        font-weight: 800;
+        box-shadow: 0 8px 24px rgb(208 188 255 / 0.18);
+        cursor: pointer;
+      }
+      .demo-button.alt {
+        border-radius: 50%;
+        width: 62px;
+        height: 62px;
+        padding: 0;
+        font-size: 27px;
+      }
+      .demo-switch {
+        width: 58px;
+        height: 34px;
+        padding: 4px;
+        border-radius: 22px;
+        background: #77747d;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .demo-switch::after {
+        content: "";
+        display: block;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #f1eef5;
+        transition: 0.2s;
+      }
+      .demo-switch.on {
+        background: var(--primary);
+      }
+      .demo-switch.on::after {
+        transform: translateX(24px);
+        background: var(--on-primary);
+      }
+      .demo-slider {
+        width: min(220px, 85%);
+        accent-color: var(--primary);
+      }
+      .demo-progress {
+        width: 90px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: conic-gradient(
+          var(--primary) 0 72%,
+          var(--surface-bright) 72%
+        );
+        position: relative;
+      }
+      .demo-progress::after {
+        content: "72%";
+        position: absolute;
+        inset: 11px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--surface-high);
+        font-weight: 800;
+      }
+      .demo-field {
+        width: min(230px, 92%);
+        padding: 13px 16px;
+        color: var(--text);
+        border: 1px solid var(--line);
+        border-radius: 14px 14px 5px 5px;
+        background: var(--surface);
+      }
+      .demo-notice {
+        width: min(245px, 95%);
+        padding: 15px;
+        border-radius: 18px;
+        background: var(--primary-container);
+        box-shadow: var(--shadow);
+      }
+      .demo-notice b,
+      .demo-notice span {
+        display: block;
+      }
+      .demo-notice span {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 4px;
+      }
+      .demo-nav {
+        display: flex;
+        gap: 6px;
+        padding: 7px;
+        border-radius: 24px;
+        background: var(--surface-bright);
+      }
+      .demo-nav i {
+        width: 42px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+        border-radius: 18px;
+        font-style: normal;
+      }
+      .demo-nav i:first-child {
+        background: var(--secondary);
+        color: #332d41;
+      }
+      .demo-calendar {
+        display: grid;
+        grid-template-columns: repeat(7, 25px);
+        gap: 5px;
+        text-align: center;
+        font-size: 11px;
+      }
+      .demo-calendar i {
+        height: 25px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        font-style: normal;
+      }
+      .demo-calendar i:nth-child(11) {
+        background: var(--primary);
+        color: var(--on-primary);
+        font-weight: 800;
+      }
+      .demo-icon {
+        width: 88px;
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+        border-radius: 35% 50% 42% 48%;
+        background: var(--primary-container);
+        color: var(--primary);
+        font-size: 38px;
+        transform: rotate(-5deg);
+      }
+      .demo-icon span {
+        transform: rotate(5deg);
+      }
+      .demo-wave {
+        width: min(230px, 92%);
+        height: 82px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+      }
+      .demo-wave i {
+        width: 5px;
+        height: calc(12px + (var(--n) * 8px));
+        border-radius: 8px;
+        background: var(--primary);
+        animation: wave 1s ease-in-out infinite alternate;
+        animation-delay: calc(var(--n) * -80ms);
+      }
+      @keyframes wave {
+        to {
+          transform: scaleY(0.35);
+          opacity: 0.65;
+        }
+      }
+      .demo-shape {
+        width: 105px;
+        aspect-ratio: 1;
+        background: linear-gradient(145deg, var(--primary), var(--tertiary));
+        border-radius: 49% 51% 33% 67% / 58% 34% 66% 42%;
+        animation: morph 5s ease-in-out infinite alternate;
+      }
+      @keyframes morph {
+        to {
+          border-radius: 31% 69% 58% 42% / 43% 61% 39% 57%;
+          transform: rotate(12deg);
+        }
+      }
+      .demo-clock {
+        width: 128px;
+        aspect-ratio: 1;
+        border: 8px solid var(--secondary);
+        border-radius: 50%;
+        position: relative;
+        box-shadow: 0 0 0 1px rgb(255 255 255 / 0.15);
+      }
+      .demo-clock::before,
+      .demo-clock::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: 50%;
+        width: 4px;
+        border-radius: 8px;
+        background: var(--tertiary);
+        transform-origin: 50% 100%;
+      }
+      .demo-clock::before {
+        height: 34px;
+        transform: rotate(42deg);
+      }
+      .demo-clock::after {
+        height: 46px;
+        width: 3px;
+        background: var(--primary);
+        transform: rotate(145deg);
+      }
+      .demo-layout {
+        width: min(230px, 92%);
+        display: grid;
+        grid-template-columns: 42px 1fr;
+        gap: 8px;
+      }
+      .demo-layout i {
+        min-height: 90px;
+        border-radius: 15px;
+        background: var(--primary-container);
+      }
+      .demo-layout i + i {
+        background: var(--surface-bright);
+      }
+      .demo-image {
+        width: 150px;
+        height: 104px;
+        border-radius: 20px;
+        background: linear-gradient(145deg, #5b7155, #233342 60%, #594a68);
+        position: relative;
+        overflow: hidden;
+      }
+      .demo-image::before {
+        content: "";
+        position: absolute;
+        width: 90px;
+        height: 90px;
+        left: -5px;
+        bottom: -44px;
+        background: #8fa784;
+        transform: rotate(35deg);
+        border-radius: 16px;
+      }
+      .demo-code {
+        width: min(245px, 95%);
+        padding: 14px;
+        border-radius: 15px;
+        background: #121319;
+        color: var(--muted);
+        font:
+          11px/1.7 ui-monospace,
+          monospace;
+        box-shadow: 0 0 0 1px var(--line);
+      }
+      .demo-code b {
+        color: var(--primary);
+      }
+
+      dialog {
+        width: min(780px, calc(100% - 28px));
+        max-height: min(84vh, 850px);
+        padding: 0;
+        color: var(--text);
+        border: 1px solid rgb(255 255 255 / 0.12);
+        border-radius: 30px;
+        background: var(--surface);
+        box-shadow: 0 30px 100px rgb(0 0 0 / 0.6);
+        overflow: hidden;
+      }
+      dialog::backdrop {
+        background: rgb(0 0 0 / 0.62);
+        backdrop-filter: blur(7px);
+      }
+      .dialog-head {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 22px 24px;
+        background: rgb(25 26 32 / 0.94);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgb(255 255 255 / 0.08);
+      }
+      .dialog-head h2 {
+        margin: 0;
+        font-size: 25px;
+      }
+      .close {
+        width: 42px;
+        height: 42px;
+        border: 0;
+        border-radius: 50%;
+        background: var(--surface-bright);
+        cursor: pointer;
+        font-size: 20px;
+      }
+      .dialog-body {
+        padding: 24px;
+        overflow-y: auto;
+      }
+      .dialog-body h3 {
+        margin: 28px 0 10px;
+        color: var(--secondary);
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .fact-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .fact {
+        padding: 14px;
+        border-radius: 16px;
+        background: var(--surface-high);
+      }
+      .fact small,
+      .fact b {
+        display: block;
+      }
+      .fact small {
+        color: var(--muted);
+      }
+      .fact b {
+        margin-top: 3px;
+        overflow-wrap: anywhere;
+      }
+      code,
+      pre {
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      }
+      pre {
+        margin: 0;
+        padding: 16px;
+        border-radius: 16px;
+        background: #101116;
+        color: #d7d3de;
+        overflow: auto;
+        white-space: pre-wrap;
+      }
+      .api-button {
+        padding: 11px 16px;
+        border: 0;
+        border-radius: 18px;
+        background: var(--primary);
+        color: var(--on-primary);
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .empty {
+        grid-column: 1 / -1;
+        padding: 60px 20px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      @media (max-width: 760px) {
+        .shell {
+          display: block;
+        }
+        .rail {
+          position: static;
+          height: auto;
+          padding: 18px;
+          border: 0;
+        }
+        .brand {
+          padding-bottom: 10px;
+        }
+        .nav-label,
+        #scopeFilters,
+        .rail-note {
+          display: none;
+        }
+        main {
+          padding-top: 30px;
+        }
+        .grid.list .card {
+          display: block;
+        }
+        .fact-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="rail">
+        <div class="brand">
+          <div class="brand-mark">ii</div>
+          <div><b>Widget atlas</b><small>Quickshell · QML</small></div>
+        </div>
+        <div class="nav-label">Scope</div>
+        <nav id="scopeFilters" aria-label="Filter widgets by scope"></nav>
+        <div class="rail-note">
+          Previews are HTML interpretations of behavior—not pixel-perfect QML
+          renders. Source metadata is read live when served locally.
+        </div>
+      </aside>
+
+      <main>
+        <header>
+          <div class="eyebrow">illogical-impulse design system</div>
+          <h1>Every widget,<br />in one place.</h1>
+          <p class="lede">
+            A browsable field guide to the shell’s reusable controls, window
+            pieces, visual effects, and canvas infrastructure.
+          </p>
+          <div class="stats" id="stats"></div>
+        </header>
+
+        <div class="toolbar">
+          <label class="search-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="m19.6 21-6.3-6.3a7.5 7.5 0 1 1 1.4-1.4l6.3 6.3-1.4 1.4ZM9.5 15A5.5 5.5 0 1 0 9.5 4a5.5 5.5 0 0 0 0 11Z"
+              />
+            </svg>
+            <input
+              id="search"
+              type="search"
+              placeholder="Search names, roles, paths…"
+              autocomplete="off"
+            />
+          </label>
+          <button
+            class="view-button"
+            id="viewButton"
+            type="button"
+            aria-label="Toggle list view"
+            title="Toggle view"
+          >
+            ☷
+          </button>
+        </div>
+        <p class="result-line" id="resultLine" aria-live="polite"></p>
+        <section class="grid" id="grid" aria-label="Widget catalog"></section>
+      </main>
+    </div>
+
+    <dialog id="details">
+      <div class="dialog-head">
+        <div>
+          <span class="chip" id="dialogChip"></span>
+          <h2 id="dialogTitle"></h2>
+        </div>
+        <button class="close" type="button" aria-label="Close details">
+          ×
+        </button>
+      </div>
+      <div class="dialog-body" id="dialogBody"></div>
+    </dialog>
+
+    <script>
+      const paths = `modules/common/widgets/AddressBar.qml
+modules/common/widgets/AddressBreadcrumb.qml
+modules/common/widgets/ButtonGroup.qml
+modules/common/widgets/CalendarView.qml
+modules/common/widgets/Circle.qml
+modules/common/widgets/CircularProgress.qml
+modules/common/widgets/CliphistImage.qml
+modules/common/widgets/ClippedFilledCircularProgress.qml
+modules/common/widgets/ClippedProgressBar.qml
+modules/common/widgets/ConfigRow.qml
+modules/common/widgets/ConfigSelectionArray.qml
+modules/common/widgets/ConfigSlider.qml
+modules/common/widgets/ConfigSpinBox.qml
+modules/common/widgets/ConfigSwitch.qml
+modules/common/widgets/ContentPage.qml
+modules/common/widgets/ContentSection.qml
+modules/common/widgets/ContentSubsectionLabel.qml
+modules/common/widgets/ContentSubsection.qml
+modules/common/widgets/CustomIcon.qml
+modules/common/widgets/DashedBorder.qml
+modules/common/widgets/DialogButton.qml
+modules/common/widgets/DialogListItem.qml
+modules/common/widgets/DirectoryIcon.qml
+modules/common/widgets/DragManager.qml
+modules/common/widgets/ErrorShakeAnimation.qml
+modules/common/widgets/FadeLoader.qml
+modules/common/widgets/Favicon.qml
+modules/common/widgets/FloatingActionButton.qml
+modules/common/widgets/FlowButtonGroup.qml
+modules/common/widgets/FocusedScrollMouseArea.qml
+modules/common/widgets/FullscreenPolkitWindow.qml
+modules/common/widgets/Graph.qml
+modules/common/widgets/GroupButton.qml
+modules/common/widgets/IconAndTextToolbarButton.qml
+modules/common/widgets/IconToolbarButton.qml
+modules/common/widgets/KeyboardKey.qml
+modules/common/widgets/LightDarkPreferenceButton.qml
+modules/common/widgets/MaskMultiEffect.qml
+modules/common/widgets/MaterialCookie.qml
+modules/common/widgets/MaterialLoadingIndicator.qml
+modules/common/widgets/MaterialShape.qml
+modules/common/widgets/MaterialShapeWrappedMaterialSymbol.qml
+modules/common/widgets/MaterialSymbol.qml
+modules/common/widgets/MaterialTextArea.qml
+modules/common/widgets/MaterialTextField.qml
+modules/common/widgets/MenuButton.qml
+modules/common/widgets/NavigationRailButton.qml
+modules/common/widgets/NavigationRailExpandButton.qml
+modules/common/widgets/NavigationRail.qml
+modules/common/widgets/NavigationRailTabArray.qml
+modules/common/widgets/NoticeBox.qml
+modules/common/widgets/NotificationActionButton.qml
+modules/common/widgets/NotificationAppIcon.qml
+modules/common/widgets/NotificationGroupExpandButton.qml
+modules/common/widgets/NotificationGroup.qml
+modules/common/widgets/NotificationItem.qml
+modules/common/widgets/NotificationListView.qml
+modules/common/widgets/OptionalMaterialSymbol.qml
+modules/common/widgets/PagePlaceholder.qml
+modules/common/widgets/PointingHandInteraction.qml
+modules/common/widgets/PointingHandLinkHover.qml
+modules/common/widgets/PopupToolTip.qml
+modules/common/widgets/Revealer.qml
+modules/common/widgets/RippleButton.qml
+modules/common/widgets/RippleButtonWithIcon.qml
+modules/common/widgets/RoundCorner.qml
+modules/common/widgets/ScrollEdgeFade.qml
+modules/common/widgets/SecondaryTabBar.qml
+modules/common/widgets/SecondaryTabButton.qml
+modules/common/widgets/SelectionDialog.qml
+modules/common/widgets/SelectionGroupButton.qml
+modules/common/widgets/shapes/example.qml
+modules/common/widgets/shapes/example-squircle.qml
+modules/common/widgets/shapes/ShapeCanvas.qml
+modules/common/widgets/SineCookie.qml
+modules/common/widgets/SqueezedAnnotationStyledText.qml
+modules/common/widgets/StyledBlurEffect.qml
+modules/common/widgets/StyledComboBox.qml
+modules/common/widgets/StyledDropShadow.qml
+modules/common/widgets/StyledFlickable.qml
+modules/common/widgets/StyledImage.qml
+modules/common/widgets/StyledIndeterminateProgressBar.qml
+modules/common/widgets/StyledListView.qml
+modules/common/widgets/StyledProgressBar.qml
+modules/common/widgets/StyledRadioButton.qml
+modules/common/widgets/StyledRectangularShadow.qml
+modules/common/widgets/StyledScrollBar.qml
+modules/common/widgets/StyledSlider.qml
+modules/common/widgets/StyledSpinBox.qml
+modules/common/widgets/StyledSwitch.qml
+modules/common/widgets/StyledTextArea.qml
+modules/common/widgets/StyledTextInput.qml
+modules/common/widgets/StyledText.qml
+modules/common/widgets/StyledToolTipContent.qml
+modules/common/widgets/StyledToolTip.qml
+modules/common/widgets/ThumbnailImage.qml
+modules/common/widgets/ToolbarButton.qml
+modules/common/widgets/ToolbarPairedFab.qml
+modules/common/widgets/Toolbar.qml
+modules/common/widgets/ToolbarTabBar.qml
+modules/common/widgets/ToolbarTabButton.qml
+modules/common/widgets/ToolbarTextField.qml
+modules/common/widgets/VerticalButtonGroup.qml
+modules/common/widgets/VibrantToolbarButton.qml
+modules/common/widgets/WaveVisualizer.qml
+modules/common/widgets/WavyLine.qml
+modules/common/widgets/WeekRow.qml
+modules/common/widgets/widgetCanvas/AbstractOverlayWidget.qml
+modules/common/widgets/widgetCanvas/AbstractWidget.qml
+modules/common/widgets/widgetCanvas/WidgetCanvas.qml
+modules/common/widgets/WindowDialogButtonRow.qml
+modules/common/widgets/WindowDialogParagraph.qml
+modules/common/widgets/WindowDialog.qml
+modules/common/widgets/WindowDialogSectionHeader.qml
+modules/common/widgets/WindowDialogSeparator.qml
+modules/common/widgets/WindowDialogSlider.qml
+modules/common/widgets/WindowDialogTitle.qml`
+        .trim()
+        .split("\n");
+
+      const exactPurposes = {
+        AddressBar:
+          "Editable location bar that turns a filesystem path into a navigation surface.",
+        AddressBreadcrumb:
+          "One clickable path segment used inside the address bar.",
+        CalendarView:
+          "Month calendar view with navigation and selected-day presentation.",
+        CliphistImage:
+          "Loads and presents image entries from the clipboard-history service.",
+        DragManager:
+          "Coordinates drag state and reorder behavior between participating items.",
+        FocusedScrollMouseArea:
+          "Captures deliberate wheel gestures and reports when the pointer moves away.",
+        FullscreenPolkitWindow:
+          "Secure fullscreen host used for shell-owned PolicyKit authentication.",
+        LightDarkPreferenceButton:
+          "Compact chooser for light, dark, or system-driven appearance.",
+        MaskMultiEffect:
+          "Applies a Qt graphical multi-effect through a reusable mask.",
+        MaterialCookie:
+          "Material-shaped cookie surface used as a distinctive container or backdrop.",
+        PagePlaceholder:
+          "Friendly empty-state composition with icon, title, and supporting text.",
+        PointingHandInteraction:
+          "Adds pointer-hand cursor feedback to an interactive region.",
+        PointingHandLinkHover:
+          "Adds link-style pointer feedback while a target is hovered.",
+        RoundCorner:
+          "Draws a single rounded corner for clipping or panel edge composition.",
+        ScrollEdgeFade:
+          "Fades scrollable content near its boundary to communicate overflow.",
+        SqueezedAnnotationStyledText:
+          "Styled label that compresses secondary annotation text when space is tight.",
+        ToolbarPairedFab:
+          "Joins a toolbar and floating action button into one coordinated control.",
+        WaveVisualizer:
+          "Animated audio-level visualization made from responsive vertical bars.",
+        WavyLine: "Decorative or status line rendered as a repeating wave.",
+        WeekRow: "One seven-day row used to compose the calendar grid.",
+        WidgetCanvas:
+          "Placement canvas that hosts movable desktop widgets and overlay controls.",
+        AbstractWidget:
+          "Base contract for widgets placed on the configurable desktop canvas.",
+        AbstractOverlayWidget:
+          "Base contract for canvas overlays such as widget editing affordances.",
+        ShapeCanvas: "Canvas renderer for the bundled Material shape geometry.",
+        example:
+          "Reference composition demonstrating the bundled Material shape renderer.",
+        "example-squircle":
+          "Reference composition demonstrating a squircle shape.",
+      };
+
+      function titleWords(name) {
+        return name
+          .replace(/[-_]/g, " ")
+          .replace(/([a-z0-9])([A-Z])/g, "$1 $2");
+      }
+      function scopeOf(path) {
+        if (path.includes("/widgetCanvas/")) return "Canvas";
+        if (path.includes("/shapes/")) return "Shape lab";
+        return "Common toolkit";
+      }
+      function categoryOf(name, path) {
+        if (
+          path.includes("/clock/") ||
+          /Calendar|Week|Date|Hour|Minute|Second|Time/.test(name)
+        )
+          return "Time & date";
+        if (/Notification|Notice/.test(name)) return "Notifications";
+        if (/Dialog|Polkit/.test(name)) return "Dialogs";
+        if (
+          /Button|Switch|Slider|SpinBox|ComboBox|Radio|TextField|TextArea|TextInput|Selection/.test(
+            name,
+          )
+        )
+          return "Controls";
+        if (/Progress|Loading|Graph|Wave|Wavy/.test(name))
+          return "Data display";
+        if (/Image|Icon|Symbol|Favicon|Thumbnail/.test(name))
+          return "Media & icons";
+        if (
+          /Toolbar|Navigation|Address|Tab|Page|Content|ListView|Flickable|Scroll|Group|Row|Canvas|Widget/.test(
+            name,
+          )
+        )
+          return "Layout & navigation";
+        if (
+          /Shape|Cookie|Circle|Border|Shadow|Blur|Effect|Fade|Shake|Reveal|Corner/.test(
+            name,
+          )
+        )
+          return "Visual primitives";
+        return "Utilities";
+      }
+      function demoKind(name, category) {
+        if (/Switch/.test(name)) return "switch";
+        if (/Slider|SpinBox/.test(name)) return "slider";
+        if (/Progress|Loading/.test(name)) return "progress";
+        if (/TextField|TextArea|TextInput|AddressBar/.test(name))
+          return "field";
+        if (/Calendar|Week/.test(name)) return "calendar";
+        if (/Clock|Date|Hour|Minute|Second|Time/.test(name)) return "clock";
+        if (/Graph|Wave|Wavy/.test(name)) return "wave";
+        if (/Shape|Cookie|Circle|Corner|Border/.test(name)) return "shape";
+        if (/Notification|Notice|Dialog|Placeholder|Polkit/.test(name))
+          return "notice";
+        if (/Image|Icon|Symbol|Favicon|Thumbnail/.test(name)) return "image";
+        if (/Button|Key/.test(name)) return "button";
+        if (/Navigation|Toolbar|Tab/.test(name)) return "nav";
+        if (/Layout|Content|Page|Group|Row|List|Canvas|Widget/.test(name))
+          return "layout";
+        return "code";
+      }
+      function purposeOf(name, category) {
+        if (exactPurposes[name]) return exactPurposes[name];
+        const label = titleWords(name).toLowerCase();
+        if (/^Styled/.test(name))
+          return `Theme-integrated ${label.replace("styled ", "")} with shell-standard colors, sizing, and interaction behavior.`;
+        if (/^Config/.test(name))
+          return `Settings-row ${label.replace("config ", "")} that binds a user-facing control to configuration data.`;
+        if (/^WindowDialog/.test(name))
+          return `Structured ${label.replace("window dialog ", "")} used to compose consistent shell window dialogs.`;
+        if (/^Notification/.test(name))
+          return `${titleWords(name).replace("Notification ", "")} component for composing and interacting with shell notifications.`;
+        if (/Toolbar/.test(name))
+          return `${titleWords(name)} for consistent actions and navigation within shell toolbars.`;
+        if (/NavigationRail/.test(name))
+          return `${titleWords(name)} used to build the shell’s responsive side navigation.`;
+        if (/Clock|Hand|Marks|Numbers|Date|Time/.test(name))
+          return `${titleWords(name)} used internally to compose the configurable background clock.`;
+        if (/Button/.test(name))
+          return `${titleWords(name)} with shell-standard theming, focus, hover, and pressed feedback.`;
+        if (/Effect|Animation|Loader|Revealer/.test(name))
+          return `Reusable ${label} for animated transitions and visual feedback.`;
+        return `${titleWords(name)} utility component for the ${category.toLowerCase()} layer of the shell.`;
+      }
+      function architectureNote(scope, name) {
+        if (scope === "Common toolkit")
+          return "Reusable across panel families via import qs.modules.common.widgets.";
+        if (scope === "Canvas")
+          return "Infrastructure for configurable, placed desktop widgets.";
+        if (scope === "Shape lab")
+          return "Part of the bundled Material shape renderer and its examples.";
+        if (scope.startsWith("Background"))
+          return "Feature-local component owned by the ii background module.";
+        return `${titleWords(name)} is scoped to its owning feature module.`;
+      }
+
+      const widgets = paths.map((path, index) => {
+        const name = path
+          .split("/")
+          .pop()
+          .replace(/\.qml$/, "");
+        const scope = scopeOf(path);
+        const category = categoryOf(name, path);
+        return {
+          id: index,
+          path,
+          name,
+          scope,
+          category,
+          purpose: purposeOf(name, category),
+          kind: demoKind(name, category),
+        };
+      });
+
+      const state = { scope: "All", query: "", list: false };
+      const grid = document.querySelector("#grid");
+      const search = document.querySelector("#search");
+      const details = document.querySelector("#details");
+
+      function demoFor(widget) {
+        const label = titleWords(widget.name).replace(/^Styled |^Config /, "");
+        switch (widget.kind) {
+          case "switch":
+            return `<div class="demo-switch" role="switch" aria-checked="false" tabindex="0" title="Try it"></div>`;
+          case "slider":
+            return `<input class="demo-slider" type="range" value="64" aria-label="${label} preview">`;
+          case "progress":
+            return `<div class="demo-progress" aria-label="72 percent"></div>`;
+          case "field":
+            return `<input class="demo-field" value="${label}" aria-label="${label} preview">`;
+          case "notice":
+            return `<div class="demo-notice"><b>${label}</b><span>Supporting information appears here.</span></div>`;
+          case "nav":
+            return `<div class="demo-nav" aria-label="${label}"><i>●</i><i>◆</i><i>▲</i></div>`;
+          case "calendar":
+            return `<div class="demo-calendar">${Array.from({ length: 28 }, (_, i) => `<i>${i + 1}</i>`).join("")}</div>`;
+          case "clock":
+            return `<div class="demo-clock" aria-label="${label} preview"></div>`;
+          case "wave":
+            return `<div class="demo-wave">${[2, 5, 8, 4, 7, 3, 9, 6, 4, 7, 2, 5].map((n) => `<i style="--n:${n}"></i>`).join("")}</div>`;
+          case "shape":
+            return `<div class="demo-shape" aria-label="${label} preview"></div>`;
+          case "image":
+            return /Image|Thumbnail/.test(widget.name)
+              ? `<div class="demo-image" aria-label="${label} preview"></div>`
+              : `<div class="demo-icon"><span>✦</span></div>`;
+          case "button":
+            return `<button class="demo-button ${/Floating|Fab|Icon|Key/.test(widget.name) ? "alt" : ""}" type="button">${/Floating|Fab|Icon/.test(widget.name) ? "+" : label}</button>`;
+          case "layout":
+            return `<div class="demo-layout"><i></i><i></i></div>`;
+          default:
+            return `<div class="demo-code"><b>${widget.name}</b> {<br>&nbsp;&nbsp;property …<br>&nbsp;&nbsp;behavior …<br>}</div>`;
+        }
+      }
+
+      function renderFilters() {
+        const scopes = ["All", ...new Set(widgets.map((w) => w.scope))];
+        document.querySelector("#scopeFilters").innerHTML = scopes
+          .map((scope) => {
+            const count =
+              scope === "All"
+                ? widgets.length
+                : widgets.filter((w) => w.scope === scope).length;
+            return `<button class="filter ${state.scope === scope ? "active" : ""}" data-scope="${scope}" type="button"><span>${scope}</span><span>${count}</span></button>`;
+          })
+          .join("");
+      }
+      function filteredWidgets() {
+        const terms = state.query
+          .toLowerCase()
+          .trim()
+          .split(/\s+/)
+          .filter(Boolean);
+        return widgets.filter(
+          (w) =>
+            (state.scope === "All" || w.scope === state.scope) &&
+            terms.every((term) =>
+              `${w.name} ${w.path} ${w.scope} ${w.category} ${w.purpose}`
+                .toLowerCase()
+                .includes(term),
+            ),
+        );
+      }
+      function render() {
+        const shown = filteredWidgets();
+        grid.classList.toggle("list", state.list);
+        document.querySelector("#resultLine").textContent =
+          `${shown.length} of ${widgets.length} components shown`;
+        grid.innerHTML = shown.length
+          ? shown
+              .map(
+                (w) => `
+        <article class="card">
+          <div class="preview">${demoFor(w)}</div>
+          <div class="card-body">
+            <div class="meta-row"><span class="chip">${w.category}</span><span class="scope-dot" title="${w.scope}"></span></div>
+            <h2>${titleWords(w.name)}</h2>
+            <p class="purpose">${w.purpose}</p>
+            <div class="path">${w.path}</div>
+            <button class="more" type="button" data-id="${w.id}">Metadata &amp; API</button>
+          </div>
+        </article>`,
+              )
+              .join("")
+          : `<div class="empty"><h2>No matching widgets</h2><p>Try a broader name, role, or scope.</p></div>`;
+      }
+
+      function showDetails(widget) {
+        document.querySelector("#dialogChip").textContent = widget.category;
+        document.querySelector("#dialogTitle").textContent = titleWords(
+          widget.name,
+        );
+        document.querySelector("#dialogBody").innerHTML = `
+        <div class="fact-grid">
+          <div class="fact"><small>QML component</small><b>${widget.name}.qml</b></div>
+          <div class="fact"><small>Scope</small><b>${widget.scope}</b></div>
+          <div class="fact"><small>Role</small><b>${widget.category}</b></div>
+          <div class="fact"><small>Preview family</small><b>${titleWords(widget.kind)}</b></div>
+        </div>
+        <h3>Purpose</h3>
+        <p>${widget.purpose}</p>
+        <h3>Architecture</h3>
+        <p>${architectureNote(widget.scope, widget.name)} Visual values in the QML source should resolve through <code>Appearance</code>; user-facing strings should use <code>Translation.tr()</code>.</p>
+        <h3>Source</h3>
+        <pre>${widget.path}</pre>
+        <h3>Live QML API</h3>
+        <p id="api-help">Read the component source to list its root type and top-level public declarations. This works when the catalog is served from the repository root.</p>
+        <button class="api-button" type="button" data-api="${widget.id}">Inspect source API</button>
+        <div id="api-result"></div>`;
+        details.showModal();
+      }
+
+      function extractApi(source) {
+        const lines = source.split(/\r?\n/);
+        const rootLine = lines.find((line) =>
+          /^[A-Za-z_][\w.]*(?:\s*<[^>]+>)?\s*\{/.test(line),
+        );
+        const root = rootLine
+          ? rootLine.match(/^([A-Za-z_][\w.]*)/)[1]
+          : "Unknown";
+        const declarations = lines
+          .filter(
+            (line) =>
+              /^( {4}|\t)(readonly\s+)?property\s+/.test(line) ||
+              /^( {4}|\t)signal\s+/.test(line) ||
+              /^( {4}|\t)function\s+/.test(line),
+          )
+          .map((line) => line.trim().replace(/\s*\{.*$/, " { … }"));
+        const imports = lines
+          .filter((line) => /^import\s+/.test(line))
+          .map((line) => line.trim());
+        return { root, declarations, imports };
+      }
+      async function inspectApi(widget) {
+        const target = document.querySelector("#api-result");
+        const button = document.querySelector("[data-api]");
+        button.disabled = true;
+        button.textContent = "Reading source…";
+        try {
+          const response = await fetch(widget.path);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const api = extractApi(await response.text());
+          target.innerHTML = `
+          <div class="fact-grid" style="margin-top:14px">
+            <div class="fact"><small>Root QML type</small><b>${api.root}</b></div>
+            <div class="fact"><small>Direct imports</small><b>${api.imports.length}</b></div>
+          </div>
+          <h3>Top-level declarations (${api.declarations.length})</h3>
+          <pre>${api.declarations.length ? api.declarations.join("\n") : "No explicit top-level public declarations."}</pre>
+          <h3>Imports</h3><pre>${api.imports.join("\n") || "No imports found."}</pre>`;
+          button.remove();
+        } catch (error) {
+          target.innerHTML = `<p style="color:var(--danger)">Source could not be read (${error.message}). Start a local server in the repository root, then reopen this page through it.</p><pre>python3 -m http.server 8000\n# open http://localhost:8000/widget-catalog.html</pre>`;
+          button.disabled = false;
+          button.textContent = "Try again";
+        }
+      }
+
+      document.querySelector("#stats").innerHTML = `
+      <span class="stat"><b>${widgets.length}</b> QML files</span>
+      <span class="stat"><b>${new Set(widgets.map((w) => w.category)).size}</b> roles</span>
+      <span class="stat"><b>${widgets.filter((w) => w.scope === "Common toolkit").length}</b> shared components</span>`;
+      document
+        .querySelector("#scopeFilters")
+        .addEventListener("click", (event) => {
+          const button = event.target.closest("[data-scope]");
+          if (!button) return;
+          state.scope = button.dataset.scope;
+          renderFilters();
+          render();
+        });
+      search.addEventListener("input", () => {
+        state.query = search.value;
+        render();
+      });
+      document
+        .querySelector("#viewButton")
+        .addEventListener("click", (event) => {
+          state.list = !state.list;
+          event.currentTarget.textContent = state.list ? "▦" : "☷";
+          render();
+        });
+      grid.addEventListener("click", (event) => {
+        const more = event.target.closest("[data-id]");
+        if (more) showDetails(widgets[Number(more.dataset.id)]);
+        const toggle = event.target.closest(".demo-switch");
+        if (toggle) {
+          toggle.classList.toggle("on");
+          toggle.setAttribute(
+            "aria-checked",
+            String(toggle.classList.contains("on")),
+          );
+        }
+      });
+      grid.addEventListener("keydown", (event) => {
+        if (
+          (event.key === "Enter" || event.key === " ") &&
+          event.target.matches(".demo-switch")
+        ) {
+          event.preventDefault();
+          event.target.click();
+        }
+      });
+      details.addEventListener("click", (event) => {
+        if (event.target.closest(".close")) details.close();
+        const apiButton = event.target.closest("[data-api]");
+        if (apiButton) inspectApi(widgets[Number(apiButton.dataset.api)]);
+        if (event.target === details) details.close();
+      });
+      renderFilters();
+      render();
+    </script>
+  </body>
+</html>
