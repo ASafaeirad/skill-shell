@@ -63,11 +63,6 @@ ApplicationWindow {
             name: Translation.tr("Advanced"),
             icon: "construction",
             component: "modules/settings/AdvancedConfig.qml"
-        },
-        {
-            name: Translation.tr("About"),
-            icon: "info",
-            component: "modules/settings/About.qml"
         }
     ]
     property int currentPage: 0
