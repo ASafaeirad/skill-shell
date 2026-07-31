@@ -22,7 +22,7 @@ ContentPage {
 
     function saveAll() {
         const rules = rulesFromCards();
-        for (const rule of rules) Monitors.applyRule(rule)
+        Monitors.applyRules(rules);
         Monitors.persist(rules);
     }
 
@@ -35,18 +35,12 @@ ContentPage {
         NoticeBox {
             Layout.fillWidth: true
             materialIcon: "bolt"
-            text: Translation.tr("Save all changes applies every display card and writes the layout to ~/.config/hypr/monitors.conf. To load it on startup, add this line to hyprland.conf once: source = ~/.config/hypr/monitors.conf")
+            text: Translation.tr("Save all changes applies every display card and writes the layout to ~/.config/hypr/quickshell/monitors.lua. It is loaded automatically by your Hyprland Lua configuration.")
         }
 
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
-
-            RippleButtonWithIcon {
-                materialIcon: "save"
-                mainText: Translation.tr("Save all changes")
-                onClicked: root.saveAll()
-            }
 
             RippleButtonWithIcon {
                 materialIcon: "refresh"
@@ -403,6 +397,22 @@ ContentPage {
         icon: "monitor"
         title: Translation.tr("No monitors detected")
         description: Translation.tr("Is Hyprland running?")
+    }
+
+    RowLayout {
+        Layout.fillWidth: true
+        spacing: 8
+
+        Item {
+            Layout.fillWidth: true
+        }
+
+        RippleButtonWithIcon {
+            primary: true
+            materialIcon: "save"
+            mainText: Translation.tr("Save all changes")
+            onClicked: root.saveAll()
+        }
     }
 
 }
