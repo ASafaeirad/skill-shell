@@ -22,7 +22,7 @@ Singleton {
         RecordWithSound
     }
 
-    property string imageSearchEngineBaseUrl: Config.options.search.imageSearch.imageSearchEngineBaseUrl
+    property string imageSearchEngineBaseUrl: "https://lens.google.com/uploadbyurl?url="
     property string fileUploadApiEndpoint: "https://uguu.se/upload"
 
     function getCommand(x, y, width, height, screenshotPath, action, saveDir = "") {

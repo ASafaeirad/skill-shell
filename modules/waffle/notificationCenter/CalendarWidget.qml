@@ -18,7 +18,7 @@ BodyRectangle {
     property bool collapsed
 
     // Locale
-    property var locale: Qt.locale(Config.options.calendar.locale)
+    property var locale: Qt.locale("en-GB")
 
     implicitHeight: collapsed ? 0 : contentColumn.implicitHeight
     implicitWidth: contentColumn.implicitWidth

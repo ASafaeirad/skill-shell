@@ -34,12 +34,12 @@ AppButton {
         model: [{
             "text": "Terminal",
             "action": () => {
-                Quickshell.execDetached(["bash", "-c", Config.options.apps.terminal]);
+                Quickshell.execDetached(["bash", "-c", Apps.terminal]);
             }
         }, {
             "text": "Task Manager",
             "action": () => {
-                Quickshell.execDetached(["bash", "-c", Config.options.apps.taskManager]);
+                Quickshell.execDetached(["bash", "-c", Apps.taskManager]);
             }
         }, {
             "text": "Settings",

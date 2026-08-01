@@ -14,6 +14,9 @@ Singleton {
 
     property string query: ""
 
+    readonly property string searchEngineBaseUrl: "https://www.google.com/search?q="
+    readonly property list<string> searchExcludedSites: ["quora.com", "facebook.com"]
+
     function ensurePrefix(prefix) {
         if ([Config.options.search.prefix.action, Config.options.search.prefix.app, Config.options.search.prefix.clipboard, Config.options.search.prefix.emojis, Config.options.search.prefix.math, Config.options.search.prefix.shellCommand, Config.options.search.prefix.webSearch,].some(i => root.query.startsWith(i))) {
             root.query = prefix + root.query.slice(1);
@@ -227,7 +230,7 @@ Singleton {
                         entry.execute();
                     else {
                         // Probably needs more proper escaping, but this will do for now
-                        Quickshell.execDetached(["bash", '-c', `${Config.options.apps.terminal} -e '${StringUtils.shellSingleQuoteEscape(entry.command.join(' '))}'`]);
+                        Quickshell.execDetached(["bash", '-c', `${Apps.terminal} -e '${StringUtils.shellSingleQuoteEscape(entry.command.join(' '))}'`]);
                     }
                 },
                 comment: entry.comment,
@@ -243,7 +246,7 @@ Singleton {
                             if (!action.runInTerminal)
                                 action.execute();
                             else {
-                                Quickshell.execDetached(["bash", '-c', `${Config.options.apps.terminal} -e '${StringUtils.shellSingleQuoteEscape(action.command.join(' '))}'`]);
+                                Quickshell.execDetached(["bash", '-c', `${Apps.terminal} -e '${StringUtils.shellSingleQuoteEscape(action.command.join(' '))}'`]);
                             }
                         }
                     });
@@ -263,7 +266,7 @@ Singleton {
                 if (cleanedCommand.startsWith(Config.options.search.prefix.shellCommand)) {
                     cleanedCommand = cleanedCommand.slice(Config.options.search.prefix.shellCommand.length);
                 }
-                Quickshell.execDetached(["bash", "-c", root.query.startsWith('sudo') ? `${Config.options.apps.terminal} fish -C '${cleanedCommand}'` : cleanedCommand]);
+                Quickshell.execDetached(["bash", "-c", root.query.startsWith('sudo') ? `${Apps.terminal} fish -C '${cleanedCommand}'` : cleanedCommand]);
             }
         });
         const webSearchResultObject = resultComp.createObject(null, {
@@ -274,8 +277,8 @@ Singleton {
             iconType: LauncherSearchResult.IconType.Material,
             execute: () => {
                 let query = StringUtils.cleanPrefix(root.query, Config.options.search.prefix.webSearch);
-                let url = Config.options.search.engineBaseUrl + query;
-                for (let site of Config.options.search.excludedSites) {
+                let url = root.searchEngineBaseUrl + query;
+                for (let site of root.searchExcludedSites) {
                     url += ` -site:${site}`;
                 }
                 Qt.openUrlExternally(url);

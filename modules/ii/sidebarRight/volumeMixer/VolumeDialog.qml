@@ -31,7 +31,7 @@ WindowDialog {
         DialogButton {
             buttonText: "Details"
             onClicked: {
-                Quickshell.execDetached(["bash", "-c", `${Config.options.apps.volumeMixer}`]);
+                Quickshell.execDetached(["bash", "-c", `${Apps.volumeMixer}`]);
                 GlobalStates.sidebarRightOpen = false;
             }
         }

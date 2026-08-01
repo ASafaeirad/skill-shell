@@ -59,7 +59,7 @@ WindowDialog {
         DialogButton {
             buttonText: "Details"
             onClicked: {
-                Quickshell.execDetached(["bash", "-c", `${Network.ethernet ? Config.options.apps.networkEthernet : Config.options.apps.network}`]);
+                Quickshell.execDetached(["bash", "-c", `${Network.ethernet ? Apps.networkEthernet : Apps.network}`]);
                 GlobalStates.sidebarRightOpen = false;
             }
         }
