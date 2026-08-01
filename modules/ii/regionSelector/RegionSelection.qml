@@ -50,8 +50,10 @@ PanelWindow {
     property color imageBorderColor: brightTertiary
     property color imageFillColor: ColorUtils.transparentize(imageBorderColor, 0.85)
     property color onBorderColor: "#ff000000"
-    property real targetRegionOpacity: Config.options.regionSelector.targetRegions.opacity
-    property bool contentRegionOpacity: Config.options.regionSelector.targetRegions.contentRegionOpacity
+    readonly property real targetRegionOpacity: 0.3 // was targetRegions.opacity
+    readonly property real contentRegionOpacity: 0.8 // was targetRegions.contentRegionOpacity
+    readonly property int circleStrokeWidth: 6 // was circle.strokeWidth
+    readonly property int circlePadding: 10 // was circle.padding
 
     // Vars for indicators
     readonly property var windows: [...HyprlandData.windowList].sort((a, b) => {
@@ -129,7 +131,7 @@ PanelWindow {
         return (root.targetedRegionX >= 0 && root.targetedRegionY >= 0)
     }
     function setRegionToTargeted() {
-        const padding = Config.options.regionSelector.targetRegions.selectionPadding; // Make borders not cut off n stuff
+        const padding = 5; // was targetRegions.selectionPadding; keeps borders from being cut off
         root.regionX = root.targetedRegionX - padding;
         root.regionY = root.targetedRegionY - padding;
         root.regionWidth = root.targetedRegionWidth + padding * 2;
@@ -348,7 +350,7 @@ PanelWindow {
             }
             // Circle dragging?
             else if (root.selectionMode === RegionSelection.SelectionMode.Circle) {
-                const padding = Config.options.regionSelector.circle.padding + Config.options.regionSelector.circle.strokeWidth / 2;
+                const padding = root.circlePadding + root.circleStrokeWidth / 2;
                 const dragPoints = (root.points.length > 0) ? root.points : [{ x: mouseArea.mouseX, y: mouseArea.mouseY }];
                 const maxX = Math.max(...dragPoints.map(p => p.x));
                 const minX = Math.min(...dragPoints.map(p => p.x));
@@ -396,6 +398,7 @@ PanelWindow {
                 color: root.selectionBorderColor
                 overlayColor: root.overlayColor
                 points: root.points
+                strokeWidth: root.circleStrokeWidth
             }
         }
 
@@ -424,7 +427,6 @@ PanelWindow {
                 z: 2
                 required property var modelData
                 clientDimensions: modelData
-                showIcon: true
                 targeted: !root.draggedAway && //
                     (root.targetedRegionX === modelData.at[0]  //
                     && root.targetedRegionY === modelData.at[1] //
@@ -434,7 +436,6 @@ PanelWindow {
                 opacity: root.draggedAway ? 0 : root.targetRegionOpacity
                 borderColor: root.windowBorderColor
                 fillColor: targeted ? root.windowFillColor : "transparent"
-                text: `${modelData.class}`
                 radius: Appearance.rounding.windowRounding
             }
         }
@@ -463,7 +464,6 @@ PanelWindow {
                 opacity: root.draggedAway ? 0 : root.targetRegionOpacity
                 borderColor: root.windowBorderColor
                 fillColor: targeted ? root.windowFillColor : "transparent"
-                text: `${modelData.namespace}`
                 radius: Appearance.rounding.windowRounding
             }
         }
@@ -492,7 +492,6 @@ PanelWindow {
                 opacity: root.draggedAway ? 0 : root.contentRegionOpacity
                 borderColor: root.imageBorderColor
                 fillColor: targeted ? root.imageFillColor : "transparent"
-                text: "Content region"
             }
         }
 

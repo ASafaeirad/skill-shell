@@ -11,6 +11,16 @@ import Quickshell.Io
  */
 Singleton {
     id: root
+
+    // Former resources and bar.resources tuning constants.
+    readonly property int updateInterval: 3000
+    readonly property int historyLength: 60
+    readonly property bool alwaysShowSwap: true
+    readonly property bool alwaysShowCpu: true
+    readonly property int memoryWarningThreshold: 95
+    readonly property int swapWarningThreshold: 85
+    readonly property int cpuWarningThreshold: 90
+
 	property real memoryTotal: 1
 	property real memoryFree: 0
 	property real memoryUsed: memoryTotal - memoryFree
@@ -26,7 +36,6 @@ Singleton {
     property string maxAvailableSwapString: kbToGbString(ResourceUsage.swapTotal)
     property string maxAvailableCpuString: "--"
 
-    readonly property int historyLength: Config?.options.resources.historyLength ?? 60
     property list<real> cpuUsageHistory: []
     property list<real> memoryUsageHistory: []
     property list<real> swapUsageHistory: []
@@ -93,7 +102,7 @@ Singleton {
             }
 
             root.updateHistories()
-            interval = Config.options?.resources?.updateInterval ?? 3000
+            interval = root.updateInterval
         }
 	}
 

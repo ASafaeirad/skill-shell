@@ -40,11 +40,6 @@ Scope {
             bottom: cornerWidget.isBottomLeft || cornerWidget.isBottomRight
             right: cornerWidget.isTopRight || cornerWidget.isBottomRight
         }
-        margins {
-            right: (Config.options.interactions.deadPixelWorkaround.enable && cornerPanelWindow.anchors.right) * -1
-            bottom: (Config.options.interactions.deadPixelWorkaround.enable && cornerPanelWindow.anchors.bottom) * -1
-        }
-
         implicitWidth: cornerWidget.implicitWidth
         implicitHeight: cornerWidget.implicitHeight
 
@@ -52,9 +47,6 @@ Scope {
             id: cornerWidget
             anchors.fill: parent
             corner: cornerPanelWindow.corner
-            rightVisualMargin: (Config.options.interactions.deadPixelWorkaround.enable && cornerPanelWindow.anchors.right) * 1
-            bottomVisualMargin: (Config.options.interactions.deadPixelWorkaround.enable && cornerPanelWindow.anchors.bottom) * 1
-
             implicitSize: Appearance.rounding.screenRounding
             implicitHeight: Math.max(implicitSize, sidebarCornerOpenInteractionLoader.implicitHeight)
             implicitWidth: Math.max(implicitSize, sidebarCornerOpenInteractionLoader.implicitWidth)

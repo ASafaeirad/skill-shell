@@ -51,7 +51,7 @@ WBarAttachedPanelContent {
                     
                     Timer {
                         id: enableTimer
-                        interval: Config.options.hacks.arbitraryRaceConditionDelay
+                        interval: 20 // was hacks.arbitraryRaceConditionDelay
                         onTriggered: heightBehavior.enabled = true;
                     }
                     Behavior on implicitHeight {

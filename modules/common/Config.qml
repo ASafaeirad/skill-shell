@@ -151,13 +151,6 @@ Singleton {
                 property bool showBackground: true
                 property bool verbose: true
                 property bool vertical: false
-                property JsonObject resources: JsonObject {
-                    property bool alwaysShowSwap: true
-                    property bool alwaysShowCpu: true
-                    property int memoryWarningThreshold: 95
-                    property int swapWarningThreshold: 85
-                    property int cpuWarningThreshold: 90
-                }
                 property list<string> screenList: [] // List of names, like "eDP-1", find out with 'hyprctl monitors' command
                 property JsonObject utilButtons: JsonObject {
                     property bool showScreenSnip: true
@@ -217,18 +210,6 @@ Singleton {
                 property list<string> ignoredAppRegexes: []
             }
 
-            property JsonObject interactions: JsonObject {
-                property JsonObject scrolling: JsonObject {
-                    property bool fasterTouchpadScroll: false // Enable faster scrolling with touchpad
-                    property int mouseScrollDeltaThreshold: 120 // delta >= this then it gets detected as mouse scroll rather than touchpad
-                    property int mouseScrollFactor: 120
-                    property int touchpadScrollFactor: 450
-                }
-                property JsonObject deadPixelWorkaround: JsonObject { // Hyprland leaves out 1 pixel on the right for interactions
-                    property bool enable: false
-                }
-            }
-
             property JsonObject launcher: JsonObject {
                 property list<string> pinnedApps: [ "org.kde.dolphin", "kitty", "cmake-gui"]
             }
@@ -262,11 +243,6 @@ Singleton {
                 property bool materialShapeChars: true
             }
 
-            property JsonObject keyDisplay: JsonObject {
-                property int timeout: 2500 // ms before shown keys fade out
-                property int maxKeys: 6 // max number of keystroke chips on screen
-            }
-
             property JsonObject media: JsonObject {
                 // Attempt to remove dupes (the aggregator playerctl one and browsers' native ones when there's plasma browser integration)
                 property bool filterDuplicatePlayers: true
@@ -277,15 +253,10 @@ Singleton {
             }
 
             property JsonObject notifications: JsonObject {
-                property int timeout: 7000
                 property JsonObject monitor: JsonObject {
                     property bool enable: false
                     property string name: "" // Name of the monitor to show notifications on, like "eDP-1". Find out with 'hyprctl monitors' command
                 }
-            }
-
-            property JsonObject osd: JsonObject {
-                property int timeout: 1000
             }
 
             property JsonObject overlay: JsonObject {
@@ -313,26 +284,7 @@ Singleton {
                     property bool windows: true
                     property bool layers: false
                     property bool content: true
-                    property bool showLabel: false
-                    property real opacity: 0.3
-                    property real contentRegionOpacity: 0.8
-                    property int selectionPadding: 5
                 }
-                property JsonObject rect: JsonObject {
-                    property bool showAimLines: true
-                }
-                property JsonObject circle: JsonObject {
-                    property int strokeWidth: 6
-                    property int padding: 10
-                }
-                property JsonObject annotation: JsonObject {
-                    property bool useSatty: false
-                }
-            }
-
-            property JsonObject resources: JsonObject {
-                property int updateInterval: 3000
-                property int historyLength: 60
             }
 
             property JsonObject tray: JsonObject {
@@ -343,13 +295,7 @@ Singleton {
                 property bool filterPassive: true
             }
 
-            property JsonObject musicRecognition: JsonObject {
-                property int timeout: 16
-                property int interval: 4
-            }
-
             property JsonObject search: JsonObject {
-                property int nonAppResultDelay: 30 // This prevents lagging when typing
                 property string engineBaseUrl: "https://www.google.com/search?q="
                 property list<string> excludedSites: ["quora.com", "facebook.com"]
                 property bool sloppy: false // Uses levenshtein distance based scoring instead of fuzzy sort. Very weird.
@@ -442,10 +388,6 @@ Singleton {
             property JsonObject windows: JsonObject {
                 property bool showTitlebar: true // Client-side decoration for shell apps
                 property bool centerTitle: true
-            }
-
-            property JsonObject hacks: JsonObject {
-                property int arbitraryRaceConditionDelay: 20 // milliseconds
             }
 
             property JsonObject waffles: JsonObject {
