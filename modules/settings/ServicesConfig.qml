@@ -8,22 +8,6 @@ ContentPage {
     forceWidth: true
 
     ContentSection {
-        icon: "cell_tower"
-        title: "Networking"
-
-        MaterialTextArea {
-            Layout.fillWidth: true
-            placeholderText: "User agent (for services that require it)"
-            text: Config.options.networking.userAgent
-            wrapMode: TextEdit.Wrap
-            onTextChanged: {
-                Config.options.networking.userAgent = text;
-            }
-        }
-
-    }
-
-    ContentSection {
         icon: "file_open"
         title: "Save paths"
 
@@ -137,21 +121,6 @@ ContentPage {
                     }
                 }
 
-            }
-
-        }
-
-        ContentSubsection {
-            title: "Web search"
-
-            MaterialTextArea {
-                Layout.fillWidth: true
-                placeholderText: "Base URL"
-                text: Config.options.search.engineBaseUrl
-                wrapMode: TextEdit.Wrap
-                onTextChanged: {
-                    Config.options.search.engineBaseUrl = text;
-                }
             }
 
         }

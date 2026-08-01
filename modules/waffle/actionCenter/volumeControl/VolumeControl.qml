@@ -65,7 +65,7 @@ Item {
                 color: "transparent"
                 onClicked: {
                     Quickshell.execDetached(["qs", "-p", Quickshell.shellPath(""), "ipc", "call", "sidebarLeft", "toggle"]);
-                    Quickshell.execDetached(["bash", "-c", Config.options.apps.volumeMixer]);
+                    Quickshell.execDetached(["bash", "-c", Apps.volumeMixer]);
                 }
 
                 anchors {

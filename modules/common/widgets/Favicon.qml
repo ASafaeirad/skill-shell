@@ -13,7 +13,7 @@ IconImage {
     property string displayText
 
     property real size: 32
-    property string downloadUserAgent: Config.options?.networking.userAgent ?? ""
+    property string downloadUserAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
     property string faviconDownloadPath: Directories.favicons
     property string domainName: url.includes("vertexaisearch") ? displayText : StringUtils.getDomain(url)
     property string faviconUrl: `https://www.google.com/s2/favicons?domain=${domainName}&sz=32`
