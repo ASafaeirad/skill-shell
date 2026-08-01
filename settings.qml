@@ -93,7 +93,7 @@ ApplicationWindow {
                 if (event.key === Qt.Key_PageDown) {
                     root.currentPage = Math.min(root.currentPage + 1, root.pages.length - 1)
                     event.accepted = true;
-                } 
+                }
                 else if (event.key === Qt.Key_PageUp) {
                     root.currentPage = Math.max(root.currentPage - 1, 0)
                     event.accepted = true;
@@ -156,11 +156,9 @@ ApplicationWindow {
             Item {
                 id: navRailWrapper
                 Layout.fillHeight: true
-                Layout.margins: 5
-                implicitWidth: navRail.expanded ? 150 : navigationTabs.implicitWidth
-                Behavior on implicitWidth {
-                    animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-                }
+                Layout.leftMargin: 5
+                Layout.rightMargin: 5
+                implicitWidth: navigationTabs.implicitWidth
                 NavigationRail { // Window content with navigation rail and content pane
                     id: navRail
                     anchors {
@@ -169,11 +167,7 @@ ApplicationWindow {
                         bottom: parent.bottom
                     }
                     spacing: 10
-                    expanded: root.width > 900
-                    
-                    NavigationRailExpandButton {
-                        focus: root.visible
-                    }
+                    expanded: false
 
                     NavigationRailTabArray {
                         id: navigationTabs
