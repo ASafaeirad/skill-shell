@@ -147,68 +147,6 @@ ContentPage {
     }
 
     ContentSection {
-        icon: "widgets"
-        title: "Utility buttons"
-
-        ConfigRow {
-            uniform: true
-
-            ConfigSwitch {
-                buttonIcon: "content_cut"
-                text: "Screen snip"
-                configKey: "bar.utilButtons.showScreenSnip"
-            }
-
-            ConfigSwitch {
-                buttonIcon: "colorize"
-                text: "Color picker"
-                configKey: "bar.utilButtons.showColorPicker"
-            }
-
-        }
-
-        ConfigRow {
-            uniform: true
-
-            ConfigSwitch {
-                buttonIcon: "mic"
-                text: "Mic toggle"
-                configKey: "bar.utilButtons.showMicToggle"
-            }
-
-        }
-
-        ConfigRow {
-            uniform: true
-
-            ConfigSwitch {
-                buttonIcon: "dark_mode"
-                text: "Dark/Light toggle"
-                configKey: "bar.utilButtons.showDarkModeToggle"
-            }
-
-            ConfigSwitch {
-                buttonIcon: "speed"
-                text: "Performance Profile toggle"
-                configKey: "bar.utilButtons.showPerformanceProfileToggle"
-            }
-
-        }
-
-        ConfigRow {
-            uniform: true
-
-            ConfigSwitch {
-                buttonIcon: "videocam"
-                text: "Record"
-                configKey: "bar.utilButtons.showScreenRecord"
-            }
-
-        }
-
-    }
-
-    ContentSection {
         icon: "cloud"
         title: "Weather"
 
