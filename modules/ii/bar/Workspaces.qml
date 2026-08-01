@@ -20,7 +20,7 @@ Item {
     readonly property Toplevel activeWindow: ToplevelManager.activeToplevel
     readonly property int effectiveActiveWorkspaceId: monitor?.activeWorkspace?.id ?? 1
 
-    readonly property int workspacesShown: Config.options.bar.workspaces.shown
+    readonly property int workspacesShown: 10
     readonly property int workspaceGroup: Math.floor((effectiveActiveWorkspaceId - 1) / root.workspacesShown)
     property list<bool> workspaceOccupied: []
     property int widgetPadding: 2
@@ -32,29 +32,6 @@ Item {
     property real workspaceIconMarginShrinked: -4
     property int workspaceIndexInGroup: (effectiveActiveWorkspaceId - 1) % root.workspacesShown
 
-    property bool showNumbers: false
-    Timer {
-        id: showNumbersTimer
-        interval: (Config?.options.bar.workspaces.showNumberDelay ?? 300)
-        repeat: false
-        onTriggered: {
-            root.showNumbers = true
-        }
-    }
-    Connections {
-        target: GlobalStates
-        function onSuperDownChanged() {
-            if (!Config?.options.bar.autoHide.showWhenPressingSuper.enable) return;
-            if (GlobalStates.superDown) showNumbersTimer.restart();
-            else {
-                showNumbersTimer.stop();
-                root.showNumbers = false;
-            }
-        }
-        function onSuperReleaseMightTriggerChanged() {
-            showNumbersTimer.stop()
-        }
-    }
 
     // Function to update workspaceOccupied
     function updateWorkspaceOccupied() {
@@ -210,37 +187,9 @@ Item {
                     property var biggestWindow: HyprlandData.biggestWindowForWorkspace(button.workspaceValue)
                     property var mainAppIconSource: Quickshell.iconPath(AppSearch.guessIcon(biggestWindow?.class), "image-missing")
 
-                    StyledText { // Workspace number text
-                        opacity: root.showNumbers
-                            || ((Config.options?.bar.workspaces.alwaysShowNumbers && (!Config.options?.bar.workspaces.showAppIcons || !workspaceButtonBackground.biggestWindow || root.showNumbers))
-                            || (root.showNumbers && !Config.options?.bar.workspaces.showAppIcons)
-                            )  ? 1 : 0
-                        z: 3
-
-                        anchors.centerIn: parent
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        font {
-                            pixelSize: Appearance.font.pixelSize.small - ((text.length - 1) * (text !== "10") * 2)
-                            family: Config.options?.bar.workspaces.useNerdFont ? Appearance.font.family.iconNerd : defaultFont
-                        }
-                        text: Config.options?.bar.workspaces.numberMap[button.workspaceValue - 1] || button.workspaceValue
-                        elide: Text.ElideRight
-                        color: (root.effectiveActiveWorkspaceId == button.workspaceValue) ?
-                            Appearance.m3colors.m3onPrimary :
-                            (workspaceOccupied[index] ? Appearance.m3colors.m3onSecondaryContainer :
-                                Appearance.colors.colOnLayer1Inactive)
-
-                        Behavior on opacity {
-                            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-                        }
-                    }
                     Rectangle { // Dot instead of ws number
                         id: wsDot
-                        opacity: (Config.options?.bar.workspaces.alwaysShowNumbers
-                            || root.showNumbers
-                            || (Config.options?.bar.workspaces.showAppIcons && workspaceButtonBackground.biggestWindow)
-                            ) ? 0 : 1
+                        opacity: 1
                         visible: opacity > 0
                         anchors.centerIn: parent
                         width: workspaceButtonWidth * 0.18
@@ -259,54 +208,8 @@ Item {
                         anchors.centerIn: parent
                         width: workspaceButtonWidth
                         height: workspaceButtonWidth
-                        opacity: !Config.options?.bar.workspaces.showAppIcons ? 0 :
-                            (workspaceButtonBackground.biggestWindow && !root.showNumbers && Config.options?.bar.workspaces.showAppIcons) ?
-                            1 : workspaceButtonBackground.biggestWindow ? workspaceIconOpacityShrinked : 0
+                        opacity: workspaceButtonBackground.biggestWindow ? workspaceIconOpacityShrinked : 0
                             visible: opacity > 0
-                        IconImage {
-                            id: mainAppIcon
-                            anchors.bottom: parent.bottom
-                            anchors.right: parent.right
-                            anchors.bottomMargin: (!root.showNumbers && Config.options?.bar.workspaces.showAppIcons) ?
-                                (workspaceButtonWidth - workspaceIconSize) / 2 : workspaceIconMarginShrinked
-                            anchors.rightMargin: (!root.showNumbers && Config.options?.bar.workspaces.showAppIcons) ?
-                                (workspaceButtonWidth - workspaceIconSize) / 2 : workspaceIconMarginShrinked
-
-                            source: workspaceButtonBackground.mainAppIconSource
-                            implicitSize: (!root.showNumbers && Config.options?.bar.workspaces.showAppIcons) ? workspaceIconSize : workspaceIconSizeShrinked
-
-                            Behavior on opacity {
-                                animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-                            }
-                            Behavior on anchors.bottomMargin {
-                                animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-                            }
-                            Behavior on anchors.rightMargin {
-                                animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-                            }
-                            Behavior on implicitSize {
-                                animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-                            }
-                        }
-
-                        Loader {
-                            active: Config.options.bar.workspaces.monochromeIcons
-                            anchors.fill: mainAppIcon
-                            sourceComponent: Item {
-                                Desaturate {
-                                    id: desaturatedIcon
-                                    visible: false // There's already color overlay
-                                    anchors.fill: parent
-                                    source: mainAppIcon
-                                    desaturation: 0.8
-                                }
-                                ColorOverlay {
-                                    anchors.fill: desaturatedIcon
-                                    source: desaturatedIcon
-                                    color: ColorUtils.transparentize(wsDot.color, 0.9)
-                                }
-                            }
-                        }
                     }
                 }
 

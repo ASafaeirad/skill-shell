@@ -153,15 +153,6 @@ Singleton {
                     property bool showPerformanceProfileToggle: false
                     property bool showScreenRecord: false
                 }
-                property JsonObject workspaces: JsonObject {
-                    property bool monochromeIcons: true
-                    property int shown: 10
-                    property bool showAppIcons: true
-                    property bool alwaysShowNumbers: false
-                    property int showNumberDelay: 300 // milliseconds
-                    property list<string> numberMap: ["1", "2"] // Characters to show instead of numbers on workspace indicator
-                    property bool useNerdFont: false
-                }
                 property JsonObject weather: JsonObject {
                     property bool enable: false
                     property bool enableGPS: true // gps based location
