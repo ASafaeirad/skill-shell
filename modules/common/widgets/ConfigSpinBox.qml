@@ -8,6 +8,7 @@ RowLayout {
 
     property string text: ""
     property string icon
+    property string configKey: ""
     property alias value: spinBoxWidget.value
     property alias stepSize: spinBoxWidget.stepSize
     property alias from: spinBoxWidget.from
@@ -40,7 +41,18 @@ RowLayout {
         id: spinBoxWidget
 
         Layout.fillWidth: false
-        value: root.value
+        onValueChanged: {
+            if (root.configKey && Config.getNestedValue(root.configKey) !== value)
+                Config.setNestedValue(root.configKey, value);
+        }
+    }
+
+    Binding {
+        target: spinBoxWidget
+        property: "value"
+        value: Config.getNestedValue(root.configKey)
+        when: root.configKey !== ""
+        restoreMode: Binding.RestoreBindingOrValue
     }
 
 }

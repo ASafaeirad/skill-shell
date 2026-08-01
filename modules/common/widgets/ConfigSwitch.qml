@@ -9,11 +9,24 @@ RippleButton {
 
     property string buttonIcon
     property alias iconSize: iconWidget.iconSize
+    property string configKey: ""
 
     Layout.fillWidth: true
     implicitHeight: contentItem.implicitHeight + 8 * 2
     font.pixelSize: Appearance.font.pixelSize.small
     onClicked: checked = !checked
+    onCheckedChanged: {
+        if (configKey && Config.getNestedValue(configKey) !== checked)
+            Config.setNestedValue(configKey, checked);
+    }
+
+    Binding {
+        target: root
+        property: "checked"
+        value: Config.getNestedValue(root.configKey)
+        when: root.configKey !== ""
+        restoreMode: Binding.RestoreBindingOrValue
+    }
 
     contentItem: RowLayout {
         spacing: 10

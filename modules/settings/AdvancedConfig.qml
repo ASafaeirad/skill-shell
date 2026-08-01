@@ -13,19 +13,13 @@ ContentPage {
         ConfigSwitch {
             buttonIcon: "hardware"
             text: "Shell & utilities"
-            checked: Config.options.appearance.wallpaperTheming.enableAppsAndShell
-            onCheckedChanged: {
-                Config.options.appearance.wallpaperTheming.enableAppsAndShell = checked;
-            }
+            configKey: "appearance.wallpaperTheming.enableAppsAndShell"
         }
 
         ConfigSwitch {
             buttonIcon: "tv_options_input_settings"
             text: "Qt apps"
-            checked: Config.options.appearance.wallpaperTheming.enableQtApps
-            onCheckedChanged: {
-                Config.options.appearance.wallpaperTheming.enableQtApps = checked;
-            }
+            configKey: "appearance.wallpaperTheming.enableQtApps"
 
             StyledToolTip {
                 text: "Shell & utilities theming must also be enabled"
@@ -36,10 +30,7 @@ ContentPage {
         ConfigSwitch {
             buttonIcon: "terminal"
             text: "Terminal"
-            checked: Config.options.appearance.wallpaperTheming.enableTerminal
-            onCheckedChanged: {
-                Config.options.appearance.wallpaperTheming.enableTerminal = checked;
-            }
+            configKey: "appearance.wallpaperTheming.enableTerminal"
 
             StyledToolTip {
                 text: "Shell & utilities theming must also be enabled"
@@ -53,10 +44,7 @@ ContentPage {
             ConfigSwitch {
                 buttonIcon: "dark_mode"
                 text: "Force dark mode in terminal"
-                checked: Config.options.appearance.wallpaperTheming.terminalGenerationProps.forceDarkMode
-                onCheckedChanged: {
-                    Config.options.appearance.wallpaperTheming.terminalGenerationProps.forceDarkMode = checked;
-                }
+                configKey: "appearance.wallpaperTheming.terminalGenerationProps.forceDarkMode"
 
                 StyledToolTip {
                     text: "Ignored if terminal theming is not enabled"
@@ -81,13 +69,10 @@ ContentPage {
         ConfigSpinBox {
             icon: "gradient"
             text: "Terminal: Harmonize threshold"
-            value: Config.options.appearance.wallpaperTheming.terminalGenerationProps.harmonizeThreshold
+            configKey: "appearance.wallpaperTheming.terminalGenerationProps.harmonizeThreshold"
             from: 0
             to: 100
             stepSize: 10
-            onValueChanged: {
-                Config.options.appearance.wallpaperTheming.terminalGenerationProps.harmonizeThreshold = value;
-            }
         }
 
         ConfigSpinBox {

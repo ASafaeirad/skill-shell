@@ -18,24 +18,18 @@ ContentPage {
             ConfigSpinBox {
                 icon: "warning"
                 text: "Low warning"
-                value: Config.options.battery.low
+                configKey: "battery.low"
                 from: 0
                 to: 100
                 stepSize: 5
-                onValueChanged: {
-                    Config.options.battery.low = value;
-                }
             }
             ConfigSpinBox {
                 icon: "dangerous"
                 text: "Critical warning"
-                value: Config.options.battery.critical
+                configKey: "battery.critical"
                 from: 0
                 to: 100
                 stepSize: 5
-                onValueChanged: {
-                    Config.options.battery.critical = value;
-                }
             }
         }
         ConfigRow {
@@ -44,10 +38,7 @@ ContentPage {
             ConfigSwitch {
                 buttonIcon: "pause"
                 text: "Automatic suspend"
-                checked: Config.options.battery.automaticSuspend
-                onCheckedChanged: {
-                    Config.options.battery.automaticSuspend = checked;
-                }
+                configKey: "battery.automaticSuspend"
                 StyledToolTip {
                     text: "Automatically suspends the system when battery is low"
                 }
@@ -55,13 +46,10 @@ ContentPage {
             ConfigSpinBox {
                 enabled: Config.options.battery.automaticSuspend
                 text: "at"
-                value: Config.options.battery.suspend
+                configKey: "battery.suspend"
                 from: 0
                 to: 100
                 stepSize: 5
-                onValueChanged: {
-                    Config.options.battery.suspend = value;
-                }
             }
         }
         ConfigRow {
@@ -69,13 +57,10 @@ ContentPage {
             ConfigSpinBox {
                 icon: "charger"
                 text: "Full warning"
-                value: Config.options.battery.full
+                configKey: "battery.full"
                 from: 0
                 to: 101
                 stepSize: 5
-                onValueChanged: {
-                    Config.options.battery.full = value;
-                }
             }
         }
     }
@@ -88,18 +73,12 @@ ContentPage {
             ConfigSwitch {
                 buttonIcon: "battery_android_full"
                 text: "Battery"
-                checked: Config.options.sounds.battery
-                onCheckedChanged: {
-                    Config.options.sounds.battery = checked;
-                }
+                configKey: "sounds.battery"
             }
             ConfigSwitch {
                 buttonIcon: "av_timer"
                 text: "Pomodoro"
-                checked: Config.options.sounds.pomodoro
-                onCheckedChanged: {
-                    Config.options.sounds.pomodoro = checked;
-                }
+                configKey: "sounds.pomodoro"
             }
         }
     }
@@ -111,10 +90,7 @@ ContentPage {
         ConfigSwitch {
             buttonIcon: "pace"
             text: "Second precision"
-            checked: Config.options.time.secondPrecision
-            onCheckedChanged: {
-                Config.options.time.secondPrecision = checked;
-            }
+            configKey: "time.secondPrecision"
             StyledToolTip {
                 text: "Enable if you want clocks to show seconds accurately"
             }

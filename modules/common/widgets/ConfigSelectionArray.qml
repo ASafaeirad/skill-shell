@@ -9,6 +9,7 @@ Flow {
     id: root
     Layout.fillWidth: true
     spacing: 2
+    property string configKey: ""
     property list<var> options: [
         {
             "displayName": "Option 1",
@@ -24,6 +25,23 @@ Flow {
     property var currentValue: null
 
     signal selected(var newValue)
+
+    Binding {
+        target: root
+        property: "currentValue"
+        value: Config.getNestedValue(root.configKey)
+        when: root.configKey !== ""
+        restoreMode: Binding.RestoreBindingOrValue
+    }
+
+    Connections {
+        target: root
+
+        function onSelected(newValue) {
+            if (root.configKey && Config.getNestedValue(root.configKey) !== newValue)
+                Config.setNestedValue(root.configKey, newValue);
+        }
+    }
 
     Repeater {
         model: root.options

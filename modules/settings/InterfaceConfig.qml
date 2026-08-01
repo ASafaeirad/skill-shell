@@ -14,10 +14,7 @@ ContentPage {
         ConfigSwitch {
             buttonIcon: "water_drop"
             text: 'Use Hyprlock (instead of Quickshell)'
-            checked: Config.options.lock.useHyprlock
-            onCheckedChanged: {
-                Config.options.lock.useHyprlock = checked;
-            }
+            configKey: "lock.useHyprlock"
 
             StyledToolTip {
                 text: "If you want to somehow use fingerprint unlock..."
@@ -28,10 +25,7 @@ ContentPage {
         ConfigSwitch {
             buttonIcon: "account_circle"
             text: 'Launch on startup'
-            checked: Config.options.lock.launchOnStartup
-            onCheckedChanged: {
-                Config.options.lock.launchOnStartup = checked;
-            }
+            configKey: "lock.launchOnStartup"
         }
 
         ContentSubsection {
@@ -40,10 +34,7 @@ ContentPage {
             ConfigSwitch {
                 buttonIcon: "settings_power"
                 text: 'Require password to power off/restart'
-                checked: Config.options.lock.security.requirePasswordToPower
-                onCheckedChanged: {
-                    Config.options.lock.security.requirePasswordToPower = checked;
-                }
+                configKey: "lock.security.requirePasswordToPower"
 
                 StyledToolTip {
                     text: "Remember that on most devices one can always hold the power button to force shutdown\nThis only makes it a tiny bit harder for accidents to happen"
@@ -54,10 +45,7 @@ ContentPage {
             ConfigSwitch {
                 buttonIcon: "key_vertical"
                 text: 'Also unlock keyring'
-                checked: Config.options.lock.security.unlockKeyring
-                onCheckedChanged: {
-                    Config.options.lock.security.unlockKeyring = checked;
-                }
+                configKey: "lock.security.unlockKeyring"
 
                 StyledToolTip {
                     text: "This is usually safe and needed for your browser and AI sidebar anyway\nMostly useful for those who use lock on startup instead of a display manager that does it (GDM, SDDM, etc.)"
@@ -73,28 +61,19 @@ ContentPage {
             ConfigSwitch {
                 buttonIcon: "center_focus_weak"
                 text: 'Center clock'
-                checked: Config.options.lock.centerClock
-                onCheckedChanged: {
-                    Config.options.lock.centerClock = checked;
-                }
+                configKey: "lock.centerClock"
             }
 
             ConfigSwitch {
                 buttonIcon: "info"
                 text: 'Show "Locked" text'
-                checked: Config.options.lock.showLockedText
-                onCheckedChanged: {
-                    Config.options.lock.showLockedText = checked;
-                }
+                configKey: "lock.showLockedText"
             }
 
             ConfigSwitch {
                 buttonIcon: "shapes"
                 text: 'Use varying shapes for password characters'
-                checked: Config.options.lock.materialShapeChars
-                onCheckedChanged: {
-                    Config.options.lock.materialShapeChars = checked;
-                }
+                configKey: "lock.materialShapeChars"
             }
 
         }
@@ -105,10 +84,7 @@ ContentPage {
             ConfigSwitch {
                 buttonIcon: "blur_on"
                 text: 'Enable blur'
-                checked: Config.options.lock.blur.enable
-                onCheckedChanged: {
-                    Config.options.lock.blur.enable = checked;
-                }
+                configKey: "lock.blur.enable"
             }
 
             ConfigSpinBox {
@@ -134,10 +110,7 @@ ContentPage {
         ConfigSwitch {
             buttonIcon: "monitor"
             text: "Force specific monitor"
-            checked: Config.options.notifications.forceMonitor.enable
-            onCheckedChanged: {
-                Config.options.notifications.forceMonitor.enable = checked;
-            }
+            configKey: "notifications.forceMonitor.enable"
 
             StyledToolTip {
                 text: "If you have multiple monitors and want notifications to only show on one of them, enable this and enter the monitor name below (e.g., eDP-1)"
@@ -169,19 +142,13 @@ ContentPage {
         ConfigSwitch {
             buttonIcon: "high_density"
             text: "Enable opening zoom animation"
-            checked: Config.options.overlay.openingZoomAnimation
-            onCheckedChanged: {
-                Config.options.overlay.openingZoomAnimation = checked;
-            }
+            configKey: "overlay.openingZoomAnimation"
         }
 
         ConfigSwitch {
             buttonIcon: "texture"
             text: "Darken screen"
-            checked: Config.options.overlay.darkenScreen
-            onCheckedChanged: {
-                Config.options.overlay.darkenScreen = checked;
-            }
+            configKey: "overlay.darkenScreen"
         }
 
     }
@@ -213,28 +180,19 @@ ContentPage {
                 ConfigSwitch {
                     buttonIcon: "select_window"
                     text: 'Windows'
-                    checked: Config.options.regionSelector.targetRegions.windows
-                    onCheckedChanged: {
-                        Config.options.regionSelector.targetRegions.windows = checked;
-                    }
+                    configKey: "regionSelector.targetRegions.windows"
                 }
 
                 ConfigSwitch {
                     buttonIcon: "right_panel_open"
                     text: 'Layers'
-                    checked: Config.options.regionSelector.targetRegions.layers
-                    onCheckedChanged: {
-                        Config.options.regionSelector.targetRegions.layers = checked;
-                    }
+                    configKey: "regionSelector.targetRegions.layers"
                 }
 
                 ConfigSwitch {
                     buttonIcon: "nearby"
                     text: 'Content'
-                    checked: Config.options.regionSelector.targetRegions.content
-                    onCheckedChanged: {
-                        Config.options.regionSelector.targetRegions.content = checked;
-                    }
+                    configKey: "regionSelector.targetRegions.content"
 
                     StyledToolTip {
                         text: "Could be images or parts of the screen that have some containment.\nMight not always be accurate.\nThis is done with an image processing algorithm run locally and no AI is used."
@@ -276,10 +234,7 @@ ContentPage {
         ConfigSwitch {
             buttonIcon: "memory"
             text: 'Keep right sidebar loaded'
-            checked: Config.options.sidebar.keepRightSidebarLoaded
-            onCheckedChanged: {
-                Config.options.sidebar.keepRightSidebarLoaded = checked;
-            }
+            configKey: "sidebar.keepRightSidebarLoaded"
 
             StyledToolTip {
                 text: "When enabled keeps the content of the right sidebar loaded to reduce the delay when opening,\nat the cost of around 15MB of consistent RAM usage. Delay significance depends on your system's performance.\nUsing a custom kernel like linux-cachyos might help"
@@ -292,10 +247,7 @@ ContentPage {
 
             ConfigSelectionArray {
                 Layout.fillWidth: false
-                currentValue: Config.options.sidebar.quickToggles.style
-                onSelected: (newValue) => {
-                    Config.options.sidebar.quickToggles.style = newValue;
-                }
+                configKey: "sidebar.quickToggles.style"
                 options: [{
                     "displayName": "Classic",
                     "icon": "password_2",
@@ -311,13 +263,10 @@ ContentPage {
                 enabled: Config.options.sidebar.quickToggles.style === "android"
                 icon: "splitscreen_left"
                 text: "Columns"
-                value: Config.options.sidebar.quickToggles.android.columns
+                configKey: "sidebar.quickToggles.android.columns"
                 from: 1
                 to: 8
                 stepSize: 1
-                onValueChanged: {
-                    Config.options.sidebar.quickToggles.android.columns = value;
-                }
             }
 
         }
@@ -328,40 +277,28 @@ ContentPage {
             ConfigSwitch {
                 buttonIcon: "check"
                 text: "Enable"
-                checked: Config.options.sidebar.quickSliders.enable
-                onCheckedChanged: {
-                    Config.options.sidebar.quickSliders.enable = checked;
-                }
+                configKey: "sidebar.quickSliders.enable"
             }
 
             ConfigSwitch {
                 buttonIcon: "brightness_6"
                 text: "Brightness"
                 enabled: Config.options.sidebar.quickSliders.enable
-                checked: Config.options.sidebar.quickSliders.showBrightness
-                onCheckedChanged: {
-                    Config.options.sidebar.quickSliders.showBrightness = checked;
-                }
+                configKey: "sidebar.quickSliders.showBrightness"
             }
 
             ConfigSwitch {
                 buttonIcon: "volume_up"
                 text: "Volume"
                 enabled: Config.options.sidebar.quickSliders.enable
-                checked: Config.options.sidebar.quickSliders.showVolume
-                onCheckedChanged: {
-                    Config.options.sidebar.quickSliders.showVolume = checked;
-                }
+                configKey: "sidebar.quickSliders.showVolume"
             }
 
             ConfigSwitch {
                 buttonIcon: "mic"
                 text: "Microphone"
                 enabled: Config.options.sidebar.quickSliders.enable
-                checked: Config.options.sidebar.quickSliders.showMic
-                onCheckedChanged: {
-                    Config.options.sidebar.quickSliders.showMic = checked;
-                }
+                configKey: "sidebar.quickSliders.showMic"
             }
 
         }
@@ -376,10 +313,7 @@ ContentPage {
                 ConfigSwitch {
                     buttonIcon: "check"
                     text: "Enable"
-                    checked: Config.options.sidebar.cornerOpen.enable
-                    onCheckedChanged: {
-                        Config.options.sidebar.cornerOpen.enable = checked;
-                    }
+                    configKey: "sidebar.cornerOpen.enable"
                 }
 
             }
@@ -387,10 +321,7 @@ ContentPage {
             ConfigSwitch {
                 buttonIcon: "highlight_mouse_cursor"
                 text: "Hover to trigger"
-                checked: Config.options.sidebar.cornerOpen.clickless
-                onCheckedChanged: {
-                    Config.options.sidebar.cornerOpen.clickless = checked;
-                }
+                configKey: "sidebar.cornerOpen.clickless"
 
                 StyledToolTip {
                     text: "When this is off you'll have to click"
@@ -402,10 +333,7 @@ ContentPage {
                 ConfigSwitch {
                     enabled: !Config.options.sidebar.cornerOpen.clickless
                     text: "Force hover open at absolute corner"
-                    checked: Config.options.sidebar.cornerOpen.clicklessCornerEnd
-                    onCheckedChanged: {
-                        Config.options.sidebar.cornerOpen.clicklessCornerEnd = checked;
-                    }
+                    configKey: "sidebar.cornerOpen.clicklessCornerEnd"
 
                     StyledToolTip {
                         text: "When the previous option is off and this is on,\nyou can still hover the corner's end to open sidebar,\nand the remaining area can be used for volume/brightness scroll"
@@ -416,13 +344,10 @@ ContentPage {
                 ConfigSpinBox {
                     icon: "arrow_cool_down"
                     text: "with vertical offset"
-                    value: Config.options.sidebar.cornerOpen.clicklessCornerVerticalOffset
+                    configKey: "sidebar.cornerOpen.clicklessCornerVerticalOffset"
                     from: 0
                     to: 20
                     stepSize: 1
-                    onValueChanged: {
-                        Config.options.sidebar.cornerOpen.clicklessCornerVerticalOffset = value;
-                    }
 
                     MouseArea {
                         id: mouseArea
@@ -448,10 +373,7 @@ ContentPage {
                 ConfigSwitch {
                     buttonIcon: "vertical_align_bottom"
                     text: "Place at bottom"
-                    checked: Config.options.sidebar.cornerOpen.bottom
-                    onCheckedChanged: {
-                        Config.options.sidebar.cornerOpen.bottom = checked;
-                    }
+                    configKey: "sidebar.cornerOpen.bottom"
 
                     StyledToolTip {
                         text: "Place the corners to trigger at the bottom"
@@ -462,10 +384,7 @@ ContentPage {
                 ConfigSwitch {
                     buttonIcon: "unfold_more_double"
                     text: "Value scroll"
-                    checked: Config.options.sidebar.cornerOpen.valueScroll
-                    onCheckedChanged: {
-                        Config.options.sidebar.cornerOpen.valueScroll = checked;
-                    }
+                    configKey: "sidebar.cornerOpen.valueScroll"
 
                     StyledToolTip {
                         text: "Brightness and volume"
@@ -478,35 +397,26 @@ ContentPage {
             ConfigSwitch {
                 buttonIcon: "visibility"
                 text: "Visualize region"
-                checked: Config.options.sidebar.cornerOpen.visualize
-                onCheckedChanged: {
-                    Config.options.sidebar.cornerOpen.visualize = checked;
-                }
+                configKey: "sidebar.cornerOpen.visualize"
             }
 
             ConfigRow {
                 ConfigSpinBox {
                     icon: "arrow_range"
                     text: "Region width"
-                    value: Config.options.sidebar.cornerOpen.cornerRegionWidth
+                    configKey: "sidebar.cornerOpen.cornerRegionWidth"
                     from: 1
                     to: 300
                     stepSize: 1
-                    onValueChanged: {
-                        Config.options.sidebar.cornerOpen.cornerRegionWidth = value;
-                    }
                 }
 
                 ConfigSpinBox {
                     icon: "height"
                     text: "Region height"
-                    value: Config.options.sidebar.cornerOpen.cornerRegionHeight
+                    configKey: "sidebar.cornerOpen.cornerRegionHeight"
                     from: 1
                     to: 300
                     stepSize: 1
-                    onValueChanged: {
-                        Config.options.sidebar.cornerOpen.cornerRegionHeight = value;
-                    }
                 }
 
             }
@@ -522,19 +432,13 @@ ContentPage {
         ConfigSwitch {
             buttonIcon: "check"
             text: "Enable"
-            checked: Config.options.overview.enable
-            onCheckedChanged: {
-                Config.options.overview.enable = checked;
-            }
+            configKey: "overview.enable"
         }
 
         ConfigSwitch {
             buttonIcon: "center_focus_strong"
             text: "Center icons"
-            checked: Config.options.overview.centerIcons
-            onCheckedChanged: {
-                Config.options.overview.centerIcons = checked;
-            }
+            configKey: "overview.centerIcons"
         }
 
         ConfigSpinBox {
@@ -555,25 +459,19 @@ ContentPage {
             ConfigSpinBox {
                 icon: "splitscreen_bottom"
                 text: "Rows"
-                value: Config.options.overview.rows
+                configKey: "overview.rows"
                 from: 1
                 to: 20
                 stepSize: 1
-                onValueChanged: {
-                    Config.options.overview.rows = value;
-                }
             }
 
             ConfigSpinBox {
                 icon: "splitscreen_right"
                 text: "Columns"
-                value: Config.options.overview.columns
+                configKey: "overview.columns"
                 from: 1
                 to: 20
                 stepSize: 1
-                onValueChanged: {
-                    Config.options.overview.columns = value;
-                }
             }
 
         }
@@ -582,10 +480,7 @@ ContentPage {
             uniform: true
 
             ConfigSelectionArray {
-                currentValue: Config.options.overview.orderRightLeft
-                onSelected: (newValue) => {
-                    Config.options.overview.orderRightLeft = newValue;
-                }
+                configKey: "overview.orderRightLeft"
                 options: [{
                     "displayName": "Left to right",
                     "icon": "arrow_forward",
@@ -598,10 +493,7 @@ ContentPage {
             }
 
             ConfigSelectionArray {
-                currentValue: Config.options.overview.orderBottomUp
-                onSelected: (newValue) => {
-                    Config.options.overview.orderBottomUp = newValue;
-                }
+                configKey: "overview.orderBottomUp"
                 options: [{
                     "displayName": "Top-down",
                     "icon": "arrow_downward",
@@ -624,10 +516,7 @@ ContentPage {
         ConfigSwitch {
             buttonIcon: "ad"
             text: 'Use system file picker'
-            checked: Config.options.wallpaperSelector.useSystemFileDialog
-            onCheckedChanged: {
-                Config.options.wallpaperSelector.useSystemFileDialog = checked;
-            }
+            configKey: "wallpaperSelector.useSystemFileDialog"
         }
 
     }
