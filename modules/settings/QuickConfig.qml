@@ -75,29 +75,6 @@ ContentPage {
                                 text: "Choose file"
                                 color: Appearance.colors.colOnSecondaryContainer
                             }
-
-                            RowLayout {
-                                spacing: 3
-
-                                KeyboardKey {
-                                    key: "Ctrl"
-                                }
-
-                                KeyboardKey {
-                                    key: "󰖳"
-                                }
-
-                                StyledText {
-                                    Layout.alignment: Qt.AlignVCenter
-                                    text: "+"
-                                }
-
-                                KeyboardKey {
-                                    key: "T"
-                                }
-
-                            }
-
                         }
 
                     }
@@ -179,11 +156,6 @@ ContentPage {
                 title: "Bar position"
 
                 ConfigSelectionArray {
-                    // bottom: false, vertical: false
-                    // bottom: false, vertical: true
-                    // bottom: true, vertical: false
-                    // bottom: true, vertical: true
-
                     currentValue: (Config.options.bar.bottom ? 1 : 0) | (Config.options.bar.vertical ? 2 : 0)
                     onSelected: (newValue) => {
                         Config.options.bar.bottom = (newValue & 1) !== 0;
@@ -255,45 +227,6 @@ ContentPage {
                     }]
                 }
 
-            }
-
-        }
-
-    }
-
-    NoticeBox {
-        Layout.fillWidth: true
-        text: "Not all options are available in this app. You should also check the config file at %1.".arg(Directories.shellConfigPath)
-
-        Item {
-            Layout.fillWidth: true
-        }
-
-        RippleButtonWithIcon {
-            id: copyPathButton
-
-            property bool justCopied: false
-
-            Layout.fillWidth: false
-            buttonRadius: Appearance.rounding.small
-            materialIcon: justCopied ? "check" : "content_copy"
-            mainText: justCopied ? "Path copied" : "Copy path"
-            onClicked: {
-                copyPathButton.justCopied = true;
-                Quickshell.clipboardText = FileUtils.trimFileProtocol(`${Directories.config}/skill-shell/config.json`);
-                revertTextTimer.restart();
-            }
-            colBackground: ColorUtils.transparentize(Appearance.colors.colPrimaryContainer)
-            colBackgroundHover: Appearance.colors.colPrimaryContainerHover
-            colRipple: Appearance.colors.colPrimaryContainerActive
-
-            Timer {
-                id: revertTextTimer
-
-                interval: 1500
-                onTriggered: {
-                    copyPathButton.justCopied = false;
-                }
             }
 
         }

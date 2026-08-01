@@ -16,8 +16,8 @@ GroupButton {
     property string buttonIcon
     property bool leftmost: false
     property bool rightmost: false
-    leftRadius: (toggled || leftmost) ? (height / 2) : Appearance.rounding.unsharpenmore
-    rightRadius: (toggled || rightmost) ? (height / 2) : Appearance.rounding.unsharpenmore
+    leftRadius: leftmost ? Appearance.rounding.unsharpenmore : 0
+    rightRadius: rightmost ? Appearance.rounding.unsharpenmore : 0
     colBackground: Appearance.colors.colSecondaryContainer
     colBackgroundHover: Appearance.colors.colSecondaryContainerHover
     colBackgroundActive: Appearance.colors.colSecondaryContainerActive
