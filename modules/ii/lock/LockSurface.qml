@@ -1,5 +1,6 @@
 import Qt5Compat.GraphicalEffects
 import QtQuick
+import QtQuick.Effects
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.SystemTray
@@ -86,6 +87,52 @@ MouseArea {
         }
 
         target: context
+    }
+
+    // Wallpaper backdrop. Hyprland doesn't render layer surfaces behind the session
+    // lock, so the background panel can't show through here — draw the wallpaper as
+    // part of the lock surface instead.
+    Item {
+        id: backdrop
+
+        readonly property bool blurEnabled: Config.options.lock.blur.enable
+
+        anchors.fill: parent
+        z: -1
+        clip: true
+
+        Image {
+            id: wallpaperImage
+
+            anchors.fill: parent
+            visible: !backdrop.blurEnabled
+            source: Config.options.background.wallpaperPath
+            fillMode: Image.PreserveAspectCrop
+            asynchronous: true
+            cache: false
+            sourceSize: Qt.size(backdrop.width, backdrop.height)
+        }
+
+        Loader {
+            anchors.fill: parent
+            active: backdrop.blurEnabled
+
+            sourceComponent: MultiEffect {
+                source: wallpaperImage
+                // Zoomed a bit so the blur doesn't sample past the wallpaper edges
+                scale: Config.options.lock.blur.extraZoom
+                autoPaddingEnabled: false
+                blurEnabled: true
+                blur: 1
+                // blurMax tops out at 64
+                blurMax: Math.min(64, Config.options.lock.blur.radius)
+            }
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            color: ColorUtils.transparentize(Appearance.colors.colLayer0, 0.7)
+        }
     }
 
     // Clock and lock status
