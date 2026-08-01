@@ -74,15 +74,7 @@ Singleton {
             }
 
             property JsonObject overlay: JsonObject {
-                property list<string> open: ["crosshair", "recorder", "volumeMixer", "resources"]
-                property JsonObject crosshair: JsonObject {
-                    property bool pinned: false
-                    property bool clickthrough: true
-                    property real x: 827
-                    property real y: 441
-                    property real width: 250
-                    property real height: 100
-                }
+                property list<string> open: ["recorder", "volumeMixer", "resources"]
                 property JsonObject floatingImage: JsonObject {
                     property bool pinned: false
                     property bool clickthrough: false

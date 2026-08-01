@@ -10,14 +10,12 @@ pragma ComponentBehavior: Bound
 Singleton {
     id: root
     property bool barOpen: true
-    property bool crosshairOpen: false
     property bool keyDisplayOpen: false
     property bool sidebarLeftOpen: false
     property bool sidebarRightOpen: false
     property bool mediaControlsOpen: false
     property bool osdBrightnessOpen: false
     property bool osdVolumeOpen: false
-    property bool oskOpen: false
     property bool overlayOpen: false
     property bool overviewOpen: false
     property bool pinentryOpen: false

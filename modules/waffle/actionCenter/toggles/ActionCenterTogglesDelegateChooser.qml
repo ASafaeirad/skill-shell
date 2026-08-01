@@ -130,13 +130,6 @@ DelegateChooser {
         }
     }
     DelegateChoice {
-        roleValue: "onScreenKeyboard"
-        ActionCenterToggleButton {
-            toggleModel: OnScreenKeyboardToggle {}
-            icon: GlobalStates.oskOpen ? "keyboard-dock" : "keyboard"
-        }
-    }
-    DelegateChoice {
         roleValue: "powerProfile"
         ActionCenterToggleButton {
             toggleModel: PowerProfilesToggle {}
