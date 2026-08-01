@@ -52,7 +52,7 @@ RowLayout {
                     font.pixelSize: Looks.font.pixelSize.large
                 }
             }
-            onClicked: LauncherSearch.ensurePrefix(tagButton.modelData.prefix)
+            onClicked: LauncherSearch.query = SearchPrefixes.ensurePrefix(LauncherSearch.query, tagButton.modelData.kind)
         }
     }
     WPanelIconButton {

@@ -243,34 +243,6 @@ Singleton {
         return str.replace(/^\d+\t/, "");
     }
 
-    /**
-     * Removes the given prefix from the string if present.
-     * @param { string } str
-     * @param { string } prefix
-     * @returns { string }
-     */
-    function cleanPrefix(str, prefix) {
-        if (str.startsWith(prefix)) {
-            return str.slice(prefix.length);
-        }
-        return str;
-    }
-
-    /**
-     * Removes the first matching prefix from the string if present.
-     * @param { string } str
-     * @param { string[] } prefixes
-     * @returns { string }
-     */
-    function cleanOnePrefix(str, prefixes) {
-        for (let i = 0; i < prefixes.length; ++i) {
-            if (str.startsWith(prefixes[i])) {
-                return str.slice(prefixes[i].length);
-            }
-        }
-        return str;
-    }
-
     function toTitleCase(str) {
         // Replace "-" and "_" with space, then capitalize each word
         return str.replace(/[-_]/g, " ").replace(
