@@ -135,13 +135,15 @@ MouseArea {
         }
     }
 
-    // Clock and lock status
+    // lock status
     Toolbar {
         id: lockInfoIsland
 
         scale: root.toolbarScale
         opacity: root.toolbarOpacity
         padding: Appearance.rounding.small
+        colBackground: ColorUtils.transparentize(Appearance.m3colors.m3surfaceContainer, 1)
+        enableShadow: false
 
         anchors {
             bottom: parent.verticalCenter
@@ -167,14 +169,6 @@ MouseArea {
                 font.pixelSize: Appearance.font.pixelSize.larger
                 animateChange: true
             }
-
-            IconAndTextPair {
-                Layout.alignment: Qt.AlignHCenter
-                visible: Config.options.lock.showLockedText
-                icon: "lock"
-                text: "Locked"
-            }
-
         }
 
         states: [

@@ -110,15 +110,7 @@ Scope {
                             pixelSize: Appearance.font.pixelSize.title
                             variableAxes: Appearance.font.variableAxes.title
                         }
-                        text: "Session"
-                    }
-
-                    StyledText {
-                        // Small instruction
-                        Layout.alignment: Qt.AlignHCenter
-                        horizontalAlignment: Text.AlignHCenter
-                        font.pixelSize: Appearance.font.pixelSize.normal
-                        text: "Arrow keys or S/R/E/L/H to navigate, Enter to select\nEsc or click anywhere to cancel"
+                        text: "Sorry to see you go!"
                     }
                 }
 
