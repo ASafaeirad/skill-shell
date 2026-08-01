@@ -40,11 +40,6 @@ ApplicationWindow {
             component: "modules/settings/BarConfig.qml"
         },
         {
-            name: "Background",
-            icon: "texture",
-            component: "modules/settings/BackgroundConfig.qml"
-        },
-        {
             name: "Interface",
             icon: "bottom_app_bar",
             component: "modules/settings/InterfaceConfig.qml"

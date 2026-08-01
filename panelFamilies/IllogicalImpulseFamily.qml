@@ -10,7 +10,6 @@ import qs.modules.ii.lock
 import qs.modules.ii.mediaControls
 import qs.modules.ii.notificationPopup
 import qs.modules.ii.onScreenDisplay
-import qs.modules.ii.onScreenKeyboard
 import qs.modules.ii.overlay
 import qs.modules.ii.overview
 import qs.modules.ii.pinentry
@@ -86,13 +85,6 @@ Scope {
     PanelLoader {
 
         component: OnScreenDisplay {
-        }
-
-    }
-
-    PanelLoader {
-
-        component: OnScreenKeyboard {
         }
 
     }

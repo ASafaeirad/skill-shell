@@ -195,15 +195,6 @@ ContentPage {
             uniform: true
 
             ConfigSwitch {
-                buttonIcon: "keyboard"
-                text: "Keyboard toggle"
-                checked: Config.options.bar.utilButtons.showKeyboardToggle
-                onCheckedChanged: {
-                    Config.options.bar.utilButtons.showKeyboardToggle = checked;
-                }
-            }
-
-            ConfigSwitch {
                 buttonIcon: "mic"
                 text: "Mic toggle"
                 checked: Config.options.bar.utilButtons.showMicToggle

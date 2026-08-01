@@ -351,52 +351,6 @@ ContentPage {
 
     ContentSection {
         icon: "point_scan"
-        title: "Overlay: Crosshair"
-
-        MaterialTextArea {
-            Layout.fillWidth: true
-            placeholderText: "Crosshair code (in Valorant's format)"
-            text: Config.options.crosshair.code
-            wrapMode: TextEdit.Wrap
-            onTextChanged: {
-                Config.options.crosshair.code = text;
-            }
-        }
-
-        RowLayout {
-            StyledText {
-                Layout.leftMargin: 10
-                color: Appearance.colors.colSubtext
-                font.pixelSize: Appearance.font.pixelSize.smallie
-                text: "Press Super+G to open the overlay and pin the crosshair"
-            }
-
-            Item {
-                Layout.fillWidth: true
-            }
-
-            RippleButtonWithIcon {
-                id: editorButton
-
-                buttonRadius: Appearance.rounding.full
-                materialIcon: "open_in_new"
-                mainText: "Open editor"
-                onClicked: {
-                    Qt.openUrlExternally(`https://www.vcrdb.net/builder?c=${Config.options.crosshair.code}`);
-                }
-
-                StyledToolTip {
-                    text: "www.vcrdb.net"
-                }
-
-            }
-
-        }
-
-    }
-
-    ContentSection {
-        icon: "point_scan"
         title: "Overlay: Floating Image"
 
         MaterialTextArea {

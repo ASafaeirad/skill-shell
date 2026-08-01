@@ -6,7 +6,6 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Bluetooth
-import qs.modules.ii.overlay.crosshair
 import qs.modules.ii.overlay.volumeMixer
 import qs.modules.ii.overlay.floatingImage
 import qs.modules.ii.overlay.fpsLimiter
@@ -18,7 +17,6 @@ DelegateChooser {
     id: root
     role: "identifier"
 
-    DelegateChoice { roleValue: "crosshair"; Crosshair {} }
     DelegateChoice { roleValue: "floatingImage"; FloatingImage {} }
     DelegateChoice { roleValue: "fpsLimiter"; FpsLimiter {} }
     DelegateChoice { roleValue: "recorder"; Recorder {} }
