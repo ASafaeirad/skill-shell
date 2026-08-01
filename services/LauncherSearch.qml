@@ -17,14 +17,6 @@ Singleton {
     readonly property string searchEngineBaseUrl: "https://www.google.com/search?q="
     readonly property list<string> searchExcludedSites: ["quora.com", "facebook.com"]
 
-    function ensurePrefix(prefix) {
-        if ([Config.options.search.prefix.action, Config.options.search.prefix.app, Config.options.search.prefix.clipboard, Config.options.search.prefix.emojis, Config.options.search.prefix.math, Config.options.search.prefix.shellCommand, Config.options.search.prefix.webSearch,].some(i => root.query.startsWith(i))) {
-            root.query = prefix + root.query.slice(1);
-        } else {
-            root.query = prefix + root.query;
-        }
-    }
-
     // https://specifications.freedesktop.org/menu/latest/category-registry.html
     property list<string> mainRegisteredCategories: ["AudioVideo", "Development", "Education", "Game", "Graphics", "Network", "Office", "Science", "Settings", "System", "Utility"]
     property list<string> appCategories: DesktopEntries.applications.values.reduce((acc, entry) => {
@@ -88,7 +80,7 @@ Singleton {
             execute: args => {
                 if (!/^(\d+)/.test(args.trim())) {
                     // Invalid if doesn't start with numbers
-                    Quickshell.execDetached(["notify-send", "Superpaste", "Usage: <tt>%1superpaste NUM_OF_ENTRIES[i]</tt>\nSupply <tt>i</tt> when you want images\nExamples:\n<tt>%1superpaste 4i</tt> for the last 4 images\n<tt>%1superpaste 7</tt> for the last 7 entries".arg(Config.options.search.prefix.action), "-a", "Shell"]);
+                    Quickshell.execDetached(["notify-send", "Superpaste", "Usage: <tt>%1superpaste NUM_OF_ENTRIES[i]</tt>\nSupply <tt>i</tt> when you want images\nExamples:\n<tt>%1superpaste 4i</tt> for the last 4 images\n<tt>%1superpaste 7</tt> for the last 7 entries".arg(SearchPrefixes.action), "-a", "Shell"]);
                     return;
                 }
                 const syntaxMatch = /^(?:(\d+)(i)?)/.exec(args.trim());
@@ -126,8 +118,8 @@ Singleton {
         interval: 30 // was search.nonAppResultDelay
         onTriggered: {
             let expr = root.query;
-            if (expr.startsWith(Config.options.search.prefix.math)) {
-                expr = expr.slice(Config.options.search.prefix.math.length);
+            if (SearchPrefixes.detect(expr) === SearchPrefixes.PrefixKind.Math) {
+                expr = SearchPrefixes.strip(expr);
             }
             mathProc.calculateExpression(expr);
         }
@@ -155,9 +147,10 @@ Singleton {
             return [];
 
         ///////////// Special cases ///////////////
-        if (root.query.startsWith(Config.options.search.prefix.clipboard)) {
+        const queryKind = SearchPrefixes.detect(root.query);
+        if (queryKind === SearchPrefixes.PrefixKind.Clipboard) {
             // Clipboard
-            const searchString = StringUtils.cleanPrefix(root.query, Config.options.search.prefix.clipboard);
+            const searchString = SearchPrefixes.strip(root.query);
             return Cliphist.fuzzyQuery(searchString).map(entry => {
                 const type = `#${entry.match(/^\s*(\S+)/)?.[1] || ""}`;
                 return resultComp.createObject(null, {
@@ -185,9 +178,9 @@ Singleton {
                         })]
                 });
             }).filter(Boolean);
-        } else if (root.query.startsWith(Config.options.search.prefix.emojis)) {
+        } else if (queryKind === SearchPrefixes.PrefixKind.Emojis) {
             // Clipboard
-            const searchString = StringUtils.cleanPrefix(root.query, Config.options.search.prefix.emojis);
+            const searchString = SearchPrefixes.strip(root.query);
             return Emojis.fuzzyQuery(searchString).map(entry => {
                 const emoji = entry.match(/^\s*(\S+)/)?.[1] || "";
                 return resultComp.createObject(null, {
@@ -217,7 +210,8 @@ Singleton {
                 Quickshell.clipboardText = root.mathResult;
             }
         });
-        const appResultObjects = AppSearch.fuzzyQuery(StringUtils.cleanPrefix(root.query, Config.options.search.prefix.app)).map(entry => {
+        const appQuery = SearchPrefixes.strip(root.query, SearchPrefixes.PrefixKind.App);
+        const appResultObjects = AppSearch.fuzzyQuery(appQuery).map(entry => {
             return resultComp.createObject(null, {
                 type: "App",
                 id: entry.id,
@@ -254,7 +248,7 @@ Singleton {
             });
         });
         const commandResultObject = resultComp.createObject(null, {
-            name: StringUtils.cleanPrefix(root.query, Config.options.search.prefix.shellCommand).replace("file://", ""),
+            name: SearchPrefixes.strip(root.query, SearchPrefixes.PrefixKind.ShellCommand).replace("file://", ""),
             verb: "Run",
             type: "Command",
             fontType: LauncherSearchResult.FontType.Monospace,
@@ -262,21 +256,21 @@ Singleton {
             iconType: LauncherSearchResult.IconType.Material,
             execute: () => {
                 let cleanedCommand = root.query.replace("file://", "");
-                cleanedCommand = StringUtils.cleanPrefix(cleanedCommand, Config.options.search.prefix.shellCommand);
-                if (cleanedCommand.startsWith(Config.options.search.prefix.shellCommand)) {
-                    cleanedCommand = cleanedCommand.slice(Config.options.search.prefix.shellCommand.length);
+                cleanedCommand = SearchPrefixes.strip(cleanedCommand, SearchPrefixes.PrefixKind.ShellCommand);
+                if (SearchPrefixes.detect(cleanedCommand) === SearchPrefixes.PrefixKind.ShellCommand) {
+                    cleanedCommand = SearchPrefixes.strip(cleanedCommand, SearchPrefixes.PrefixKind.ShellCommand);
                 }
                 Quickshell.execDetached(["bash", "-c", root.query.startsWith('sudo') ? `${Apps.terminal} fish -C '${cleanedCommand}'` : cleanedCommand]);
             }
         });
         const webSearchResultObject = resultComp.createObject(null, {
-            name: StringUtils.cleanPrefix(root.query, Config.options.search.prefix.webSearch),
+            name: SearchPrefixes.strip(root.query, SearchPrefixes.PrefixKind.WebSearch),
             verb: "Search",
             type: "Web search",
             iconName: 'travel_explore',
             iconType: LauncherSearchResult.IconType.Material,
             execute: () => {
-                let query = StringUtils.cleanPrefix(root.query, Config.options.search.prefix.webSearch);
+                let query = SearchPrefixes.strip(root.query, SearchPrefixes.PrefixKind.WebSearch);
                 let url = root.searchEngineBaseUrl + query;
                 for (let site of root.searchExcludedSites) {
                     url += ` -site:${site}`;
@@ -285,7 +279,7 @@ Singleton {
             }
         });
         const launcherActionObjects = root.allActions.map(action => {
-            const actionString = `${Config.options.search.prefix.action}${action.action}`;
+            const actionString = `${SearchPrefixes.action}${action.action}`;
             if (actionString.startsWith(root.query) || root.query.startsWith(actionString)) {
                 return resultComp.createObject(null, {
                     name: root.query.startsWith(actionString) ? root.query : actionString,
@@ -304,9 +298,9 @@ Singleton {
         //////// Prioritized by prefix /////////
         let result = [];
         const startsWithNumber = /^\d/.test(root.query);
-        const startsWithMathPrefix = root.query.startsWith(Config.options.search.prefix.math);
-        const startsWithShellCommandPrefix = root.query.startsWith(Config.options.search.prefix.shellCommand);
-        const startsWithWebSearchPrefix = root.query.startsWith(Config.options.search.prefix.webSearch);
+        const startsWithMathPrefix = queryKind === SearchPrefixes.PrefixKind.Math;
+        const startsWithShellCommandPrefix = queryKind === SearchPrefixes.PrefixKind.ShellCommand;
+        const startsWithWebSearchPrefix = queryKind === SearchPrefixes.PrefixKind.WebSearch;
         if (startsWithNumber || startsWithMathPrefix) {
             result.push(mathResultObject);
         } else if (startsWithShellCommandPrefix) {
@@ -322,7 +316,7 @@ Singleton {
         result = result.concat(launcherActionObjects);
 
         /// Math result, command, web search ///
-        if (Config.options.search.prefix.showDefaultActionsWithoutPrefix) {
+        if (SearchPrefixes.showDefaultActionsWithoutPrefix) {
             if (!startsWithShellCommandPrefix)
                 result.push(commandResultObject);
             if (!startsWithNumber && !startsWithMathPrefix)

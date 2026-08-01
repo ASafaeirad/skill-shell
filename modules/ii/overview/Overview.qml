@@ -1,6 +1,7 @@
 import qs
 import qs.services
 import qs.modules.common
+import qs.modules.common.functions
 import qs.modules.common.widgets
 import Qt.labs.synchronizer
 import QtQuick
@@ -109,7 +110,7 @@ Scope {
             return;
         }
         overviewScope.dontAutoCancelSearch = true;
-        panelWindow.setSearchingText(Config.options.search.prefix.clipboard);
+        panelWindow.setSearchingText(SearchPrefixes.clipboard);
         GlobalStates.overviewOpen = true;
     }
 
@@ -119,7 +120,7 @@ Scope {
             return;
         }
         overviewScope.dontAutoCancelSearch = true;
-        panelWindow.setSearchingText(Config.options.search.prefix.emojis);
+        panelWindow.setSearchingText(SearchPrefixes.emojis);
         GlobalStates.overviewOpen = true;
     }
 

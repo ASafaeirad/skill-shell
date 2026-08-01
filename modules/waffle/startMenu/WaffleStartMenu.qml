@@ -5,6 +5,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import qs
 import qs.modules.common
+import qs.modules.common.functions
 import qs.modules.common.widgets
 import qs.services
 
@@ -12,17 +13,17 @@ Scope {
     id: root
 
     function toggleClipboard() {
-        if (LauncherSearch.query.startsWith(Config.options.search.prefix.clipboard) || !GlobalStates.searchOpen)
+        if (SearchPrefixes.detect(LauncherSearch.query) === SearchPrefixes.PrefixKind.Clipboard || !GlobalStates.searchOpen)
             GlobalStates.searchOpen = !GlobalStates.searchOpen;
 
-        LauncherSearch.ensurePrefix(Config.options.search.prefix.clipboard);
+        LauncherSearch.query = SearchPrefixes.ensurePrefix(LauncherSearch.query, SearchPrefixes.PrefixKind.Clipboard);
     }
 
     function toggleEmojis() {
-        if (LauncherSearch.query.startsWith(Config.options.search.prefix.emojis) || !GlobalStates.searchOpen)
+        if (SearchPrefixes.detect(LauncherSearch.query) === SearchPrefixes.PrefixKind.Emojis || !GlobalStates.searchOpen)
             GlobalStates.searchOpen = !GlobalStates.searchOpen;
 
-        LauncherSearch.ensurePrefix(Config.options.search.prefix.emojis);
+        LauncherSearch.query = SearchPrefixes.ensurePrefix(LauncherSearch.query, SearchPrefixes.PrefixKind.Emojis);
     }
 
     Connections {
