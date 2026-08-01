@@ -58,10 +58,6 @@ Singleton {
 
             property string hyprlandInstanceSignature: ""
 
-            property JsonObject cheatsheet: JsonObject {
-                property int tabIndex: 0
-            }
-
             property JsonObject sidebar: JsonObject {
                 property JsonObject bottomGroup: JsonObject {
                     property bool collapsed: false

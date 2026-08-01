@@ -9,14 +9,14 @@ Singleton {
     id: root
 
     function isPinned(appId) {
-        return Config.options.dock.pinnedApps.indexOf(appId) !== -1;
+        return Config.options.taskbar.pinnedApps.indexOf(appId) !== -1;
     }
 
     function togglePin(appId) {
         if (root.isPinned(appId)) {
-            Config.options.dock.pinnedApps = Config.options.dock.pinnedApps.filter(id => id !== appId)
+            Config.options.taskbar.pinnedApps = Config.options.taskbar.pinnedApps.filter(id => id !== appId)
         } else {
-            Config.options.dock.pinnedApps = Config.options.dock.pinnedApps.concat([appId])
+            Config.options.taskbar.pinnedApps = Config.options.taskbar.pinnedApps.concat([appId])
         }
     }
 
@@ -24,7 +24,7 @@ Singleton {
         var map = new Map();
 
         // Pinned apps
-        const pinnedApps = Config.options?.dock.pinnedApps ?? [];
+        const pinnedApps = Config.options?.taskbar.pinnedApps ?? [];
         for (const appId of pinnedApps) {
             if (!map.has(appId.toLowerCase())) map.set(appId.toLowerCase(), ({
                 pinned: true,
@@ -38,7 +38,7 @@ Singleton {
         }
 
         // Ignored apps
-        const ignoredRegexStrings = Config.options?.dock.ignoredAppRegexes ?? [];
+        const ignoredRegexStrings = Config.options?.taskbar.ignoredAppRegexes ?? [];
         const ignoredRegexes = ignoredRegexStrings.map(pattern => new RegExp(pattern, "i"));
         // Open windows
         for (const toplevel of ToplevelManager.toplevels.values) {
