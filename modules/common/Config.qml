@@ -115,16 +115,6 @@ Singleton {
                 }
             }
 
-            property JsonObject audio: JsonObject {
-                // Values in %
-                property JsonObject protection: JsonObject {
-                    // Prevent sudden bangs
-                    property bool enable: false
-                    property real maxAllowedIncrease: 10
-                    property real maxAllowed: 99
-                }
-            }
-
             property JsonObject apps: JsonObject {
                 property string bluetooth: "kcmshell6 kcm_bluetooth"
                 property string changePassword: "kitty -1 --hold=yes fish -i -c 'passwd'"
@@ -445,13 +435,6 @@ Singleton {
                 property bool secondPrecision: false
             }
 
-            property JsonObject updates: JsonObject {
-                property bool enableCheck: true
-                property int checkInterval: 120 // minutes
-                property int adviseUpdateThreshold: 75 // packages
-                property int stronglyAdviseUpdateThreshold: 200 // packages
-            }
-            
             property JsonObject wallpaperSelector: JsonObject {
                 property bool useSystemFileDialog: false
             }

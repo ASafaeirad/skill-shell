@@ -29,7 +29,6 @@ ShellRoot {
         ConflictKiller.load()
         Cliphist.refresh()
         Wallpapers.load()
-        Updates.load()
     }
 
 
@@ -74,4 +73,3 @@ ShellRoot {
         onPressed: root.cyclePanelFamily()
     }
 }
-

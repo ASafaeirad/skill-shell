@@ -96,9 +96,6 @@ Rectangle {
         Tray {
         }
 
-        UpdatesButton {
-        }
-
         SystemButton {
         }
 

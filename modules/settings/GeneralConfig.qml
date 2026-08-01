@@ -10,48 +10,6 @@ ContentPage {
     forceWidth: true
 
     ContentSection {
-        icon: "volume_up"
-        title: "Audio"
-
-        ConfigSwitch {
-            buttonIcon: "hearing"
-            text: "Earbang protection"
-            checked: Config.options.audio.protection.enable
-            onCheckedChanged: {
-                Config.options.audio.protection.enable = checked;
-            }
-            StyledToolTip {
-                text: "Prevents abrupt increments and restricts volume limit"
-            }
-        }
-        ConfigRow {
-            enabled: Config.options.audio.protection.enable
-            ConfigSpinBox {
-                icon: "arrow_warm_up"
-                text: "Max allowed increase"
-                value: Config.options.audio.protection.maxAllowedIncrease
-                from: 0
-                to: 100
-                stepSize: 2
-                onValueChanged: {
-                    Config.options.audio.protection.maxAllowedIncrease = value;
-                }
-            }
-            ConfigSpinBox {
-                icon: "vertical_align_top"
-                text: "Volume limit"
-                value: Config.options.audio.protection.maxAllowed
-                from: 0
-                to: 154 // pavucontrol allows up to 153%
-                stepSize: 2
-                onValueChanged: {
-                    Config.options.audio.protection.maxAllowed = value;
-                }
-            }
-        }
-    }
-
-    ContentSection {
         icon: "battery_android_full"
         title: "Battery"
 

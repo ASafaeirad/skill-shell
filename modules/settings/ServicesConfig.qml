@@ -5,30 +5,6 @@ import qs.modules.common.widgets
 import qs.services
 
 ContentPage {
-    // There's no update indicator in ii for now so we shouldn't show this yet
-    // ContentSection {
-    //     icon: "deployed_code_update"
-    //     title: "System updates (Arch only)"
-    //     ConfigSwitch {
-    //         text: "Enable update checks"
-    //         checked: Config.options.updates.enableCheck
-    //         onCheckedChanged: {
-    //             Config.options.updates.enableCheck = checked;
-    //         }
-    //     }
-    //     ConfigSpinBox {
-    //         icon: "av_timer"
-    //         text: "Check interval (mins)"
-    //         value: Config.options.updates.checkInterval
-    //         from: 60
-    //         to: 1440
-    //         stepSize: 60
-    //         onValueChanged: {
-    //             Config.options.updates.checkInterval = value;
-    //         }
-    //     }
-    // }
-
     forceWidth: true
 
     ContentSection {
