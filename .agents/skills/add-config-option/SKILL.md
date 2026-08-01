@@ -17,7 +17,7 @@ property JsonObject myFeature: JsonObject {
 }
 ```
 
-`~/.config/illogical-impulse/config.json` only stores current values — users who never touched the option get the QML default. Supported types: `bool`, `int`, `real`, `string`, `list<string>`, nested `JsonObject`.
+`~/.config/skill-shell/config.json` only stores current values — users who never touched the option get the QML default. Supported types: `bool`, `int`, `real`, `string`, `list<string>`, nested `JsonObject`.
 
 ## 2. Consume it
 
@@ -44,7 +44,7 @@ Other controls in `modules/common/widgets/`: `ConfigSpinBox`, `ConfigSlider`, `C
 
 ## 4. Verify
 
-- Flip the value in `~/.config/illogical-impulse/config.json` and watch the UI react (no restart).
+- Flip the value in `~/.config/skill-shell/config.json` and watch the UI react (no restart).
 - Settings page runs standalone: `qs -p ~/.config/quickshell/ii/settings.qml` — toggle the control, confirm config.json updates.
 - Check `qs -c ii log -t 30` for QML errors after the Config.qml edit (`verify-shell` skill).
 

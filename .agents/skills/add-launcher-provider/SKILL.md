@@ -1,13 +1,13 @@
 ---
 name: add-launcher-provider
-description: Add a new search provider/prefix to the launcher (overview search), e.g. "make @f search files". NOT needed for simple launcher actions - executable scripts dropped in ~/.config/illogical-impulse/actions/ auto-appear under the / prefix with zero code.
+description: Add a new search provider/prefix to the launcher (overview search), e.g. "make @f search files". NOT needed for simple launcher actions - executable scripts dropped in ~/.config/skill-shell/actions/ auto-appear under the / prefix with zero code.
 ---
 
 # Add a launcher search provider
 
 The launcher is the search box in the **overview** panel (`qs -c ii ipc call search toggle`). Existing prefixes: `>` apps, `/` actions, `;` clipboard, `:` emoji, `=` math, `$` shell, `?` web.
 
-**First check the zero-code path:** if the request is "run X with my query" (no result list needed), it's a user action — an executable in `~/.config/illogical-impulse/actions/` (auto-loaded, remaining query passed as space-split args). Stop here if that fits.
+**First check the zero-code path:** if the request is "run X with my query" (no result list needed), it's a user action — an executable in `~/.config/skill-shell/actions/` (auto-loaded, remaining query passed as space-split args). Stop here if that fits.
 
 Otherwise, prefix logic is **duplicated across many files** — work through this checklist completely; a missed site means inconsistent UI, not a crash.
 

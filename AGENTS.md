@@ -64,7 +64,7 @@ property JsonObject bar: JsonObject {
 }
 ```
 
-- User file: `~/.config/illogical-impulse/config.json`. It hot-applies on edit (50 ms debounce) **and is auto-rewritten by the shell** whenever any option changes from QML — don't be surprised when it reformats itself, and don't fight it for formatting.
+- User file: `~/.config/skill-shell/config.json`. It hot-applies on edit (50 ms debounce) **and is auto-rewritten by the shell** whenever any option changes from QML — don't be surprised when it reformats itself, and don't fight it for formatting.
 - Read anywhere as `Config.options.bar.bottom` — fully reactive, no signal wiring needed.
 - Settings app UI lives in `modules/settings/*Config.qml` (see `.claude/skills/add-config-option`).
 
@@ -92,8 +92,8 @@ Details in `.claude/skills/verify-shell`.
 
 | Task                                  | How                                                                                                                                                    |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Add launcher action (`/foo`)          | **Zero code**: drop an executable script in `~/.config/illogical-impulse/actions/` — auto-appears under the `/` prefix, remaining query passed as args |
-| Change a setting                      | Edit `~/.config/illogical-impulse/config.json` directly (hot-applies)                                                                                  |
+| Add launcher action (`/foo`)          | **Zero code**: drop an executable script in `~/.config/skill-shell/actions/` — auto-appears under the `/` prefix, remaining query passed as args |
+| Change a setting                      | Edit `~/.config/skill-shell/config.json` directly (hot-applies)                                                                                  |
 | Add a bar widget                      | `.claude/skills/add-bar-widget`                                                                                                                        |
 | Add a launcher search provider/prefix | `.claude/skills/add-launcher-provider`                                                                                                                 |
 | Add a config option (+ settings UI)   | `.claude/skills/add-config-option`                                                                                                                     |
