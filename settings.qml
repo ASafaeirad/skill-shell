@@ -45,6 +45,11 @@ ApplicationWindow {
             component: "modules/settings/InterfaceConfig.qml"
         },
         {
+            name: "Sidebars",
+            icon: "side_navigation",
+            component: "modules/settings/SidebarsConfig.qml"
+        },
+        {
             name: "Displays",
             icon: "monitor",
             component: "modules/settings/DisplaysConfig.qml"
