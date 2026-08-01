@@ -88,6 +88,82 @@ MouseArea {
         target: context
     }
 
+    // Clock and lock status
+    Toolbar {
+        id: lockInfoIsland
+
+        scale: root.toolbarScale
+        opacity: root.toolbarOpacity
+        padding: Appearance.rounding.small
+
+        anchors {
+            bottom: parent.verticalCenter
+            bottomMargin: Appearance.sizes.elevationMargin
+        }
+
+        ColumnLayout {
+            spacing: Appearance.rounding.verysmall
+
+            StyledText {
+                Layout.alignment: Qt.AlignHCenter
+                text: DateTime.time
+                color: Appearance.colors.colOnSurfaceVariant
+                font.family: Appearance.font.family.numbers
+                font.pixelSize: Appearance.font.pixelSize.hugeass * 3
+                animateChange: true
+            }
+
+            StyledText {
+                Layout.alignment: Qt.AlignHCenter
+                text: DateTime.longDate
+                color: Appearance.colors.colOnSurfaceVariant
+                font.pixelSize: Appearance.font.pixelSize.larger
+                animateChange: true
+            }
+
+            IconAndTextPair {
+                Layout.alignment: Qt.AlignHCenter
+                visible: Config.options.lock.showLockedText
+                icon: "lock"
+                text: "Locked"
+            }
+
+        }
+
+        states: [
+            State {
+                name: "centered"
+                when: Config.options.lock.centerClock
+
+                AnchorChanges {
+                    target: lockInfoIsland
+                    anchors.left: undefined
+                    anchors.horizontalCenter: root.horizontalCenter
+                }
+
+            },
+            State {
+                name: "leftAligned"
+                when: !Config.options.lock.centerClock
+
+                AnchorChanges {
+                    target: lockInfoIsland
+                    anchors.left: leftIsland.left
+                    anchors.horizontalCenter: undefined
+                }
+
+            }
+        ]
+        transitions: Transition {
+            AnchorAnimation {
+                duration: Appearance.animation.elementMoveFast.duration
+                easing.type: Appearance.animation.elementMoveFast.type
+                easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+            }
+
+        }
+    }
+
     // Main toolbar: password box
     Toolbar {
         id: mainIsland
