@@ -311,16 +311,4 @@ ContentPage {
 
     }
 
-    ContentSection {
-        icon: "wallpaper_slideshow"
-        title: "Wallpaper selector"
-
-        ConfigSwitch {
-            buttonIcon: "ad"
-            text: 'Use system file picker'
-            configKey: "wallpaperSelector.useSystemFileDialog"
-        }
-
-    }
-
 }

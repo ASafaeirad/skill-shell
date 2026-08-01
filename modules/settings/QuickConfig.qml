@@ -12,12 +12,13 @@ ContentPage {
 
     // Wallpaper selection
     ContentSection {
-        icon: "format_paint"
-        title: "Wallpaper & Colors"
+        icon: "wallpaper"
+        title: "Wallpaper"
         Layout.fillWidth: true
 
         RowLayout {
             Layout.fillWidth: true
+            spacing: 10
 
             Item {
                 implicitWidth: 340
@@ -47,6 +48,9 @@ ContentPage {
             }
 
             ColumnLayout {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignTop
+
                 RippleButtonWithIcon {
                     Layout.fillWidth: true
                     materialIcon: "wallpaper"
@@ -81,68 +85,99 @@ ContentPage {
 
                 }
 
-                RowLayout {
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.fillWidth: true
+                ConfigSwitch {
+                    buttonIcon: "ad"
+                    text: "Use system file picker"
+                    configKey: "wallpaperSelector.useSystemFileDialog"
+                }
+
+                Item {
                     Layout.fillHeight: true
-                    uniformCellSizes: true
-
-                    SmallLightDarkPreferenceButton {
-                        Layout.fillHeight: true
-                        dark: false
-                    }
-
-                    SmallLightDarkPreferenceButton {
-                        Layout.fillHeight: true
-                        dark: true
-                    }
-
                 }
 
             }
 
         }
 
-        ConfigSelectionArray {
-            currentValue: Config.options.appearance.palette.type
-            onSelected: (newValue) => {
-                Config.options.appearance.palette.type = newValue;
-                Quickshell.execDetached(["bash", "-c", `${Directories.wallpaperSwitchScriptPath} --noswitch`]);
+    }
+
+    ContentSection {
+        icon: "format_paint"
+        title: "Colors"
+        Layout.fillWidth: true
+
+        ContentSubsection {
+            title: "Mode"
+
+            ConfigSelectionArray {
+                currentValue: Appearance.m3colors.darkmode ? "dark" : "light"
+                onSelected: (newValue) => {
+                    Quickshell.execDetached(["bash", "-c", `${Directories.wallpaperSwitchScriptPath} --mode ${newValue} --noswitch`]);
+                }
+                options: [{
+                    "value": "light",
+                    "icon": "light_mode",
+                    "displayName": "Light"
+                }, {
+                    "value": "dark",
+                    "icon": "dark_mode",
+                    "displayName": "Dark"
+                }]
             }
-            options: [{
-                "value": "auto",
-                "displayName": "Auto"
-            }, {
-                "value": "scheme-content",
-                "displayName": "Content"
-            }, {
-                "value": "scheme-expressive",
-                "displayName": "Expressive"
-            }, {
-                "value": "scheme-fidelity",
-                "displayName": "Fidelity"
-            }, {
-                "value": "scheme-fruit-salad",
-                "displayName": "Fruit Salad"
-            }, {
-                "value": "scheme-monochrome",
-                "displayName": "Monochrome"
-            }, {
-                "value": "scheme-neutral",
-                "displayName": "Neutral"
-            }, {
-                "value": "scheme-rainbow",
-                "displayName": "Rainbow"
-            }, {
-                "value": "scheme-tonal-spot",
-                "displayName": "Tonal Spot"
-            }]
+
         }
 
-        ConfigSwitch {
-            buttonIcon: "ev_shadow"
-            text: "Transparency"
-            configKey: "appearance.transparency.enable"
+        ContentSubsection {
+            title: "Palette"
+            tooltip: "How colors are derived from your wallpaper"
+
+            ConfigSelectionArray {
+                currentValue: Config.options.appearance.palette.type
+                onSelected: (newValue) => {
+                    Config.options.appearance.palette.type = newValue;
+                    Quickshell.execDetached(["bash", "-c", `${Directories.wallpaperSwitchScriptPath} --noswitch`]);
+                }
+                options: [{
+                    "value": "auto",
+                    "displayName": "Auto"
+                }, {
+                    "value": "scheme-content",
+                    "displayName": "Content"
+                }, {
+                    "value": "scheme-expressive",
+                    "displayName": "Expressive"
+                }, {
+                    "value": "scheme-fidelity",
+                    "displayName": "Fidelity"
+                }, {
+                    "value": "scheme-fruit-salad",
+                    "displayName": "Fruit Salad"
+                }, {
+                    "value": "scheme-monochrome",
+                    "displayName": "Monochrome"
+                }, {
+                    "value": "scheme-neutral",
+                    "displayName": "Neutral"
+                }, {
+                    "value": "scheme-rainbow",
+                    "displayName": "Rainbow"
+                }, {
+                    "value": "scheme-tonal-spot",
+                    "displayName": "Tonal Spot"
+                }]
+            }
+
+        }
+
+        ContentSubsection {
+            title: "Style"
+
+            ConfigSwitch {
+                buttonIcon: "ev_shadow"
+                text: "Transparency"
+                configKey: "appearance.transparency.enable"
+            }
+
         }
 
     }
@@ -225,47 +260,6 @@ ContentPage {
                         "icon": "fullscreen_exit",
                         "value": 2
                     }]
-                }
-
-            }
-
-        }
-
-    }
-
-    component SmallLightDarkPreferenceButton: RippleButton {
-        id: smallLightDarkPreferenceButton
-
-        required property bool dark
-        property color colText: toggled ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer2
-
-        padding: 5
-        Layout.fillWidth: true
-        toggled: Appearance.m3colors.darkmode === dark
-        colBackground: Appearance.colors.colLayer2
-        onClicked: {
-            Quickshell.execDetached(["bash", "-c", `${Directories.wallpaperSwitchScriptPath} --mode ${dark ? "dark" : "light"} --noswitch`]);
-        }
-
-        contentItem: Item {
-            anchors.centerIn: parent
-
-            ColumnLayout {
-                anchors.centerIn: parent
-                spacing: 0
-
-                MaterialSymbol {
-                    Layout.alignment: Qt.AlignHCenter
-                    iconSize: 30
-                    text: dark ? "dark_mode" : "light_mode"
-                    color: smallLightDarkPreferenceButton.colText
-                }
-
-                StyledText {
-                    Layout.alignment: Qt.AlignHCenter
-                    text: dark ? "Dark" : "Light"
-                    font.pixelSize: Appearance.font.pixelSize.smaller
-                    color: smallLightDarkPreferenceButton.colText
                 }
 
             }
