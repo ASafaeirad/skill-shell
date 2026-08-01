@@ -11,7 +11,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
 import Quickshell
-import Quickshell.Io
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
@@ -40,18 +39,6 @@ ApplicationWindow {
     width: 900
     height: 650
     color: Appearance.m3colors.m3background
-
-    Process {
-        id: konachanWallProc
-        property string status: ""
-        command: ["bash", "-c", Quickshell.shellPath("scripts/colors/random/random_konachan_wall.sh")]
-        stdout: SplitParser {
-            onRead: data => {
-                console.log(`Konachan wall proc output: ${data}`);
-                konachanWallProc.status = data.trim();
-            }
-        }
-    }
 
     ColumnLayout {
         anchors {
@@ -214,54 +201,37 @@ ApplicationWindow {
                         }
                     }
 
-                    RowLayout {
+                    RippleButtonWithIcon {
                         Layout.alignment: Qt.AlignHCenter
-                        RippleButtonWithIcon {
-                            id: rndWallBtn
-                            visible: Config.options.policies.weeb === 1
-                            Layout.alignment: Qt.AlignHCenter
-                            buttonRadius: Appearance.rounding.small
-                            materialIcon: "ifl"
-                            mainText: konachanWallProc.running ? "Be patient..." : "Random: Konachan"
-                            onClicked: {
-                                console.log(konachanWallProc.command.join(" "));
-                                konachanWallProc.running = true;
-                            }
-                            StyledToolTip {
-                                text: "Random SFW Anime wallpaper from Konachan\nImage is saved to ~/Pictures/Wallpapers"
-                            }
+                        materialIcon: "wallpaper"
+                        StyledToolTip {
+                            text: "Pick wallpaper image on your system"
                         }
-                        RippleButtonWithIcon {
-                            materialIcon: "wallpaper"
-                            StyledToolTip {
-                                text: "Pick wallpaper image on your system"
-                            }
-                            onClicked: {
-                                Quickshell.execDetached([`${Directories.wallpaperSwitchScriptPath}`]);
-                            }
-                            mainContentComponent: Component {
+                        onClicked: {
+                            Quickshell.execDetached([`${Directories.wallpaperSwitchScriptPath}`]);
+                        }
+                        mainContentComponent: Component {
+                            RowLayout {
+                                spacing: 10
+                                StyledText {
+                                    font.pixelSize: Appearance.font.pixelSize.small
+                                    text: "Choose file"
+                                    color: Appearance.colors.colOnSecondaryContainer
+                                }
                                 RowLayout {
-                                    spacing: 10
-                                    StyledText {
-                                        font.pixelSize: Appearance.font.pixelSize.small
-                                        text: "Choose file"
-                                        color: Appearance.colors.colOnSecondaryContainer
+                                    spacing: 3
+                                    KeyboardKey {
+                                        key: "Ctrl"
                                     }
-                                    RowLayout {
-                                        spacing: 3
-                                        KeyboardKey {
-                                            key: "Ctrl"
-                                        }
-                                        KeyboardKey {
-                                            key: "󰖳"
-                                        }
-                                        StyledText {
-                                            Layout.alignment: Qt.AlignVCenter
-                                            text: "+"
-                                        }
-                                        KeyboardKey {
-                                            key: "T"
-                                        }
+                                    KeyboardKey {
+                                        key: "󰖳"
+                                    }
+                                    StyledText {
+                                        Layout.alignment: Qt.AlignVCenter
+                                        text: "+"
+                                    }
+                                    KeyboardKey {
+                                        key: "T"
                                     }
                                 }
                             }
@@ -271,44 +241,6 @@ ApplicationWindow {
                     NoticeBox {
                         Layout.fillWidth: true
                         text: "Change any time later with /dark, /light, /wallpaper in the launcher\nIf the shell's colors aren't changing:\n    1. Open the right sidebar with Super+N\n    2. Click \"Reload Hyprland & Quickshell\" in the top-right corner"
-                    }
-                }
-
-                ContentSection {
-                    icon: "rule"
-                    title: "Policies"
-
-                    ConfigRow {
-                        Layout.fillWidth: true
-
-                        ContentSubsection {
-                            title: "Weeb"
-
-                            ConfigSelectionArray {
-                                currentValue: Config.options.policies.weeb
-                                onSelected: newValue => {
-                                    Config.options.policies.weeb = newValue;
-                                }
-                                options: [
-                                    {
-                                        displayName: "No",
-                                        icon: "close",
-                                        value: 0
-                                    },
-                                    {
-                                        displayName: "Yes",
-                                        icon: "check",
-                                        value: 1
-                                    },
-                                    {
-                                        displayName: "Closet",
-                                        icon: "ev_shadow",
-                                        value: 2
-                                    }
-                                ]
-                            }
-                        }
-
                     }
                 }
 

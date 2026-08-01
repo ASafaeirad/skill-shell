@@ -244,21 +244,6 @@ Singleton {
     }
 
     /**
-     * Checks if any substring in the list is contained in the string.
-     * @param { string } str
-     * @param { string[] } substrings
-     * @returns { boolean }
-     */
-    function stringListContainsSubstring(str, substrings) {
-        for (let i = 0; i < substrings.length; ++i) {
-            if (str.includes(substrings[i])) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Removes the given prefix from the string if present.
      * @param { string } str
      * @param { string } prefix
