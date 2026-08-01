@@ -312,14 +312,14 @@ Rectangle {
 
             WMenuItem {
                 icon.name: smallGridAppButton.pinnedStart ? "pin-off" : "pin"
-                text: smallGridAppButton.pinnedStart ? Translation.tr("Unpin from Start") : Translation.tr("Pin to Start")
+                text: smallGridAppButton.pinnedStart ? "Unpin from Start" : "Pin to Start"
                 onTriggered: {
                     LauncherApps.togglePin(smallGridAppButton.desktopEntry.id);
                 }
             }
             WMenuItem {
                 icon.name: smallGridAppButton.pinnedTaskbar ? "pin-off" : "pin"
-                text: smallGridAppButton.pinnedTaskbar ? Translation.tr("Unpin from taskbar") : Translation.tr("Pin to taskbar")
+                text: smallGridAppButton.pinnedTaskbar ? "Unpin from taskbar" : "Pin to taskbar"
                 onTriggered: {
                     TaskbarApps.togglePin(smallGridAppButton.desktopEntry.id);
                 }

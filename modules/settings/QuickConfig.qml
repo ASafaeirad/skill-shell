@@ -30,7 +30,7 @@ ContentPage {
     // Wallpaper selection
     ContentSection {
         icon: "format_paint"
-        title: Translation.tr("Wallpaper & Colors")
+        title: "Wallpaper & Colors"
         Layout.fillWidth: true
 
         RowLayout {
@@ -70,32 +70,14 @@ ContentPage {
                     Layout.fillWidth: true
                     buttonRadius: Appearance.rounding.small
                     materialIcon: "ifl"
-                    mainText: randomWallProc.running ? Translation.tr("Be patient...") : Translation.tr("Random: Konachan")
+                    mainText: randomWallProc.running ? "Be patient..." : "Random: Konachan"
                     onClicked: {
                         randomWallProc.scriptPath = `${Directories.scriptPath}/colors/random/random_konachan_wall.sh`;
                         randomWallProc.running = true;
                     }
 
                     StyledToolTip {
-                        text: Translation.tr("Random SFW Anime wallpaper from Konachan\nImage is saved to ~/Pictures/Wallpapers")
-                    }
-
-                }
-
-                RippleButtonWithIcon {
-                    enabled: !randomWallProc.running
-                    visible: Config.options.policies.weeb === 1
-                    Layout.fillWidth: true
-                    buttonRadius: Appearance.rounding.small
-                    materialIcon: "ifl"
-                    mainText: randomWallProc.running ? Translation.tr("Be patient...") : Translation.tr("Random: osu! seasonal")
-                    onClicked: {
-                        randomWallProc.scriptPath = `${Directories.scriptPath}/colors/random/random_osu_wall.sh`;
-                        randomWallProc.running = true;
-                    }
-
-                    StyledToolTip {
-                        text: Translation.tr("Random osu! seasonal background\nImage is saved to ~/Pictures/Wallpapers")
+                        text: "Random SFW Anime wallpaper from Konachan\nImage is saved to ~/Pictures/Wallpapers"
                     }
 
                 }
@@ -116,7 +98,7 @@ ContentPage {
                     }
 
                     StyledToolTip {
-                        text: Translation.tr("Pick wallpaper image on your system")
+                        text: "Pick wallpaper image on your system"
                     }
 
                     mainContentComponent: Component {
@@ -125,7 +107,7 @@ ContentPage {
 
                             StyledText {
                                 font.pixelSize: Appearance.font.pixelSize.small
-                                text: Translation.tr("Choose file")
+                                text: "Choose file"
                                 color: Appearance.colors.colOnSecondaryContainer
                             }
 
@@ -187,37 +169,37 @@ ContentPage {
             }
             options: [{
                 "value": "auto",
-                "displayName": Translation.tr("Auto")
+                "displayName": "Auto"
             }, {
                 "value": "scheme-content",
-                "displayName": Translation.tr("Content")
+                "displayName": "Content"
             }, {
                 "value": "scheme-expressive",
-                "displayName": Translation.tr("Expressive")
+                "displayName": "Expressive"
             }, {
                 "value": "scheme-fidelity",
-                "displayName": Translation.tr("Fidelity")
+                "displayName": "Fidelity"
             }, {
                 "value": "scheme-fruit-salad",
-                "displayName": Translation.tr("Fruit Salad")
+                "displayName": "Fruit Salad"
             }, {
                 "value": "scheme-monochrome",
-                "displayName": Translation.tr("Monochrome")
+                "displayName": "Monochrome"
             }, {
                 "value": "scheme-neutral",
-                "displayName": Translation.tr("Neutral")
+                "displayName": "Neutral"
             }, {
                 "value": "scheme-rainbow",
-                "displayName": Translation.tr("Rainbow")
+                "displayName": "Rainbow"
             }, {
                 "value": "scheme-tonal-spot",
-                "displayName": Translation.tr("Tonal Spot")
+                "displayName": "Tonal Spot"
             }]
         }
 
         ConfigSwitch {
             buttonIcon: "ev_shadow"
-            text: Translation.tr("Transparency")
+            text: "Transparency"
             checked: Config.options.appearance.transparency.enable
             onCheckedChanged: {
                 Config.options.appearance.transparency.enable = checked;
@@ -228,11 +210,11 @@ ContentPage {
 
     ContentSection {
         icon: "screenshot_monitor"
-        title: Translation.tr("Bar & screen")
+        title: "Bar & screen"
 
         ConfigRow {
             ContentSubsection {
-                title: Translation.tr("Bar position")
+                title: "Bar position"
 
                 ConfigSelectionArray {
                     // bottom: false, vertical: false
@@ -246,19 +228,19 @@ ContentPage {
                         Config.options.bar.vertical = (newValue & 2) !== 0;
                     }
                     options: [{
-                        "displayName": Translation.tr("Top"),
+                        "displayName": "Top",
                         "icon": "arrow_upward",
                         "value": 0
                     }, {
-                        "displayName": Translation.tr("Left"),
+                        "displayName": "Left",
                         "icon": "arrow_back",
                         "value": 2
                     }, {
-                        "displayName": Translation.tr("Bottom"),
+                        "displayName": "Bottom",
                         "icon": "arrow_downward",
                         "value": 1
                     }, {
-                        "displayName": Translation.tr("Right"),
+                        "displayName": "Right",
                         "icon": "arrow_forward",
                         "value": 3
                     }]
@@ -267,7 +249,7 @@ ContentPage {
             }
 
             ContentSubsection {
-                title: Translation.tr("Bar style")
+                title: "Bar style"
 
                 ConfigSelectionArray {
                     currentValue: Config.options.bar.cornerStyle
@@ -275,15 +257,15 @@ ContentPage {
                         Config.options.bar.cornerStyle = newValue; // Update local copy
                     }
                     options: [{
-                        "displayName": Translation.tr("Hug"),
+                        "displayName": "Hug",
                         "icon": "line_curve",
                         "value": 0
                     }, {
-                        "displayName": Translation.tr("Float"),
+                        "displayName": "Float",
                         "icon": "page_header",
                         "value": 1
                     }, {
-                        "displayName": Translation.tr("Rect"),
+                        "displayName": "Rect",
                         "icon": "toolbar",
                         "value": 2
                     }]
@@ -295,7 +277,7 @@ ContentPage {
 
         ConfigRow {
             ContentSubsection {
-                title: Translation.tr("Screen round corner")
+                title: "Screen round corner"
 
                 ConfigSelectionArray {
                     currentValue: Config.options.appearance.fakeScreenRounding
@@ -303,15 +285,15 @@ ContentPage {
                         Config.options.appearance.fakeScreenRounding = newValue;
                     }
                     options: [{
-                        "displayName": Translation.tr("No"),
+                        "displayName": "No",
                         "icon": "close",
                         "value": 0
                     }, {
-                        "displayName": Translation.tr("Yes"),
+                        "displayName": "Yes",
                         "icon": "check",
                         "value": 1
                     }, {
-                        "displayName": Translation.tr("When not fullscreen"),
+                        "displayName": "When not fullscreen",
                         "icon": "fullscreen_exit",
                         "value": 2
                     }]
@@ -325,7 +307,7 @@ ContentPage {
 
     NoticeBox {
         Layout.fillWidth: true
-        text: Translation.tr('Not all options are available in this app. You should also check the config file by hitting the "Config file" button on the topleft corner or opening %1 manually.').arg(Directories.shellConfigPath)
+        text: 'Not all options are available in this app. You should also check the config file by hitting the "Config file" button on the topleft corner or opening %1 manually.'.arg(Directories.shellConfigPath)
 
         Item {
             Layout.fillWidth: true
@@ -339,7 +321,7 @@ ContentPage {
             Layout.fillWidth: false
             buttonRadius: Appearance.rounding.small
             materialIcon: justCopied ? "check" : "content_copy"
-            mainText: justCopied ? Translation.tr("Path copied") : Translation.tr("Copy path")
+            mainText: justCopied ? "Path copied" : "Copy path"
             onClicked: {
                 copyPathButton.justCopied = true;
                 Quickshell.clipboardText = FileUtils.trimFileProtocol(`${Directories.config}/illogical-impulse/config.json`);
@@ -392,7 +374,7 @@ ContentPage {
 
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
-                    text: dark ? Translation.tr("Dark") : Translation.tr("Light")
+                    text: dark ? "Dark" : "Light"
                     font.pixelSize: Appearance.font.pixelSize.smaller
                     color: smallLightDarkPreferenceButton.colText
                 }

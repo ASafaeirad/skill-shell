@@ -127,7 +127,7 @@ MouseArea {
             property bool materialShapeChars: Config.options.lock.materialShapeChars
 
             Layout.rightMargin: -Layout.leftMargin
-            placeholderText: GlobalStates.screenUnlockFailed ? Translation.tr("Incorrect password") : Translation.tr("Enter password")
+            placeholderText: GlobalStates.screenUnlockFailed ? "Incorrect password" : "Enter password"
             // Style
             clip: true
             font.pixelSize: Appearance.font.pixelSize.small

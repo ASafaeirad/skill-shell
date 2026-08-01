@@ -44,7 +44,7 @@ Item {
                             id: headerRow
 
                             Layout.fillWidth: true
-                            title: Translation.tr("Wi-Fi")
+                            title: "Wi-Fi"
                         }
 
                         WSwitch {
@@ -107,7 +107,7 @@ Item {
 
         FooterRectangle {
             WTextButton {
-                text: Translation.tr("More Internet settings")
+                text: "More Internet settings"
                 onClicked: {
                     Quickshell.execDetached(["qs", "-p", Quickshell.shellPath(""), "ipc", "call", "sidebarLeft", "toggle"]);
                     Quickshell.execDetached(["bash", "-c", Config.options.apps.network]);

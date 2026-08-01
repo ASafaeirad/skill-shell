@@ -74,7 +74,7 @@ RowLayout {
 
             WTextWithFixedWidth {
                 longestText: "Off" // The larger one
-                text: switchWidget.checked ? Translation.tr("On") : Translation.tr("Off")
+                text: switchWidget.checked ? "On" : "Off"
                 font.pixelSize: Looks.font.pixelSize.large
             }
 

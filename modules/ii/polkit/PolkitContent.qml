@@ -60,7 +60,7 @@ Item {
             id: titleText
             Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
-            text: Translation.tr("Authentication")
+            text: "Authentication"
         }
 
         WindowDialogParagraph {
@@ -91,12 +91,12 @@ Item {
                 Layout.fillWidth: true
             }
             DialogButton {
-                buttonText: Translation.tr("Cancel")
+                buttonText: "Cancel"
                 onClicked: PolkitService.cancel();
             }
             DialogButton {
                 enabled: PolkitService.interactionAvailable
-                buttonText: Translation.tr("OK")
+                buttonText: "OK"
                 onClicked: root.submit();
             }
         }

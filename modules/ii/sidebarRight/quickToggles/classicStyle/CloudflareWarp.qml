@@ -26,7 +26,7 @@ QuickToggleButton {
         command: ["warp-cli", "connect"]
         onExited: (exitCode, exitStatus) => {
             if (exitCode !== 0)
-                Quickshell.execDetached(["notify-send", Translation.tr("Cloudflare WARP"), Translation.tr("Connection failed. Please inspect manually with the <tt>warp-cli</tt> command"), "-a", "Shell"]);
+                Quickshell.execDetached(["notify-send", "Cloudflare WARP", "Connection failed. Please inspect manually with the <tt>warp-cli</tt> command", "-a", "Shell"]);
 
         }
     }
@@ -40,7 +40,7 @@ QuickToggleButton {
             if (exitCode === 0)
                 connectProc.running = true;
             else
-                Quickshell.execDetached(["notify-send", Translation.tr("Cloudflare WARP"), Translation.tr("Registration failed. Please inspect manually with the <tt>warp-cli</tt> command"), "-a", "Shell"]);
+                Quickshell.execDetached(["notify-send", "Cloudflare WARP", "Registration failed. Please inspect manually with the <tt>warp-cli</tt> command", "-a", "Shell"]);
         }
     }
 
@@ -69,7 +69,7 @@ QuickToggleButton {
     }
 
     StyledToolTip {
-        text: Translation.tr("Cloudflare WARP (1.1.1.1)")
+        text: "Cloudflare WARP (1.1.1.1)"
     }
 
     contentItem: CustomIcon {

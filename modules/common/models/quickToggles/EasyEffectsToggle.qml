@@ -7,7 +7,7 @@ import qs.modules.common.widgets
 import qs.services
 
 QuickToggleModel {
-    name: Translation.tr("EasyEffects")
+    name: "EasyEffects"
     available: EasyEffects.available
     toggled: EasyEffects.active
     icon: "graphic_eq"
@@ -21,5 +21,5 @@ QuickToggleModel {
         Quickshell.execDetached(["bash", "-c", "flatpak run com.github.wwmm.easyeffects || easyeffects"]);
         GlobalStates.sidebarRightOpen = false;
     }
-    tooltipText: Translation.tr("EasyEffects | Right-click to configure")
+    tooltipText: "EasyEffects | Right-click to configure"
 }

@@ -12,6 +12,6 @@ OsdValueIndicator {
     icon: Hyprsunset.temperatureActive ? "routine" : "light_mode"
     rotateIcon: true
     scaleIcon: true
-    name: Translation.tr("Brightness")
+    name: "Brightness"
     value: root.brightnessMonitor?.brightness ?? 50
 }

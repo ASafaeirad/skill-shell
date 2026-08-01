@@ -71,7 +71,7 @@ RowLayout {
             downDirection: true
             Action {
                 icon.name: "people-settings"
-                text: Translation.tr("Manage accounts")
+                text: "Manage accounts"
                 onTriggered: {
                     Quickshell.execDetached(["bash", "-c", Config.options.apps.manageUser])
                     GlobalStates.searchOpen = false;

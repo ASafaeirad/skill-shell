@@ -42,7 +42,7 @@ GCloudApi {
         if (!preparationReady) return;
         if (GoogleCloud.tokenError || GoogleCloud.keyError) {
             root.state = GCloudApi.State.Error;
-            root.error(Translation.tr("Set your Google Cloud service account key"));
+            root.error("Set your Google Cloud service account key");
             return;
         }
         root.state = GCloudApi.State.Processing;

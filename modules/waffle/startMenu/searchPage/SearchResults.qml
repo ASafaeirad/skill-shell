@@ -112,7 +112,7 @@ RowLayout {
                         }
                         const entry = allResults[i];
                         const tweakedEntry = searchResultComp.createObject(null, Object.assign({}, entry));
-                        tweakedEntry.category = categorizedResults.length === 0 ? Translation.tr("Best match") : entry.type;
+                        tweakedEntry.category = categorizedResults.length === 0 ? "Best match" : entry.type;
 
                         categorizedResults.push(tweakedEntry); // Section header
                         count++;
@@ -200,7 +200,7 @@ RowLayout {
                 clip: true
                 spacing: 2
                 model: {
-                    const isAppEntry = resultPreview.entry.type === Translation.tr("App");
+                    const isAppEntry = resultPreview.entry.type === "App";
                     const appId = isAppEntry ? resultPreview.entry.id : "";
                     const pinned = isAppEntry ? (Config.options.dock.pinnedApps.includes(appId)) : false;
                     const startPinned = isAppEntry ? (Config.options.launcher.pinnedApps.includes(appId)) : false;
@@ -215,7 +215,7 @@ RowLayout {
                         }),
                         ...(isAppEntry ? [
                             searchResultComp.createObject(null, {
-                                name: startPinned ? Translation.tr("Unpin from Start") : Translation.tr("Pin to Start"),
+                                name: startPinned ? "Unpin from Start" : "Pin to Start",
                                 iconName: startPinned ? "keep_off" : "keep",
                                 iconType: LauncherSearchResult.IconType.Material,
                                 execute: () => {
@@ -225,7 +225,7 @@ RowLayout {
                         ] : []),
                         ...(isAppEntry ? [
                             searchResultComp.createObject(null, {
-                                name: pinned ? Translation.tr("Unpin from taskbar") : Translation.tr("Pin to taskbar"),
+                                name: pinned ? "Unpin from taskbar" : "Pin to taskbar",
                                 iconName: pinned ? "keep_off" : "keep",
                                 iconType: LauncherSearchResult.IconType.Material,
                                 execute: () => {

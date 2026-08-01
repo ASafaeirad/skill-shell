@@ -7,11 +7,11 @@ import qs.modules.common.widgets
 import qs.services
 
 QuickToggleModel {
-    name: Translation.tr("Keep awake")
+    name: "Keep awake"
     toggled: Idle.inhibit
     icon: "coffee"
     mainAction: () => {
         Idle.toggleInhibit();
     }
-    tooltipText: Translation.tr("Keep system awake")
+    tooltipText: "Keep system awake"
 }

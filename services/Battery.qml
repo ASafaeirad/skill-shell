@@ -53,8 +53,8 @@ Singleton {
     function notifyLowBattery() {
         Quickshell.execDetached([
             "notify-send",
-            Translation.tr("Low battery"),
-            Translation.tr("Consider plugging in your device (%1%)").arg(Math.round(percentage * 100)),
+            "Low battery",
+            "Consider plugging in your device (%1%)".arg(Math.round(percentage * 100)),
             "-u", "critical",
             "-a", "Shell",
             "-h", "string:desktop-entry:illogical-impulse",
@@ -67,8 +67,8 @@ Singleton {
         // expire-time 0 → popup stays until dismissed; no transient → kept in notification list
         Quickshell.execDetached([
             "notify-send",
-            Translation.tr("Critically low battery"),
-            Translation.tr("Please charge! Battery at %1%.\nAutomatic suspend triggers at %2%").arg(Math.round(percentage * 100)).arg(Config.options.battery.suspend),
+            "Critically low battery",
+            "Please charge! Battery at %1%.\nAutomatic suspend triggers at %2%".arg(Math.round(percentage * 100)).arg(Config.options.battery.suspend),
             "-u", "critical",
             "-a", "Shell",
             "-t", "0",
@@ -107,8 +107,8 @@ Singleton {
         if (!root.available || !isFullAndCharging) return;
         Quickshell.execDetached([
             "notify-send",
-            Translation.tr("Battery full"),
-            Translation.tr("Please unplug the charger"),
+            "Battery full",
+            "Please unplug the charger",
             "-a", "Shell",
             "--hint=int:transient:1",
         ]);

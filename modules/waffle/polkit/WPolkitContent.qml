@@ -89,11 +89,11 @@ Rectangle {
                             text: {
                                 const iconName = PolkitService.flow?.iconName ?? "";
                                 if (iconName === "")
-                                    return Translation.tr("Command-line-invoked Action");
+                                    return "Command-line-invoked Action";
                                 const desktopEntry = DesktopEntries.applications.values.find(entry => {
                                     return entry.icon == iconName;
                                 });
-                                return desktopEntry ? desktopEntry.name : Translation.tr("Unknown Application");
+                                return desktopEntry ? desktopEntry.name : "Unknown Application";
                             }
                         }
                     }
@@ -147,7 +147,7 @@ Rectangle {
                         implicitHeight: 32
                         colBackground: Looks.colors.bg1
                         horizontalAlignment: Text.AlignHCenter
-                        text: Translation.tr("Yes")
+                        text: "Yes"
                         onClicked: PolkitService.submit(inputField.text)
                     }
                     WButton {
@@ -155,7 +155,7 @@ Rectangle {
                         implicitHeight: 32
                         horizontalAlignment: Text.AlignHCenter
                         checked: true
-                        text: Translation.tr("No")
+                        text: "No"
                         onClicked: PolkitService.cancel()
                     }
                 }
@@ -192,14 +192,14 @@ Rectangle {
                 Layout.topMargin: 20
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignLeft
-                text: Translation.tr("Polkit")
+                text: "Polkit"
             }
             WText {
                 Layout.fillWidth: true
                 Layout.bottomMargin: 12
                 horizontalAlignment: Text.AlignLeft
                 wrapMode: Text.Wrap
-                text: Translation.tr("Do you want to allow this app to make changes to your device?")
+                text: "Do you want to allow this app to make changes to your device?"
                 font.pixelSize: Looks.font.pixelSize.xlarger
                 font.weight: Looks.font.weight.strongest
             }

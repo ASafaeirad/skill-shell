@@ -12,7 +12,7 @@ Item {
     id: root
 
     property var items: []
-    property string prompt: Translation.tr("Select an item")
+    property string prompt: "Select an item"
     // --- Enter / exit slide-and-fade transition ----------------------------
     property real slideDistance: 40
     property real yOffset: slideDistance

@@ -14,7 +14,7 @@ Scope {
     id: root
 
     property string description: ""
-    property string promptLabel: Translation.tr("Passphrase")
+    property string promptLabel: "Passphrase"
     property string errorText: ""
     property string fifoPath: ""
     property bool visibleInput: false
@@ -32,7 +32,7 @@ Scope {
 
     function open(descB64, labelB64, errB64, fifo, visible) {
         root.description = b64decode(descB64);
-        root.promptLabel = b64decode(labelB64) || Translation.tr("Passphrase");
+        root.promptLabel = b64decode(labelB64) || "Passphrase";
         root.errorText = b64decode(errB64);
         root.fifoPath = fifo;
         root.visibleInput = (visible === "1");
@@ -126,7 +126,7 @@ Scope {
                         WindowDialogTitle {
                             Layout.fillWidth: true
                             horizontalAlignment: Text.AlignHCenter
-                            text: Translation.tr("Passphrase required")
+                            text: "Passphrase required"
                         }
 
                         WindowDialogParagraph {
@@ -161,11 +161,11 @@ Scope {
                             Layout.bottomMargin: 10
                             Item { Layout.fillWidth: true }
                             DialogButton {
-                                buttonText: Translation.tr("Cancel")
+                                buttonText: "Cancel"
                                 onClicked: root.cancel()
                             }
                             DialogButton {
-                                buttonText: Translation.tr("OK")
+                                buttonText: "OK"
                                 onClicked: root.submit(inputField.text)
                             }
                         }

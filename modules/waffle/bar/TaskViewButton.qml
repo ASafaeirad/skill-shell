@@ -19,7 +19,7 @@ AppButton {
 
     BarToolTip {
         extraVisibleCondition: root.shouldShowTooltip
-        text: Translation.tr("Task View") // Should be a preview of workspaces, but we'll have this for now...
+        text: "Task View" // Should be a preview of workspaces, but we'll have this for now...
     }
 
 }

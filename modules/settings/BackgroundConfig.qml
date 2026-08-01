@@ -8,11 +8,11 @@ ContentPage {
 
     ContentSection {
         icon: "sync_alt"
-        title: Translation.tr("Parallax")
+        title: "Parallax"
 
         ConfigSwitch {
             buttonIcon: "unfold_more_double"
-            text: Translation.tr("Vertical")
+            text: "Vertical"
             checked: Config.options.background.parallax.vertical
             onCheckedChanged: {
                 Config.options.background.parallax.vertical = checked;
@@ -24,7 +24,7 @@ ContentPage {
 
             ConfigSwitch {
                 buttonIcon: "counter_1"
-                text: Translation.tr("Depends on workspace")
+                text: "Depends on workspace"
                 checked: Config.options.background.parallax.enableWorkspace
                 onCheckedChanged: {
                     Config.options.background.parallax.enableWorkspace = checked;
@@ -33,7 +33,7 @@ ContentPage {
 
             ConfigSwitch {
                 buttonIcon: "side_navigation"
-                text: Translation.tr("Depends on sidebars")
+                text: "Depends on sidebars"
                 checked: Config.options.background.parallax.enableSidebar
                 onCheckedChanged: {
                     Config.options.background.parallax.enableSidebar = checked;
@@ -43,7 +43,7 @@ ContentPage {
 
         ConfigSpinBox {
             icon: "loupe"
-            text: Translation.tr("Preferred wallpaper zoom (%)")
+            text: "Preferred wallpaper zoom (%)"
             value: Config.options.background.parallax.workspaceZoom * 100
             from: 10
             to: 200

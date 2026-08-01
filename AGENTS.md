@@ -31,8 +31,7 @@ Two switchable "panel families" exist: **ii** (the main one) and **waffle** (Win
 │   ├── waffle/               # Second panel family (own bar, startMenu, ...)
 │   └── settings/             # Pages of the settings app (BarConfig.qml, ...)
 ├── panelFamilies/            # IllogicalImpulseFamily.qml: PanelLoader{} per panel
-├── scripts/                  # Runtime helper scripts (colors, ai, ...) — not dev tools
-└── translations/             # Translation.tr() catalogs
+└── scripts/                  # Runtime helper scripts (colors, ai, ...) — not dev tools
 ```
 
 Import scheme: `import qs.services`, `import qs.modules.common`, `import qs.modules.common.widgets`, etc. Services are `pragma Singleton` — reference them directly (`Audio.sink`, `Network.materialSymbol`).
@@ -52,7 +51,7 @@ Colors come from **matugen** (Material You from the wallpaper) → `~/.local/sta
   - `Appearance.rounding.*`, `Appearance.sizes.*`
   - `Appearance.animation.*` (e.g. `Appearance.animation.elementMoveFast.colorAnimation.createObject(this)`)
 - Prefer existing widgets from `modules/common/widgets/`: `StyledText`, `StyledRectangularShadow`, `RippleButton`, `MaterialSymbol` (Material Symbols icon font), `Revealer`, ...
-- Wrap every user-visible string in `Translation.tr("...")`.
+- Write user-visible strings directly in English; this configuration intentionally has no i18n layer.
 
 ## Config options
 

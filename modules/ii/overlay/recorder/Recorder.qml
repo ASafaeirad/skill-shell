@@ -84,7 +84,7 @@ StyledOverlayWidget {
                     }
                     StyledText {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: Translation.tr("Open recordings folder")
+                        text: "Open recordings folder"
                     }
                 }
             }

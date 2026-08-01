@@ -9,10 +9,10 @@ Item {
     id: root
 
     property var tabButtonList: [{
-        "name": Translation.tr("Pomodoro"),
+        "name": "Pomodoro",
         "icon": "search_activity"
     }, {
-        "name": Translation.tr("Stopwatch"),
+        "name": "Stopwatch",
         "icon": "timer"
     }]
 

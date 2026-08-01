@@ -41,7 +41,7 @@ Item {
                     id: headerRow
 
                     Layout.fillWidth: true
-                    title: Translation.tr("Eye protection")
+                    title: "Eye protection"
                 }
 
                 StyledFlickable {
@@ -78,14 +78,14 @@ Item {
         spacing: 10
 
         SectionText {
-            text: Translation.tr("Night Light")
+            text: "Night Light"
         }
 
         ToggleItem {
-            name: Translation.tr("Automatic")
+            name: "Automatic"
             description: Hyprsunset.temperatureActive
-                ? Translation.tr("Night Light is enabled now")
-                : Translation.tr("Night Light is disabled now")
+                ? "Night Light is enabled now"
+                : "Night Light is disabled now"
             iconName: "auto"
             checked: Config.options.light.night.automatic
             onCheckedChanged: {
@@ -94,10 +94,10 @@ Item {
         }
 
         ToggleItem {
-            name: Hyprsunset.temperatureActive ? Translation.tr("Enabled now") : Translation.tr("Disabled now")
+            name: Hyprsunset.temperatureActive ? "Enabled now" : "Disabled now"
             description: Config.options.light.night.automatic
-                ? Translation.tr("Automatic mode is on")
-                : Translation.tr("Automatic mode is off")
+                ? "Automatic mode is on"
+                : "Automatic mode is off"
             iconName: WIcons.nightLightIcon
             checked: Hyprsunset.temperatureActive
             onCheckedChanged: {
@@ -110,12 +110,12 @@ Item {
         }
 
         SectionText {
-            text: Translation.tr("Anti-flashbang (experimental)")
+            text: "Anti-flashbang (experimental)"
         }
 
         ToggleItem {
-            name: Translation.tr("Enable")
-            description: Translation.tr("Balance brightness based on content")
+            name: "Enable"
+            description: "Balance brightness based on content"
             iconName: "flash-off"
             checked: Config.options.light.antiFlashbang.enable
             onCheckedChanged: {
@@ -151,13 +151,13 @@ Item {
 
                 WText {
                     Layout.fillWidth: true
-                    text: Translation.tr("Intensity")
+                    text: "Intensity"
                     font.pixelSize: Looks.font.pixelSize.large
                 }
 
                 WText {
                     Layout.fillWidth: true
-                    text: Translation.tr("Adjust the color temperature")
+                    text: "Adjust the color temperature"
                     color: Looks.colors.subfg
                 }
 

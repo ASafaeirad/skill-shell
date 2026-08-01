@@ -8,9 +8,9 @@ ContentPage {
     // There's no update indicator in ii for now so we shouldn't show this yet
     // ContentSection {
     //     icon: "deployed_code_update"
-    //     title: Translation.tr("System updates (Arch only)")
+    //     title: "System updates (Arch only)"
     //     ConfigSwitch {
-    //         text: Translation.tr("Enable update checks")
+    //         text: "Enable update checks"
     //         checked: Config.options.updates.enableCheck
     //         onCheckedChanged: {
     //             Config.options.updates.enableCheck = checked;
@@ -18,7 +18,7 @@ ContentPage {
     //     }
     //     ConfigSpinBox {
     //         icon: "av_timer"
-    //         text: Translation.tr("Check interval (mins)")
+    //         text: "Check interval (mins)"
     //         value: Config.options.updates.checkInterval
     //         from: 60
     //         to: 1440
@@ -33,11 +33,11 @@ ContentPage {
 
     ContentSection {
         icon: "music_cast"
-        title: Translation.tr("Music Recognition")
+        title: "Music Recognition"
 
         ConfigSpinBox {
             icon: "timer_off"
-            text: Translation.tr("Total duration timeout (s)")
+            text: "Total duration timeout (s)"
             value: Config.options.musicRecognition.timeout
             from: 10
             to: 100
@@ -49,7 +49,7 @@ ContentPage {
 
         ConfigSpinBox {
             icon: "av_timer"
-            text: Translation.tr("Polling interval (s)")
+            text: "Polling interval (s)"
             value: Config.options.musicRecognition.interval
             from: 2
             to: 10
@@ -63,11 +63,11 @@ ContentPage {
 
     ContentSection {
         icon: "cell_tower"
-        title: Translation.tr("Networking")
+        title: "Networking"
 
         MaterialTextArea {
             Layout.fillWidth: true
-            placeholderText: Translation.tr("User agent (for services that require it)")
+            placeholderText: "User agent (for services that require it)"
             text: Config.options.networking.userAgent
             wrapMode: TextEdit.Wrap
             onTextChanged: {
@@ -79,11 +79,11 @@ ContentPage {
 
     ContentSection {
         icon: "memory"
-        title: Translation.tr("Resources")
+        title: "Resources"
 
         ConfigSpinBox {
             icon: "av_timer"
-            text: Translation.tr("Polling interval (ms)")
+            text: "Polling interval (ms)"
             value: Config.options.resources.updateInterval
             from: 100
             to: 10000
@@ -97,11 +97,11 @@ ContentPage {
 
     ContentSection {
         icon: "file_open"
-        title: Translation.tr("Save paths")
+        title: "Save paths"
 
         MaterialTextArea {
             Layout.fillWidth: true
-            placeholderText: Translation.tr("Video Recording Path")
+            placeholderText: "Video Recording Path"
             text: Config.options.screenRecord.savePath
             wrapMode: TextEdit.Wrap
             onTextChanged: {
@@ -111,7 +111,7 @@ ContentPage {
 
         MaterialTextArea {
             Layout.fillWidth: true
-            placeholderText: Translation.tr("Screenshot Path (leave empty to just copy)")
+            placeholderText: "Screenshot Path (leave empty to just copy)"
             text: Config.options.screenSnip.savePath
             wrapMode: TextEdit.Wrap
             onTextChanged: {
@@ -123,30 +123,30 @@ ContentPage {
 
     ContentSection {
         icon: "search"
-        title: Translation.tr("Search")
+        title: "Search"
 
         ConfigSwitch {
-            text: Translation.tr("Use Levenshtein distance-based algorithm instead of fuzzy")
+            text: "Use Levenshtein distance-based algorithm instead of fuzzy"
             checked: Config.options.search.sloppy
             onCheckedChanged: {
                 Config.options.search.sloppy = checked;
             }
 
             StyledToolTip {
-                text: Translation.tr("Could be better if you make a ton of typos,\nbut results can be weird and might not work with acronyms\n(e.g. \"GIMP\" might not give you the paint program)")
+                text: "Could be better if you make a ton of typos,\nbut results can be weird and might not work with acronyms\n(e.g. \"GIMP\" might not give you the paint program)"
             }
 
         }
 
         ContentSubsection {
-            title: Translation.tr("Prefixes")
+            title: "Prefixes"
 
             ConfigRow {
                 uniform: true
 
                 MaterialTextArea {
                     Layout.fillWidth: true
-                    placeholderText: Translation.tr("Action")
+                    placeholderText: "Action"
                     text: Config.options.search.prefix.action
                     wrapMode: TextEdit.Wrap
                     onTextChanged: {
@@ -156,7 +156,7 @@ ContentPage {
 
                 MaterialTextArea {
                     Layout.fillWidth: true
-                    placeholderText: Translation.tr("Clipboard")
+                    placeholderText: "Clipboard"
                     text: Config.options.search.prefix.clipboard
                     wrapMode: TextEdit.Wrap
                     onTextChanged: {
@@ -166,7 +166,7 @@ ContentPage {
 
                 MaterialTextArea {
                     Layout.fillWidth: true
-                    placeholderText: Translation.tr("Emojis")
+                    placeholderText: "Emojis"
                     text: Config.options.search.prefix.emojis
                     wrapMode: TextEdit.Wrap
                     onTextChanged: {
@@ -181,7 +181,7 @@ ContentPage {
 
                 MaterialTextArea {
                     Layout.fillWidth: true
-                    placeholderText: Translation.tr("Math")
+                    placeholderText: "Math"
                     text: Config.options.search.prefix.math
                     wrapMode: TextEdit.Wrap
                     onTextChanged: {
@@ -191,7 +191,7 @@ ContentPage {
 
                 MaterialTextArea {
                     Layout.fillWidth: true
-                    placeholderText: Translation.tr("Shell command")
+                    placeholderText: "Shell command"
                     text: Config.options.search.prefix.shellCommand
                     wrapMode: TextEdit.Wrap
                     onTextChanged: {
@@ -201,7 +201,7 @@ ContentPage {
 
                 MaterialTextArea {
                     Layout.fillWidth: true
-                    placeholderText: Translation.tr("Web search")
+                    placeholderText: "Web search"
                     text: Config.options.search.prefix.webSearch
                     wrapMode: TextEdit.Wrap
                     onTextChanged: {
@@ -214,11 +214,11 @@ ContentPage {
         }
 
         ContentSubsection {
-            title: Translation.tr("Web search")
+            title: "Web search"
 
             MaterialTextArea {
                 Layout.fillWidth: true
-                placeholderText: Translation.tr("Base URL")
+                placeholderText: "Base URL"
                 text: Config.options.search.engineBaseUrl
                 wrapMode: TextEdit.Wrap
                 onTextChanged: {
@@ -232,12 +232,12 @@ ContentPage {
 
     ContentSection {
         icon: "weather_mix"
-        title: Translation.tr("Weather")
+        title: "Weather"
 
         ConfigRow {
             ConfigSwitch {
                 buttonIcon: "assistant_navigation"
-                text: Translation.tr("Enable GPS based location")
+                text: "Enable GPS based location"
                 checked: Config.options.bar.weather.enableGPS
                 onCheckedChanged: {
                     Config.options.bar.weather.enableGPS = checked;
@@ -246,14 +246,14 @@ ContentPage {
 
             ConfigSwitch {
                 buttonIcon: "thermometer"
-                text: Translation.tr("Fahrenheit unit")
+                text: "Fahrenheit unit"
                 checked: Config.options.bar.weather.useUSCS
                 onCheckedChanged: {
                     Config.options.bar.weather.useUSCS = checked;
                 }
 
                 StyledToolTip {
-                    text: Translation.tr("It may take a few seconds to update")
+                    text: "It may take a few seconds to update"
                 }
 
             }
@@ -262,7 +262,7 @@ ContentPage {
 
         MaterialTextArea {
             Layout.fillWidth: true
-            placeholderText: Translation.tr("City name")
+            placeholderText: "City name"
             text: Config.options.bar.weather.city
             wrapMode: TextEdit.Wrap
             onTextChanged: {
@@ -272,7 +272,7 @@ ContentPage {
 
         ConfigSpinBox {
             icon: "av_timer"
-            text: Translation.tr("Polling interval (m)")
+            text: "Polling interval (m)"
             value: Config.options.bar.weather.fetchInterval
             from: 5
             to: 50

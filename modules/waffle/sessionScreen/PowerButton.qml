@@ -44,13 +44,13 @@ WSessionScreenTextButton {
 
         Action {
             icon.name: "power"
-            text: Translation.tr("Shut down")
+            text: "Shut down"
             onTriggered: Session.poweroff()
         }
 
         Action {
             icon.name: "arrow-counterclockwise"
-            text: Translation.tr("Restart")
+            text: "Restart"
             onTriggered: Session.reboot()
         }
 

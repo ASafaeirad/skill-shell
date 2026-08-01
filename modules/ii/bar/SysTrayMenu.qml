@@ -171,7 +171,7 @@ PopupWindow {
                     }
                     StyledText {
                         Layout.fillWidth: true
-                        text: Translation.tr("Back")
+                        text: "Back"
                     }
                 }
             }
@@ -206,7 +206,7 @@ PopupWindow {
 
                 StyledText {
                     Layout.fillWidth: true
-                    text: TrayService.isPinned(root.trayItemId) ? Translation.tr("Unpin") : Translation.tr("Pin")
+                    text: TrayService.isPinned(root.trayItemId) ? "Unpin" : "Pin"
                 }
             }
         }

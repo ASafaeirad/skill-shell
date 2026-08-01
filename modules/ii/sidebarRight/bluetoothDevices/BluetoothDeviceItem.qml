@@ -47,7 +47,7 @@ DialogListItem {
                     Layout.fillWidth: true
                     color: Appearance.colors.colOnSurfaceVariant
                     elide: Text.ElideRight
-                    text: root.device?.name || Translation.tr("Unknown device")
+                    text: root.device?.name || "Unknown device"
                     textFormat: Text.PlainText
                 }
                 StyledText {
@@ -58,7 +58,7 @@ DialogListItem {
                     elide: Text.ElideRight
                     text: {
                         if (!root.device?.paired) return "";
-                        let statusText = root.device?.connected ? Translation.tr("Connected") : Translation.tr("Paired");
+                        let statusText = root.device?.connected ? "Connected" : "Paired";
                         if (!root.device?.batteryAvailable) return statusText;
                         statusText += ` • ${Math.round(root.device?.battery * 100)}%`;
                         return statusText;
@@ -90,7 +90,7 @@ DialogListItem {
                 colRipple: p ? Appearance.colors.colErrorActive : Appearance.colors.colLayer3Hover
                 colText: p ? Appearance.colors.colOnError : Appearance.colors.colPrimary
 
-                buttonText: p ? Translation.tr("Forget") : Translation.tr("Always connect")
+                buttonText: p ? "Forget" : "Always connect"
                 onClicked: {
                     if (root.device?.paired) {
                         root.device?.forget();
@@ -100,7 +100,7 @@ DialogListItem {
                 }
             }
             ActionButton {
-                buttonText: root.device?.connected ? Translation.tr("Disconnect") : Translation.tr("Connect")
+                buttonText: root.device?.connected ? "Disconnect" : "Connect"
 
                 onClicked: {
                     if (root.device?.connected) {

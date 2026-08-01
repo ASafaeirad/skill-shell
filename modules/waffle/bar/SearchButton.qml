@@ -19,7 +19,7 @@ AppButton {
     BarToolTip {
         id: tooltip
 
-        text: Translation.tr("Search")
+        text: "Search"
         extraVisibleCondition: root.shouldShowTooltip
     }
 

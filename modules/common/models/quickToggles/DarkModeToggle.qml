@@ -7,8 +7,8 @@ import qs.modules.common.widgets
 import qs.services
 
 QuickToggleModel {
-    name: Translation.tr("Dark Mode")
-    statusText: Appearance.m3colors.darkmode ? Translation.tr("Dark") : Translation.tr("Light")
+    name: "Dark Mode"
+    statusText: Appearance.m3colors.darkmode ? "Dark" : "Light"
     toggled: Appearance.m3colors.darkmode
     icon: "contrast"
     mainAction: () => {
@@ -17,5 +17,5 @@ QuickToggleModel {
         else
             Quickshell.execDetached([Directories.wallpaperSwitchScriptPath, "--mode", "dark", "--noswitch"]);
     }
-    tooltipText: Translation.tr("Dark Mode")
+    tooltipText: "Dark Mode"
 }

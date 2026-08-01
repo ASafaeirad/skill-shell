@@ -10,5 +10,5 @@ import qs.services
 ActionCenterToggle {
     id: root
 
-    name: Network.ethernet ? Translation.tr("Network") : Network.networkName
+    name: Network.ethernet ? "Network" : Network.networkName
 }

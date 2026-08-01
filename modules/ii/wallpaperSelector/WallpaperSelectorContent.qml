@@ -155,7 +155,7 @@ MouseArea {
                             pixelSize: Appearance.font.pixelSize.normal
                             weight: Font.Medium
                         }
-                        text: Translation.tr("Pick a wallpaper")
+                        text: "Pick a wallpaper"
                     }
                     ListView {
                         // Quick dirs
@@ -366,7 +366,7 @@ MouseArea {
                                 }
                                 text: "open_in_new"
                                 StyledToolTip {
-                                    text: Translation.tr("Use the system file picker instead\nRight-click to make this the default behavior")
+                                    text: "Use the system file picker instead\nRight-click to make this the default behavior"
                                 }
                             }
 
@@ -377,7 +377,7 @@ MouseArea {
                                 }
                                 text: "ifl"
                                 StyledToolTip {
-                                    text: Translation.tr("Pick random from this folder")
+                                    text: "Pick random from this folder"
                                 }
                             }
 
@@ -386,13 +386,13 @@ MouseArea {
                                 onClicked: root.useDarkMode = !root.useDarkMode
                                 text: root.useDarkMode ? "dark_mode" : "light_mode"
                                 StyledToolTip {
-                                    text: Translation.tr("Click to toggle light/dark mode\n(applied when wallpaper is chosen)")
+                                    text: "Click to toggle light/dark mode\n(applied when wallpaper is chosen)"
                                 }
                             }
 
                             ToolbarTextField {
                                 id: filterField
-                                placeholderText: focus ? Translation.tr("Search wallpapers") : Translation.tr("Hit \"/\" to search")
+                                placeholderText: focus ? "Search wallpapers" : "Hit \"/\" to search"
 
                                 // Style
                                 clip: true
@@ -429,7 +429,7 @@ MouseArea {
                             iconText: "close"
                             onClicked: GlobalStates.wallpaperSelectorOpen = false;
                             StyledToolTip {
-                                text: Translation.tr("Cancel wallpaper selection")
+                                text: "Cancel wallpaper selection"
                             }
                         }
                     }

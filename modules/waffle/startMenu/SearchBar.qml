@@ -83,7 +83,7 @@ FooterRectangle {
                         verticalCenter: parent.verticalCenter
                     }
                     color: Looks.colors.accentUnfocused
-                    text: Translation.tr("Search for apps") // should also have "", settings, and documents" but we don't have those
+                    text: "Search for apps" // should also have "", settings, and documents" but we don't have those
                     visible: searchInput.text.length === 0
                     font.pixelSize: Looks.font.pixelSize.large
                 }

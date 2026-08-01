@@ -40,7 +40,7 @@ ExpandableChoiceButton {
                 Layout.fillWidth: true
                 elide: Text.ElideRight
                 font.pixelSize: Looks.font.pixelSize.large
-                text: root.device?.name || Translation.tr("Unknown device")
+                text: root.device?.name || "Unknown device"
                 textFormat: Text.PlainText
             }
             WText { // Status
@@ -55,8 +55,8 @@ ExpandableChoiceButton {
                 }
                 text: {
                     if (!root.device?.paired)
-                        return Translation.tr("Not connected");
-                    let statusText = root.device?.connected ? Translation.tr("Connected") : Translation.tr("Paired");
+                        return "Not connected";
+                    let statusText = root.device?.connected ? "Connected" : "Paired";
                     if (!root.device?.batteryAvailable)
                         return statusText;
                     statusText += ` • ${Math.round(root.device?.battery * 100)}%`;
@@ -74,7 +74,7 @@ ExpandableChoiceButton {
                 colBackgroundActive: Looks.colors.bg2Active
                 implicitHeight: 30
                 implicitWidth: 148
-                text: root.device?.connected ? Translation.tr("Disconnect") : Translation.tr("Connect")
+                text: root.device?.connected ? "Disconnect" : "Connect"
 
                 onClicked: {
                     if (root.device?.connected) {

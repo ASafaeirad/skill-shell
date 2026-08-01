@@ -30,17 +30,17 @@ Add to the matching page in `modules/settings/` (`BarConfig.qml`, `GeneralConfig
 ```qml
 ContentSection {
     icon: "tune"                        // Material Symbols name
-    title: Translation.tr("My feature")
+    title: "My feature"
     ConfigSwitch {
         buttonIcon: "toggle_on"
-        text: Translation.tr("Enable my feature")
+        text: "Enable my feature"
         checked: Config.options.myFeature.enable
         onCheckedChanged: Config.options.myFeature.enable = checked;
     }
 }
 ```
 
-Other controls in `modules/common/widgets/`: `ConfigSpinBox`, `ConfigSlider`, `ConfigSelectionArray` (multi-choice; see "Bar position" in BarConfig.qml), `ConfigRow`/`ContentSubsection` for layout. All labels via `Translation.tr()`.
+Other controls in `modules/common/widgets/`: `ConfigSpinBox`, `ConfigSlider`, `ConfigSelectionArray` (multi-choice; see "Bar position" in BarConfig.qml), `ConfigRow`/`ContentSubsection` for layout. Write labels directly in English.
 
 ## 4. Verify
 

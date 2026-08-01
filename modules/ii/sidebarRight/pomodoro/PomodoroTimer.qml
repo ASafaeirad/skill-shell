@@ -46,7 +46,7 @@ Item {
 
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
-                    text: TimerService.pomodoroLongBreak ? Translation.tr("Long break") : TimerService.pomodoroBreak ? Translation.tr("Break") : Translation.tr("Focus")
+                    text: TimerService.pomodoroLongBreak ? "Long break" : TimerService.pomodoroBreak ? "Break" : "Focus"
                     font.pixelSize: Appearance.font.pixelSize.normal
                     color: Appearance.colors.colSubtext
                 }
@@ -92,7 +92,7 @@ Item {
                 contentItem: StyledText {
                     anchors.centerIn: parent
                     horizontalAlignment: Text.AlignHCenter
-                    text: TimerService.pomodoroRunning ? Translation.tr("Pause") : (TimerService.pomodoroSecondsLeft === TimerService.focusTime) ? Translation.tr("Start") : Translation.tr("Resume")
+                    text: TimerService.pomodoroRunning ? "Pause" : (TimerService.pomodoroSecondsLeft === TimerService.focusTime) ? "Start" : "Resume"
                     color: TimerService.pomodoroRunning ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnPrimary
                 }
 
@@ -111,7 +111,7 @@ Item {
                 contentItem: StyledText {
                     anchors.centerIn: parent
                     horizontalAlignment: Text.AlignHCenter
-                    text: Translation.tr("Reset")
+                    text: "Reset"
                     color: Appearance.colors.colOnErrorContainer
                 }
 

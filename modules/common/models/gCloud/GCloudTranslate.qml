@@ -24,7 +24,7 @@ GCloudApi {
         if (!preparationReady) return;
         root.state = GCloudApi.State.Processing;
 
-        const targetLang = Translation.languageCode;
+        const targetLang = Qt.locale().name;
         const payload = {
             "targetLanguageCode": targetLang,
             "contents": root.pendingStrings,

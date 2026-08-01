@@ -35,7 +35,7 @@ FooterRectangle {
             implicitWidth: 81
             horizontalAlignment: Text.AlignHCenter
             color: Looks.colors.subfg
-            text: Translation.tr("%1 mins").arg(`<font color="${Looks.colors.fg.toString()}">${TimerService.focusTime / 60}</font>`)
+            text: "%1 mins".arg(`<font color="${Looks.colors.fg.toString()}">${TimerService.focusTime / 60}</font>`)
         }
 
         SmallBorderedIconButton {
@@ -47,7 +47,7 @@ FooterRectangle {
         WText {
             visible: TimerService.pomodoroRunning
             font.pixelSize: Looks.font.pixelSize.large
-            text: Translation.tr("Focusing")
+            text: "Focusing"
         }
 
         Item {
@@ -56,7 +56,7 @@ FooterRectangle {
 
         SmallBorderedIconAndTextButton {
             iconName: TimerService.pomodoroRunning ? "stop" : "play"
-            text: TimerService.pomodoroRunning ? Translation.tr("End session") : Translation.tr("Focus")
+            text: TimerService.pomodoroRunning ? "End session" : "Focus"
 
             onClicked: {
                 if (TimerService.pomodoroRunning) {

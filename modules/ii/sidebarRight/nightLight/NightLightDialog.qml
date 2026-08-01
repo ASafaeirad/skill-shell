@@ -18,11 +18,11 @@ WindowDialog {
     backgroundHeight: 700
 
     WindowDialogTitle {
-        text: Translation.tr("Eye protection")
+        text: "Eye protection"
     }
 
     WindowDialogSectionHeader {
-        text: Translation.tr("Night Light")
+        text: "Night Light"
     }
 
     WindowDialogSeparator {
@@ -45,11 +45,11 @@ WindowDialog {
             buttonIcon: "check"
             text: Hyprsunset.temperatureActive
                 ? (Config.options.light.night.automatic
-                    ? `${Translation.tr("Enabled now")} · ${Translation.tr("Automatic")}`
-                    : Translation.tr("Enabled now"))
+                    ? `${"Enabled now"} · ${"Automatic"}`
+                    : "Enabled now")
                 : (Config.options.light.night.automatic
-                    ? `${Translation.tr("Disabled now")} · ${Translation.tr("Automatic")}`
-                    : Translation.tr("Disabled"))
+                    ? `${"Disabled now"} · ${"Automatic"}`
+                    : "Disabled")
             checked: Hyprsunset.temperatureActive
             onCheckedChanged: {
                 Hyprsunset.toggleTemperature(checked)
@@ -63,7 +63,7 @@ WindowDialog {
             }
             iconSize: Appearance.font.pixelSize.larger
             buttonIcon: "night_sight_auto"
-            text: Translation.tr("Automatic")
+            text: "Automatic"
             checked: Config.options.light.night.automatic
             onCheckedChanged: {
                 Config.options.light.night.automatic = checked;
@@ -77,7 +77,7 @@ WindowDialog {
                 leftMargin: 4
                 rightMargin: 4
             }
-            text: Translation.tr("Intensity")
+            text: "Intensity"
             from: 6500
             to: 1200
             stopIndicatorValues: [5000, to]
@@ -88,7 +88,7 @@ WindowDialog {
     }
 
     WindowDialogSectionHeader {
-        text: Translation.tr("Anti-flashbang (experimental)")
+        text: "Anti-flashbang (experimental)"
     }
 
     WindowDialogSeparator {
@@ -109,14 +109,14 @@ WindowDialog {
             }
             iconSize: Appearance.font.pixelSize.larger
             buttonIcon: "filter"
-            text: Translation.tr("Content adjustment")
+            text: "Content adjustment"
             checked: HyprlandAntiFlashbangShader.enabled
             onCheckedChanged: {
                 if (checked) HyprlandAntiFlashbangShader.enable()
                 else HyprlandAntiFlashbangShader.disable()
             }
             StyledToolTip {
-                text: Translation.tr("<b>Dims screen content</b> as needed.<br><br>Pros: Immediately responsive<br>Cons: Expensive and can hurt color accuracy<br><br><i>Uses a Hyprland screen shader</i>")
+                text: "<b>Dims screen content</b> as needed.<br><br>Pros: Immediately responsive<br>Cons: Expensive and can hurt color accuracy<br><br><i>Uses a Hyprland screen shader</i>"
             }
         }
 
@@ -127,19 +127,19 @@ WindowDialog {
             }
             iconSize: Appearance.font.pixelSize.larger
             buttonIcon: "light_mode"
-            text: Translation.tr("Brightness adjustment")
+            text: "Brightness adjustment"
             checked: Config.options.light.antiFlashbang.enable
             onCheckedChanged: {
                 Config.options.light.antiFlashbang.enable = checked;
             }
             StyledToolTip {
-                text: Translation.tr("Adapts the <b>display (physical screen) brightness</b><br><br>Pros: Less expensive, retains colors<br>Cons: Not immediately responsive<br><br><i>Adjusts display brightness after each Hyprland IPC event</i>")
+                text: "Adapts the <b>display (physical screen) brightness</b><br><br>Pros: Less expensive, retains colors<br>Cons: Not immediately responsive<br><br><i>Adjusts display brightness after each Hyprland IPC event</i>"
             }
         }
     }
 
     WindowDialogSectionHeader {
-        text: Translation.tr("Brightness")
+        text: "Brightness"
     }
 
     WindowDialogSeparator {
@@ -166,7 +166,7 @@ WindowDialog {
     }
 
     WindowDialogSectionHeader {
-        text: Translation.tr("Gamma")
+        text: "Gamma"
     }
 
     WindowDialogSeparator {
@@ -203,7 +203,7 @@ WindowDialog {
         }
 
         DialogButton {
-            buttonText: Translation.tr("Done")
+            buttonText: "Done"
             onClicked: root.dismiss()
         }
     }

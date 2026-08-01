@@ -60,7 +60,7 @@ WMouseAreaButton {
             Layout.fillHeight: false
             horizontalAlignment: Text.AlignLeft
             elide: Text.ElideRight
-            text: root.newWorkspace ? Translation.tr("New desktop") : Translation.tr("Desktop %1").arg(root.workspace)
+            text: root.newWorkspace ? "New desktop" : "Desktop %1".arg(root.workspace)
         }
 
         Rectangle {

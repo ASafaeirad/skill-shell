@@ -24,7 +24,7 @@ AppButton {
     BarToolTip {
         id: tooltip
 
-        text: Translation.tr("Start")
+        text: "Start"
         extraVisibleCondition: root.shouldShowTooltip
     }
 
@@ -32,27 +32,27 @@ AppButton {
         id: contextMenu
 
         model: [{
-            "text": Translation.tr("Terminal"),
+            "text": "Terminal",
             "action": () => {
                 Quickshell.execDetached(["bash", "-c", Config.options.apps.terminal]);
             }
         }, {
-            "text": Translation.tr("Task Manager"),
+            "text": "Task Manager",
             "action": () => {
                 Quickshell.execDetached(["bash", "-c", Config.options.apps.taskManager]);
             }
         }, {
-            "text": Translation.tr("Settings"),
+            "text": "Settings",
             "action": () => {
                 Quickshell.execDetached(["qs", "-p", Quickshell.shellPath("settings.qml")]);
             }
         }, {
-            "text": Translation.tr("File Explorer"),
+            "text": "File Explorer",
             "action": () => {
                 Qt.openUrlExternally(Directories.home);
             }
         }, {
-            "text": Translation.tr("Search"),
+            "text": "Search",
             "action": () => {
                 Quickshell.execDetached(["qs", "-p", Quickshell.shellPath(""), "ipc", "call", "overview", "toggle"]);
             }

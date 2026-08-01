@@ -34,7 +34,7 @@ Item {
 }
 ```
 
-Rules: theme tokens only (`Appearance.colors/font/sizes/rounding/animation.*`), `StyledText`/`MaterialSymbol` from common widgets, `Translation.tr()` for visible strings. Data belongs in a `services/` singleton (check the ~45 existing ones — Battery, Network, ResourceUsage, DateTime... — before writing a new one). Hover popups: `MouseArea { id: mouseArea; ... MyPopup { hoverTarget: mouseArea } }` like ClockWidget.
+Rules: theme tokens only (`Appearance.colors/font/sizes/rounding/animation.*`), `StyledText`/`MaterialSymbol` from common widgets, and direct English text for visible strings. Data belongs in a `services/` singleton (check the ~45 existing ones — Battery, Network, ResourceUsage, DateTime... — before writing a new one). Hover popups: `MouseArea { id: mouseArea; ... MyPopup { hoverTarget: mouseArea } }` like ClockWidget.
 
 ## 2. Wire it into the bar
 

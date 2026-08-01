@@ -33,7 +33,7 @@ BodyRectangle {
     }
 
     component PinnedApps: PageSection {
-        title: Translation.tr("Pinned")
+        title: "Pinned"
 
         BigAppGrid {
             Layout.fillWidth: true
@@ -43,7 +43,7 @@ BodyRectangle {
     }
 
     component AllApps: PageSection {
-        title: Translation.tr("All")
+        title: "All"
         // TODO: Do we wanna also implement list view and grid view?
         //       (instead of only category view)
         AllAppsGrid {

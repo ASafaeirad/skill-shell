@@ -110,7 +110,7 @@ Scope {
                             pixelSize: Appearance.font.pixelSize.title
                             variableAxes: Appearance.font.variableAxes.title
                         }
-                        text: Translation.tr("Session")
+                        text: "Session"
                     }
 
                     StyledText {
@@ -118,7 +118,7 @@ Scope {
                         Layout.alignment: Qt.AlignHCenter
                         horizontalAlignment: Text.AlignHCenter
                         font.pixelSize: Appearance.font.pixelSize.normal
-                        text: Translation.tr("Arrow keys or S/R/E/L/H to navigate, Enter to select\nEsc or click anywhere to cancel")
+                        text: "Arrow keys or S/R/E/L/H to navigate, Enter to select\nEsc or click anywhere to cancel"
                     }
                 }
 
@@ -131,7 +131,7 @@ Scope {
                         id: sessionLock
                         focus: sessionRoot.visible
                         buttonIcon: "lock"
-                        buttonText: Translation.tr("Lock")
+                        buttonText: "Lock"
                         onClicked: {
                             Session.lock();
                             sessionRoot.hide();
@@ -146,7 +146,7 @@ Scope {
                     SessionActionButton {
                         id: sessionSleep
                         buttonIcon: "dark_mode"
-                        buttonText: Translation.tr("Sleep")
+                        buttonText: "Sleep"
                         onClicked: {
                             Session.suspend();
                             sessionRoot.hide();
@@ -162,7 +162,7 @@ Scope {
                     SessionActionButton {
                         id: sessionLogout
                         buttonIcon: "logout"
-                        buttonText: Translation.tr("Logout")
+                        buttonText: "Logout"
                         onClicked: {
                             Session.logout();
                             sessionRoot.hide();
@@ -179,7 +179,7 @@ Scope {
                     SessionActionButton {
                         id: sessionHibernate
                         buttonIcon: "downloading"
-                        buttonText: Translation.tr("Hibernate")
+                        buttonText: "Hibernate"
                         onClicked: {
                             Session.hibernate();
                             sessionRoot.hide();
@@ -194,7 +194,7 @@ Scope {
                     SessionActionButton {
                         id: sessionShutdown
                         buttonIcon: "power_settings_new"
-                        buttonText: Translation.tr("Shutdown")
+                        buttonText: "Shutdown"
                         onClicked: {
                             Session.poweroff();
                             sessionRoot.hide();
@@ -210,7 +210,7 @@ Scope {
                     SessionActionButton {
                         id: sessionReboot
                         buttonIcon: "restart_alt"
-                        buttonText: Translation.tr("Reboot")
+                        buttonText: "Reboot"
                         onClicked: {
                             Session.reboot();
                             sessionRoot.hide();
@@ -243,7 +243,7 @@ Scope {
                     active: SessionWarnings.downloadRunning
                     visible: active
                     sourceComponent: DescriptionLabel {
-                        text: Translation.tr("There might be a download in progress. Check your Downloads folder.")
+                        text: "There might be a download in progress. Check your Downloads folder."
                         textColor: Appearance.m3colors.m3onErrorContainer
                         color: Appearance.m3colors.m3errorContainer
                     }
@@ -254,7 +254,7 @@ Scope {
                     active: SessionWarnings.packageManagerRunning
                     visible: active
                     sourceComponent: DescriptionLabel {
-                        text: Translation.tr("Your package manager is running")
+                        text: "Your package manager is running"
                         textColor: Appearance.m3colors.m3onErrorContainer
                         color: Appearance.m3colors.m3errorContainer
                     }

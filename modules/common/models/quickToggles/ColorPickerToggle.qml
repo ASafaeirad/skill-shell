@@ -7,7 +7,7 @@ import qs.modules.common.widgets
 import qs.services
 
 QuickToggleModel {
-    name: Translation.tr("Color picker")
+    name: "Color picker"
     hasStatusText: false
     toggled: false
     icon: "colorize"
@@ -15,7 +15,7 @@ QuickToggleModel {
         GlobalStates.sidebarRightOpen = false;
         delayedActionTimer.start();
     }
-    tooltipText: Translation.tr("Color picker")
+    tooltipText: "Color picker"
 
     Timer {
         id: delayedActionTimer

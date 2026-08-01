@@ -11,11 +11,11 @@ QuickToggleModel {
     property bool activeNow: Hyprsunset.temperatureActive
 
     name: auto
-        ? `${Translation.tr("Night Light")} · ${Translation.tr("Automatic")}`
-        : Translation.tr("Night Light")
+        ? `${"Night Light"} · ${"Automatic"}`
+        : "Night Light"
     statusText: activeNow
-        ? Translation.tr("Enabled now")
-        : (auto ? Translation.tr("Disabled now") : Translation.tr("Disabled"))
+        ? "Enabled now"
+        : (auto ? "Disabled now" : "Disabled")
     // Keep the control visibly enabled when automatic mode is configured,
     // while statusText reports whether the temperature filter is active now.
     toggled: auto || activeNow
@@ -27,5 +27,5 @@ QuickToggleModel {
     Component.onCompleted: {
         Hyprsunset.fetchState();
     }
-    tooltipText: Translation.tr("Night Light | Right-click to configure")
+    tooltipText: "Night Light | Right-click to configure"
 }

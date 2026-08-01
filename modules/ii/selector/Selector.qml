@@ -18,7 +18,7 @@ Scope {
         "Alpha", "Bravo", "Charlie", "Delta", "Echo",
         "Foxtrot", "Golf", "Hotel", "India", "Juliet"
     ]
-    property string prompt: Translation.tr("Select an item")
+    property string prompt: "Select an item"
 
     // Emitted when the user confirms a choice. `item` is the original entry
     // from `items` (string or object); `index` is its position.

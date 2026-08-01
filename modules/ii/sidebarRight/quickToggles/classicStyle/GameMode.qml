@@ -28,7 +28,7 @@ QuickToggleButton {
     }
 
     StyledToolTip {
-        text: Translation.tr("Game mode")
+        text: "Game mode"
     }
 
 }

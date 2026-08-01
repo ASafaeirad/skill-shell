@@ -60,14 +60,14 @@ ExpandableChoiceButton {
                 Layout.fillWidth: true
                 elide: Text.ElideRight
                 font.pixelSize: Looks.font.pixelSize.large
-                text: root.wifiNetwork?.ssid ?? Translation.tr("Unknown")
+                text: root.wifiNetwork?.ssid ?? "Unknown"
                 textFormat: Text.PlainText
             }
             WText { // Status
                 id: statusText
                 Layout.fillWidth: true
                 elide: Text.ElideRight
-                text: root.wifiNetwork?.active ? Translation.tr("Connected") : root.wifiNetwork?.isSecure ? Translation.tr("Secured") : Translation.tr("Not secured")
+                text: root.wifiNetwork?.active ? "Connected" : root.wifiNetwork?.isSecure ? "Secured" : "Not secured"
                 font.pixelSize: Looks.font.pixelSize.large
                 color: Looks.colors.subfg
                 visible: root.wifiNetwork?.active || root.expanded
@@ -86,7 +86,7 @@ ExpandableChoiceButton {
                 colBackgroundActive: Looks.colors.bg2Active
                 implicitHeight: 30
                 implicitWidth: 148
-                text: root.wifiNetwork?.active ? Translation.tr("Disconnect") : Translation.tr("Connect")
+                text: root.wifiNetwork?.active ? "Disconnect" : "Connect"
 
                 onClicked: {
                     if (root.wifiNetwork?.active) {

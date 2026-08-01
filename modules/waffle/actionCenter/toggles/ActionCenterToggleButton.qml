@@ -19,7 +19,7 @@ ColumnLayout {
 
     required property QuickToggleModel toggleModel
     property string name: toggleModel?.name ?? ""
-    property string statusText: (toggleModel?.hasStatusText) ? (toggleModel?.statusText || (toggled ? Translation.tr("Active") : Translation.tr("Inactive"))) : ""
+    property string statusText: (toggleModel?.hasStatusText) ? (toggleModel?.statusText || (toggled ? "Active" : "Inactive")) : ""
     property string tooltipText: toggleModel?.tooltipText ?? ""
     required property string icon
     property bool available: toggleModel?.available ?? true

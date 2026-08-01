@@ -8,7 +8,7 @@ import qs.modules.common.widgets
 import qs.services
 
 QuickToggleModel {
-    name: Translation.tr("Power Profile")
+    name: "Power Profile"
     toggled: PowerProfiles.profile !== PowerProfile.Balanced
     icon: {
         switch (PowerProfiles.profile) {
@@ -47,5 +47,5 @@ QuickToggleModel {
             PowerProfiles.profile = PowerProfiles.profile == PowerProfile.Balanced ? PowerProfile.PowerSaver : PowerProfile.Balanced;
         }
     }
-    tooltipText: Translation.tr("Click to cycle through power profiles")
+    tooltipText: "Click to cycle through power profiles"
 }

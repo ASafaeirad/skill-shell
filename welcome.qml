@@ -25,10 +25,10 @@ ApplicationWindow {
     property bool showNextTime: false
     visible: true
     onClosing: {
-        Quickshell.execDetached(["notify-send", Translation.tr("Welcome app"), Translation.tr("Enjoy! You can reopen the welcome app any time with <tt>Super+Shift+Alt+/</tt>. To open the settings app, hit <tt>Super+I</tt>"), "-a", "Shell"]);
+        Quickshell.execDetached(["notify-send", "Welcome app", "Enjoy! You can reopen the welcome app any time with <tt>Super+Shift+Alt+/</tt>. To open the settings app, hit <tt>Super+I</tt>", "-a", "Shell"]);
         Qt.quit();
     }
-    title: Translation.tr("illogical-impulse Welcome")
+    title: "illogical-impulse Welcome"
 
     Component.onCompleted: {
         MaterialThemeLoader.reapplyTheme();
@@ -53,12 +53,6 @@ ApplicationWindow {
         }
     }
 
-    Process {
-        id: translationProc
-        property string locale: ""
-        command: [Directories.aiTranslationScriptPath, translationProc.locale]
-    }
-
     ColumnLayout {
         anchors {
             fill: parent
@@ -79,7 +73,7 @@ ApplicationWindow {
                     leftMargin: 12
                 }
                 color: Appearance.colors.colOnLayer0
-                text: Translation.tr("Hi there! First things first...")
+                text: "Hi there! First things first..."
                 font {
                     family: Appearance.font.family.title
                     pixelSize: Appearance.font.pixelSize.title
@@ -92,7 +86,7 @@ ApplicationWindow {
                 anchors.right: parent.right
                 StyledText {
                     font.pixelSize: Appearance.font.pixelSize.smaller
-                    text: Translation.tr("Show next time")
+                    text: "Show next time"
                 }
                 StyledSwitch {
                     id: showNextTimeSwitch
@@ -120,7 +114,7 @@ ApplicationWindow {
                     }
 
                     StyledToolTip {
-                        text: Translation.tr("Tip: Close a window with Super+Q")
+                        text: "Tip: Close a window with Super+Q"
                     }
                 }
             }
@@ -140,70 +134,12 @@ ApplicationWindow {
                 anchors.fill: parent
 
                 ContentSection {
-                    Layout.fillWidth: true
-                    icon: "language"
-                    title: Translation.tr("Language")
-
-                    ContentSubsection {
-                        title: Translation.tr("Select language")
-                        ConfigSelectionArray {
-                            id: languageSelector
-                            currentValue: Config.options.language.ui
-                            onSelected: newValue => {
-                                Config.options.language.ui = newValue;
-                            }
-                            options: [
-                                {
-                                    displayName: Translation.tr("Auto (System)"),
-                                    value: "auto"
-                                },
-                                ...Translation.allAvailableLanguages.map(lang => {
-                                    return {
-                                        displayName: lang,
-                                        value: lang
-                                    };
-                                })]
-                        }
-                    }
-
-                    NoticeBox {
-                        Layout.fillWidth: true
-                        text: Translation.tr("Language not listed or incomplete translations?\nYou can choose to generate translations for it with Gemini.\n1. Open the left sidebar with Super+A, set model to Gemini (if it isn't already)\n2. Type /key, hit Enter and follow the instructions\n3. Type /key YOUR_API_KEY\n4. Type the locale of your language below and press Generate")
-                    }
-
-                    ContentSubsection {
-                        title: Translation.tr("Generate translation with Gemini")
-                        
-                        ConfigRow {
-                            MaterialTextArea {
-                                id: localeInput
-                                Layout.fillWidth: true
-                                placeholderText: Translation.tr("Locale code, e.g. fr_FR, de_DE, zh_CN...")
-                                text: Config.options.language.ui === "auto" ? Qt.locale().name : Config.options.language.ui
-                            }
-                            RippleButtonWithIcon {
-                                id: generateTranslationBtn
-                                Layout.fillHeight: true
-                                nerdIcon: ""
-                                enabled: !translationProc.running || (translationProc.locale !== localeInput.text.trim())
-                                mainText: enabled ? Translation.tr("Generate\nTypically takes 2 minutes") : Translation.tr("Generating...\nDon't close this window!")
-                                onClicked: {
-                                    translationProc.locale = localeInput.text.trim();
-                                    translationProc.running = false;
-                                    translationProc.running = true;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                ContentSection {
                     icon: "screenshot_monitor"
-                    title: Translation.tr("Bar")
+                    title: "Bar"
 
                     ConfigRow {
                         ContentSubsection {
-                            title: Translation.tr("Bar position")
+                            title: "Bar position"
                             ConfigSelectionArray {
                                 currentValue: (Config.options.bar.bottom ? 1 : 0) | (Config.options.bar.vertical ? 2 : 0)
                                 onSelected: newValue => {
@@ -212,22 +148,22 @@ ApplicationWindow {
                                 }
                                 options: [
                                     {
-                                        displayName: Translation.tr("Top"),
+                                        displayName: "Top",
                                         icon: "arrow_upward",
                                         value: 0 // bottom: false, vertical: false
                                     },
                                     {
-                                        displayName: Translation.tr("Left"),
+                                        displayName: "Left",
                                         icon: "arrow_back",
                                         value: 2 // bottom: false, vertical: true
                                     },
                                     {
-                                        displayName: Translation.tr("Bottom"),
+                                        displayName: "Bottom",
                                         icon: "arrow_downward",
                                         value: 1 // bottom: true, vertical: false
                                     },
                                     {
-                                        displayName: Translation.tr("Right"),
+                                        displayName: "Right",
                                         icon: "arrow_forward",
                                         value: 3 // bottom: true, vertical: true
                                     }
@@ -235,7 +171,7 @@ ApplicationWindow {
                             }
                         }
                         ContentSubsection {
-                            title: Translation.tr("Bar style")
+                            title: "Bar style"
 
                             ConfigSelectionArray {
                                 currentValue: Config.options.bar.cornerStyle
@@ -244,17 +180,17 @@ ApplicationWindow {
                                 }
                                 options: [
                                     {
-                                        displayName: Translation.tr("Hug"),
+                                        displayName: "Hug",
                                         icon: "line_curve",
                                         value: 0
                                     },
                                     {
-                                        displayName: Translation.tr("Float"),
+                                        displayName: "Float",
                                         icon: "page_header",
                                         value: 1
                                     },
                                     {
-                                        displayName: Translation.tr("Rect"),
+                                        displayName: "Rect",
                                         icon: "toolbar",
                                         value: 2
                                     }
@@ -266,7 +202,7 @@ ApplicationWindow {
 
                 ContentSection {
                     icon: "format_paint"
-                    title: Translation.tr("Style & wallpaper")
+                    title: "Style & wallpaper"
 
                     ButtonGroup {
                         Layout.alignment: Qt.AlignHCenter
@@ -286,19 +222,19 @@ ApplicationWindow {
                             Layout.alignment: Qt.AlignHCenter
                             buttonRadius: Appearance.rounding.small
                             materialIcon: "ifl"
-                            mainText: konachanWallProc.running ? Translation.tr("Be patient...") : Translation.tr("Random: Konachan")
+                            mainText: konachanWallProc.running ? "Be patient..." : "Random: Konachan"
                             onClicked: {
                                 console.log(konachanWallProc.command.join(" "));
                                 konachanWallProc.running = true;
                             }
                             StyledToolTip {
-                                text: Translation.tr("Random SFW Anime wallpaper from Konachan\nImage is saved to ~/Pictures/Wallpapers")
+                                text: "Random SFW Anime wallpaper from Konachan\nImage is saved to ~/Pictures/Wallpapers"
                             }
                         }
                         RippleButtonWithIcon {
                             materialIcon: "wallpaper"
                             StyledToolTip {
-                                text: Translation.tr("Pick wallpaper image on your system")
+                                text: "Pick wallpaper image on your system"
                             }
                             onClicked: {
                                 Quickshell.execDetached([`${Directories.wallpaperSwitchScriptPath}`]);
@@ -308,7 +244,7 @@ ApplicationWindow {
                                     spacing: 10
                                     StyledText {
                                         font.pixelSize: Appearance.font.pixelSize.small
-                                        text: Translation.tr("Choose file")
+                                        text: "Choose file"
                                         color: Appearance.colors.colOnSecondaryContainer
                                     }
                                     RowLayout {
@@ -334,13 +270,13 @@ ApplicationWindow {
 
                     NoticeBox {
                         Layout.fillWidth: true
-                        text: Translation.tr("Change any time later with /dark, /light, /wallpaper in the launcher\nIf the shell's colors aren't changing:\n    1. Open the right sidebar with Super+N\n    2. Click \"Reload Hyprland & Quickshell\" in the top-right corner")
+                        text: "Change any time later with /dark, /light, /wallpaper in the launcher\nIf the shell's colors aren't changing:\n    1. Open the right sidebar with Super+N\n    2. Click \"Reload Hyprland & Quickshell\" in the top-right corner"
                     }
                 }
 
                 ContentSection {
                     icon: "rule"
-                    title: Translation.tr("Policies")
+                    title: "Policies"
 
                     ConfigRow {
                         Layout.fillWidth: true
@@ -355,17 +291,17 @@ ApplicationWindow {
                                 }
                                 options: [
                                     {
-                                        displayName: Translation.tr("No"),
+                                        displayName: "No",
                                         icon: "close",
                                         value: 0
                                     },
                                     {
-                                        displayName: Translation.tr("Yes"),
+                                        displayName: "Yes",
                                         icon: "check",
                                         value: 1
                                     },
                                     {
-                                        displayName: Translation.tr("Closet"),
+                                        displayName: "Closet",
                                         icon: "ev_shadow",
                                         value: 2
                                     }
@@ -378,7 +314,7 @@ ApplicationWindow {
 
                 ContentSection {
                     icon: "info"
-                    title: Translation.tr("Info")
+                    title: "Info"
 
                     Flow {
                         Layout.fillWidth: true
@@ -394,7 +330,7 @@ ApplicationWindow {
                                     spacing: 10
                                     StyledText {
                                         font.pixelSize: Appearance.font.pixelSize.small
-                                        text: Translation.tr("Keybinds")
+                                        text: "Keybinds"
                                         color: Appearance.colors.colOnSecondaryContainer
                                     }
                                     RowLayout {
@@ -416,14 +352,14 @@ ApplicationWindow {
 
                         RippleButtonWithIcon {
                             materialIcon: "help"
-                            mainText: Translation.tr("Usage")
+                            mainText: "Usage"
                             onClicked: {
                                 Qt.openUrlExternally("https://end-4.github.io/dots-hyprland-wiki/en/ii-qs/02usage/");
                             }
                         }
                         RippleButtonWithIcon {
                             materialIcon: "construction"
-                            mainText: Translation.tr("Configuration")
+                            mainText: "Configuration"
                             onClicked: {
                                 Qt.openUrlExternally("https://end-4.github.io/dots-hyprland-wiki/en/ii-qs/03config/");
                             }
@@ -433,7 +369,7 @@ ApplicationWindow {
 
                 ContentSection {
                     icon: "monitoring"
-                    title: Translation.tr("Useless buttons")
+                    title: "Useless buttons"
 
                     Flow {
                         Layout.fillWidth: true
@@ -441,7 +377,7 @@ ApplicationWindow {
 
                         RippleButtonWithIcon {
                             nerdIcon: "󰊤"
-                            mainText: Translation.tr("GitHub")
+                            mainText: "GitHub"
                             onClicked: {
                                 Qt.openUrlExternally("https://github.com/end-4/dots-hyprland");
                             }

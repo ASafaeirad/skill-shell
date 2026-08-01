@@ -5,9 +5,9 @@ import qs.modules.common.widgets
 import qs.services
 
 QuickToggleModel {
-    name: Translation.tr("Internet")
+    name: "Internet"
     statusText: Network.networkName
-    tooltipText: Translation.tr("%1 | Right-click to configure").arg(Network.networkName)
+    tooltipText: "%1 | Right-click to configure".arg(Network.networkName)
     icon: Network.materialSymbol
     toggled: Network.wifiStatus !== "disabled"
     mainAction: () => {

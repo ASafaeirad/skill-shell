@@ -24,7 +24,7 @@ Item {
             id: lockButton
 
             focus: true
-            text: Translation.tr("Lock")
+            text: "Lock"
             onClicked: {
                 GlobalStates.sessionOpen = false;
                 Session.lock();
@@ -37,7 +37,7 @@ Item {
             id: signOutButton
 
             focus: true
-            text: Translation.tr("Sign out")
+            text: "Sign out"
             onClicked: {
                 GlobalStates.sessionOpen = false;
                 Session.logout();
@@ -50,7 +50,7 @@ Item {
             id: changePasswordButton
 
             focus: true
-            text: Translation.tr("Change password")
+            text: "Change password"
             onClicked: {
                 GlobalStates.sessionOpen = false;
                 Session.changePassword();
@@ -63,7 +63,7 @@ Item {
             id: taskManagerButton
 
             focus: true
-            text: Translation.tr("Task Manager")
+            text: "Task Manager"
             onClicked: {
                 GlobalStates.sessionOpen = false;
                 Session.launchTaskManager();
@@ -142,7 +142,7 @@ Item {
         }
 
         contentItem: WText {
-            text: Translation.tr("Cancel")
+            text: "Cancel"
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: Looks.font.pixelSize.large
             color: root.colForeground

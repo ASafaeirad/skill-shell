@@ -492,7 +492,7 @@ PanelWindow {
                 opacity: root.draggedAway ? 0 : root.contentRegionOpacity
                 borderColor: root.imageBorderColor
                 fillColor: targeted ? root.imageFillColor : "transparent"
-                text: Translation.tr("Content region")
+                text: "Content region"
             }
         }
 
@@ -537,7 +537,7 @@ PanelWindow {
                 iconText: "close"
                 onClicked: root.dismiss();
                 StyledToolTip {
-                    text: Translation.tr("Close")
+                    text: "Close"
                 }
             }
         }

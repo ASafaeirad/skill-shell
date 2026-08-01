@@ -165,7 +165,7 @@ PanelWindow {
 
                 StyledToolTip {
                     z: 9999
-                    text: Translation.tr("Key input")
+                    text: "Key input"
                 }
             }
 
@@ -180,7 +180,7 @@ PanelWindow {
                     ToolbarTextField {
                         id: keyInput
                         implicitWidth: 400
-                        placeholderText: Translation.tr("Paste service account key JSON here")
+                        placeholderText: "Paste service account key JSON here"
                         inputMethodHints: Qt.ImhSensitiveData
                         onAccepted: submit()
 
@@ -207,7 +207,7 @@ PanelWindow {
 
                         StyledToolTip {
                             z: 9999
-                            text: Translation.tr("Confirm")
+                            text: "Confirm"
                         }
                     }
                 }
@@ -218,7 +218,7 @@ PanelWindow {
             iconText: "close"
             onClicked: root.dismiss()
             StyledToolTip {
-                text: Translation.tr("Close")
+                text: "Close"
             }
         }
     }

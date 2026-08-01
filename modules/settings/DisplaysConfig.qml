@@ -30,12 +30,12 @@ ContentPage {
 
     ContentSection {
         icon: "monitor"
-        title: Translation.tr("Displays")
+        title: "Displays"
 
         NoticeBox {
             Layout.fillWidth: true
             materialIcon: "bolt"
-            text: Translation.tr("Save all changes applies every display card and writes the layout to ~/.config/hypr/quickshell/monitors.lua. It is loaded automatically by your Hyprland Lua configuration.")
+            text: "Save all changes applies every display card and writes the layout to ~/.config/hypr/quickshell/monitors.lua. It is loaded automatically by your Hyprland Lua configuration."
         }
 
         RowLayout {
@@ -44,7 +44,7 @@ ContentPage {
 
             RippleButtonWithIcon {
                 materialIcon: "refresh"
-                mainText: Translation.tr("Refresh")
+                mainText: "Refresh"
                 onClicked: Monitors.refresh()
             }
 
@@ -92,7 +92,7 @@ ContentPage {
             }
             readonly property var refreshes: refreshesFor(card.selRes)
             readonly property var scaleOptions: [{
-                "label": Translation.tr("Auto"),
+                "label": "Auto",
                 "value": "auto"
             }, {
                 "label": "100%",
@@ -117,7 +117,7 @@ ContentPage {
                 "value": 3
             }]
             readonly property var transformOptions: [{
-                "label": Translation.tr("Normal"),
+                "label": "Normal",
                 "value": 0
             }, {
                 "label": "90°",
@@ -129,21 +129,21 @@ ContentPage {
                 "label": "270°",
                 "value": 3
             }, {
-                "label": Translation.tr("Flipped"),
+                "label": "Flipped",
                 "value": 4
             }, {
-                "label": Translation.tr("Flipped 90°"),
+                "label": "Flipped 90°",
                 "value": 5
             }, {
-                "label": Translation.tr("Flipped 180°"),
+                "label": "Flipped 180°",
                 "value": 6
             }, {
-                "label": Translation.tr("Flipped 270°"),
+                "label": "Flipped 270°",
                 "value": 7
             }]
             readonly property var mirrorOptions: {
                 let opts = [{
-                    "label": Translation.tr("None"),
+                    "label": "None",
                     "value": "none"
                 }];
                 for (const m of Monitors.list) {
@@ -252,7 +252,7 @@ ContentPage {
                     opacity: enabled ? 1 : 0.4
 
                     ContentSubsection {
-                        title: Translation.tr("Resolution")
+                        title: "Resolution"
                         Layout.fillWidth: true
 
                         StyledComboBox {
@@ -269,7 +269,7 @@ ContentPage {
                     }
 
                     ContentSubsection {
-                        title: Translation.tr("Refresh rate")
+                        title: "Refresh rate"
                         Layout.fillWidth: true
 
                         StyledComboBox {
@@ -284,7 +284,7 @@ ContentPage {
                     }
 
                     ContentSubsection {
-                        title: Translation.tr("Scale")
+                        title: "Scale"
                         Layout.fillWidth: true
 
                         StyledComboBox {
@@ -305,7 +305,7 @@ ContentPage {
                     }
 
                     ContentSubsection {
-                        title: Translation.tr("Orientation")
+                        title: "Orientation"
                         Layout.fillWidth: true
 
                         StyledComboBox {
@@ -323,7 +323,7 @@ ContentPage {
                     }
 
                     ContentSubsection {
-                        title: Translation.tr("Mirror")
+                        title: "Mirror"
                         Layout.fillWidth: true
 
                         StyledComboBox {
@@ -341,7 +341,7 @@ ContentPage {
                     }
 
                     ContentSubsection {
-                        title: Translation.tr("Position (x, y)")
+                        title: "Position (x, y)"
                         Layout.fillWidth: true
 
                         RowLayout {
@@ -377,7 +377,7 @@ ContentPage {
 
                     ConfigSwitch {
                         buttonIcon: "sync"
-                        text: Translation.tr("Adaptive sync (VRR)")
+                        text: "Adaptive sync (VRR)"
                         checked: card.selVrr
                         enabled: card.selEnabled
                         onCheckedChanged: card.selVrr = checked
@@ -395,8 +395,8 @@ ContentPage {
         visible: Monitors.list.length === 0
         Layout.fillWidth: true
         icon: "monitor"
-        title: Translation.tr("No monitors detected")
-        description: Translation.tr("Is Hyprland running?")
+        title: "No monitors detected"
+        description: "Is Hyprland running?"
     }
 
     RowLayout {
@@ -410,7 +410,7 @@ ContentPage {
         RippleButtonWithIcon {
             primary: true
             materialIcon: "save"
-            mainText: Translation.tr("Save all changes")
+            mainText: "Save all changes"
             onClicked: root.saveAll()
         }
     }

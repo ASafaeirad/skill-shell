@@ -89,7 +89,7 @@ WBorderlessButton {
                             implicitWidth: textItem.implicitWidth + 10 * 2
                             contentItem: WText {
                                 id: textItem
-                                text: Translation.tr("Sign out")
+                                text: "Sign out"
                                 font.pixelSize: Looks.font.pixelSize.large
                             }
                             onClicked: Session.logout()
@@ -117,11 +117,11 @@ WBorderlessButton {
                             }
                             WText {
                                 color: Looks.colors.fg1
-                                text: Translation.tr("Local account")
+                                text: "Local account"
                             }
                             WText {
                                 color: Looks.colors.accent
-                                text: Translation.tr("Manage my account")
+                                text: "Manage my account"
                                 MouseArea {
                                     anchors.fill: parent
                                     cursorShape: Qt.PointingHandCursor

@@ -88,9 +88,9 @@ MouseArea {
                     if (root.notifications.length <= 1)
                         return "";
                     if (!root.expanded)
-                        return Translation.tr("+%1 notifications").arg(root.notifications.length - 1);
+                        return "+%1 notifications".arg(root.notifications.length - 1);
                     if (index === root.notifications.length - 1)
-                        return Translation.tr("See fewer");
+                        return "See fewer";
                     return "";
                 }
                 onGroupExpandToggle: {

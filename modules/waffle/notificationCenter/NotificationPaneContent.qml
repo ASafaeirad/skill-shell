@@ -31,7 +31,7 @@ FooterRectangle {
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignLeft
                 elide: Text.ElideRight
-                text: Translation.tr("Notifications")
+                text: "Notifications"
                 font.pixelSize: Looks.font.pixelSize.large
             }
 
@@ -46,7 +46,7 @@ FooterRectangle {
             SmallBorderedIconAndTextButton {
                 visible: Notifications.list.length > 0
                 iconVisible: false
-                text: Translation.tr("Clear all")
+                text: "Clear all"
                 onClicked: {
                     Notifications.discardAllNotifications();
                 }
@@ -79,7 +79,7 @@ FooterRectangle {
 
     component EmptyPlaceholder: WText {
         horizontalAlignment: Text.AlignHCenter
-        text: Translation.tr("No new notifications")
+        text: "No new notifications"
     }
 
 }

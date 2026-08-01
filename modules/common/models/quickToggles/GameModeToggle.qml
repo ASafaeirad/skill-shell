@@ -6,7 +6,7 @@ import qs.services
 QuickToggleModel {
     id: root
 
-    name: Translation.tr("Game mode")
+    name: "Game mode"
     toggled: !confOpt.value
     icon: "gamepad"
     mainAction: () => {
@@ -25,7 +25,7 @@ QuickToggleModel {
         else
             HyprlandConfig.resetMany(["animations:enabled", "decoration:shadow:enabled", "decoration:blur:enabled", "general:gaps_in", "general:gaps_out", "general:border_size", "decoration:rounding", "general:allow_tearing"]);
     }
-    tooltipText: Translation.tr("Game mode")
+    tooltipText: "Game mode"
 
     HyprlandConfigOption {
         id: confOpt

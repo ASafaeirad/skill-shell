@@ -26,7 +26,7 @@ AppButton {
 
     BarToolTip {
         extraVisibleCondition: root.shouldShowTooltip
-        text: Translation.tr("Widgets")
+        text: "Widgets"
     }
 
     contentItem: Item {
@@ -73,7 +73,7 @@ AppButton {
                 anchors.verticalCenter: parent.verticalCenter
 
                 WText {
-                    text: Translation.tr("Widgets")
+                    text: "Widgets"
                 }
 
             }

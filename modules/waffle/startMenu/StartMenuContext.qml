@@ -28,35 +28,35 @@ Scope {
     }
     property list<var> categories: [
         {
-            name: Translation.tr("All"),
+            name: "All",
             prefix: ""
         },
         {
-            name: Translation.tr("Apps"),
+            name: "Apps",
             prefix: Config.options.search.prefix.app
         },
         {
-            name: Translation.tr("Actions"),
+            name: "Actions",
             prefix: Config.options.search.prefix.action
         },
         {
-            name: Translation.tr("Clipboard"),
+            name: "Clipboard",
             prefix: Config.options.search.prefix.clipboard
         },
         {
-            name: Translation.tr("Emojis"),
+            name: "Emojis",
             prefix: Config.options.search.prefix.emojis
         },
         {
-            name: Translation.tr("Math"),
+            name: "Math",
             prefix: Config.options.search.prefix.math
         },
         {
-            name: Translation.tr("Commands"),
+            name: "Commands",
             prefix: Config.options.search.prefix.shellCommand
         },
         {
-            name: Translation.tr("Web"),
+            name: "Web",
             prefix: Config.options.search.prefix.webSearch
         },
     ]

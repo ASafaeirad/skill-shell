@@ -20,10 +20,10 @@ QuickToggleButton {
     }
 
     StyledToolTip {
-        text: `${Translation.tr("Night Light")} · ${
-            Config.options.light.night.automatic ? Translation.tr("Automatic") : Translation.tr("Manual")
+        text: `${"Night Light"} · ${
+            Config.options.light.night.automatic ? "Automatic" : "Manual"
         } · ${
-            Hyprsunset.temperatureActive ? Translation.tr("Enabled now") : Translation.tr("Disabled now")
+            Hyprsunset.temperatureActive ? "Enabled now" : "Disabled now"
         }`
     }
 

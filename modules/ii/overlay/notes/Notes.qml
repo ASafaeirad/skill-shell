@@ -8,7 +8,7 @@ import qs.services
 StyledOverlayWidget {
     id: root
 
-    title: Translation.tr("Notes")
+    title: "Notes"
     showCenterButton: true
 
     contentItem: NotesContent {

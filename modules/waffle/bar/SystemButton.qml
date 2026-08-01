@@ -90,18 +90,18 @@ BarButton {
 
     BarToolTip {
         extraVisibleCondition: root.shouldShowTooltip && internetHoverArea.containsMouse
-        text: Translation.tr("%1\nInternet access").arg(Network.ethernet ? Translation.tr("Network") : Network.networkName)
+        text: "%1\nInternet access".arg(Network.ethernet ? "Network" : Network.networkName)
     }
     BarToolTip {
         extraVisibleCondition: root.shouldShowTooltip && volumeHoverArea.containsMouse
-        text: Translation.tr("Speakers (%1): %2") //
-            .arg(Audio.sink?.nickname || Audio.sink?.description || Translation.tr("Unknown")) //
-            .arg(Audio.sink?.audio.muted ? Translation.tr("Muted") : `${Math.round(Audio.sink?.audio.volume * 100) || 0}%`) //
+        text: "Speakers (%1): %2" //
+            .arg(Audio.sink?.nickname || Audio.sink?.description || "Unknown") //
+            .arg(Audio.sink?.audio.muted ? "Muted" : `${Math.round(Audio.sink?.audio.volume * 100) || 0}%`) //
     }
     BarToolTip {
         extraVisibleCondition: root.shouldShowTooltip && batteryHoverArea.containsMouse
-        text: Translation.tr("Battery: %1%2") //
+        text: "Battery: %1%2" //
             .arg(`${Math.round(Battery.percentage * 100) || 0}%`) //
-            .arg(Battery.isPluggedIn ? (" " + Translation.tr("(Plugged in)")) : "")
+            .arg(Battery.isPluggedIn ? (" " + "(Plugged in)") : "")
     }
 }

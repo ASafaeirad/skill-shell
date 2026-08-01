@@ -64,7 +64,7 @@ Rectangle {
 
         WText {
             Layout.fillWidth: true
-            text: appInfo.desktopEntry?.name ?? Translation.tr("Media")
+            text: appInfo.desktopEntry?.name ?? "Media"
             horizontalAlignment: Text.AlignLeft
             elide: Text.ElideRight
         }
@@ -83,13 +83,13 @@ Rectangle {
                 font.weight: Looks.font.weight.strong
                 font.pixelSize: Looks.font.pixelSize.large
                 elide: Text.ElideRight
-                text: StringUtils.cleanMusicTitle(root.activePlayer?.trackTitle) || Translation.tr("Unknown Title")
+                text: StringUtils.cleanMusicTitle(root.activePlayer?.trackTitle) || "Unknown Title"
             }
 
             WText {
                 Layout.fillWidth: true
                 elide: Text.ElideRight
-                text: root.activePlayer?.trackArtist || Translation.tr("Unknown Artist")
+                text: root.activePlayer?.trackArtist || "Unknown Artist"
             }
         }
 

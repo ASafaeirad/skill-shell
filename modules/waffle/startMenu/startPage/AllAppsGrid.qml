@@ -20,19 +20,19 @@ GridLayout {
     }
     property list<AggregatedAppCategoryModel> aggregatedCategories: [
         aggAppCatComp.createObject(null, {
-            name: Translation.tr("Productivity"),
+            name: "Productivity",
             categories: ["Development", "Education", "Network", "Office"]
         }), aggAppCatComp.createObject(null, {
-            name: Translation.tr("Utilities & Tools"),
+            name: "Utilities & Tools",
             categories: ["Utility", "Science"]
         }), aggAppCatComp.createObject(null, {
-            name: Translation.tr("Creativity"),
+            name: "Creativity",
             categories: ["AudioVideo", "Graphics"]
         }), aggAppCatComp.createObject(null, {
-            name: Translation.tr("System"),
+            name: "System",
             categories: ["Settings", "System"]
         }), aggAppCatComp.createObject(null, {
-            name: Translation.tr("Other"),
+            name: "Other",
             categories: ["Game"]
         }), 
     ]

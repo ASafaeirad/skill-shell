@@ -16,11 +16,11 @@ Scope { // Scope
     property var tabButtonList: [
         {
             "icon": "keyboard",
-            "name": Translation.tr("Keybinds")
+            "name": "Keybinds"
         },
         {
             "icon": "experiment",
-            "name": Translation.tr("Elements")
+            "name": "Elements"
         },
     ]
 

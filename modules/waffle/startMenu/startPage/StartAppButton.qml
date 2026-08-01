@@ -59,7 +59,7 @@ WButton {
         WMenuItem {
             visible: root.pinnedStart
             icon.name: "arrow-up-left"
-            text: Translation.tr("Move to front")
+            text: "Move to front"
             onTriggered: {
                 LauncherApps.moveToFront(root.desktopEntry.id);
             }
@@ -67,7 +67,7 @@ WButton {
         WMenuItem {
             visible: root.pinnedStart
             icon.name: "arrow-left"
-            text: Translation.tr("Move left")
+            text: "Move left"
             onTriggered: {
                 LauncherApps.moveLeft(root.desktopEntry.id);
             }
@@ -75,21 +75,21 @@ WButton {
         WMenuItem {
             visible: root.pinnedStart
             icon.name: "arrow-right"
-            text: Translation.tr("Move right")
+            text: "Move right"
             onTriggered: {
                 LauncherApps.moveRight(root.desktopEntry.id);
             }
         }
         WMenuItem {
             icon.name: root.pinnedStart ? "pin-off" : "pin"
-            text: root.pinnedStart ? Translation.tr("Unpin from Start") : Translation.tr("Pin to Start")
+            text: root.pinnedStart ? "Unpin from Start" : "Pin to Start"
             onTriggered: {
                 LauncherApps.togglePin(root.desktopEntry.id);
             }
         }
         WMenuItem {
             icon.name: root.pinnedTaskbar ? "pin-off" : "pin"
-            text: root.pinnedTaskbar ? Translation.tr("Unpin from taskbar") : Translation.tr("Pin to taskbar")
+            text: root.pinnedTaskbar ? "Unpin from taskbar" : "Pin to taskbar"
             onTriggered: {
                 TaskbarApps.togglePin(root.desktopEntry.id);
             }

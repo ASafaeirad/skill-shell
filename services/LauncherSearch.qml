@@ -91,7 +91,7 @@ Singleton {
             execute: args => {
                 if (!/^(\d+)/.test(args.trim())) {
                     // Invalid if doesn't start with numbers
-                    Quickshell.execDetached(["notify-send", Translation.tr("Superpaste"), Translation.tr("Usage: <tt>%1superpaste NUM_OF_ENTRIES[i]</tt>\nSupply <tt>i</tt> when you want images\nExamples:\n<tt>%1superpaste 4i</tt> for the last 4 images\n<tt>%1superpaste 7</tt> for the last 7 entries").arg(Config.options.search.prefix.action), "-a", "Shell"]);
+                    Quickshell.execDetached(["notify-send", "Superpaste", "Usage: <tt>%1superpaste NUM_OF_ENTRIES[i]</tt>\nSupply <tt>i</tt> when you want images\nExamples:\n<tt>%1superpaste 4i</tt> for the last 4 images\n<tt>%1superpaste 7</tt> for the last 7 entries".arg(Config.options.search.prefix.action), "-a", "Shell"]);
                     return;
                 }
                 const syntaxMatch = /^(?:(\d+)(i)?)/.exec(args.trim());
@@ -190,14 +190,14 @@ Singleton {
                         Cliphist.copy(entry);
                     },
                     actions: [resultComp.createObject(null, {
-                            name: Translation.tr("Copy"),
+                            name: "Copy",
                             iconName: "content_copy",
                             iconType: LauncherSearchResult.IconType.Material,
                             execute: () => {
                                 Cliphist.copy(entry);
                             }
                         }), resultComp.createObject(null, {
-                            name: Translation.tr("Delete"),
+                            name: "Delete",
                             iconName: "delete",
                             iconType: LauncherSearchResult.IconType.Material,
                             execute: () => {
@@ -217,8 +217,8 @@ Singleton {
                     name: entry.replace(/^\s*\S+\s+/, ""),
                     iconName: emoji,
                     iconType: LauncherSearchResult.IconType.Text,
-                    verb: Translation.tr("Copy"),
-                    type: Translation.tr("Emoji"),
+                    verb: "Copy",
+                    type: "Emoji",
                     execute: () => {
                         Quickshell.clipboardText = entry.match(/^\s*(\S+)/)?.[1];
                     }
@@ -230,8 +230,8 @@ Singleton {
         nonAppResultsTimer.restart();
         const mathResultObject = resultComp.createObject(null, {
             name: root.mathResult,
-            verb: Translation.tr("Copy"),
-            type: Translation.tr("Math result"),
+            verb: "Copy",
+            type: "Math result",
             fontType: LauncherSearchResult.FontType.Monospace,
             iconName: 'calculate',
             iconType: LauncherSearchResult.IconType.Material,
@@ -241,12 +241,12 @@ Singleton {
         });
         const appResultObjects = AppSearch.fuzzyQuery(StringUtils.cleanPrefix(root.query, Config.options.search.prefix.app)).map(entry => {
             return resultComp.createObject(null, {
-                type: Translation.tr("App"),
+                type: "App",
                 id: entry.id,
                 name: entry.name,
                 iconName: entry.icon,
                 iconType: LauncherSearchResult.IconType.System,
-                verb: Translation.tr("Open"),
+                verb: "Open",
                 execute: () => {
                     if (!entry.runInTerminal)
                         entry.execute();
@@ -277,8 +277,8 @@ Singleton {
         });
         const commandResultObject = resultComp.createObject(null, {
             name: StringUtils.cleanPrefix(root.query, Config.options.search.prefix.shellCommand).replace("file://", ""),
-            verb: Translation.tr("Run"),
-            type: Translation.tr("Command"),
+            verb: "Run",
+            type: "Command",
             fontType: LauncherSearchResult.FontType.Monospace,
             iconName: 'terminal',
             iconType: LauncherSearchResult.IconType.Material,
@@ -293,8 +293,8 @@ Singleton {
         });
         const webSearchResultObject = resultComp.createObject(null, {
             name: StringUtils.cleanPrefix(root.query, Config.options.search.prefix.webSearch),
-            verb: Translation.tr("Search"),
-            type: Translation.tr("Web search"),
+            verb: "Search",
+            type: "Web search",
             iconName: 'travel_explore',
             iconType: LauncherSearchResult.IconType.Material,
             execute: () => {
@@ -311,8 +311,8 @@ Singleton {
             if (actionString.startsWith(root.query) || root.query.startsWith(actionString)) {
                 return resultComp.createObject(null, {
                     name: root.query.startsWith(actionString) ? root.query : actionString,
-                    verb: Translation.tr("Run"),
-                    type: Translation.tr("Action"),
+                    verb: "Run",
+                    type: "Action",
                     iconName: 'settings_suggest',
                     iconType: LauncherSearchResult.IconType.Material,
                     execute: () => {

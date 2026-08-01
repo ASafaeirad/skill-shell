@@ -239,7 +239,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     font.pixelSize: Appearance.font.pixelSize.normal
                     color: Appearance.colors.colOnLayer0
-                    text: Translation.tr("Up %1").arg(DateTime.uptime)
+                    text: "Up %1".arg(DateTime.uptime)
                     textFormat: Text.MarkdownText
                 }
             }
@@ -261,7 +261,7 @@ Item {
                 buttonIcon: "edit"
                 onClicked: root.editMode = !root.editMode
                 StyledToolTip {
-                    text: Translation.tr("Edit quick toggles") + (root.editMode ? Translation.tr("\nLMB to enable/disable\nRMB to toggle size\nScroll to swap position") : "")
+                    text: "Edit quick toggles" + (root.editMode ? "\nLMB to enable/disable\nRMB to toggle size\nScroll to swap position" : "")
                 }
             }
             QuickToggleButton {
@@ -272,7 +272,7 @@ Item {
                     Quickshell.reload(true);
                 }
                 StyledToolTip {
-                    text: Translation.tr("Reload Hyprland & Quickshell")
+                    text: "Reload Hyprland & Quickshell"
                 }
             }
             QuickToggleButton {
@@ -283,7 +283,7 @@ Item {
                     Quickshell.execDetached(["qs", "-p", root.settingsQmlPath]);
                 }
                 StyledToolTip {
-                    text: Translation.tr("Settings")
+                    text: "Settings"
                 }
             }
             QuickToggleButton {
@@ -293,7 +293,7 @@ Item {
                     GlobalStates.sessionOpen = true;
                 }
                 StyledToolTip {
-                    text: Translation.tr("Session")
+                    text: "Session"
                 }
             }
         }

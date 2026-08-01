@@ -82,15 +82,15 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: {
                     if (cloudVision.state == GCloudApi.State.Preparing)
-                        return Translation.tr("Uploading image");
+                        return "Uploading image";
                     else if (cloudVision.state == GCloudApi.State.Processing)
-                        return Translation.tr("Reading image");
+                        return "Reading image";
                     else if (cloudVision.state == GCloudApi.State.Error)
-                        return Translation.tr("Error");
+                        return "Error";
                     else if (cloudTrans.state == GCloudApi.State.Preparing)
-                        return Translation.tr("Getting ready to translate");
+                        return "Getting ready to translate";
                     else if (cloudTrans.state == GCloudApi.State.Processing)
-                        return Translation.tr("Translating");
+                        return "Translating";
                     else
                         return " ";
                 }
@@ -120,7 +120,7 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
                 textFormat: Text.MarkdownText
                 wrapMode: Text.Wrap
-                text: `**${Translation.tr("Screen Translator")}**\n\n${root.errorMessage}\n\n__[${Translation.tr("See setup instructions on the wiki")}](${root.wikiLink})__`
+                text: `**${"Screen Translator"}**\n\n${root.errorMessage}\n\n__[${"See setup instructions on the wiki"}](${root.wikiLink})__`
                 font.pixelSize: Appearance.font.pixelSize.small * root.scaleFactor
                 color: root.textColor
                 onLinkActivated: (link) => {
@@ -139,7 +139,7 @@ Item {
 
     function handleError(msg) {
         if (msg?.length > 0) root.errorMessage = msg;
-        else root.errorMessage = Translation.tr("Set your Google Cloud service account key");
+        else root.errorMessage = "Set your Google Cloud service account key";
         root.showError();
     }
 

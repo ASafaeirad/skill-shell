@@ -9,7 +9,7 @@ import qs.services
 QuickToggleModel {
     id: root
 
-    name: Translation.tr("Cloudflare WARP")
+    name: "Cloudflare WARP"
     toggled: false
     icon: "cloud_lock"
     mainAction: () => {
@@ -21,7 +21,7 @@ QuickToggleModel {
             Quickshell.execDetached(["warp-cli", "connect"]);
         }
     }
-    tooltipText: Translation.tr("Cloudflare WARP (1.1.1.1)")
+    tooltipText: "Cloudflare WARP (1.1.1.1)"
 
     Process {
         id: connectProc
@@ -29,7 +29,7 @@ QuickToggleModel {
         command: ["warp-cli", "connect"]
         onExited: (exitCode, exitStatus) => {
             if (exitCode !== 0)
-                Quickshell.execDetached(["notify-send", Translation.tr("Cloudflare WARP"), Translation.tr("Connection failed. Please inspect manually with the <tt>warp-cli</tt> command"), "-a", "Shell"]);
+                Quickshell.execDetached(["notify-send", "Cloudflare WARP", "Connection failed. Please inspect manually with the <tt>warp-cli</tt> command", "-a", "Shell"]);
 
         }
     }
@@ -43,7 +43,7 @@ QuickToggleModel {
             if (exitCode === 0)
                 connectProc.running = true;
             else
-                Quickshell.execDetached(["notify-send", Translation.tr("Cloudflare WARP"), Translation.tr("Registration failed. Please inspect manually with the <tt>warp-cli</tt> command"), "-a", "Shell"]);
+                Quickshell.execDetached(["notify-send", "Cloudflare WARP", "Registration failed. Please inspect manually with the <tt>warp-cli</tt> command", "-a", "Shell"]);
         }
     }
 

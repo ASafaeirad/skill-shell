@@ -282,7 +282,7 @@ LockScreen {
                             anchors.left: parent.left
                             anchors.verticalCenter: parent.verticalCenter
                             visible: passwordInput.text.length === 0
-                            text: Translation.tr("Password")
+                            text: "Password"
                             font.pixelSize: Looks.font.pixelSize.large
                             color: Looks.darkColors.fg
                             opacity: 0.8

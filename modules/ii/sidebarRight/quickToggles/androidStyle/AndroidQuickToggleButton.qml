@@ -24,7 +24,7 @@ GroupButton {
     // Declared in specific toggles
     property QuickToggleModel toggleModel
     property string name: toggleModel?.name ?? ""
-    property string statusText: (toggleModel?.hasStatusText) ? (toggleModel?.statusText || (toggled ? Translation.tr("On") : Translation.tr("Off"))) : ""
+    property string statusText: (toggleModel?.hasStatusText) ? (toggleModel?.statusText || (toggled ? "On" : "Off")) : ""
     property string tooltipText: toggleModel?.tooltipText ?? ""
     property string buttonIcon: toggleModel?.icon ?? "close"
     property bool available: toggleModel?.available ?? true

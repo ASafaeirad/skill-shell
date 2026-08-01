@@ -141,14 +141,14 @@ WMouseAreaButton {
             enabled: root.hyprlandClient?.floating
             property bool isPinned: root.hyprlandClient?.pinned
             icon.name: isPinned ? "checkmark" : "empty"
-            text: Translation.tr("Show this window on all desktops")
+            text: "Show this window on all desktops"
             onTriggered: {
                 Hyprland.dispatch(`hl.dsp.window.pin({window = "address:${root.hyprlandClient?.address}"})`);
             }
         }
         Action {
             icon.name: "empty"
-            text: Translation.tr("Close")
+            text: "Close"
             onTriggered: root.closeWindow()
         }
     }

@@ -226,7 +226,7 @@ PanelWindow {
             }
 
             WToolTip {
-                text: Translation.tr("Snip")
+                text: "Snip"
             }
         }
 
@@ -279,7 +279,7 @@ PanelWindow {
 
                 Action {
                     icon.name: "crop"
-                    text: Translation.tr("Rectangle")
+                    text: "Rectangle"
                     checked: root.selectionMode === WRegionSelectionPanel.SelectionMode.Rect
                     onTriggered: {
                         root.selectionMode = WRegionSelectionPanel.SelectionMode.Rect;
@@ -287,7 +287,7 @@ PanelWindow {
                 }
                 Action {
                     icon.name: "calendar-add"
-                    text: Translation.tr("Window")
+                    text: "Window"
                     checked: root.selectionMode === WRegionSelectionPanel.SelectionMode.Window
                     onTriggered: {
                         root.selectionMode = WRegionSelectionPanel.SelectionMode.Window;
@@ -296,7 +296,7 @@ PanelWindow {
             }
 
             WToolTip {
-                text: Translation.tr("Snipping area")
+                text: "Snipping area"
             }
         }
 
@@ -313,7 +313,7 @@ PanelWindow {
                 }
             }
             WToolTip {
-                text: Translation.tr("Quick markup (Ctrl+E)")
+                text: "Quick markup (Ctrl+E)"
             }
         }
 
@@ -332,7 +332,7 @@ PanelWindow {
                 }
             }
             WToolTip {
-                text: Translation.tr("Image search")
+                text: "Image search"
             }
         }
         WToolbarIconButton {
@@ -342,7 +342,7 @@ PanelWindow {
                 root.closed();
             }
             WToolTip {
-                text: Translation.tr("Color picker")
+                text: "Color picker"
             }
         }
         WToolbarIconButton {
@@ -357,7 +357,7 @@ PanelWindow {
                 }
             }
             WToolTip {
-                text: Translation.tr("Text extractor")
+                text: "Text extractor"
             }
         }
 
@@ -367,7 +367,7 @@ PanelWindow {
             icon.name: "dismiss"
             onClicked: root.close()
             WToolTip {
-                text: Translation.tr("Close (Esc)")
+                text: "Close (Esc)"
             }
         }
     }

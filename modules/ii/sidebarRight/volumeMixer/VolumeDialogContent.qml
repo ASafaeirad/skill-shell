@@ -32,7 +32,7 @@ ColumnLayout {
         }
         PagePlaceholder {
             icon: "widgets"
-            title: Translation.tr("No applications")
+            title: "No applications"
             shown: !root.hasApps
             shape: MaterialShape.Shape.Cookie7Sided
         }

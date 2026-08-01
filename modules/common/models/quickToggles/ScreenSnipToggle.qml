@@ -7,7 +7,7 @@ import qs.modules.common.widgets
 import qs.services
 
 QuickToggleModel {
-    name: Translation.tr("Screen snip")
+    name: "Screen snip"
     hasStatusText: false
     toggled: false
     icon: "screenshot_region"
@@ -15,7 +15,7 @@ QuickToggleModel {
         GlobalStates.sidebarRightOpen = false;
         delayedActionTimer.start();
     }
-    tooltipText: Translation.tr("Screen snip")
+    tooltipText: "Screen snip"
 
     Timer {
         id: delayedActionTimer

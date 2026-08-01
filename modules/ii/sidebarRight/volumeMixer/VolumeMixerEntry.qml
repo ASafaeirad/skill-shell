@@ -33,7 +33,7 @@ Item {
             hoverEnabled: true
             property bool hovered: containsMouse
             StyledToolTip {
-                text: root.node?.audio.muted ? Translation.tr("Click to unmute") : Translation.tr("Click to mute")
+                text: root.node?.audio.muted ? "Click to unmute" : "Click to mute"
             }
 
             StyledImage {
