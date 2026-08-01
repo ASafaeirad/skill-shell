@@ -35,7 +35,7 @@ Item {
     property bool showNumbers: false
     Timer {
         id: showNumbersTimer
-        interval: (Config?.options.bar.autoHide.showWhenPressingSuper.delay ?? 100)
+        interval: (Config?.options.bar.workspaces.showNumberDelay ?? 300)
         repeat: false
         onTriggered: {
             root.showNumbers = true
