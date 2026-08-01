@@ -39,10 +39,7 @@ ContentPage {
 
         ConfigSwitch {
             text: "Use Levenshtein distance-based algorithm instead of fuzzy"
-            checked: Config.options.search.sloppy
-            onCheckedChanged: {
-                Config.options.search.sloppy = checked;
-            }
+            configKey: "search.sloppy"
 
             StyledToolTip {
                 text: "Could be better if you make a ton of typos,\nbut results can be weird and might not work with acronyms\n(e.g. \"GIMP\" might not give you the paint program)"
@@ -60,19 +57,13 @@ ContentPage {
             ConfigSwitch {
                 buttonIcon: "assistant_navigation"
                 text: "Enable GPS based location"
-                checked: Config.options.bar.weather.enableGPS
-                onCheckedChanged: {
-                    Config.options.bar.weather.enableGPS = checked;
-                }
+                configKey: "bar.weather.enableGPS"
             }
 
             ConfigSwitch {
                 buttonIcon: "thermometer"
                 text: "Fahrenheit unit"
-                checked: Config.options.bar.weather.useUSCS
-                onCheckedChanged: {
-                    Config.options.bar.weather.useUSCS = checked;
-                }
+                configKey: "bar.weather.useUSCS"
 
                 StyledToolTip {
                     text: "It may take a few seconds to update"
@@ -95,13 +86,10 @@ ContentPage {
         ConfigSpinBox {
             icon: "av_timer"
             text: "Polling interval (m)"
-            value: Config.options.bar.weather.fetchInterval
+            configKey: "bar.weather.fetchInterval"
             from: 5
             to: 50
             stepSize: 5
-            onValueChanged: {
-                Config.options.bar.weather.fetchInterval = value;
-            }
         }
 
     }

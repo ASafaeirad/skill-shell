@@ -13,6 +13,20 @@ Singleton {
     property int readWriteDelay: 50 // milliseconds
     property bool blockWrites: false
 
+    function getNestedValue(nestedKey) {
+        if (!nestedKey)
+            return undefined;
+
+        const keys = nestedKey.split(".");
+        let obj = root.options;
+        for (let i = 0; i < keys.length; ++i) {
+            if (obj === null || obj === undefined)
+                return undefined;
+            obj = obj[keys[i]];
+        }
+        return obj;
+    }
+
     function setNestedValue(nestedKey, value) {
         let keys = nestedKey.split(".");
         let obj = root.options;
