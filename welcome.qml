@@ -253,36 +253,6 @@ ApplicationWindow {
                         spacing: 5
 
                         RippleButtonWithIcon {
-                            materialIcon: "keyboard_alt"
-                            onClicked: {
-                                Quickshell.execDetached(["qs", "-p", Quickshell.shellPath(""), "ipc", "call", "cheatsheet", "toggle"]);
-                            }
-                            mainContentComponent: Component {
-                                RowLayout {
-                                    spacing: 10
-                                    StyledText {
-                                        font.pixelSize: Appearance.font.pixelSize.small
-                                        text: "Keybinds"
-                                        color: Appearance.colors.colOnSecondaryContainer
-                                    }
-                                    RowLayout {
-                                        spacing: 3
-                                        KeyboardKey {
-                                            key: "󰖳"
-                                        }
-                                        StyledText {
-                                            Layout.alignment: Qt.AlignVCenter
-                                            text: "+"
-                                        }
-                                        KeyboardKey {
-                                            key: "/"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        RippleButtonWithIcon {
                             materialIcon: "help"
                             mainText: "Usage"
                             onClicked: {

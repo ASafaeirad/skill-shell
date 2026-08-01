@@ -84,7 +84,7 @@ ContentPage {
                                 }
 
                                 KeyboardKey {
-                                    key: Config.options.cheatsheet.superKey ?? "󰖳"
+                                    key: "󰖳"
                                 }
 
                                 StyledText {
