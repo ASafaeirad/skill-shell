@@ -263,7 +263,7 @@ ContentPage {
 
     NoticeBox {
         Layout.fillWidth: true
-        text: 'Not all options are available in this app. You should also check the config file by hitting the "Config file" button on the topleft corner or opening %1 manually.'.arg(Directories.shellConfigPath)
+        text: "Not all options are available in this app. You should also check the config file at %1.".arg(Directories.shellConfigPath)
 
         Item {
             Layout.fillWidth: true
