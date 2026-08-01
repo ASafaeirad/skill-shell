@@ -123,46 +123,6 @@ ContentPage {
     }
 
     ContentSection {
-        icon: "rule"
-        title: "Policies"
-
-        ConfigRow {
-
-            // Weeb policy
-            ColumnLayout {
-
-                ContentSubsectionLabel {
-                    text: "Weeb"
-                }
-
-                ConfigSelectionArray {
-                    currentValue: Config.options.policies.weeb
-                    onSelected: newValue => {
-                        Config.options.policies.weeb = newValue;
-                    }
-                    options: [
-                        {
-                            displayName: "No",
-                            icon: "close",
-                            value: 0
-                        },
-                        {
-                            displayName: "Yes",
-                            icon: "check",
-                            value: 1
-                        },
-                        {
-                            displayName: "Closet",
-                            icon: "ev_shadow",
-                            value: 2
-                        }
-                    ]
-                }
-            }
-        }
-    }
-
-    ContentSection {
         icon: "notification_sound"
         title: "Sounds"
         ConfigRow {
@@ -235,25 +195,4 @@ ContentPage {
         }
     }
 
-    ContentSection {
-        icon: "work_alert"
-        title: "Work safety"
-
-        ConfigSwitch {
-            buttonIcon: "assignment"
-            text: "Hide clipboard images copied from sussy sources"
-            checked: Config.options.workSafety.enable.clipboard
-            onCheckedChanged: {
-                Config.options.workSafety.enable.clipboard = checked;
-            }
-        }
-        ConfigSwitch {
-            buttonIcon: "wallpaper"
-            text: "Hide sussy/anime wallpapers"
-            checked: Config.options.workSafety.enable.wallpaper
-            onCheckedChanged: {
-                Config.options.workSafety.enable.wallpaper = checked;
-            }
-        }
-    }
 }

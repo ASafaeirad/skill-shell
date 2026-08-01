@@ -75,12 +75,6 @@ Singleton {
             }
         },
         {
-            action: "konachanwallpaper",
-            execute: () => {
-                Quickshell.execDetached([Quickshell.shellPath("scripts/colors/random/random_konachan_wall.sh")]);
-            }
-        },
-        {
             action: "light",
             execute: () => {
                 Quickshell.execDetached([Directories.wallpaperSwitchScriptPath, "--mode", "light", "--noswitch"]);
@@ -124,19 +118,6 @@ Singleton {
     property var allActions: searchActions.concat(userActionScripts)
 
     property string mathResult: ""
-    property bool clipboardWorkSafetyActive: {
-        const enabled = Config.options.workSafety.enable.clipboard;
-        const sensitiveNetwork = (StringUtils.stringListContainsSubstring(Network.networkName.toLowerCase(), Config.options.workSafety.triggerCondition.networkNameKeywords));
-        return enabled && sensitiveNetwork;
-    }
-
-    function containsUnsafeLink(entry) {
-        if (entry == undefined)
-            return false;
-        const unsafeKeywords = Config.options.workSafety.triggerCondition.linkKeywords;
-        return StringUtils.stringListContainsSubstring(entry.toLowerCase(), unsafeKeywords);
-    }
-
     Timer {
         id: nonAppResultsTimer
         interval: Config.options.search.nonAppResultDelay
@@ -174,12 +155,7 @@ Singleton {
         if (root.query.startsWith(Config.options.search.prefix.clipboard)) {
             // Clipboard
             const searchString = StringUtils.cleanPrefix(root.query, Config.options.search.prefix.clipboard);
-            return Cliphist.fuzzyQuery(searchString).map((entry, index, array) => {
-                const mightBlurImage = Cliphist.entryIsImage(entry) && root.clipboardWorkSafetyActive;
-                let shouldBlurImage = mightBlurImage;
-                if (mightBlurImage) {
-                    shouldBlurImage = shouldBlurImage && (root.containsUnsafeLink(array[index - 1]) || root.containsUnsafeLink(array[index + 1]));
-                }
+            return Cliphist.fuzzyQuery(searchString).map(entry => {
                 const type = `#${entry.match(/^\s*(\S+)/)?.[1] || ""}`;
                 return resultComp.createObject(null, {
                     rawValue: entry,
@@ -203,8 +179,7 @@ Singleton {
                             execute: () => {
                                 Cliphist.deleteEntry(entry);
                             }
-                        })],
-                    blurImage: shouldBlurImage
+                        })]
                 });
             }).filter(Boolean);
         } else if (root.query.startsWith(Config.options.search.prefix.emojis)) {

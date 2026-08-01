@@ -2,7 +2,6 @@ import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Io
 import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.widgets
@@ -10,22 +9,6 @@ import qs.services
 
 ContentPage {
     forceWidth: true
-
-    Process {
-        id: randomWallProc
-
-        property string status: ""
-        property string scriptPath: `${Directories.scriptPath}/colors/random/random_konachan_wall.sh`
-
-        command: ["bash", "-c", FileUtils.trimFileProtocol(randomWallProc.scriptPath)]
-
-        stdout: SplitParser {
-            onRead: (data) => {
-                randomWallProc.status = data.trim();
-            }
-        }
-
-    }
 
     // Wallpaper selection
     ContentSection {
@@ -64,24 +47,6 @@ ContentPage {
             }
 
             ColumnLayout {
-                RippleButtonWithIcon {
-                    enabled: !randomWallProc.running
-                    visible: Config.options.policies.weeb === 1
-                    Layout.fillWidth: true
-                    buttonRadius: Appearance.rounding.small
-                    materialIcon: "ifl"
-                    mainText: randomWallProc.running ? "Be patient..." : "Random: Konachan"
-                    onClicked: {
-                        randomWallProc.scriptPath = `${Directories.scriptPath}/colors/random/random_konachan_wall.sh`;
-                        randomWallProc.running = true;
-                    }
-
-                    StyledToolTip {
-                        text: "Random SFW Anime wallpaper from Konachan\nImage is saved to ~/Pictures/Wallpapers"
-                    }
-
-                }
-
                 RippleButtonWithIcon {
                     Layout.fillWidth: true
                     materialIcon: "wallpaper"
