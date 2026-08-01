@@ -131,18 +131,6 @@ ContentPage {
         icon: "notifications"
         title: "Notifications"
 
-        ConfigSpinBox {
-            icon: "av_timer"
-            text: "Timeout duration (if not defined by notification) (ms)"
-            value: Config.options.notifications.timeout
-            from: 1000
-            to: 60000
-            stepSize: 1000
-            onValueChanged: {
-                Config.options.notifications.timeout = value;
-            }
-        }
-
         ConfigSwitch {
             buttonIcon: "monitor"
             text: "Force specific monitor"
@@ -275,49 +263,6 @@ ContentPage {
                     "value": "circle",
                     "displayName": "Circle to Search"
                 }]
-            }
-
-        }
-
-        ContentSubsection {
-            title: "Rectangular selection"
-
-            ConfigSwitch {
-                buttonIcon: "point_scan"
-                text: "Show aim lines"
-                checked: Config.options.regionSelector.rect.showAimLines
-                onCheckedChanged: {
-                    Config.options.regionSelector.rect.showAimLines = checked;
-                }
-            }
-
-        }
-
-        ContentSubsection {
-            title: "Circle selection"
-
-            ConfigSpinBox {
-                icon: "eraser_size_3"
-                text: "Stroke width"
-                value: Config.options.regionSelector.circle.strokeWidth
-                from: 1
-                to: 20
-                stepSize: 1
-                onValueChanged: {
-                    Config.options.regionSelector.circle.strokeWidth = value;
-                }
-            }
-
-            ConfigSpinBox {
-                icon: "screenshot_frame_2"
-                text: "Padding"
-                value: Config.options.regionSelector.circle.padding
-                from: 0
-                to: 100
-                stepSize: 5
-                onValueChanged: {
-                    Config.options.regionSelector.circle.padding = value;
-                }
             }
 
         }
@@ -566,24 +511,6 @@ ContentPage {
 
             }
 
-        }
-
-    }
-
-    ContentSection {
-        icon: "voting_chip"
-        title: "On-screen display"
-
-        ConfigSpinBox {
-            icon: "av_timer"
-            text: "Timeout (ms)"
-            value: Config.options.osd.timeout
-            from: 100
-            to: 3000
-            stepSize: 100
-            onValueChanged: {
-                Config.options.osd.timeout = value;
-            }
         }
 
     }

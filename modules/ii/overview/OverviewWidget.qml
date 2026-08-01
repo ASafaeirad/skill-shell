@@ -231,7 +231,7 @@ Item {
 
                     Timer {
                         id: updateWindowPosition
-                        interval: Config.options.hacks.arbitraryRaceConditionDelay
+                        interval: 20 // was hacks.arbitraryRaceConditionDelay
                         repeat: false
                         running: false
                         onTriggered: {

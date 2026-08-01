@@ -2,6 +2,7 @@ pragma Singleton
 pragma ComponentBehavior: Bound
 import qs
 import qs.modules.common
+import qs.services
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -48,7 +49,7 @@ Singleton {
             if (minutes > 0 || !formatted)
                 formatted += `${formatted ? ", " : ""}${minutes}m`;
             uptime = formatted;
-            interval = Config.options?.resources?.updateInterval ?? 3000;
+            interval = ResourceUsage.updateInterval;
         }
     }
 

@@ -8,36 +8,6 @@ ContentPage {
     forceWidth: true
 
     ContentSection {
-        icon: "music_cast"
-        title: "Music Recognition"
-
-        ConfigSpinBox {
-            icon: "timer_off"
-            text: "Total duration timeout (s)"
-            value: Config.options.musicRecognition.timeout
-            from: 10
-            to: 100
-            stepSize: 2
-            onValueChanged: {
-                Config.options.musicRecognition.timeout = value;
-            }
-        }
-
-        ConfigSpinBox {
-            icon: "av_timer"
-            text: "Polling interval (s)"
-            value: Config.options.musicRecognition.interval
-            from: 2
-            to: 10
-            stepSize: 1
-            onValueChanged: {
-                Config.options.musicRecognition.interval = value;
-            }
-        }
-
-    }
-
-    ContentSection {
         icon: "cell_tower"
         title: "Networking"
 
@@ -48,24 +18,6 @@ ContentPage {
             wrapMode: TextEdit.Wrap
             onTextChanged: {
                 Config.options.networking.userAgent = text;
-            }
-        }
-
-    }
-
-    ContentSection {
-        icon: "memory"
-        title: "Resources"
-
-        ConfigSpinBox {
-            icon: "av_timer"
-            text: "Polling interval (ms)"
-            value: Config.options.resources.updateInterval
-            from: 100
-            to: 10000
-            stepSize: 100
-            onValueChanged: {
-                Config.options.resources.updateInterval = value;
             }
         }
 

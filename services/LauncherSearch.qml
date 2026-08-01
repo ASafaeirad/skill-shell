@@ -120,7 +120,7 @@ Singleton {
     property string mathResult: ""
     Timer {
         id: nonAppResultsTimer
-        interval: Config.options.search.nonAppResultDelay
+        interval: 30 // was search.nonAppResultDelay
         onTriggered: {
             let expr = root.query;
             if (expr.startsWith(Config.options.search.prefix.math)) {

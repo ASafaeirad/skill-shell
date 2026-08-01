@@ -70,7 +70,7 @@ Scope {
             }
         }
         keyChips.append({ "label": label, "count": 1 });
-        while (keyChips.count > Config.options.keyDisplay.maxKeys)
+        while (keyChips.count > 6) // was keyDisplay.maxKeys
             keyChips.remove(0);
         chipTimeout.restart();
     }
@@ -113,7 +113,7 @@ Scope {
 
     Timer {
         id: chipTimeout
-        interval: Config.options.keyDisplay.timeout
+        interval: 2500 // was keyDisplay.timeout
         repeat: false
         onTriggered: keyChips.clear()
     }

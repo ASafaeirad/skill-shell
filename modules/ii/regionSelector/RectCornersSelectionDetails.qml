@@ -13,7 +13,6 @@ Item {
     required property real mouseY
     required property color color
     required property color overlayColor
-    property bool showAimLines: Config.options.regionSelector.rect.showAimLines
     property bool breathingBorderOnly: false
 
     // Overlay to darken screen
@@ -97,7 +96,7 @@ Item {
     // Coord lines
     Rectangle {
         // Vertical
-        visible: root.showAimLines && !root.breathingBorderOnly
+        visible: !root.breathingBorderOnly // rect.showAimLines was true
         opacity: 0.2
         z: 2
         x: root.mouseX
@@ -113,7 +112,7 @@ Item {
 
     // Horizontal
     Rectangle {
-        visible: root.showAimLines && !root.breathingBorderOnly
+        visible: !root.breathingBorderOnly // rect.showAimLines was true
         opacity: 0.2
         z: 2
         y: root.mouseY
