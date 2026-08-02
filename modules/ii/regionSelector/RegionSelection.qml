@@ -36,6 +36,12 @@ PanelWindow {
     property var selectionMode: RegionSelection.SelectionMode.RectCorners
     property var phase: RegionSelection.Phase.Select
     signal dismiss()
+    Component.onDestruction: screenshotProc.restoreCursor()
+
+    function dismissAndRestoreCursor() {
+        screenshotProc.restoreCursor();
+        root.dismiss();
+    }
 
     // Styles
     property string screenshotDir: Directories.screenshotTemp
@@ -193,6 +199,7 @@ PanelWindow {
         screen: root.screen
         screenshotDir: root.screenshotDir
         screenshotPath: root.screenshotPath
+        keepCursorHidden: true
         onExited: (exitCode, exitStatus) => {
             if (root.enableContentRegions) imageDetectionProcess.running = true;
             root.preparationDone = !checkRecordingProc.running;
@@ -214,7 +221,7 @@ PanelWindow {
         if (!preparationDone) return;
         if (root.isRecording && root.recordingShouldStop) {
             Quickshell.execDetached([Directories.recordScriptPath]);
-            root.dismiss();
+            root.dismissAndRestoreCursor();
             return;
         }
         root.visible = true;
@@ -254,7 +261,7 @@ PanelWindow {
                 return ScreenshotAction.Action.RecordWithSound;
             default:
                 console.warn("[Region Selector] Unknown snip action, skipping snip.");
-                root.dismiss();
+                root.dismissAndRestoreCursor();
                 return;
         }
     }
@@ -264,7 +271,7 @@ PanelWindow {
         // Validity check
         if (root.regionWidth <= 0 || root.regionHeight <= 0) {
             console.warn("[Region Selector] Invalid region size, skipping snip.");
-            root.dismiss();
+            root.dismissAndRestoreCursor();
         }
 
         // Clamp region to screen bounds
@@ -299,7 +306,7 @@ PanelWindow {
             root.visible = false
             Qt.callLater(() => root.visible = true)
         } else {
-            root.dismiss();
+            root.dismissAndRestoreCursor();
         }
     }
 
@@ -312,15 +319,20 @@ PanelWindow {
     }
 
     ScreencopyView { // For freezing
+        id: screencopyView
         anchors.fill: parent
         live: false
-        captureSource: root.screen
+        captureSource: root.preparationDone ? root.screen : null
         visible: root.phase === RegionSelection.Phase.Select
+
+        onHasContentChanged: {
+            if (hasContent) screenshotProc.restoreCursor();
+        }
 
         focus: root.visible
         Keys.onPressed: (event) => { // Esc to close
             if (event.key === Qt.Key_Escape) {
-                root.dismiss();
+                root.dismissAndRestoreCursor();
             }
         }
     }
@@ -529,12 +541,12 @@ PanelWindow {
                 Synchronizer on selectionMode {
                     property alias source: root.selectionMode
                 }
-                onDismiss: root.dismiss();
+                onDismiss: root.dismissAndRestoreCursor();
             }
             ToolbarPairedFab {
                 anchors.verticalCenter: parent.verticalCenter
                 iconText: "close"
-                onClicked: root.dismiss();
+                onClicked: root.dismissAndRestoreCursor();
                 StyledToolTip {
                     text: "Close"
                 }
