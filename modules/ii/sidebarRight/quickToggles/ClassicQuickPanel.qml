@@ -45,9 +45,6 @@ AbstractQuickPanel {
         EasyEffectsToggle {
         }
 
-        CloudflareWarp {
-        }
-
     }
 
 }
