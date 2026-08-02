@@ -7,6 +7,14 @@ import qs.services
 StyledPopup {
     id: root
 
+    // Hyprland emits no event for a mode change, so HyprlandData.monitors can be stale by the
+    // time the popup opens (the `power` CLI switches refresh rate on plug/unplug). Re-read on
+    // open; the popup only exists while hovered, so this costs one hyprctl call per hover.
+    readonly property var focusedMonitor: HyprlandData.monitors.find(m => m.focused) ?? HyprlandData.monitors[0] ?? null
+
+    onActiveChanged: if (root.active)
+        HyprlandData.updateMonitors()
+
     ColumnLayout {
         id: columnLayout
 
@@ -67,6 +75,19 @@ StyledPopup {
             icon: "heart_check"
             label: "Health:"
             value: `${(Battery.health).toFixed(1)}%`
+        }
+
+        StyledPopupValueRow {
+            visible: (root.focusedMonitor?.refreshRate ?? 0) > 0
+            icon: "monitor"
+            label: "Refresh:"
+            value: {
+                const monitor = root.focusedMonitor;
+                if (!monitor)
+                    return "";
+                // VRR is worth surfacing: mode-setting drops it silently if not preserved.
+                return `${Math.round(monitor.refreshRate)}Hz${monitor.vrr ? " · VRR" : ""}`;
+            }
         }
 
     }

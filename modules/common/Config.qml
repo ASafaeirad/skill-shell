@@ -176,6 +176,8 @@ Singleton {
                 property int full: 101
                 property bool automaticSuspend: true
                 property int suspend: 3
+                // Invoke `power auto` on AC/battery transitions (services/PowerProfile.qml)
+                property bool autoPowerProfile: true
             }
 
             property JsonObject conflictKiller: JsonObject {
