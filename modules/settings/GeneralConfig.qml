@@ -98,9 +98,6 @@ ContentPage {
                     "value": "powersaver"
                 }
             ]
-            StyledToolTip {
-                text: "Auto follows the power source: balanced and 240Hz on AC, power saver and 60Hz on battery. Performance pins the performance profile and 240Hz on both sources. Power Saver pins the power saver profile on both, while refresh rate still follows the source. Plugged in is always 240Hz."
-            }
         }
     }
 
