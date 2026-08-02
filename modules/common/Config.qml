@@ -138,7 +138,7 @@ Singleton {
                 property int cornerStyle: 0 // 0: Hug | 1: Float | 2: Plain rectangle
                 property bool floatStyleShadow: true // Show shadow behind bar when cornerStyle == 1 (Float)
                 property bool borderless: false // true for no grouping of items
-                property string topLeftIcon: "spark" // Options: "distro" or any icon name in ~/.config/quickshell/ii/assets/icons
+                property string topLeftIcon: "spark" // Options: "distro" or any icon name in ~/.config/quickshell/widgets/assets/icons
                 property bool showBackground: true
                 property bool verbose: true
                 property bool vertical: false
@@ -348,7 +348,7 @@ Singleton {
             property JsonObject wallpaperSelector: JsonObject {
                 property bool useSystemFileDialog: false
             }
-            
+
             property JsonObject windows: JsonObject {
                 property bool showTitlebar: true // Client-side decoration for shell apps
                 property bool centerTitle: true

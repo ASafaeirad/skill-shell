@@ -21,7 +21,7 @@ Quickshell hot-reloads the whole config on file save. Never restart the shell ju
    ```sh
    qs list --all
    ```
-   Must show the instance with config path `.../quickshell/ii/shell.qml`.
+   Must show the instance with config path `.../quickshell/widgets/shell.qml`.
    ⚠️ Plain `qs list` always errors with "Could not find default config" — that is not a failure signal; use `--all` or `-c skill`.
 
 3. **Exercise the feature headlessly.** Find the IPC surface, then drive it:
@@ -34,7 +34,7 @@ Quickshell hot-reloads the whole config on file save. Never restart the shell ju
 
 4. **Settings app** changes can be tested without touching the running shell:
    ```sh
-   qs -p ~/.config/quickshell/ii/settings.qml
+   qs -p ~/.config/quickshell/widgets/settings.qml
    ```
 
 ## Escalation ladder (in order)

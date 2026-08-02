@@ -100,14 +100,14 @@ Details in `.claude/skills/verify-shell`.
 
 ## Removing or refactoring a feature (hints)
 
-Features are **not self-contained** — one threads through service singletons, panel modules, the panel-family loader, both bar variants, `Config.qml` schema, `Persistent.qml` state, `Directories.qml` paths, the settings app, `welcome.qml`, and sometimes helper scripts. Before deleting, map the blast radius:
+Features are **not self-contained** — one threads through service singletons, panel modules, the panel-family loader, both bar variants, `Config.qml` schema, `Persistent.qml` state, `Directories.qml` paths, the settings app, and sometimes helper scripts. Before deleting, map the blast radius:
 
 1. Grep broadly for service names, module dir, widget names, config keys (`options.X`, `policies.X`), and `GlobalStates.*` across **all** `*.qml`, not just the feature dir.
 2. For each hit, decide **feature-specific (delete) vs shared (keep)**. Services, scripts, `policies.*` flags, and `GlobalStates` are often reused by unrelated features (other panels, the lock screen, wallpaper theming) — verify before assuming a dependency is dedicated.
 3. Removing a panel = delete `modules/widgets/<panel>/` **and** drop its `import` + `PanelLoader { component: X {} }` line from `panelFamilies/IllogicalImpulseFamily.qml` (the only importer of widgets panel modules).
 4. Removing a bar entry point: fix **both** bar variants, and check for `id`-references to the removed widget from siblings and for `MouseArea` handlers that acted on it.
 5. Deleting a `JsonObject` from `Config.qml`/`Persistent.qml` leaves orphan keys in the user's `config.json` until the next shell-side rewrite — harmless; don't hand-edit the JSON to chase them.
-6. Also purge the settings UI (`modules/settings/*Config.qml`) and `welcome.qml`, or dead toggles linger.
+6. Also purge the settings UI (`modules/settings/*Config.qml`), or dead toggles linger.
 7. **Transient hot-reload warnings are normal**: `TypeError: Cannot read property 'X' of undefined/null` during a reload or a `SwipeView`/tab-list rebuild is noise — confirm only that the property isn't one you changed.
 
 ## Gotchas

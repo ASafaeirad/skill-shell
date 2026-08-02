@@ -46,7 +46,7 @@ Item {
     function animateIn() {
         // Reset input each time the panel opens. Without this, reopening while
         // the previous exit animation is still playing reuses this same instance
-        // with stale query text (e.g. running ii-menu twice back-to-back).
+        // with stale query text (e.g. running menu twice back-to-back).
         searchField.text = "";
         exitAnim.stop();
         enterAnim.start();
