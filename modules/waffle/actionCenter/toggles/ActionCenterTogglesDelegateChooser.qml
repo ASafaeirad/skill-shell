@@ -20,16 +20,6 @@ DelegateChooser {
     // role: "type" is implied by usage
 
     DelegateChoice {
-        roleValue: "antiFlashbang"
-        ActionCenterToggleButton {
-            toggleModel: AntiFlashbangToggle {}
-            icon: "flash-off"
-            menu: Component {
-                NightLightControl {}
-            }
-        }
-    }
-    DelegateChoice {
         roleValue: "bluetooth"
         ActionCenterToggleButton {
             toggleModel: BluetoothToggle {}
