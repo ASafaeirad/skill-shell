@@ -10,7 +10,7 @@ The shell uses the **widgets** panel family, loaded lazily in `shell.qml`.
 
 ```
 .
-├── shell.qml                 # ShellRoot: shared startup and widgets family loader
+├── shell.qml                 # ShellRoot: startup and lazy panel loading
 ├── settings.qml              # Separate settings app: qs -p settings.qml
 ├── GlobalStates.qml          # Singleton: open/closed state of every panel
 ├── ReloadPopup.qml           # Shows QML error popup when hot reload fails
@@ -24,12 +24,11 @@ The shell uses the **widgets** panel family, loaded lazily in `shell.qml`.
 │   │   │                     #   ConfigSwitch/Slider/SpinBox/SelectionArray, ...
 │   │   ├── functions/        #   Fuzzy.qml (fuzzysort), StringUtils, ColorUtils
 │   │   └── models/           #   LauncherSearchResult.qml etc.
-│   ├──                    # Panels of the widgets family: bar/, verticalBar/, dock/,
+│   ├── widgets/              # Panels: bar/, verticalBar/, dock/,
 │   │                         #   overview/ (= the launcher), sidebarLeft/, sidebarRight/,
 │   │                         #   notificationPopup/, onScreenDisplay/, sessionScreen/,
 │   │                         #   lock/, polkit/, background/, ...
 │   └── settings/             # Pages of the settings app (BarConfig.qml, ...)
-├── panelFamilies/            # IllogicalImpulseFamily.qml: PanelLoader{} per panel
 └── scripts/                  # Runtime helper scripts (colors, ai, ...) — not dev tools
 ```
 
@@ -104,7 +103,7 @@ Features are **not self-contained** — one threads through service singletons, 
 
 1. Grep broadly for service names, module dir, widget names, config keys (`options.X`, `policies.X`), and `GlobalStates.*` across **all** `*.qml`, not just the feature dir.
 2. For each hit, decide **feature-specific (delete) vs shared (keep)**. Services, scripts, `policies.*` flags, and `GlobalStates` are often reused by unrelated features (other panels, the lock screen, wallpaper theming) — verify before assuming a dependency is dedicated.
-3. Removing a panel = delete `modules/widgets/<panel>/` **and** drop its `import` + `PanelLoader { component: X {} }` line from `panelFamilies/IllogicalImpulseFamily.qml` (the only importer of widgets panel modules).
+3. Removing a panel = delete `modules/widgets/<panel>/` **and** drop its `import` + `PanelLoader { component: X {} }` line from `shell.qml` (the only importer of widgets panel modules).
 4. Removing a bar entry point: fix **both** bar variants, and check for `id`-references to the removed widget from siblings and for `MouseArea` handlers that acted on it.
 5. Deleting a `JsonObject` from `Config.qml`/`Persistent.qml` leaves orphan keys in the user's `config.json` until the next shell-side rewrite — harmless; don't hand-edit the JSON to chase them.
 6. Also purge the settings UI (`modules/settings/*Config.qml`), or dead toggles linger.
