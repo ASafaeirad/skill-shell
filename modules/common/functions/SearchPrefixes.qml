@@ -24,18 +24,6 @@ QtObject {
     readonly property string webSearch: "?"
     readonly property bool showDefaultActionsWithoutPrefix: true
 
-    // Canonical order used by the waffle search category chips.
-    readonly property list<int> kinds: [
-        SearchPrefixes.PrefixKind.DefaultSearch,
-        SearchPrefixes.PrefixKind.App,
-        SearchPrefixes.PrefixKind.Action,
-        SearchPrefixes.PrefixKind.Clipboard,
-        SearchPrefixes.PrefixKind.Emojis,
-        SearchPrefixes.PrefixKind.Math,
-        SearchPrefixes.PrefixKind.ShellCommand,
-        SearchPrefixes.PrefixKind.WebSearch
-    ]
-
     function detect(query) {
         if (query.startsWith(action)) return SearchPrefixes.PrefixKind.Action;
         if (query.startsWith(app)) return SearchPrefixes.PrefixKind.App;
@@ -66,25 +54,6 @@ QtObject {
             return query;
         const detectedPrefix = prefix(detectedKind);
         return detectedPrefix === "" ? query : query.slice(detectedPrefix.length);
-    }
-
-    function ensurePrefix(query, kind) {
-        const requestedPrefix = prefix(kind);
-        const currentPrefix = prefix(detect(query));
-        return requestedPrefix + (currentPrefix === "" ? query : query.slice(currentPrefix.length));
-    }
-
-    function displayName(kind) {
-        switch (kind) {
-        case SearchPrefixes.PrefixKind.Action: return "Actions";
-        case SearchPrefixes.PrefixKind.App: return "Apps";
-        case SearchPrefixes.PrefixKind.Clipboard: return "Clipboard";
-        case SearchPrefixes.PrefixKind.Emojis: return "Emojis";
-        case SearchPrefixes.PrefixKind.Math: return "Math";
-        case SearchPrefixes.PrefixKind.ShellCommand: return "Commands";
-        case SearchPrefixes.PrefixKind.WebSearch: return "Web";
-        default: return "All";
-        }
     }
 
     function icon(kind) {

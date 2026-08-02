@@ -2,7 +2,7 @@
 
 This is the end-4 **illogical-impulse** desktop shell for Quickshell (0.3.0, Qt 6.11) on Arch Linux + Hyprland. Entry point: `shell.qml`. It runs as `qs -c ii`, autostarted by Hyprland (`exec-once = qs -c ii` in `~/.config/hypr/autostart.conf`).
 
-Two switchable "panel families" exist: **ii** (the main one) and **waffle** (Windows-like), selected by `Config.options.panelFamily` and loaded lazily in `shell.qml`. Most work targets the `ii` family.
+The shell uses the **ii** panel family, loaded lazily in `shell.qml`.
 
 ⚠️ **The shell owns the polkit agent and notification daemon.** Don't leave it dead; avoid killing it unless a hot reload is genuinely stuck (see Verifying changes).
 
@@ -10,7 +10,7 @@ Two switchable "panel families" exist: **ii** (the main one) and **waffle** (Win
 
 ```
 .
-├── shell.qml                 # ShellRoot: panel family loaders, panelFamily IPC
+├── shell.qml                 # ShellRoot: shared startup and ii family loader
 ├── settings.qml              # Separate settings app: qs -p settings.qml
 ├── GlobalStates.qml          # Singleton: open/closed state of every panel
 ├── ReloadPopup.qml           # Shows QML error popup when hot reload fails
@@ -28,7 +28,6 @@ Two switchable "panel families" exist: **ii** (the main one) and **waffle** (Win
 │   │                         #   overview/ (= the launcher), sidebarLeft/, sidebarRight/,
 │   │                         #   notificationPopup/, onScreenDisplay/, sessionScreen/,
 │   │                         #   lock/, polkit/, background/, ...
-│   ├── waffle/               # Second panel family (own bar, startMenu, ...)
 │   └── settings/             # Pages of the settings app (BarConfig.qml, ...)
 ├── panelFamilies/            # IllogicalImpulseFamily.qml: PanelLoader{} per panel
 └── scripts/                  # Runtime helper scripts (colors, ai, ...) — not dev tools
@@ -104,18 +103,17 @@ Details in `.claude/skills/verify-shell`.
 Features are **not self-contained** — one threads through service singletons, panel modules, the panel-family loader, both bar variants, `Config.qml` schema, `Persistent.qml` state, `Directories.qml` paths, the settings app, `welcome.qml`, and sometimes helper scripts. Before deleting, map the blast radius:
 
 1. Grep broadly for service names, module dir, widget names, config keys (`options.X`, `policies.X`), and `GlobalStates.*` across **all** `*.qml`, not just the feature dir.
-2. For each hit, decide **feature-specific (delete) vs shared (keep)**. Services, scripts, `policies.*` flags, and `GlobalStates` are often reused by unrelated features (other panels, the lock screen, wallpaper theming, the waffle family) — verify before assuming a dependency is dedicated.
+2. For each hit, decide **feature-specific (delete) vs shared (keep)**. Services, scripts, `policies.*` flags, and `GlobalStates` are often reused by unrelated features (other panels, the lock screen, wallpaper theming) — verify before assuming a dependency is dedicated.
 3. Removing a panel = delete `modules/ii/<panel>/` **and** drop its `import` + `PanelLoader { component: X {} }` line from `panelFamilies/IllogicalImpulseFamily.qml` (the only importer of ii panel modules).
 4. Removing a bar entry point: fix **both** bar variants, and check for `id`-references to the removed widget from siblings and for `MouseArea` handlers that acted on it.
 5. Deleting a `JsonObject` from `Config.qml`/`Persistent.qml` leaves orphan keys in the user's `config.json` until the next shell-side rewrite — harmless; don't hand-edit the JSON to chase them.
 6. Also purge the settings UI (`modules/settings/*Config.qml`) and `welcome.qml`, or dead toggles linger.
-7. Both panel families reuse the same IPC `target:`/`GlobalShortcut name:`; only one loads at a time, so removing the ii handler never touches the waffle one.
-8. **Transient hot-reload warnings are normal**: `TypeError: Cannot read property 'X' of undefined/null` during a reload or a `SwipeView`/tab-list rebuild is noise — confirm only that the property isn't one you changed.
+7. **Transient hot-reload warnings are normal**: `TypeError: Cannot read property 'X' of undefined/null` during a reload or a `SwipeView`/tab-list rebuild is noise — confirm only that the property isn't one you changed.
 
 ## Gotchas
 
-- **Launcher prefix logic is duplicated across ~7 files.** Prefix strings live in `Config.qml` (`search.prefix`), but branching/stripping/icons appear in: `services/LauncherSearch.qml` (`ensurePrefix` + `results`), `modules/common/functions/StringUtils.qml` helpers' call sites, `modules/overview/SearchBar.qml` (`SearchPrefixType` enum + icon/shape switches), `modules/overview/SearchWidget.qml` (`cleanOnePrefix` list), and the waffle family (`modules/waffle/startMenu/StartMenuContext.qml`, `startMenu/searchPage/TagStrip.qml`, `startMenu/WaffleStartMenu.qml`). Adding a prefix means touching all the relevant ones — see the skill.
-- **The bar exists in three variants**: `modules/bar/BarContent.qml` (horizontal), `modules/verticalBar/VerticalBarContent.qml` (separate composition with its own widget variants), and the waffle bar. A widget added to one does not appear in the others; decide scope consciously.
+- **Launcher prefix logic spans several files.** Prefix definitions and helpers live in `modules/common/functions/SearchPrefixes.qml`, provider behavior in `services/LauncherSearch.qml`, and presentation in `modules/ii/overview/SearchBar.qml` and `SearchWidget.qml`. Adding a prefix means touching all relevant call sites — see the skill.
+- **The bar exists in two ii variants**: `modules/ii/bar/BarContent.qml` (horizontal) and `modules/ii/verticalBar/VerticalBarContent.qml` (separate composition with its own widget variants). A widget added to one does not appear in the other; decide scope consciously.
 - The bar adapts to screen width via `useShortenedForm` (0/1/2) and fixes middle-group widths via `centerSideModuleWidth` — gate wide widgets on `useShortenedForm`.
 - `config.json` is rewritten by the shell ~50 ms after any QML-side option change; schema defaults live in `Config.qml`, the JSON only reflects current values.
 - Single monitor setup; Hyprland master layout, gaps 5, rounding 8. Keyboard layouts `us,ir`.

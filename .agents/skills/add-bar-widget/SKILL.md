@@ -54,7 +54,6 @@ Gotchas:
 ## 3. Decide variant coverage (consciously, don't skip)
 
 - **Vertical bar** is a separate composition: `modules/ii/verticalBar/VerticalBarContent.qml` with its own widget variants (`VerticalClockWidget.qml`...). If the user uses `Config.options.bar.vertical`, add a variant or state that you didn't.
-- **Waffle family** has its own bar (`modules/waffle/`) — usually out of scope; say so.
 
 ## 4. Optional: visibility toggle
 
