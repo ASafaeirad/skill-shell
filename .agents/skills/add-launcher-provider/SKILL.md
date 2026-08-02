@@ -25,8 +25,6 @@ Otherwise, prefix logic is **duplicated across many files** — work through thi
 
 4. **Prefix stripping in the widget** — `modules/ii/overview/SearchWidget.qml` ~line 215: add `Config.options.search.prefix.myThing` to the `cleanOnePrefix([...])` array.
 
-5. **Waffle parity — conscious decision, usually skip.** The waffle family duplicates prefix handling in `modules/waffle/startMenu/StartMenuContext.qml`, `startMenu/searchPage/TagStrip.qml`, `startMenu/WaffleStartMenu.qml`. The user runs the `ii` family; state explicitly that waffle was not updated unless asked.
-
 ## Verify
 
 ```sh
