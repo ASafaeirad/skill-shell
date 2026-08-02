@@ -1,8 +1,8 @@
-# Quickshell config — end-4 "illogical-impulse" (ii)
+# Quickshell config
 
-This is the end-4 **illogical-impulse** desktop shell for Quickshell (0.3.0, Qt 6.11) on Arch Linux + Hyprland. Entry point: `shell.qml`. It runs as `qs -c ii`, autostarted by Hyprland (`exec-once = qs -c ii` in `~/.config/hypr/autostart.conf`).
+This is the end-4 **illogical-impulse** desktop shell for Quickshell (0.3.0, Qt 6.11) on Arch Linux + Hyprland. Entry point: `shell.qml`. It runs as `qs -c skill`, autostarted by Hyprland (`exec-once = qs -c skill` in `~/.config/hypr/autostart.conf`).
 
-The shell uses the **ii** panel family, loaded lazily in `shell.qml`.
+The shell uses the **widgets** panel family, loaded lazily in `shell.qml`.
 
 ⚠️ **The shell owns the polkit agent and notification daemon.** Don't leave it dead; avoid killing it unless a hot reload is genuinely stuck (see Verifying changes).
 
@@ -10,7 +10,7 @@ The shell uses the **ii** panel family, loaded lazily in `shell.qml`.
 
 ```
 .
-├── shell.qml                 # ShellRoot: shared startup and ii family loader
+├── shell.qml                 # ShellRoot: shared startup and widgets family loader
 ├── settings.qml              # Separate settings app: qs -p settings.qml
 ├── GlobalStates.qml          # Singleton: open/closed state of every panel
 ├── ReloadPopup.qml           # Shows QML error popup when hot reload fails
@@ -24,7 +24,7 @@ The shell uses the **ii** panel family, loaded lazily in `shell.qml`.
 │   │   │                     #   ConfigSwitch/Slider/SpinBox/SelectionArray, ...
 │   │   ├── functions/        #   Fuzzy.qml (fuzzysort), StringUtils, ColorUtils
 │   │   └── models/           #   LauncherSearchResult.qml etc.
-│   ├──                    # Panels of the ii family: bar/, verticalBar/, dock/,
+│   ├──                    # Panels of the widgets family: bar/, verticalBar/, dock/,
 │   │                         #   overview/ (= the launcher), sidebarLeft/, sidebarRight/,
 │   │                         #   notificationPopup/, onScreenDisplay/, sessionScreen/,
 │   │                         #   lock/, polkit/, background/, ...
@@ -71,32 +71,32 @@ property JsonObject bar: JsonObject {
 
 Each panel's Scope defines `IpcHandler { target: "..." }` functions and `GlobalShortcut { name: "..." }` entries (e.g. `modules/overview/Overview.qml` has target `search` with `toggle()`, `close()`, `clipboardToggle()`...).
 
-- Hyprland keybinds (`~/.config/hypr/keybinds.conf`) invoke them: `qs -c ii ipc call search toggle`.
-- List all live targets/functions: `qs -c ii ipc show`.
+- Hyprland keybinds (`~/.config/hypr/keybinds.conf`) invoke them: `qs -c skill ipc call search toggle`.
+- List all live targets/functions: `qs -c skill ipc show`.
 - Panel open/closed state lives in `GlobalStates.qml` properties (e.g. `GlobalStates.overviewOpen`).
 
 ## Verifying changes (do this after every edit)
 
 Quickshell **hot-reloads on file save** — no restart needed.
 
-1. **Did the reload succeed?** On failure, `ReloadPopup.qml` shows the QML error on screen. Headless check: `qs -c ii log -t 30` and look for QML errors mentioning your file. (Warnings about missing icons are normal noise.)
-2. **Is the instance alive?** `qs list --all` — note: plain `qs list` errors with "Could not find default config"; always pass `--all` or `-c ii`.
-3. **Exercise the feature headlessly:** find the target with `qs -c ii ipc show`, then e.g. `qs -c ii ipc call search toggle`, `qs -c ii ipc call osdVolume trigger`.
+1. **Did the reload succeed?** On failure, `ReloadPopup.qml` shows the QML error on screen. Headless check: `qs -c skill log -t 30` and look for QML errors mentioning your file. (Warnings about missing icons are normal noise.)
+2. **Is the instance alive?** `qs list --all` — note: plain `qs list` errors with "Could not find default config"; always pass `--all` or `-c skill`.
+3. **Exercise the feature headlessly:** find the target with `qs -c skill ipc show`, then e.g. `qs -c skill ipc call search toggle`, `qs -c skill ipc call osdVolume trigger`.
 4. **Settings app** can be tested standalone without touching the shell: `qs -p ~/.config/quickshell/settings.qml`.
-5. **Full restart — last resort only** (kills polkit agent + notifications briefly): `qs kill -c ii && qs -c ii -d`.
+5. **Full restart — last resort only** (kills polkit agent + notifications briefly): `qs kill -c skill && qs -c skill -d`.
 
 Details in `.claude/skills/verify-shell`.
 
 ## Common tasks
 
-| Task                                  | How                                                                                                                                                    |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Task                                  | How                                                                                                                                              |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Add launcher action (`/foo`)          | **Zero code**: drop an executable script in `~/.config/skill-shell/actions/` — auto-appears under the `/` prefix, remaining query passed as args |
 | Change a setting                      | Edit `~/.config/skill-shell/config.json` directly (hot-applies)                                                                                  |
-| Add a bar widget                      | `.claude/skills/add-bar-widget`                                                                                                                        |
-| Add a launcher search provider/prefix | `.claude/skills/add-launcher-provider`                                                                                                                 |
-| Add a config option (+ settings UI)   | `.claude/skills/add-config-option`                                                                                                                     |
-| Verify a change works                 | `.claude/skills/verify-shell`                                                                                                                          |
+| Add a bar widget                      | `.claude/skills/add-bar-widget`                                                                                                                  |
+| Add a launcher search provider/prefix | `.claude/skills/add-launcher-provider`                                                                                                           |
+| Add a config option (+ settings UI)   | `.claude/skills/add-config-option`                                                                                                               |
+| Verify a change works                 | `.claude/skills/verify-shell`                                                                                                                    |
 
 ## Removing or refactoring a feature (hints)
 
@@ -104,7 +104,7 @@ Features are **not self-contained** — one threads through service singletons, 
 
 1. Grep broadly for service names, module dir, widget names, config keys (`options.X`, `policies.X`), and `GlobalStates.*` across **all** `*.qml`, not just the feature dir.
 2. For each hit, decide **feature-specific (delete) vs shared (keep)**. Services, scripts, `policies.*` flags, and `GlobalStates` are often reused by unrelated features (other panels, the lock screen, wallpaper theming) — verify before assuming a dependency is dedicated.
-3. Removing a panel = delete `modules/ii/<panel>/` **and** drop its `import` + `PanelLoader { component: X {} }` line from `panelFamilies/IllogicalImpulseFamily.qml` (the only importer of ii panel modules).
+3. Removing a panel = delete `modules/widgets/<panel>/` **and** drop its `import` + `PanelLoader { component: X {} }` line from `panelFamilies/IllogicalImpulseFamily.qml` (the only importer of widgets panel modules).
 4. Removing a bar entry point: fix **both** bar variants, and check for `id`-references to the removed widget from siblings and for `MouseArea` handlers that acted on it.
 5. Deleting a `JsonObject` from `Config.qml`/`Persistent.qml` leaves orphan keys in the user's `config.json` until the next shell-side rewrite — harmless; don't hand-edit the JSON to chase them.
 6. Also purge the settings UI (`modules/settings/*Config.qml`) and `welcome.qml`, or dead toggles linger.
@@ -112,8 +112,8 @@ Features are **not self-contained** — one threads through service singletons, 
 
 ## Gotchas
 
-- **Launcher prefix logic spans several files.** Prefix definitions and helpers live in `modules/common/functions/SearchPrefixes.qml`, provider behavior in `services/LauncherSearch.qml`, and presentation in `modules/ii/overview/SearchBar.qml` and `SearchWidget.qml`. Adding a prefix means touching all relevant call sites — see the skill.
-- **The bar exists in two ii variants**: `modules/ii/bar/BarContent.qml` (horizontal) and `modules/ii/verticalBar/VerticalBarContent.qml` (separate composition with its own widget variants). A widget added to one does not appear in the other; decide scope consciously.
+- **Launcher prefix logic spans several files.** Prefix definitions and helpers live in `modules/common/functions/SearchPrefixes.qml`, provider behavior in `services/LauncherSearch.qml`, and presentation in `modules/widgets/overview/SearchBar.qml` and `SearchWidget.qml`. Adding a prefix means touching all relevant call sites — see the skill.
+- **The bar exists in two widgets variants**: `modules/widgets/bar/BarContent.qml` (horizontal) and `modules/widgets/verticalBar/VerticalBarContent.qml` (separate composition with its own widget variants). A widget added to one does not appear in the other; decide scope consciously.
 - The bar adapts to screen width via `useShortenedForm` (0/1/2) and fixes middle-group widths via `centerSideModuleWidth` — gate wide widgets on `useShortenedForm`.
 - `config.json` is rewritten by the shell ~50 ms after any QML-side option change; schema defaults live in `Config.qml`, the JSON only reflects current values.
 - Single monitor setup; Hyprland master layout, gaps 5, rounding 8. Keyboard layouts `us,ir`.

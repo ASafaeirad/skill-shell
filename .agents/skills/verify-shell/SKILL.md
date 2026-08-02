@@ -11,7 +11,7 @@ Quickshell hot-reloads the whole config on file save. Never restart the shell ju
 
 1. **Reload status.** A failed reload shows an on-screen popup with the QML error (`ReloadPopup.qml`). Headless equivalent:
    ```sh
-   qs -c ii log -t 30
+   qs -c skill log -t 30
    ```
    Look for QML errors referencing the file you edited (`... .qml:LINE: error`). Append `-f` to follow live while re-saving the file.
 
@@ -22,13 +22,13 @@ Quickshell hot-reloads the whole config on file save. Never restart the shell ju
    qs list --all
    ```
    Must show the instance with config path `.../quickshell/ii/shell.qml`.
-   ⚠️ Plain `qs list` always errors with "Could not find default config" — that is not a failure signal; use `--all` or `-c ii`.
+   ⚠️ Plain `qs list` always errors with "Could not find default config" — that is not a failure signal; use `--all` or `-c skill`.
 
 3. **Exercise the feature headlessly.** Find the IPC surface, then drive it:
    ```sh
-   qs -c ii ipc show                     # lists all targets + functions
-   qs -c ii ipc call search toggle       # example: open the launcher
-   qs -c ii ipc call search close
+   qs -c skill ipc show                     # lists all targets + functions
+   qs -c skill ipc call search toggle       # example: open the launcher
+   qs -c skill ipc call search close
    ```
    Panel visibility state lives in `GlobalStates.qml` properties if you need to reason about it.
 
@@ -43,6 +43,6 @@ Quickshell hot-reloads the whole config on file save. Never restart the shell ju
 2. If the error is in your edit: fix it. The shell keeps running the last good state while reload fails, so there's no rush.
 3. Only if the shell state is genuinely corrupted (panels gone, IPC dead):
    ```sh
-   qs kill -c ii && qs -c ii -d
+   qs kill -c skill && qs -c skill -d
    ```
    ⚠️ This briefly kills the **polkit agent and notification daemon** (the shell provides both). Never leave the shell dead; confirm it's back with `qs list --all`.

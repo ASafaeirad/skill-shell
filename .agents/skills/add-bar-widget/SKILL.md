@@ -7,7 +7,7 @@ description: Add or modify a widget in the illogical-impulse bar (indicators, cl
 
 ## 1. Write the widget
 
-Create `modules/ii/bar/MyWidget.qml`. Model it on `ClockWidget.qml` (49 lines — the minimal shape):
+Create `modules/widgets/bar/MyWidget.qml`. Model it on `ClockWidget.qml` (49 lines — the minimal shape):
 
 ```qml
 import qs.modules.common
@@ -38,7 +38,7 @@ Rules: theme tokens only (`Appearance.colors/font/sizes/rounding/animation.*`), 
 
 ## 2. Wire it into the bar
 
-Edit `modules/ii/bar/BarContent.qml`. Placement options:
+Edit `modules/widgets/bar/BarContent.qml`. Placement options:
 
 | Region             | Where in BarContent.qml                                                                     |
 | ------------------ | ------------------------------------------------------------------------------------------- |
@@ -53,7 +53,7 @@ Gotchas:
 
 ## 3. Decide variant coverage (consciously, don't skip)
 
-- **Vertical bar** is a separate composition: `modules/ii/verticalBar/VerticalBarContent.qml` with its own widget variants (`VerticalClockWidget.qml`...). If the user uses `Config.options.bar.vertical`, add a variant or state that you didn't.
+- **Vertical bar** is a separate composition: `modules/widgets/verticalBar/VerticalBarContent.qml` with its own widget variants (`VerticalClockWidget.qml`...). If the user uses `Config.options.bar.vertical`, add a variant or state that you didn't.
 
 ## 4. Optional: visibility toggle
 
@@ -61,4 +61,4 @@ Add `property bool enable` under `Config.qml`'s `bar` JsonObject and gate the wi
 
 ## 5. Verify
 
-Save → hot reload. Follow the `verify-shell` skill: `qs -c ii log -t 30` for QML errors, then eyeball the bar (or ask the user to).
+Save → hot reload. Follow the `verify-shell` skill: `qs -c skill log -t 30` for QML errors, then eyeball the bar (or ask the user to).

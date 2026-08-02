@@ -46,6 +46,6 @@ Other controls in `modules/common/widgets/`: `ConfigSpinBox`, `ConfigSlider`, `C
 
 - Flip the value in `~/.config/skill-shell/config.json` and watch the UI react (no restart).
 - Settings page runs standalone: `qs -p ~/.config/quickshell/ii/settings.qml` — toggle the control, confirm config.json updates.
-- Check `qs -c ii log -t 30` for QML errors after the Config.qml edit (`verify-shell` skill).
+- Check `qs -c skill log -t 30` for QML errors after the Config.qml edit (`verify-shell` skill).
 
 Gotcha: don't hand-edit config.json while also changing values from QML in the same moment — the shell's debounced rewrite can clobber the file edit.
