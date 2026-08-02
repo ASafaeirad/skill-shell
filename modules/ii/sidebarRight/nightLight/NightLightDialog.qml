@@ -88,57 +88,6 @@ WindowDialog {
     }
 
     WindowDialogSectionHeader {
-        text: "Anti-flashbang (experimental)"
-    }
-
-    WindowDialogSeparator {
-        Layout.topMargin: -22
-        Layout.leftMargin: 0
-        Layout.rightMargin: 0
-    }
-
-    Column {
-        id: antiFlashbangColumn
-        Layout.topMargin: -16
-        Layout.fillWidth: true
-
-        ConfigSwitch {
-            anchors {
-                left: parent.left
-                right: parent.right
-            }
-            iconSize: Appearance.font.pixelSize.larger
-            buttonIcon: "filter"
-            text: "Content adjustment"
-            checked: HyprlandAntiFlashbangShader.enabled
-            onCheckedChanged: {
-                if (checked) HyprlandAntiFlashbangShader.enable()
-                else HyprlandAntiFlashbangShader.disable()
-            }
-            StyledToolTip {
-                text: "<b>Dims screen content</b> as needed.<br><br>Pros: Immediately responsive<br>Cons: Expensive and can hurt color accuracy<br><br><i>Uses a Hyprland screen shader</i>"
-            }
-        }
-
-        ConfigSwitch {
-            anchors {
-                left: parent.left
-                right: parent.right
-            }
-            iconSize: Appearance.font.pixelSize.larger
-            buttonIcon: "light_mode"
-            text: "Brightness adjustment"
-            checked: Config.options.light.antiFlashbang.enable
-            onCheckedChanged: {
-                Config.options.light.antiFlashbang.enable = checked;
-            }
-            StyledToolTip {
-                text: "Adapts the <b>display (physical screen) brightness</b><br><br>Pros: Less expensive, retains colors<br>Cons: Not immediately responsive<br><br><i>Adjusts display brightness after each Hyprland IPC event</i>"
-            }
-        }
-    }
-
-    WindowDialogSectionHeader {
         text: "Brightness"
     }
 
