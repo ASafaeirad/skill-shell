@@ -78,13 +78,6 @@ DelegateChooser {
         }
     }
     DelegateChoice {
-        roleValue: "musicRecognition"
-        ActionCenterToggleButton {
-            toggleModel: MusicRecognitionToggle {}
-            icon: "music-note-2"
-        }
-    }
-    DelegateChoice {
         roleValue: "network"
         ActionCenterToggleButton {
             toggleModel: NetworkToggle {}
