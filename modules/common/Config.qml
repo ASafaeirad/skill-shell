@@ -176,8 +176,15 @@ Singleton {
                 property int full: 101
                 property bool automaticSuspend: true
                 property int suspend: 3
-                // Invoke `power auto` on AC/battery transitions (services/PowerProfile.qml)
+                // Master switch for services/PowerProfile.qml. Off = the shell never touches
+                // the power profile at all, and powerMode below has no effect.
                 property bool autoPowerProfile: true
+                // User-selected power mode, applied via `power mode <name>`. The script owns
+                // what each mode means; this only records which one is selected.
+                //   auto        - follow the power source
+                //   performance - pin performance + 240Hz on both sources
+                //   powersaver  - pin power-saver on both sources (refresh follows the source)
+                property string powerMode: "auto"
             }
 
             property JsonObject conflictKiller: JsonObject {
