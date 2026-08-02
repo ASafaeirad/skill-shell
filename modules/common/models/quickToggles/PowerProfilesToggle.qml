@@ -7,45 +7,69 @@ import qs.modules.common.functions
 import qs.modules.common.widgets
 import qs.services
 
+/**
+ * Cycles the user-selected power mode, not the raw profile. Writing Config here is the whole
+ * action: services/PowerProfile.qml watches the option and invokes `power mode <name>`, which
+ * owns what each mode actually does. Cycling profiles directly would be undone by the next
+ * plug/unplug, since policy would have no record of the choice having been made.
+ */
 QuickToggleModel {
-    name: "Power Profile"
-    toggled: PowerProfiles.profile !== PowerProfile.Balanced
-    icon: {
+    id: root
+
+    readonly property string mode: Config.options.battery.powerMode
+    // What the machine is doing right now, which is only the same as the mode under `auto`.
+    readonly property string activeProfile: {
         switch (PowerProfiles.profile) {
         case PowerProfile.PowerSaver:
-            return "energy_savings_leaf";
+            return "power-saver";
         case PowerProfile.Balanced:
-            return "airwave";
+            return "balanced";
         case PowerProfile.Performance:
-            return "local_fire_department";
+            return "performance";
         }
+        return "unknown";
+    }
+
+    name: "Power Profile"
+    toggled: root.mode !== "auto"
+    icon: {
+        switch (root.mode) {
+        case "performance":
+            return "local_fire_department";
+        case "powersaver":
+            return "energy_savings_leaf";
+        }
+        return "autorenew";
     }
     statusText: {
-        switch (PowerProfiles.profile) {
-        case PowerProfile.PowerSaver:
-            return "Power Saver";
-        case PowerProfile.Balanced:
-            return "Balanced";
-        case PowerProfile.Performance:
+        switch (root.mode) {
+        case "performance":
             return "Performance";
+        case "powersaver":
+            return "Power Saver";
         }
+        return "Auto";
     }
     mainAction: () => {
-        if (PowerProfiles.hasPerformanceProfile) {
-            switch (PowerProfiles.profile) {
-            case PowerProfile.PowerSaver:
-                PowerProfiles.profile = PowerProfile.Balanced;
-                break;
-            case PowerProfile.Balanced:
-                PowerProfiles.profile = PowerProfile.Performance;
-                break;
-            case PowerProfile.Performance:
-                PowerProfiles.profile = PowerProfile.PowerSaver;
-                break;
-            }
-        } else {
-            PowerProfiles.profile = PowerProfiles.profile == PowerProfile.Balanced ? PowerProfile.PowerSaver : PowerProfile.Balanced;
+        switch (root.mode) {
+        case "auto":
+            Config.options.battery.powerMode = "performance";
+            break;
+        case "performance":
+            Config.options.battery.powerMode = "powersaver";
+            break;
+        default:
+            Config.options.battery.powerMode = "auto";
+            break;
         }
     }
-    tooltipText: "Click to cycle through power profiles"
+    tooltipText: {
+        switch (root.mode) {
+        case "performance":
+            return `Performance and 240Hz on both AC and battery (now: ${root.activeProfile}).\nClick for Power Saver.`;
+        case "powersaver":
+            return `Power saver on both AC and battery (now: ${root.activeProfile}).\nRefresh rate still follows the power source.\nClick for Auto.`;
+        }
+        return `Following the power source (now: ${root.activeProfile}).\nClick for Performance.`;
+    }
 }
