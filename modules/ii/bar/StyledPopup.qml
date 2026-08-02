@@ -19,6 +19,15 @@ LazyLoader {
         id: popupWindow
         color: "transparent"
 
+        readonly property real availableWidth: screen?.width ?? root.QsWindow?.screen?.width ?? 0
+        readonly property real availableHeight: screen?.height ?? root.QsWindow?.screen?.height ?? 0
+
+        function boundedPosition(wantedPosition, availableSize, popupSize) {
+            if (availableSize <= 0)
+                return wantedPosition;
+            return Math.max(0, Math.min(wantedPosition, availableSize - popupSize));
+        }
+
         anchors.left: !Config.options.bar.vertical || (Config.options.bar.vertical && !Config.options.bar.bottom)
         anchors.right: Config.options.bar.vertical && Config.options.bar.bottom
         anchors.top: Config.options.bar.vertical || (!Config.options.bar.vertical && !Config.options.bar.bottom)
@@ -35,18 +44,19 @@ LazyLoader {
         exclusiveZone: 0
         margins {
             left: {
-                if (!Config.options.bar.vertical) return root.QsWindow?.mapFromItem(
-                    root.hoverTarget, 
-                    (root.hoverTarget.width - popupBackground.implicitWidth) / 2, 0
-                ).x;
-                return Appearance.sizes.verticalBarWidth
+                if (!Config.options.bar.vertical) {
+                    const targetPosition = root.QsWindow?.mapFromItem(root.hoverTarget, 0, 0).x ?? 0;
+                    const wantedPosition = targetPosition + (root.hoverTarget.width - popupWindow.implicitWidth) / 2;
+                    return popupWindow.boundedPosition(wantedPosition, popupWindow.availableWidth, popupWindow.implicitWidth);
+                }
+                return Appearance.sizes.verticalBarWidth;
             }
             top: {
-                if (!Config.options.bar.vertical) return Appearance.sizes.barHeight;
-                return root.QsWindow?.mapFromItem(
-                    root.hoverTarget, 
-                    (root.hoverTarget.height - popupBackground.implicitHeight) / 2, 0
-                ).y;
+                if (!Config.options.bar.vertical)
+                    return Appearance.sizes.barHeight;
+                const targetPosition = root.QsWindow?.mapFromItem(root.hoverTarget, 0, 0).y ?? 0;
+                const wantedPosition = targetPosition + (root.hoverTarget.height - popupWindow.implicitHeight) / 2;
+                return popupWindow.boundedPosition(wantedPosition, popupWindow.availableHeight, popupWindow.implicitHeight);
             }
             right: Appearance.sizes.verticalBarWidth
             bottom: Appearance.sizes.barHeight
