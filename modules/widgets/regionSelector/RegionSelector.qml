@@ -14,7 +14,6 @@ Scope {
     }
 
     property var action: RegionSelection.SnipAction.Copy
-    property var selectionMode: RegionSelection.SelectionMode.RectCorners
 
     Variants {
         model: Quickshell.screens
@@ -27,54 +26,35 @@ Scope {
                 screen: regionSelectorLoader.modelData
                 onDismiss: root.dismiss()
                 action: root.action
-                selectionMode: root.selectionMode
             }
         }
     }
 
-    function screenshot() {
+    // The one entry point for screenshot, record and record with sound.
+    // Opens in screenshot mode; the toolbar (or Tab) switches mode before the region is picked.
+    // If a recording is running, this stops it instead of opening.
+    function capture() {
         root.action = RegionSelection.SnipAction.Copy
-        root.selectionMode = RegionSelection.SelectionMode.RectCorners
+        // If already open then re-trigger so a running recording gets stopped
+        if (GlobalStates.regionSelectorOpen) GlobalStates.regionSelectorOpen = false
         GlobalStates.regionSelectorOpen = true
     }
 
     function search() {
         root.action = RegionSelection.SnipAction.Search
-        if (Config.options.search.imageSearch.useCircleSelection) {
-            root.selectionMode = RegionSelection.SelectionMode.Circle
-        } else {
-            root.selectionMode = RegionSelection.SelectionMode.RectCorners
-        }
         GlobalStates.regionSelectorOpen = true
     }
 
     function ocr() {
         root.action = RegionSelection.SnipAction.CharRecognition
-        root.selectionMode = RegionSelection.SelectionMode.RectCorners
-        GlobalStates.regionSelectorOpen = true
-    }
-
-    function record() {
-        root.action = RegionSelection.SnipAction.Record
-        root.selectionMode = RegionSelection.SelectionMode.RectCorners
-        // If already open then re-trigger to stop recording
-        if (GlobalStates.regionSelectorOpen) GlobalStates.regionSelectorOpen = false
-        GlobalStates.regionSelectorOpen = true
-    }
-
-    function recordWithSound() {
-        root.action = RegionSelection.SnipAction.RecordWithSound
-        root.selectionMode = RegionSelection.SelectionMode.RectCorners
-        // If already open then re-trigger to stop recording
-        if (GlobalStates.regionSelectorOpen) GlobalStates.regionSelectorOpen = false
         GlobalStates.regionSelectorOpen = true
     }
 
     IpcHandler {
         target: "region"
 
-        function screenshot() {
-            root.screenshot()
+        function capture() {
+            root.capture()
         }
         function search() {
             root.search()
@@ -82,18 +62,12 @@ Scope {
         function ocr() {
             root.ocr()
         }
-        function record() {
-            root.record()
-        }
-        function recordWithSound() {
-            root.recordWithSound()
-        }
     }
 
     GlobalShortcut {
-        name: "regionScreenshot"
-        description: "Takes a screenshot of the selected region"
-        onPressed: root.screenshot()
+        name: "regionCapture"
+        description: "Screenshots or records the selected region, switchable in the overlay"
+        onPressed: root.capture()
     }
     GlobalShortcut {
         name: "regionSearch"
@@ -104,15 +78,5 @@ Scope {
         name: "regionOcr"
         description: "Recognizes text in the selected region"
         onPressed: root.ocr()
-    }
-    GlobalShortcut {
-        name: "regionRecord"
-        description: "Records the selected region"
-        onPressed: root.record()
-    }
-    GlobalShortcut {
-        name: "regionRecordWithSound"
-        description: "Records the selected region with sound"
-        onPressed: root.recordWithSound()
     }
 }

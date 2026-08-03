@@ -30,11 +30,26 @@ PanelWindow {
     // Modes
     // TODO: Ask: sidebar AI
     enum SnipAction { Copy, Edit, Search, CharRecognition, Record, RecordWithSound }
-    enum SelectionMode { RectCorners, Circle }
     enum Phase { Select, Post }
     property var action: RegionSelection.SnipAction.Copy
-    property var selectionMode: RegionSelection.SelectionMode.RectCorners
     property var phase: RegionSelection.Phase.Select
+    // Capture actions can be switched between in the overlay; search/ocr are one-shot
+    readonly property var captureModeActions: [
+        RegionSelection.SnipAction.Copy,
+        RegionSelection.SnipAction.Record,
+        RegionSelection.SnipAction.RecordWithSound
+    ]
+    readonly property bool captureModes: root.captureModeActions.includes(root.action)
+    function cycleCaptureMode(step) {
+        if (!root.captureModes) return;
+        const current = Math.max(0, root.captureModeActions.indexOf(root.action));
+        const count = root.captureModeActions.length;
+        root.setCaptureMode((current + step + count) % count);
+    }
+    function setCaptureMode(index) {
+        if (!root.captureModes) return;
+        root.action = root.captureModeActions[index];
+    }
     signal dismiss()
     Component.onDestruction: screenshotProc.restoreCursor()
 
@@ -58,8 +73,6 @@ PanelWindow {
     property color onBorderColor: "#ff000000"
     readonly property real targetRegionOpacity: 0.3 // was targetRegions.opacity
     readonly property real contentRegionOpacity: 0.8 // was targetRegions.contentRegionOpacity
-    readonly property int circleStrokeWidth: 6 // was circle.strokeWidth
-    readonly property int circlePadding: 10 // was circle.padding
 
     // Vars for indicators
     readonly property var windows: [...HyprlandData.windowList].sort((a, b) => {
@@ -85,7 +98,6 @@ PanelWindow {
     property real dragDiffY: 0
     property bool draggedAway: (dragDiffX !== 0 || dragDiffY !== 0)
     property bool dragging: false
-    property list<point> points: []
     property var mouseButton: null
     property var imageRegions: []
     readonly property list<var> windowRegions: RegionFunctions.filterWindowRegionsByLayers(
@@ -123,9 +135,8 @@ PanelWindow {
     }
 
     // Config
-    property bool isCircleSelection: (root.selectionMode === RegionSelection.SelectionMode.Circle)
-    property bool enableWindowRegions: Config.options.regionSelector.targetRegions.windows && !isCircleSelection
-    property bool enableLayerRegions: Config.options.regionSelector.targetRegions.layers && !isCircleSelection
+    property bool enableWindowRegions: Config.options.regionSelector.targetRegions.windows
+    property bool enableLayerRegions: Config.options.regionSelector.targetRegions.layers
     property bool enableContentRegions: Config.options.regionSelector.targetRegions.content
 
     // Target
@@ -205,11 +216,12 @@ PanelWindow {
             root.preparationDone = !checkRecordingProc.running;
         }
     }
-    property bool isRecording: root.action === RegionSelection.SnipAction.Record || root.action === RegionSelection.SnipAction.RecordWithSound
     property bool recordingShouldStop: false
     Process {
         id: checkRecordingProc
-        running: isRecording
+        // The recording may have been started from any capture mode, so look for a
+        // running recorder whenever the overlay could toggle one off
+        running: root.captureModes
         command: ["pidof", "wf-recorder"]
         onExited: (exitCode, exitStatus) => {
             root.preparationDone = !screenshotProc.running
@@ -219,7 +231,7 @@ PanelWindow {
     property bool preparationDone: false
     onPreparationDoneChanged: {
         if (!preparationDone) return;
-        if (root.isRecording && root.recordingShouldStop) {
+        if (root.captureModes && root.recordingShouldStop) {
             Quickshell.execDetached([Directories.recordScriptPath]);
             root.dismissAndRestoreCursor();
             return;
@@ -300,7 +312,6 @@ PanelWindow {
         Quickshell.execDetached(command);
         if (root.action == RegionSelection.SnipAction.Record || root.action == RegionSelection.SnipAction.RecordWithSound) {
             root.phase = RegionSelection.Phase.Post
-            root.selectionMode = RegionSelection.SelectionMode.RectCorners
             // Remap the surface: the compositor won't return keyboard focus to the
             // window below on an interactivity change alone, only on unmap
             root.visible = false
@@ -330,9 +341,15 @@ PanelWindow {
         }
 
         focus: root.visible
-        Keys.onPressed: (event) => { // Esc to close
+        Keys.onPressed: (event) => { // Esc to close, Tab to switch capture mode
             if (event.key === Qt.Key_Escape) {
                 root.dismissAndRestoreCursor();
+            } else if (event.key === Qt.Key_Tab) {
+                root.cycleCaptureMode(1);
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Backtab) {
+                root.cycleCaptureMode(-1);
+                event.accepted = true;
             }
         }
     }
@@ -360,19 +377,6 @@ PanelWindow {
                     root.setRegionToTargeted();
                 }
             }
-            // Circle dragging?
-            else if (root.selectionMode === RegionSelection.SelectionMode.Circle) {
-                const padding = root.circlePadding + root.circleStrokeWidth / 2;
-                const dragPoints = (root.points.length > 0) ? root.points : [{ x: mouseArea.mouseX, y: mouseArea.mouseY }];
-                const maxX = Math.max(...dragPoints.map(p => p.x));
-                const minX = Math.min(...dragPoints.map(p => p.x));
-                const maxY = Math.max(...dragPoints.map(p => p.y));
-                const minY = Math.min(...dragPoints.map(p => p.y));
-                root.regionX = minX - padding;
-                root.regionY = minY - padding;
-                root.regionWidth = maxX - minX + padding * 2;
-                root.regionHeight = maxY - minY + padding * 2;
-            }
             root.snip();
         }
         onPositionChanged: (mouse) => {
@@ -382,36 +386,20 @@ PanelWindow {
             root.draggingY = mouse.y;
             root.dragDiffX = mouse.x - root.dragStartX;
             root.dragDiffY = mouse.y - root.dragStartY;
-            root.points.push({ x: mouse.x, y: mouse.y });
         }
 
-        Loader {
+        RectCornersSelectionDetails {
             z: 2
             anchors.fill: parent
-            active: root.selectionMode === RegionSelection.SelectionMode.RectCorners
-            sourceComponent: RectCornersSelectionDetails {
-                regionX: root.regionX
-                regionY: root.regionY
-                regionWidth: root.regionWidth
-                regionHeight: root.regionHeight
-                mouseX: mouseArea.mouseX
-                mouseY: mouseArea.mouseY
-                color: root.selectionBorderColor
-                overlayColor: root.overlayColor
-                breathingBorderOnly: root.phase === RegionSelection.Phase.Post
-            }
-        }
-
-        Loader {
-            z: 2
-            anchors.fill: parent
-            active: root.selectionMode === RegionSelection.SelectionMode.Circle
-            sourceComponent: CircleSelectionDetails {
-                color: root.selectionBorderColor
-                overlayColor: root.overlayColor
-                points: root.points
-                strokeWidth: root.circleStrokeWidth
-            }
+            regionX: root.regionX
+            regionY: root.regionY
+            regionWidth: root.regionWidth
+            regionHeight: root.regionHeight
+            mouseX: mouseArea.mouseX
+            mouseY: mouseArea.mouseY
+            color: root.selectionBorderColor
+            overlayColor: root.overlayColor
+            breathingBorderOnly: root.phase === RegionSelection.Phase.Post
         }
 
         // The thing to the bottom-right with an icon
@@ -421,7 +409,6 @@ PanelWindow {
             x: root.dragging ? root.regionX + root.regionWidth : mouseArea.mouseX
             y: root.dragging ? root.regionY + root.regionHeight : mouseArea.mouseY
             action: root.action
-            selectionMode: root.selectionMode
         }
 
         // Window regions
@@ -535,12 +522,13 @@ PanelWindow {
             spacing: 6
 
             OptionsToolbar {
+                captureModes: root.captureModes
+                // Nothing to switch between for search/ocr
+                visible: root.captureModes
                 Synchronizer on action {
                     property alias source: root.action
                 }
-                Synchronizer on selectionMode {
-                    property alias source: root.selectionMode
-                }
+                onCaptureModeSelected: index => root.setCaptureMode(index);
                 onDismiss: root.dismissAndRestoreCursor();
             }
             ToolbarPairedFab {

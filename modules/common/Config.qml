@@ -277,9 +277,6 @@ Singleton {
 
             property JsonObject search: JsonObject {
                 property bool sloppy: false // Uses levenshtein distance based scoring instead of fuzzy sort. Very weird.
-                property JsonObject imageSearch: JsonObject {
-                    property bool useCircleSelection: false
-                }
             }
 
             property JsonObject sidebar: JsonObject {

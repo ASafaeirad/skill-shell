@@ -17,21 +17,31 @@ import Quickshell.Hyprland
 Toolbar {
     id: root
 
-    // Use a synchronizer on these
+    // Use a synchronizer on this
     property var action
-    property var selectionMode
+    // Whether the current action is one of the switchable capture modes
+    property bool captureModes: false
     // Signals
     signal dismiss()
+    signal captureModeSelected(int index)
 
     ToolbarTabBar {
-        id: tabBar
+        id: captureModeTabBar
         tabButtonList: [
-            {"icon": "activity_zone", "name": "Rect"},
-            {"icon": "gesture", "name": "Circle"}
+            {"icon": "photo_camera", "name": "Shot"},
+            {"icon": "videocam", "name": "Record"},
+            {"icon": "mic", "name": "Record + audio"}
         ]
-        currentIndex: root.selectionMode === RegionSelection.SelectionMode.RectCorners ? 0 : 1
-        onCurrentIndexChanged: {
-            root.selectionMode = currentIndex === 0 ? RegionSelection.SelectionMode.RectCorners : RegionSelection.SelectionMode.Circle;
+        currentIndex: switch (root.action) {
+        case RegionSelection.SnipAction.Record:
+            return 1;
+        case RegionSelection.SnipAction.RecordWithSound:
+            return 2;
+        default:
+            return 0;
         }
+        // Guarded: this also fires while the tab bar initializes, which would otherwise
+        // knock a search/ocr overlay into screenshot mode
+        onCurrentIndexChanged: if (root.captureModes) root.captureModeSelected(currentIndex)
     }
 }

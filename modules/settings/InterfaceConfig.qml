@@ -204,27 +204,6 @@ ContentPage {
 
         }
 
-        ContentSubsection {
-            title: "Google Lens"
-
-            ConfigSelectionArray {
-                currentValue: Config.options.search.imageSearch.useCircleSelection ? "circle" : "rectangles"
-                onSelected: (newValue) => {
-                    Config.options.search.imageSearch.useCircleSelection = (newValue === "circle");
-                }
-                options: [{
-                    "icon": "activity_zone",
-                    "value": "rectangles",
-                    "displayName": "Rectangular selection"
-                }, {
-                    "icon": "gesture",
-                    "value": "circle",
-                    "displayName": "Circle to Search"
-                }]
-            }
-
-        }
-
     }
 
     ContentSection {

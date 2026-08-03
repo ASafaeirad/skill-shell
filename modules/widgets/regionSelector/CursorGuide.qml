@@ -7,7 +7,6 @@ Item {
     id: root
 
     property var action
-    property var selectionMode
     property string description: switch (root.action) {
     case RegionSelection.SnipAction.Copy:
     case RegionSelection.SnipAction.Edit:
@@ -17,8 +16,9 @@ Item {
     case RegionSelection.SnipAction.CharRecognition:
         return "Recognize text";
     case RegionSelection.SnipAction.Record:
-    case RegionSelection.SnipAction.RecordWithSound:
         return "Record region";
+    case RegionSelection.SnipAction.RecordWithSound:
+        return "Record region with audio";
     }
     property string materialSymbol: switch (root.action) {
     case RegionSelection.SnipAction.Copy:
@@ -29,8 +29,9 @@ Item {
     case RegionSelection.SnipAction.CharRecognition:
         return "document_scanner";
     case RegionSelection.SnipAction.Record:
-    case RegionSelection.SnipAction.RecordWithSound:
         return "videocam";
+    case RegionSelection.SnipAction.RecordWithSound:
+        return "mic";
     default:
         return "";
     }
