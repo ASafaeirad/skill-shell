@@ -23,6 +23,7 @@ import qs.modules.widgets.polkit
 import qs.modules.widgets.regionSelector
 import qs.modules.widgets.screenCorners
 import qs.modules.widgets.screenTranslator
+import qs.modules.widgets.screenZoom
 import qs.modules.widgets.selector
 import qs.modules.widgets.sessionScreen
 import qs.modules.widgets.sidebarRight
@@ -69,6 +70,7 @@ ShellRoot {
     PanelLoader { component: RegionSelector {} }
     PanelLoader { component: ScreenCorners {} }
     PanelLoader { component: ScreenTranslator {} }
+    PanelLoader { component: ScreenZoom {} }
     PanelLoader { component: Selector {} }
     PanelLoader { component: SessionScreen {} }
     PanelLoader { component: SidebarRight {} }
