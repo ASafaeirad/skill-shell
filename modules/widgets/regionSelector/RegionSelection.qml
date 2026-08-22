@@ -236,7 +236,6 @@ PanelWindow {
             root.dismissAndRestoreCursor();
             return;
         }
-        root.visible = true;
     }
 
     Process {
@@ -337,7 +336,9 @@ PanelWindow {
         visible: root.phase === RegionSelection.Phase.Select
 
         onHasContentChanged: {
-            if (hasContent) screenshotProc.restoreCursor();
+            if (!hasContent) return;
+            screenshotProc.restoreCursor();
+            root.visible = true;
         }
 
         focus: root.visible
