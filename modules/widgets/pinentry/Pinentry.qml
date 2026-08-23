@@ -19,6 +19,13 @@ Scope {
     property string fifoPath: ""
     property bool visibleInput: false
 
+    // True while the slide-up exit animation is playing; keeps the window
+    // loaded until it finishes (same approach as the selector).
+    property bool closing: false
+
+    signal animateOutRequested()
+    signal animateInRequested()
+
     // Decode base64 (from the pinentry script) into a proper UTF-8 string.
     function b64decode(s) {
         if (!s || s.length === 0) return "";
@@ -36,7 +43,12 @@ Scope {
         root.errorText = b64decode(errB64);
         root.fifoPath = fifo;
         root.visibleInput = (visible === "1");
+        // Reopening while the previous exit animation is still playing reuses
+        // the same window instance, so replay the enter animation explicitly.
+        const wasClosing = root.closing;
+        root.closing = false;
         GlobalStates.pinentryOpen = true;
+        if (wasClosing) root.animateInRequested();
     }
 
     // Send the answer back to the script over the FIFO. The secret travels via
@@ -48,6 +60,10 @@ Scope {
         writer.stdinEnabled = true;
         writer.running = true;
         root.fifoPath = "";
+        if (GlobalStates.pinentryOpen) {
+            root.closing = true;
+            root.animateOutRequested();
+        }
         GlobalStates.pinentryOpen = false;
     }
 
@@ -79,7 +95,8 @@ Scope {
     }
 
     Loader {
-        active: GlobalStates.pinentryOpen
+        // Stay loaded through the exit animation, then unload.
+        active: GlobalStates.pinentryOpen || root.closing
         sourceComponent: Variants {
             model: Quickshell.screens
             delegate: PanelWindow {
@@ -101,72 +118,179 @@ Scope {
                 exclusionMode: ExclusionMode.Ignore
 
                 Item {
+                    id: dialogRoot
                     anchors.fill: parent
                     focus: true
-                    Component.onCompleted: inputField.forceActiveFocus()
+
+                    // --- Enter / exit slide-and-fade transition ---------------
+                    property real slideDistance: 40
+                    property real yOffset: slideDistance
+                    property real contentOpacity: 0
+
+                    Component.onCompleted: {
+                        inputField.forceActiveFocus();
+                        enterAnim.start();
+                    }
+
+                    Connections {
+                        target: root
+                        function onAnimateOutRequested() {
+                            enterAnim.stop();
+                            exitAnim.start();
+                        }
+                        function onAnimateInRequested() {
+                            exitAnim.stop();
+                            inputField.text = "";
+                            inputField.forceActiveFocus();
+                            enterAnim.start();
+                        }
+                    }
+
+                    ParallelAnimation {
+                        id: enterAnim
+
+                        NumberAnimation {
+                            target: dialogRoot
+                            property: "yOffset"
+                            to: 0
+                            duration: Appearance.animation.elementMoveEnter.duration
+                            easing.type: Appearance.animation.elementMoveEnter.type
+                            easing.bezierCurve: Appearance.animation.elementMoveEnter.bezierCurve
+                        }
+
+                        NumberAnimation {
+                            target: dialogRoot
+                            property: "contentOpacity"
+                            to: 1
+                            duration: Appearance.animation.elementMoveEnter.duration
+                            easing.type: Appearance.animation.elementMoveEnter.type
+                            easing.bezierCurve: Appearance.animation.elementMoveEnter.bezierCurve
+                        }
+                    }
+
+                    ParallelAnimation {
+                        id: exitAnim
+
+                        onFinished: root.closing = false
+
+                        NumberAnimation {
+                            target: dialogRoot
+                            property: "yOffset"
+                            to: dialogRoot.slideDistance
+                            duration: Appearance.animation.elementMoveExit.duration
+                            easing.type: Appearance.animation.elementMoveExit.type
+                            easing.bezierCurve: Appearance.animation.elementMoveExit.bezierCurve
+                        }
+
+                        NumberAnimation {
+                            target: dialogRoot
+                            property: "contentOpacity"
+                            to: 0
+                            duration: Appearance.animation.elementMoveExit.duration
+                            easing.type: Appearance.animation.elementMoveExit.type
+                            easing.bezierCurve: Appearance.animation.elementMoveExit.bezierCurve
+                        }
+                    }
 
                     Keys.onPressed: event => {
                         if (event.key === Qt.Key_Escape) root.cancel();
                     }
 
-                    WindowDialog {
+                    // Full-window scrim: dims everything behind the dialog and
+                    // captures clicks outside it to dismiss.
+                    Rectangle {
                         anchors.fill: parent
-                        backgroundWidth: 450
-                        show: false
-                        Component.onCompleted: show = true
-                        onDismiss: root.cancel()
+                        color: Appearance.colors.colScrim
+                        opacity: dialogRoot.contentOpacity
+                        MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.AllButtons
+                            onPressed: root.cancel()
+                        }
+                    }
 
-                        MaterialSymbol {
-                            Layout.alignment: Qt.AlignHCenter
-                            iconSize: 26
-                            text: "password"
-                            color: Appearance.colors.colSecondary
+                    Rectangle {
+                        id: dialogCard
+
+                        anchors.centerIn: parent
+                        implicitWidth: 450
+                        implicitHeight: contentColumn.implicitHeight + radius * 2
+                        radius: Appearance.rounding.large
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        opacity: dialogRoot.contentOpacity
+
+                        transform: Translate {
+                            y: dialogRoot.yOffset
                         }
 
-                        WindowDialogTitle {
-                            Layout.fillWidth: true
-                            horizontalAlignment: Text.AlignHCenter
-                            text: "Passphrase required"
+                        // So clicking inside the dialog won't dismiss
+                        MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.AllButtons
+                            hoverEnabled: true
                         }
 
-                        WindowDialogParagraph {
-                            Layout.fillWidth: true
-                            horizontalAlignment: Text.AlignLeft
-                            visible: root.description.length > 0
-                            text: root.description
-                        }
+                        ColumnLayout {
+                            id: contentColumn
 
-                        WindowDialogParagraph {
-                            Layout.fillWidth: true
-                            horizontalAlignment: Text.AlignLeft
-                            visible: root.errorText.length > 0
-                            color: Appearance.m3colors.m3error
-                            text: root.errorText
-                        }
-
-                        MaterialTextField {
-                            id: inputField
-                            Layout.fillWidth: true
-                            focus: true
-                            placeholderText: root.promptLabel
-                            echoMode: root.visibleInput ? TextInput.Normal : TextInput.Password
-                            onAccepted: root.submit(inputField.text)
-
-                            Keys.onPressed: event => {
-                                if (event.key === Qt.Key_Escape) root.cancel();
+                            spacing: 16
+                            anchors {
+                                fill: parent
+                                margins: dialogCard.radius
                             }
-                        }
 
-                        WindowDialogButtonRow {
-                            Layout.bottomMargin: 10
-                            Item { Layout.fillWidth: true }
-                            DialogButton {
-                                buttonText: "Cancel"
-                                onClicked: root.cancel()
+                            MaterialSymbol {
+                                Layout.alignment: Qt.AlignHCenter
+                                iconSize: 26
+                                text: "password"
+                                color: Appearance.colors.colSecondary
                             }
-                            DialogButton {
-                                buttonText: "OK"
-                                onClicked: root.submit(inputField.text)
+
+                            WindowDialogTitle {
+                                Layout.fillWidth: true
+                                horizontalAlignment: Text.AlignHCenter
+                                text: "Passphrase required"
+                            }
+
+                            WindowDialogParagraph {
+                                Layout.fillWidth: true
+                                horizontalAlignment: Text.AlignLeft
+                                visible: root.description.length > 0
+                                text: root.description
+                            }
+
+                            WindowDialogParagraph {
+                                Layout.fillWidth: true
+                                horizontalAlignment: Text.AlignLeft
+                                visible: root.errorText.length > 0
+                                color: Appearance.m3colors.m3error
+                                text: root.errorText
+                            }
+
+                            MaterialTextField {
+                                id: inputField
+                                Layout.fillWidth: true
+                                focus: true
+                                placeholderText: root.promptLabel
+                                echoMode: root.visibleInput ? TextInput.Normal : TextInput.Password
+                                onAccepted: root.submit(inputField.text)
+
+                                Keys.onPressed: event => {
+                                    if (event.key === Qt.Key_Escape) root.cancel();
+                                }
+                            }
+
+                            WindowDialogButtonRow {
+                                Layout.bottomMargin: 10
+                                Item { Layout.fillWidth: true }
+                                DialogButton {
+                                    buttonText: "Cancel"
+                                    onClicked: root.cancel()
+                                }
+                                DialogButton {
+                                    buttonText: "OK"
+                                    onClicked: root.submit(inputField.text)
+                                }
                             }
                         }
                     }
