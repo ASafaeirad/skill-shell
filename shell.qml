@@ -27,6 +27,7 @@ import qs.modules.widgets.screenZoom
 import qs.modules.widgets.selector
 import qs.modules.widgets.sessionScreen
 import qs.modules.widgets.sidebarRight
+import qs.modules.widgets.textPopup
 import qs.modules.widgets.verticalBar
 import qs.modules.widgets.wallpaperSelector
 
@@ -74,6 +75,7 @@ ShellRoot {
     PanelLoader { component: Selector {} }
     PanelLoader { component: SessionScreen {} }
     PanelLoader { component: SidebarRight {} }
+    PanelLoader { component: TextPopup {} }
 
     PanelLoader {
         extraCondition: Config.options.bar.vertical

@@ -29,6 +29,7 @@ Singleton {
     property bool screenZoomOpen: false
     property bool sessionOpen: false
     property bool superDown: false
+    property bool textPopupOpen: false
     property bool superReleaseMightTrigger: true
     property bool wallpaperSelectorOpen: false
     property bool workspaceShowNumbers: false
