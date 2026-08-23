@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Layouts
 import qs.modules.common
 import qs.modules.common.widgets
 import qs.services
@@ -36,6 +37,37 @@ ContentPage {
                 text: "Shell & utilities theming must also be enabled"
             }
 
+        }
+
+        ConfigSwitch {
+            buttonIcon: "palette"
+            text: "Set GTK theme on switch"
+            configKey: "appearance.wallpaperTheming.gtkTheme.enable"
+
+            StyledToolTip {
+                text: "Applies the theme names below via gsettings whenever the wallpaper or light/dark mode changes. Turn off to keep your own gtk-theme."
+            }
+
+        }
+
+        MaterialTextArea {
+            Layout.fillWidth: true
+            placeholderText: "GTK theme for light mode (e.g. adw-gtk3)"
+            text: Config.options.appearance.wallpaperTheming.gtkTheme.light
+            wrapMode: TextEdit.Wrap
+            onTextChanged: {
+                Config.options.appearance.wallpaperTheming.gtkTheme.light = text;
+            }
+        }
+
+        MaterialTextArea {
+            Layout.fillWidth: true
+            placeholderText: "GTK theme for dark mode (e.g. adw-gtk3-dark)"
+            text: Config.options.appearance.wallpaperTheming.gtkTheme.dark
+            wrapMode: TextEdit.Wrap
+            onTextChanged: {
+                Config.options.appearance.wallpaperTheming.gtkTheme.dark = text;
+            }
         }
 
         ConfigRow {

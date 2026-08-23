@@ -105,6 +105,13 @@ Singleton {
                     property bool enableAppsAndShell: true
                     property bool enableQtApps: true
                     property bool enableTerminal: true
+                    // GTK theme names applied via gsettings on each wallpaper/mode switch.
+                    // Leave a string empty to keep whatever gtk-theme is currently set.
+                    property JsonObject gtkTheme: JsonObject {
+                        property bool enable: true
+                        property string light: "adw-gtk3"
+                        property string dark: "adw-gtk3-dark"
+                    }
                     property JsonObject terminalGenerationProps: JsonObject {
                         property real harmony: 0.6
                         property real harmonizeThreshold: 100

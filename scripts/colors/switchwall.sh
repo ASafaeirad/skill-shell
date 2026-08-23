@@ -36,13 +36,31 @@ handle_kde_material_you_colors() {
 
 pre_process() {
     local mode_flag="$1"
+
+    # GTK theme names are configurable; an empty name means "don't touch gtk-theme".
+    local gtk_theme_enable="true"
+    local gtk_theme_light="adw-gtk3"
+    local gtk_theme_dark="adw-gtk3-dark"
+    if [ -f "$SHELL_CONFIG_FILE" ]; then
+        # NOTE: don't use jq's `//` here -- it would turn an explicit `false` into the default.
+        gtk_theme_enable=$(jq -r '.appearance.wallpaperTheming.gtkTheme.enable' "$SHELL_CONFIG_FILE")
+        [[ "$gtk_theme_enable" == "null" ]] && gtk_theme_enable="true"
+        gtk_theme_light=$(jq -r '.appearance.wallpaperTheming.gtkTheme.light // "adw-gtk3"' "$SHELL_CONFIG_FILE")
+        gtk_theme_dark=$(jq -r '.appearance.wallpaperTheming.gtkTheme.dark // "adw-gtk3-dark"' "$SHELL_CONFIG_FILE")
+    fi
+
+    local gtk_theme=""
     # Set GNOME color-scheme if mode_flag is dark or light
     if [[ "$mode_flag" == "dark" ]]; then
         gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-        gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
+        gtk_theme="$gtk_theme_dark"
     elif [[ "$mode_flag" == "light" ]]; then
         gsettings set org.gnome.desktop.interface color-scheme 'prefer-light'
-        gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3'
+        gtk_theme="$gtk_theme_light"
+    fi
+
+    if [[ "$gtk_theme_enable" == "true" && -n "$gtk_theme" && "$gtk_theme" != "null" ]]; then
+        gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme"
     fi
 
     if [ ! -d "$CACHE_DIR"/user/generated ]; then
