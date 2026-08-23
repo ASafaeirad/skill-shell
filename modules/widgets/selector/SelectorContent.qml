@@ -13,6 +13,10 @@ Item {
 
     property var items: []
     property string prompt: "Select an item"
+    // dmenu-style free-form input: when no entry matches, Enter returns the
+    // typed text instead of doing nothing. Shift+Enter always returns the
+    // typed text, even while an entry is highlighted.
+    property bool allowCustom: false
     // --- Enter / exit slide-and-fade transition ----------------------------
     property real slideDistance: 40
     property real yOffset: slideDistance
@@ -22,6 +26,8 @@ Item {
     property int maxListHeight: 360
     property real listContentHeight: filtered.length * itemHeight + Math.max(0, filtered.length - 1) * itemSpacing
     property real visibleListHeight: Math.min(listContentHeight, maxListHeight)
+    // Free-form affordance shown when nothing matches what's typed.
+    property bool showCustomRow: allowCustom && filtered.length === 0 && query.trim().length > 0
     property string query: searchField.text
     property var filtered: {
         const q = query.trim().toLowerCase();
@@ -39,6 +45,8 @@ Item {
     }
 
     signal selected(var item, int index)
+    // Emitted when the user confirms free-form text that isn't a list entry.
+    signal submitted(string text)
     signal cancelled()
     // Emitted once the slide-down finishes, so the panel can unload.
     signal closeFinished()
@@ -69,11 +77,25 @@ Item {
     }
 
     function activateCurrent() {
-        if (listView.currentIndex < 0 || listView.currentIndex >= filtered.length)
+        if (listView.currentIndex >= 0 && listView.currentIndex < filtered.length) {
+            const entry = filtered[listView.currentIndex];
+            root.selected(entry.item, entry.index);
+            return ;
+        }
+        root.submitCustom();
+    }
+
+    // Confirm whatever is typed, ignoring the highlighted entry. No-op unless
+    // the caller asked for free-form input and something was actually typed.
+    function submitCustom() {
+        if (!root.allowCustom)
             return ;
 
-        const entry = filtered[listView.currentIndex];
-        root.selected(entry.item, entry.index);
+        const text = root.query.trim();
+        if (text.length === 0)
+            return ;
+
+        root.submitted(text);
     }
 
     opacity: 0
@@ -83,7 +105,7 @@ Item {
     }
     implicitWidth: 500
     // Grow with the number of results, up to maxListHeight, then scroll.
-    implicitHeight: 2 * Appearance.sizes.elevationMargin + 2 * 12 + searchField.implicitHeight + 8 + visibleListHeight
+    implicitHeight: 2 * Appearance.sizes.elevationMargin + 2 * 12 + searchField.implicitHeight + 8 + visibleListHeight + (showCustomRow ? itemHeight : 0)
     onFilteredChanged: listView.currentIndex = filtered.length > 0 ? 0 : -1
 
     ParallelAnimation {
@@ -168,7 +190,10 @@ Item {
 
                         event.accepted = true;
                     } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                        root.activateCurrent();
+                        if (event.modifiers & Qt.ShiftModifier)
+                            root.submitCustom();
+                        else
+                            root.activateCurrent();
                         event.accepted = true;
                     } else {
                         event.accepted = false;
@@ -233,6 +258,47 @@ Item {
                         }
                     }
 
+                }
+
+            }
+
+            Rectangle {
+                id: customRow
+
+                Layout.fillWidth: true
+                Layout.preferredHeight: root.itemHeight
+                visible: root.showCustomRow
+                radius: Appearance.rounding.small
+                color: customMouse.containsMouse ? Appearance.colors.colLayer1Hover : Appearance.colors.colPrimaryContainer
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 12
+                    anchors.rightMargin: 12
+                    spacing: 10
+
+                    MaterialSymbol {
+                        text: "keyboard_return"
+                        iconSize: Appearance.font.pixelSize.larger
+                        color: Appearance.colors.colOnPrimaryContainer
+                    }
+
+                    StyledText {
+                        Layout.fillWidth: true
+                        elide: Text.ElideRight
+                        text: `Use "${root.query.trim()}"`
+                        color: Appearance.colors.colOnPrimaryContainer
+                    }
+
+                }
+
+                MouseArea {
+                    id: customMouse
+
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: root.submitCustom()
                 }
 
             }
