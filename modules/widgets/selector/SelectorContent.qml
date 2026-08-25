@@ -161,7 +161,7 @@ Item {
 
         anchors.fill: parent
         anchors.margins: Appearance.sizes.elevationMargin
-        color: Appearance.m3colors.m3surfaceContainerHigh // Match Pinentry dialog surface
+        color: Appearance.colors.colBackgroundSurfaceContainerHigh // Match Pinentry dialog surface
         radius: Appearance.rounding.large
 
         ColumnLayout {

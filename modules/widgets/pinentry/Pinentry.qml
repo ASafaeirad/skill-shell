@@ -216,7 +216,7 @@ Scope {
                         implicitWidth: 450
                         implicitHeight: contentColumn.implicitHeight + radius * 2
                         radius: Appearance.rounding.large
-                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        color: Appearance.colors.colBackgroundSurfaceContainerHigh
                         opacity: dialogRoot.contentOpacity
 
                         transform: Translate {

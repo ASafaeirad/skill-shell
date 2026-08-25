@@ -100,7 +100,7 @@ Item {
 
         anchors.fill: parent
         anchors.margins: Appearance.sizes.elevationMargin
-        color: Appearance.m3colors.m3surfaceContainerHigh // Same dialog surface as WindowDialog
+        color: Appearance.colors.colBackgroundSurfaceContainerHigh // Same dialog surface as Pinentry/Selector
         radius: Appearance.rounding.large
 
         // Clicks inside the dialog shouldn't reach the dismissing scrim.
