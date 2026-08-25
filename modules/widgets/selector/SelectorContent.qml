@@ -8,7 +8,7 @@ import qs.modules.common.functions
 import qs.modules.common.widgets
 import qs.services
 
-Item {
+OverlayDialogCard {
     id: root
 
     property var items: []
@@ -17,9 +17,6 @@ Item {
     // typed text instead of doing nothing. Shift+Enter always returns the
     // typed text, even while an entry is highlighted.
     property bool allowCustom: false
-    // --- Enter / exit slide-and-fade transition ----------------------------
-    property real slideDistance: 40
-    property real yOffset: slideDistance
     // Sizing
     property int itemHeight: 40
     property int itemSpacing: 2
@@ -48,22 +45,11 @@ Item {
     // Emitted when the user confirms free-form text that isn't a list entry.
     signal submitted(string text)
     signal cancelled()
-    // Emitted once the slide-down finishes, so the panel can unload.
-    signal closeFinished()
 
-    function animateIn() {
-        // Reset input each time the panel opens. Without this, reopening while
-        // the previous exit animation is still playing reuses this same instance
-        // with stale query text (e.g. running menu twice back-to-back).
-        searchField.text = "";
-        exitAnim.stop();
-        enterAnim.start();
-    }
-
-    function animateOut() {
-        enterAnim.stop();
-        exitAnim.start();
-    }
+    // Reset input each time the panel opens. Without this, reopening while
+    // the previous exit animation is still playing reuses this same instance
+    // with stale query text (e.g. running menu twice back-to-back).
+    onAboutToAnimateIn: searchField.text = ""
 
     // --- Filtering ---------------------------------------------------------
     // Each filtered entry keeps the item and its original index so the
@@ -98,7 +84,6 @@ Item {
         root.submitted(text);
     }
 
-    opacity: 0
     Component.onCompleted: {
         searchField.forceActiveFocus();
         animateIn();
@@ -108,168 +93,64 @@ Item {
     implicitHeight: 2 * Appearance.sizes.elevationMargin + 2 * 12 + searchField.implicitHeight + 8 + visibleListHeight + (showCustomRow ? itemHeight : 0)
     onFilteredChanged: listView.currentIndex = filtered.length > 0 ? 0 : -1
 
-    ParallelAnimation {
-        id: enterAnim
-
-        NumberAnimation {
-            target: root
-            property: "yOffset"
-            to: 0
-            duration: Appearance.animation.elementMoveEnter.duration
-            easing.type: Appearance.animation.elementMoveEnter.type
-            easing.bezierCurve: Appearance.animation.elementMoveEnter.bezierCurve
-        }
-
-        NumberAnimation {
-            target: root
-            property: "opacity"
-            to: 1
-            duration: Appearance.animation.elementMoveEnter.duration
-            easing.type: Appearance.animation.elementMoveEnter.type
-            easing.bezierCurve: Appearance.animation.elementMoveEnter.bezierCurve
-        }
-
-    }
-
-    ParallelAnimation {
-        id: exitAnim
-
-        onFinished: root.closeFinished()
-
-        NumberAnimation {
-            target: root
-            property: "yOffset"
-            to: root.slideDistance
-            duration: Appearance.animation.elementMoveExit.duration
-            easing.type: Appearance.animation.elementMoveExit.type
-            easing.bezierCurve: Appearance.animation.elementMoveExit.bezierCurve
-        }
-
-        NumberAnimation {
-            target: root
-            property: "opacity"
-            to: 0
-            duration: Appearance.animation.elementMoveExit.duration
-            easing.type: Appearance.animation.elementMoveExit.type
-            easing.bezierCurve: Appearance.animation.elementMoveExit.bezierCurve
-        }
-
-    }
-
-    Rectangle {
-        id: background
-
+    ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Appearance.sizes.elevationMargin
-        color: Appearance.colors.colBackgroundSurfaceContainerHigh // Match Pinentry dialog surface
-        radius: Appearance.rounding.large
+        anchors.margins: 12
+        spacing: 8
 
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: 12
-            spacing: 8
+        MaterialTextField {
+            id: searchField
 
-            MaterialTextField {
-                id: searchField
+            Layout.fillWidth: true
+            placeholderText: root.prompt
+            focus: true
+            Keys.onPressed: (event) => {
+                if (event.key === Qt.Key_Escape) {
+                    root.cancelled();
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_Down) {
+                    if (root.filtered.length > 0)
+                        listView.currentIndex = Math.min(listView.currentIndex + 1, root.filtered.length - 1);
 
-                Layout.fillWidth: true
-                placeholderText: root.prompt
-                focus: true
-                Keys.onPressed: (event) => {
-                    if (event.key === Qt.Key_Escape) {
-                        root.cancelled();
-                        event.accepted = true;
-                    } else if (event.key === Qt.Key_Down) {
-                        if (root.filtered.length > 0)
-                            listView.currentIndex = Math.min(listView.currentIndex + 1, root.filtered.length - 1);
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_Up) {
+                    if (root.filtered.length > 0)
+                        listView.currentIndex = Math.max(listView.currentIndex - 1, 0);
 
-                        event.accepted = true;
-                    } else if (event.key === Qt.Key_Up) {
-                        if (root.filtered.length > 0)
-                            listView.currentIndex = Math.max(listView.currentIndex - 1, 0);
-
-                        event.accepted = true;
-                    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                        if (event.modifiers & Qt.ShiftModifier)
-                            root.submitCustom();
-                        else
-                            root.activateCurrent();
-                        event.accepted = true;
-                    } else {
-                        event.accepted = false;
-                    }
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                    if (event.modifiers & Qt.ShiftModifier)
+                        root.submitCustom();
+                    else
+                        root.activateCurrent();
+                    event.accepted = true;
+                } else {
+                    event.accepted = false;
                 }
             }
+        }
 
-            StyledListView {
-                id: listView
+        StyledListView {
+            id: listView
 
-                Layout.fillWidth: true
-                Layout.preferredHeight: root.visibleListHeight
-                visible: root.filtered.length > 0
-                clip: true
-                spacing: root.itemSpacing
-                model: root.filtered
-                currentIndex: 0
+            Layout.fillWidth: true
+            Layout.preferredHeight: root.visibleListHeight
+            visible: root.filtered.length > 0
+            clip: true
+            spacing: root.itemSpacing
+            model: root.filtered
+            currentIndex: 0
 
-                delegate: Rectangle {
-                    id: item
+            delegate: Rectangle {
+                id: item
 
-                    required property var modelData
-                    required property int index
+                required property var modelData
+                required property int index
 
-                    width: listView.width
-                    height: root.itemHeight
-                    radius: Appearance.rounding.small
-                    color: (index === listView.currentIndex) ? Appearance.colors.colPrimaryContainer : itemMouse.containsMouse ? Appearance.colors.colLayer1Hover : "transparent"
-
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.leftMargin: 12
-                        anchors.rightMargin: 12
-                        spacing: 10
-
-                        MaterialSymbol {
-                            visible: text.length > 0
-                            text: root.iconOf(item.modelData.item)
-                            iconSize: Appearance.font.pixelSize.larger
-                            color: (item.index === listView.currentIndex) ? Appearance.colors.colOnPrimaryContainer : Appearance.colors.colOnLayer0
-                        }
-
-                        StyledText {
-                            Layout.fillWidth: true
-                            elide: Text.ElideRight
-                            text: root.displayText(item.modelData.item)
-                            color: (item.index === listView.currentIndex) ? Appearance.colors.colOnPrimaryContainer : Appearance.colors.colOnLayer0
-                        }
-
-                    }
-
-                    MouseArea {
-                        id: itemMouse
-
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onEntered: listView.currentIndex = item.index
-                        onClicked: {
-                            listView.currentIndex = item.index;
-                            root.activateCurrent();
-                        }
-                    }
-
-                }
-
-            }
-
-            Rectangle {
-                id: customRow
-
-                Layout.fillWidth: true
-                Layout.preferredHeight: root.itemHeight
-                visible: root.showCustomRow
+                width: listView.width
+                height: root.itemHeight
                 radius: Appearance.rounding.small
-                color: customMouse.containsMouse ? Appearance.colors.colLayer1Hover : Appearance.colors.colPrimaryContainer
+                color: (index === listView.currentIndex) ? Appearance.colors.colPrimaryContainer : itemMouse.containsMouse ? Appearance.colors.colLayer1Hover : "transparent"
 
                 RowLayout {
                     anchors.fill: parent
@@ -278,38 +159,81 @@ Item {
                     spacing: 10
 
                     MaterialSymbol {
-                        text: "keyboard_return"
+                        visible: text.length > 0
+                        text: root.iconOf(item.modelData.item)
                         iconSize: Appearance.font.pixelSize.larger
-                        color: Appearance.colors.colOnPrimaryContainer
+                        color: (item.index === listView.currentIndex) ? Appearance.colors.colOnPrimaryContainer : Appearance.colors.colOnLayer0
                     }
 
                     StyledText {
                         Layout.fillWidth: true
                         elide: Text.ElideRight
-                        text: `Use "${root.query.trim()}"`
-                        color: Appearance.colors.colOnPrimaryContainer
+                        text: root.displayText(item.modelData.item)
+                        color: (item.index === listView.currentIndex) ? Appearance.colors.colOnPrimaryContainer : Appearance.colors.colOnLayer0
                     }
 
                 }
 
                 MouseArea {
-                    id: customMouse
+                    id: itemMouse
 
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: root.submitCustom()
+                    onEntered: listView.currentIndex = item.index
+                    onClicked: {
+                        listView.currentIndex = item.index;
+                        root.activateCurrent();
+                    }
                 }
 
             }
 
         }
 
+        Rectangle {
+            id: customRow
+
+            Layout.fillWidth: true
+            Layout.preferredHeight: root.itemHeight
+            visible: root.showCustomRow
+            radius: Appearance.rounding.small
+            color: customMouse.containsMouse ? Appearance.colors.colLayer1Hover : Appearance.colors.colPrimaryContainer
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: 12
+                anchors.rightMargin: 12
+                spacing: 10
+
+                MaterialSymbol {
+                    text: "keyboard_return"
+                    iconSize: Appearance.font.pixelSize.larger
+                    color: Appearance.colors.colOnPrimaryContainer
+                }
+
+                StyledText {
+                    Layout.fillWidth: true
+                    elide: Text.ElideRight
+                    text: `Use "${root.query.trim()}"`
+                    color: Appearance.colors.colOnPrimaryContainer
+                }
+
+            }
+
+            MouseArea {
+                id: customMouse
+
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.submitCustom()
+            }
+
+        }
+
     }
 
-    transform: Translate {
-        y: root.yOffset
-    }
 
     // Animate the list height itself (implicitHeight derives from it), so the
     // container and the ListView resize in lockstep and the list never pokes

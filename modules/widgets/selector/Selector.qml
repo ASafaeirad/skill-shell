@@ -92,45 +92,16 @@ Scope {
         id: selectorLoader
         active: GlobalStates.selectorOpen || root.closing
 
-        sourceComponent: PanelWindow {
+        sourceComponent: OverlayDialogWindow {
             id: panelWindow
+
             readonly property alias selectorContent: content
-            readonly property HyprlandMonitor monitor: Hyprland.monitorFor(panelWindow.screen)
-            property bool monitorIsFocused: (Hyprland.focusedMonitor?.id == monitor?.id)
 
-            exclusionMode: ExclusionMode.Ignore
-            WlrLayershell.namespace: "quickshell:selector"
-            WlrLayershell.layer: WlrLayer.Overlay
-            WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-            color: "transparent"
-
-            anchors {
-                top: true
-                bottom: true
-                left: true
-                right: true
-            }
-
-            // Full-window scrim like Pinentry: dim everything behind the dialog
-            // and capture clicks outside it to dismiss.
-            Rectangle {
-                anchors.fill: parent
-                color: Appearance.colors.colScrim
-                opacity: content.opacity
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: root.finish("")
-                }
-            }
-
-            Component.onCompleted: GlobalFocusGrab.addDismissable(panelWindow)
-            Component.onDestruction: GlobalFocusGrab.removeDismissable(panelWindow)
-            Connections {
-                target: GlobalFocusGrab
-                function onDismissed() {
-                    root.finish("");
-                }
-            }
+            layerNamespace: "quickshell:selector"
+            keyboardFocus: WlrKeyboardFocus.OnDemand
+            // Dim everything behind the dialog and fade the scrim with it.
+            scrimOpacity: content.opacity
+            onDismissed: root.finish("")
 
             SelectorContent {
                 id: content

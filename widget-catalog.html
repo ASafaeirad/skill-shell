@@ -887,6 +887,8 @@ modules/common/widgets/NotificationGroup.qml
 modules/common/widgets/NotificationItem.qml
 modules/common/widgets/NotificationListView.qml
 modules/common/widgets/OptionalMaterialSymbol.qml
+modules/common/widgets/OverlayDialogCard.qml
+modules/common/widgets/OverlayDialogWindow.qml
 modules/common/widgets/PagePlaceholder.qml
 modules/common/widgets/PointingHandInteraction.qml
 modules/common/widgets/PointingHandLinkHover.qml
@@ -950,6 +952,10 @@ modules/common/widgets/WindowDialogTitle.qml`
         .split("\n");
 
       const exactPurposes = {
+        OverlayDialogCard:
+          "Rounded dialog surface with the shared slide-and-fade transition, used by the script-driven overlay dialogs.",
+        OverlayDialogWindow:
+          "Fullscreen layershell overlay with a dismissing scrim and focused content item, hosting an OverlayDialogCard.",
         AddressBar:
           "Editable location bar that turns a filesystem path into a navigation surface.",
         AddressBreadcrumb:

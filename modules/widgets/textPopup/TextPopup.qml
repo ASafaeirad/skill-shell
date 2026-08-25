@@ -7,7 +7,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
-import Quickshell.Hyprland
 
 /**
  * A read-only text dialog, the shell-native replacement for `zenity --text-info`.
@@ -81,67 +80,26 @@ Scope {
         id: popupLoader
         active: GlobalStates.textPopupOpen || root.closing
 
-        sourceComponent: PanelWindow {
+        sourceComponent: OverlayDialogWindow {
             id: panelWindow
+
             readonly property alias popupContent: content
 
-            exclusionMode: ExclusionMode.Ignore
-            WlrLayershell.namespace: "quickshell:textPopup"
-            WlrLayershell.layer: WlrLayer.Overlay
-            WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive // Modal like Pinentry: Esc/Enter dismiss without clicking first
-            color: "transparent"
+            layerNamespace: "quickshell:textPopup"
+            keyboardFocus: WlrKeyboardFocus.Exclusive // Modal like Pinentry: Esc/Enter dismiss without clicking first
+            // Dim everything behind the dialog and fade the scrim with it.
+            scrimOpacity: content.opacity
+            onDismissed: root.close()
 
-            anchors {
-                top: true
-                bottom: true
-                left: true
-                right: true
-            }
+            TextPopupContent {
+                id: content
 
-            // Dim everything behind the dialog and dismiss on an outside click.
-            Rectangle {
-                anchors.fill: parent
-                color: Appearance.colors.colScrim
-                opacity: content.opacity
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: root.close()
-                }
-            }
-
-            Component.onCompleted: GlobalFocusGrab.addDismissable(panelWindow)
-            Component.onDestruction: GlobalFocusGrab.removeDismissable(panelWindow)
-            Connections {
-                target: GlobalFocusGrab
-                function onDismissed() {
-                    root.close();
-                }
-            }
-
-            Item {
-                anchors.fill: parent
+                anchors.centerIn: parent
                 focus: true
-
-                Keys.onPressed: event => {
-                    if (event.key === Qt.Key_Escape || event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                        root.close();
-                        event.accepted = true;
-                    } else if (event.key === Qt.Key_C && (event.modifiers & Qt.ControlModifier)) {
-                        content.copyBody();
-                        event.accepted = true;
-                    } else {
-                        event.accepted = false;
-                    }
-                }
-
-                TextPopupContent {
-                    id: content
-                    anchors.centerIn: parent
-                    title: root.title
-                    body: root.body
-                    onDismissed: root.close()
-                    onCloseFinished: root.closing = false
-                }
+                title: root.title
+                body: root.body
+                onDismissed: root.close()
+                onCloseFinished: root.closing = false
             }
         }
     }
