@@ -9,29 +9,19 @@ QtObject {
         Action,
         App,
         Clipboard,
-        Emojis,
-        Math,
-        ShellCommand,
-        WebSearch
+        Emojis
     }
 
     readonly property string action: "/"
     readonly property string app: ">"
     readonly property string clipboard: ";"
     readonly property string emojis: ":"
-    readonly property string math: "="
-    readonly property string shellCommand: "$"
-    readonly property string webSearch: "?"
-    readonly property bool showDefaultActionsWithoutPrefix: true
 
     function detect(query) {
         if (query.startsWith(action)) return SearchPrefixes.PrefixKind.Action;
         if (query.startsWith(app)) return SearchPrefixes.PrefixKind.App;
         if (query.startsWith(clipboard)) return SearchPrefixes.PrefixKind.Clipboard;
         if (query.startsWith(emojis)) return SearchPrefixes.PrefixKind.Emojis;
-        if (query.startsWith(math)) return SearchPrefixes.PrefixKind.Math;
-        if (query.startsWith(shellCommand)) return SearchPrefixes.PrefixKind.ShellCommand;
-        if (query.startsWith(webSearch)) return SearchPrefixes.PrefixKind.WebSearch;
         return SearchPrefixes.PrefixKind.DefaultSearch;
     }
 
@@ -41,9 +31,6 @@ QtObject {
         case SearchPrefixes.PrefixKind.App: return app;
         case SearchPrefixes.PrefixKind.Clipboard: return clipboard;
         case SearchPrefixes.PrefixKind.Emojis: return emojis;
-        case SearchPrefixes.PrefixKind.Math: return math;
-        case SearchPrefixes.PrefixKind.ShellCommand: return shellCommand;
-        case SearchPrefixes.PrefixKind.WebSearch: return webSearch;
         default: return "";
         }
     }
@@ -62,9 +49,6 @@ QtObject {
         case SearchPrefixes.PrefixKind.App: return "apps";
         case SearchPrefixes.PrefixKind.Clipboard: return "content_paste_search";
         case SearchPrefixes.PrefixKind.Emojis: return "add_reaction";
-        case SearchPrefixes.PrefixKind.Math: return "calculate";
-        case SearchPrefixes.PrefixKind.ShellCommand: return "terminal";
-        case SearchPrefixes.PrefixKind.WebSearch: return "travel_explore";
         default: return "search";
         }
     }
@@ -75,9 +59,6 @@ QtObject {
         case SearchPrefixes.PrefixKind.App: return MaterialShape.Shape.Clover4Leaf;
         case SearchPrefixes.PrefixKind.Clipboard: return MaterialShape.Shape.Gem;
         case SearchPrefixes.PrefixKind.Emojis: return MaterialShape.Shape.Sunny;
-        case SearchPrefixes.PrefixKind.Math: return MaterialShape.Shape.PuffyDiamond;
-        case SearchPrefixes.PrefixKind.ShellCommand: return MaterialShape.Shape.PixelCircle;
-        case SearchPrefixes.PrefixKind.WebSearch: return MaterialShape.Shape.SoftBurst;
         default: return MaterialShape.Shape.Cookie7Sided;
         }
     }

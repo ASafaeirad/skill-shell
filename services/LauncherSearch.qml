@@ -6,16 +6,12 @@ import qs.modules.common.functions
 import QtQuick
 import Qt.labs.folderlistmodel
 import Quickshell
-import Quickshell.Io
 import Quickshell.Hyprland
 
 Singleton {
     id: root
 
     property string query: ""
-
-    readonly property string searchEngineBaseUrl: "https://www.google.com/search?q="
-    readonly property list<string> searchExcludedSites: ["quora.com", "facebook.com"]
 
     // https://specifications.freedesktop.org/menu/latest/category-registry.html
     property list<string> mainRegisteredCategories: ["AudioVideo", "Development", "Education", "Game", "Graphics", "Network", "Office", "Science", "Settings", "System", "Utility"]
@@ -112,34 +108,6 @@ Singleton {
     // Combined built-in and user actions
     property var allActions: searchActions.concat(userActionScripts)
 
-    property string mathResult: ""
-    Timer {
-        id: nonAppResultsTimer
-        interval: 30 // was search.nonAppResultDelay
-        onTriggered: {
-            let expr = root.query;
-            if (SearchPrefixes.detect(expr) === SearchPrefixes.PrefixKind.Math) {
-                expr = SearchPrefixes.strip(expr);
-            }
-            mathProc.calculateExpression(expr);
-        }
-    }
-
-    Process {
-        id: mathProc
-        property list<string> baseCommand: ["qalc", "-t"]
-        function calculateExpression(expression) {
-            mathProc.running = false;
-            mathProc.command = baseCommand.concat(expression);
-            mathProc.running = true;
-        }
-        stdout: SplitParser {
-            onRead: data => {
-                root.mathResult = data;
-            }
-        }
-    }
-
     property list<var> results: {
         // Search results are handled here
         ////////////////// Skip? //////////////////
@@ -198,18 +166,6 @@ Singleton {
         }
 
         ////////////////// Init ///////////////////
-        nonAppResultsTimer.restart();
-        const mathResultObject = resultComp.createObject(null, {
-            name: root.mathResult,
-            verb: "Copy",
-            type: "Math result",
-            fontType: LauncherSearchResult.FontType.Monospace,
-            iconName: 'calculate',
-            iconType: LauncherSearchResult.IconType.Material,
-            execute: () => {
-                Quickshell.clipboardText = root.mathResult;
-            }
-        });
         const appQuery = SearchPrefixes.strip(root.query, SearchPrefixes.PrefixKind.App);
         const appResultObjects = AppSearch.fuzzyQuery(appQuery).map(entry => {
             return resultComp.createObject(null, {
@@ -247,37 +203,6 @@ Singleton {
                 })
             });
         });
-        const commandResultObject = resultComp.createObject(null, {
-            name: SearchPrefixes.strip(root.query, SearchPrefixes.PrefixKind.ShellCommand).replace("file://", ""),
-            verb: "Run",
-            type: "Command",
-            fontType: LauncherSearchResult.FontType.Monospace,
-            iconName: 'terminal',
-            iconType: LauncherSearchResult.IconType.Material,
-            execute: () => {
-                let cleanedCommand = root.query.replace("file://", "");
-                cleanedCommand = SearchPrefixes.strip(cleanedCommand, SearchPrefixes.PrefixKind.ShellCommand);
-                if (SearchPrefixes.detect(cleanedCommand) === SearchPrefixes.PrefixKind.ShellCommand) {
-                    cleanedCommand = SearchPrefixes.strip(cleanedCommand, SearchPrefixes.PrefixKind.ShellCommand);
-                }
-                Quickshell.execDetached(["bash", "-c", root.query.startsWith('sudo') ? `${Apps.terminal} fish -C '${cleanedCommand}'` : cleanedCommand]);
-            }
-        });
-        const webSearchResultObject = resultComp.createObject(null, {
-            name: SearchPrefixes.strip(root.query, SearchPrefixes.PrefixKind.WebSearch),
-            verb: "Search",
-            type: "Web search",
-            iconName: 'travel_explore',
-            iconType: LauncherSearchResult.IconType.Material,
-            execute: () => {
-                let query = SearchPrefixes.strip(root.query, SearchPrefixes.PrefixKind.WebSearch);
-                let url = root.searchEngineBaseUrl + query;
-                for (let site of root.searchExcludedSites) {
-                    url += ` -site:${site}`;
-                }
-                Qt.openUrlExternally(url);
-            }
-        });
         const launcherActionObjects = root.allActions.map(action => {
             const actionString = `${SearchPrefixes.action}${action.action}`;
             if (actionString.startsWith(root.query) || root.query.startsWith(actionString)) {
@@ -295,35 +220,12 @@ Singleton {
             return null;
         }).filter(Boolean);
 
-        //////// Prioritized by prefix /////////
         let result = [];
-        const startsWithNumber = /^\d/.test(root.query);
-        const startsWithMathPrefix = queryKind === SearchPrefixes.PrefixKind.Math;
-        const startsWithShellCommandPrefix = queryKind === SearchPrefixes.PrefixKind.ShellCommand;
-        const startsWithWebSearchPrefix = queryKind === SearchPrefixes.PrefixKind.WebSearch;
-        if (startsWithNumber || startsWithMathPrefix) {
-            result.push(mathResultObject);
-        } else if (startsWithShellCommandPrefix) {
-            result.push(commandResultObject);
-        } else if (startsWithWebSearchPrefix) {
-            result.push(webSearchResultObject);
-        }
-
         //////////////// Apps //////////////////
         result = result.concat(appResultObjects);
 
         ////////// Launcher actions ////////////
         result = result.concat(launcherActionObjects);
-
-        /// Math result, command, web search ///
-        if (SearchPrefixes.showDefaultActionsWithoutPrefix) {
-            if (!startsWithShellCommandPrefix)
-                result.push(commandResultObject);
-            if (!startsWithNumber && !startsWithMathPrefix)
-                result.push(mathResultObject);
-            if (!startsWithWebSearchPrefix)
-                result.push(webSearchResultObject);
-        }
 
         return result;
     }
