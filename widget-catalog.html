@@ -947,11 +947,17 @@ modules/common/widgets/WindowDialog.qml
 modules/common/widgets/WindowDialogSectionHeader.qml
 modules/common/widgets/WindowDialogSeparator.qml
 modules/common/widgets/WindowDialogSlider.qml
-modules/common/widgets/WindowDialogTitle.qml`
+modules/common/widgets/WindowDialogTitle.qml
+modules/widgets/pass/Pass.qml
+modules/widgets/pass/PassContent.qml`
         .trim()
         .split("\n");
 
       const exactPurposes = {
+        Pass:
+          "Keyboard-first pass password-store panel with IPC and a global shortcut entry point.",
+        PassContent:
+          "Searchable pass entry list with masked details, OTP, copy, autotype, reveal, and Vim-style navigation.",
         OverlayDialogCard:
           "Rounded dialog surface with the shared slide-and-fade transition, used by the script-driven overlay dialogs.",
         OverlayDialogWindow:
@@ -1017,6 +1023,7 @@ modules/common/widgets/WindowDialogTitle.qml`
           .replace(/([a-z0-9])([A-Z])/g, "$1 $2");
       }
       function scopeOf(path) {
+        if (path.includes("/widgets/pass/")) return "Panel widgets";
         if (path.includes("/widgetCanvas/")) return "Canvas";
         if (path.includes("/shapes/")) return "Shape lab";
         return "Common toolkit";

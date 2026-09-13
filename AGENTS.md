@@ -96,6 +96,7 @@ Details in `.claude/skills/verify-shell`.
 | Add a launcher search provider/prefix | `.claude/skills/add-launcher-provider`                                                                                                           |
 | Add a config option (+ settings UI)   | `.claude/skills/add-config-option`                                                                                                               |
 | Verify a change works                 | `.claude/skills/verify-shell`                                                                                                                    |
+| Sync the design system to Claude Design | `scripts/design/sync.sh`, then ask Claude Code to push `scripts/design/build/bundle`                                                           |
 
 ## Removing or refactoring a feature (hints)
 

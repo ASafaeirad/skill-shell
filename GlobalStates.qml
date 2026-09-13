@@ -18,6 +18,7 @@ Singleton {
     property bool osdVolumeOpen: false
     property bool overlayOpen: false
     property bool overviewOpen: false
+    property bool passOpen: false
     property bool pinentryOpen: false
     property bool regionSelectorOpen: false
     property bool searchOpen: false

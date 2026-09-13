@@ -8,6 +8,7 @@
 
 import "modules/common"
 import "services"
+import "modules/widgets/pass"
 
 import qs.modules.widgets.background
 import qs.modules.widgets.bar
@@ -66,6 +67,7 @@ ShellRoot {
     PanelLoader { component: OnScreenDisplay {} }
     PanelLoader { component: Overlay {} }
     PanelLoader { component: Overview {} }
+    PanelLoader { component: Pass {} }
     PanelLoader { component: Pinentry {} }
     PanelLoader { component: Polkit {} }
     PanelLoader { component: RegionSelector {} }

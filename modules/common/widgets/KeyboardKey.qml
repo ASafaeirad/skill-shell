@@ -5,14 +5,14 @@ Rectangle {
     id: root
 
     property string key
-    property real horizontalPadding: 6
-    property real verticalPadding: 1
+    property real horizontalPadding: 8
+    property real verticalPadding: 2
     property real borderWidth: 1
-    property real extraBottomBorderWidth: 2
-    property color borderColor: Appearance.colors.colOnLayer0
+    property real extraBottomBorderWidth: 3
+    property color borderColor: Appearance.m3colors.m3surfaceVariant
     property real borderRadius: 5
     property real pixelSize: Appearance.font.pixelSize.smaller
-    property color keyColor: Appearance.m3colors.m3surfaceContainerLow
+    property color keyColor: Appearance.m3colors.m3surfaceContainerHighest
 
     implicitWidth: keyFace.implicitWidth + borderWidth * 2
     implicitHeight: keyFace.implicitHeight + borderWidth * 2 + extraBottomBorderWidth
@@ -43,7 +43,5 @@ Rectangle {
             font.pixelSize: root.pixelSize
             text: key
         }
-
     }
-
 }
