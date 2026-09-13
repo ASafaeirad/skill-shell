@@ -55,8 +55,11 @@ Scope {
     // the process's stdin only — never argv, never this shell's IPC stdout.
     function respond(prefix, text) {
         if (root.fifoPath.length === 0) return;
+        // A caller can disappear while the writer is opening its FIFO. Stop
+        // that abandoned writer before reusing this Process for a new reply.
+        writer.running = false;
         writer.payload = prefix + (text ?? "") + "\n";
-        writer.command = ["sh", "-c", 'cat > "$1"', "sh", root.fifoPath];
+        writer.command = ["timeout", "5", "sh", "-c", 'cat > "$1"', "sh", root.fifoPath];
         writer.stdinEnabled = true;
         writer.running = true;
         root.fifoPath = "";
