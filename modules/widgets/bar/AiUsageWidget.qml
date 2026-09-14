@@ -54,12 +54,13 @@ MouseArea {
                 required property var modelData
 
                 Layout.alignment: Qt.AlignVCenter
-                spacing: Appearance.rounding.unsharpen
+                spacing: Appearance.rounding.verysmall
 
                 Rectangle {
                     visible: providerMeter.modelData.label === "CX"
                     Layout.alignment: Qt.AlignVCenter
-                    Layout.rightMargin: Appearance.rounding.unsharpenmore - providerMeter.spacing
+                    Layout.rightMargin: Appearance.rounding.unshapen
+                    Layout.leftMargin: Appearance.rounding.unshapen
                     implicitWidth: Appearance.rounding.unsharpen
                     implicitHeight: Appearance.font.pixelSize.normal
                     radius: Appearance.rounding.full
