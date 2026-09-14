@@ -129,8 +129,6 @@ Singleton {
         otpProc.entryName = name;
         otpProc.command = ["pass", "otp", "code", "--clip", name];
         otpProc.running = true;
-        root.showStatus("OTP copied");
-        root.closeRequested();
     }
 
     function copyToClipboard(value, message) {
@@ -251,7 +249,10 @@ Singleton {
             if (exitCode !== 0) {
                 root.errorText = "This entry has no usable OTP";
                 root.statusMessage = "";
+                return;
             }
+            root.showStatus("OTP copied");
+            root.closeRequested();
         }
     }
 
