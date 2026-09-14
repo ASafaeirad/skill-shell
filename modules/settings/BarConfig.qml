@@ -159,6 +159,33 @@ ContentPage {
     }
 
     ContentSection {
+        icon: "data_usage"
+        title: "AI usage"
+
+        ConfigSwitch {
+            buttonIcon: "check"
+            text: "Show Claude and Codex limits"
+            configKey: "bar.aiUsage.enable"
+        }
+
+        ConfigSwitch {
+            buttonIcon: "pause_circle"
+            text: "Pause automatic refresh"
+            configKey: "bar.aiUsage.paused"
+        }
+
+        ConfigSpinBox {
+            icon: "schedule"
+            text: "Refresh interval in minutes"
+            configKey: "bar.aiUsage.refreshIntervalMinutes"
+            from: 1
+            to: 60
+            stepSize: 1
+        }
+
+    }
+
+    ContentSection {
         icon: "tooltip"
         title: "Tooltips"
 

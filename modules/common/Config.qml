@@ -149,6 +149,11 @@ Singleton {
                 property bool showBackground: true
                 property bool verbose: true
                 property bool vertical: false
+                property JsonObject aiUsage: JsonObject {
+                    property bool enable: true
+                    property bool paused: false
+                    property int refreshIntervalMinutes: 5
+                }
                 property list<string> screenList: [] // List of names, like "eDP-1", find out with 'hyprctl monitors' command
                 property JsonObject utilButtons: JsonObject {
                     property bool showScreenSnip: true

@@ -836,6 +836,7 @@ modules/common/widgets/AddressBreadcrumb.qml
 modules/common/widgets/ButtonGroup.qml
 modules/common/widgets/Circle.qml
 modules/common/widgets/CircularProgress.qml
+modules/common/widgets/IconCircularProgress.qml
 modules/common/widgets/CliphistImage.qml
 modules/common/widgets/ClippedFilledCircularProgress.qml
 modules/common/widgets/ClippedProgressBar.qml
@@ -948,12 +949,20 @@ modules/common/widgets/WindowDialogSectionHeader.qml
 modules/common/widgets/WindowDialogSeparator.qml
 modules/common/widgets/WindowDialogSlider.qml
 modules/common/widgets/WindowDialogTitle.qml
+modules/widgets/bar/AiUsagePopup.qml
+modules/widgets/bar/AiUsageWidget.qml
 modules/widgets/pass/Pass.qml
 modules/widgets/pass/PassContent.qml`
         .trim()
         .split("\n");
 
       const exactPurposes = {
+        IconCircularProgress:
+          "Stroke-only circular progress variant with clockwise depletion, a theme-aware remainder track, and an optional centered Material Symbol.",
+        AiUsagePopup:
+          "Two-column Claude and Codex usage panel with five-hour and seven-day limit rings, reset times, and sync state.",
+        AiUsageWidget:
+          "Two labeled Claude and Codex limit rings with manual sync on left-click and persistent automatic-refresh pause on right-click.",
         Pass:
           "Keyboard-first pass password-store panel with IPC and a global shortcut entry point.",
         PassContent:

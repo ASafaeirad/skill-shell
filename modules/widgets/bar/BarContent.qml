@@ -241,6 +241,14 @@ Item { // Bar content region
                 invertSide: Config?.options.bar.bottom
             }
 
+            Loader {
+                active: Config.options.bar.aiUsage.enable && root.useShortenedForm === 0
+
+                sourceComponent: BarGroup {
+                    AiUsageWidget {}
+                }
+            }
+
             ClockWidget {
                 showDate: (Config.options.bar.verbose && root.useShortenedForm < 2)
                 Layout.alignment: Qt.AlignVCenter

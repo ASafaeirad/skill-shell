@@ -15,6 +15,7 @@ Item {
     property color colSecondary: Appearance.colors.colSecondaryContainer
     property real gapAngle: 360 / 18
     property bool fill: false
+    property bool drainClockwise: false
     property int fillOverflow: 2
     property bool enableAnimation: true
     property int animationDuration: 800
@@ -58,8 +59,10 @@ Item {
                 centerY: root.centerY
                 radiusX: root.arcRadius
                 radiusY: root.arcRadius
-                startAngle: root.startAngle - root.gapAngle
-                sweepAngle: -(360 - root.degree - 2 * root.gapAngle)
+                startAngle: root.drainClockwise ? root.startAngle : root.startAngle - root.gapAngle
+                sweepAngle: root.drainClockwise
+                    ? Math.max(0, 360 - root.degree - root.gapAngle)
+                    : -(360 - root.degree - 2 * root.gapAngle)
             }
 
         }
@@ -77,8 +80,8 @@ Item {
                 centerY: root.centerY
                 radiusX: root.arcRadius
                 radiusY: root.arcRadius
-                startAngle: root.startAngle
-                sweepAngle: root.degree
+                startAngle: root.startAngle + (root.drainClockwise ? 360 - root.degree : 0)
+                sweepAngle: root.drainClockwise ? Math.max(0, root.degree - root.gapAngle) : root.degree
             }
 
         }
