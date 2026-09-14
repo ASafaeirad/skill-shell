@@ -12,6 +12,9 @@ LazyLoader {
     property Item hoverTarget
     default property Item contentItem
     property real popupBackgroundMargin: 0
+    property real contentPadding: Appearance.rounding.verysmall + Appearance.rounding.unsharpen
+    property real backgroundRadius: Appearance.rounding.small
+    property bool clipContent: false
 
     active: hoverTarget && hoverTarget.containsMouse
 
@@ -70,7 +73,6 @@ LazyLoader {
 
         Rectangle {
             id: popupBackground
-            readonly property real margin: 10
             anchors {
                 fill: parent
                 leftMargin: Appearance.sizes.elevationMargin + root.popupBackgroundMargin * (!popupWindow.anchors.left)
@@ -78,10 +80,11 @@ LazyLoader {
                 topMargin: Appearance.sizes.elevationMargin + root.popupBackgroundMargin * (!popupWindow.anchors.top)
                 bottomMargin: Appearance.sizes.elevationMargin + root.popupBackgroundMargin * (!popupWindow.anchors.bottom)
             }
-            implicitWidth: root.contentItem.implicitWidth + margin * 2
-            implicitHeight: root.contentItem.implicitHeight + margin * 2
+            implicitWidth: root.contentItem.implicitWidth + root.contentPadding * 2
+            implicitHeight: root.contentItem.implicitHeight + root.contentPadding * 2
             color: Appearance.m3colors.m3surfaceContainer
-            radius: Appearance.rounding.small
+            radius: root.backgroundRadius
+            clip: root.clipContent
             children: [root.contentItem]
 
             border.width: 1

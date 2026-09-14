@@ -7,66 +7,114 @@ import qs.services
 StyledPopup {
     id: root
 
-    property string formattedDate: Qt.locale().toString(DateTime.clock.date, "dddd, MMMM dd, yyyy")
-    property string formattedTime: DateTime.time
-    property string formattedUptime: DateTime.uptime
-    property string todosSection: getUpcomingTodos()
+    contentPadding: 0
+    backgroundRadius: Appearance.rounding.normal + Appearance.rounding.unsharpen
+    clipContent: true
 
-    function getUpcomingTodos() {
-        const unfinishedTodos = Todo.list.filter(function(item) {
-            return !item.done;
-        });
-        if (unfinishedTodos.length === 0)
-            return "No pending tasks";
+    readonly property var displayLocale: Qt.locale("en_US")
+    readonly property string formattedDay: DateTime.clock.date.getDate().toString()
+    readonly property string formattedWeekday: displayLocale.toString(DateTime.clock.date, "dddd")
+    readonly property string formattedMonthAndWeek: "%1 · week %2".arg(displayLocale.toString(
+                                                                           DateTime.clock.date,
+                                                                           "MMMM yyyy")).arg(getIsoWeekNumber(
+                                                                                                 DateTime.clock.date))
+    readonly property string formattedUptime: DateTime.uptime.split(", ").join(" ")
 
-        // Limit to first 5 todos to keep popup manageable
-        const limitedTodos = unfinishedTodos.slice(0, 5);
-        let todoText = limitedTodos.map(function(item, index) {
-            return `  ${index + 1}. ${item.content}`;
-        }).join('\n');
-        if (unfinishedTodos.length > 5)
-            todoText += `\n  ${"... and %1 more".arg(unfinishedTodos.length - 5)}`;
-
-        return todoText;
+    function getIsoWeekNumber(date) {
+        const target = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+        const day = target.getUTCDay() || 7;
+        target.setUTCDate(target.getUTCDate() + 4 - day);
+        const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
+        return Math.ceil((((target - yearStart) / 86400000) + 1) / 7);
     }
 
-    ColumnLayout {
-        id: columnLayout
-
+    Column {
+        id: card
         anchors.centerIn: parent
-        spacing: 4
+        width: Appearance.sizes.notificationPopupWidth + Appearance.rounding.normal
+        spacing: 0
 
-        StyledPopupHeaderRow {
-            icon: "calendar_month"
-            label: root.formattedDate
-        }
+        Item {
+            id: dateSection
 
-        StyledPopupValueRow {
-            icon: "timelapse"
-            label: "System uptime:"
-            value: root.formattedUptime
-        }
+            width: card.width
+            implicitHeight: Appearance.font.pixelSize.huge * 4 + Appearance.rounding.verysmall
 
-        // Tasks
-        Column {
-            spacing: 0
-            Layout.fillWidth: true
+            RowLayout {
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    verticalCenter: parent.verticalCenter
+                    leftMargin: Appearance.rounding.large
+                    rightMargin: Appearance.rounding.large
+                }
 
-            StyledPopupValueRow {
-                icon: "checklist"
-                label: "To Do:"
-                value: ""
+                StyledText {
+                    Layout.alignment: Qt.AlignVCenter
+                    text: root.formattedDay
+                    color: Appearance.colors.colPrimary
+                    font {
+                        family: Appearance.font.family.numbers
+                        pixelSize: Appearance.font.pixelSize.huge * 3
+                        weight: Font.Normal
+                    }
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignVCenter
+                    spacing: 0
+
+                    StyledText {
+                        text: root.formattedWeekday
+                        color: Appearance.colors.colOnSurface
+                        font.pixelSize: Appearance.font.pixelSize.huge
+                    }
+
+                    StyledText {
+                        text: root.formattedMonthAndWeek
+                        color: Appearance.colors.colSubtext
+                        font.pixelSize: Appearance.font.pixelSize.normal
+                    }
+                }
             }
-
-            StyledText {
-                horizontalAlignment: Text.AlignLeft
-                wrapMode: Text.Wrap
-                color: Appearance.colors.colOnSurfaceVariant
-                text: root.todosSection
-            }
-
         }
 
+        Rectangle {
+            width: card.width
+            height: Appearance.rounding.unsharpen / 2
+            color: Appearance.colors.colOutlineVariant
+        }
+
+        Rectangle {
+            width: card.width
+            implicitHeight: Appearance.font.pixelSize.huge * 2 + Appearance.rounding.small
+            color: Appearance.colors.colSurfaceContainerHigh
+
+            Column {
+                anchors {
+                    left: parent.left
+                    verticalCenter: parent.verticalCenter
+                    leftMargin: Appearance.rounding.large
+                }
+                spacing: Appearance.rounding.unsharpen
+
+                StyledText {
+                    text: "Uptime"
+                    color: Appearance.colors.colSubtext
+                    font {
+                        pixelSize: Appearance.font.pixelSize.smallest
+                        capitalization: Font.AllUppercase
+                        letterSpacing: Appearance.rounding.unsharpen / 2
+                    }
+                }
+
+                StyledText {
+                    text: root.formattedUptime
+                    color: Appearance.colors.colOnSurface
+                    font.pixelSize: Appearance.font.pixelSize.small
+                }
+            }
+        }
     }
-
 }
