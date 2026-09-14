@@ -106,7 +106,7 @@ StyledPopup {
         readonly property real contentPadding: Appearance.spacing.lg
 
         implicitWidth: Math.max(cardContent.implicitWidth + contentPadding * 2,
-            Appearance.font.pixelSize.normal * 13)
+                                Appearance.font.pixelSize.normal * 13)
         implicitHeight: cardContent.implicitHeight + contentPadding * 2
         color: Appearance.colors.colLayer3
         radius: Appearance.rounding.normal

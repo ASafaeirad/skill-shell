@@ -58,8 +58,8 @@ Item {
         updateWorkspaceOccupied();
     }
 
-    implicitWidth: root.vertical ? Appearance.sizes.verticalBarWidth : (root.workspaceButtonWidth * root.workspacesShown)
-    implicitHeight: root.vertical ? (root.workspaceButtonWidth * root.workspacesShown) : Appearance.sizes.barHeight
+    implicitWidth: root.workspaceButtonWidth * root.workspacesShown
+    implicitHeight: Appearance.sizes.barHeight
 
     // Scroll to switch workspaces
     WheelHandler {
@@ -89,8 +89,8 @@ Item {
 
         rowSpacing: 0
         columnSpacing: 0
-        columns: root.vertical ? 1 : root.workspacesShown
-        rows: root.vertical ? root.workspacesShown : 1
+        columns: root.workspacesShown
+        rows: 1
 
         Repeater {
             model: root.workspacesShown
@@ -106,8 +106,8 @@ Item {
                 property var radiusNext: rightOccupied ? 0 : (width / 2)
 
                 topLeftRadius: radiusPrev
-                bottomLeftRadius: root.vertical ? radiusNext : radiusPrev
-                topRightRadius: root.vertical ? radiusPrev : radiusNext
+                bottomLeftRadius: radiusPrev
+                topRightRadius: radiusNext
                 bottomRightRadius: radiusNext
 
                 color: ColorUtils.transparentize(Appearance.m3colors.m3secondaryContainer, 0.4)
@@ -150,19 +150,17 @@ Item {
         property real indicatorLength: Math.abs(idxPair.idx1 - idxPair.idx2) * workspaceButtonWidth + workspaceButtonWidth - root.activeWorkspaceMargin * 2
         property real indicatorThickness: workspaceButtonWidth - root.activeWorkspaceMargin * 2
 
-        x: root.vertical ? null : indicatorPosition
-        implicitWidth: root.vertical ? indicatorThickness : indicatorLength
-        y: root.vertical ? indicatorPosition : null
-        implicitHeight: root.vertical ? indicatorLength : indicatorThickness
-
+        x: indicatorPosition
+        implicitWidth: indicatorLength
+        implicitHeight: indicatorThickness
     }
 
     // Workspaces - numbers
     Grid {
         z: 3
 
-        columns: root.vertical ? 1 : root.workspacesShown
-        rows: root.vertical ? root.workspacesShown : 1
+        columns: root.workspacesShown
+        rows: 1
         columnSpacing: 0
         rowSpacing: 0
 
