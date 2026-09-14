@@ -249,9 +249,12 @@ Item { // Bar content region
                 }
             }
 
-            ClockWidget {
-                showDate: (Config.options.bar.verbose && root.useShortenedForm < 2)
+            BarGroup {
                 Layout.alignment: Qt.AlignVCenter
+
+                ClockWidget {
+                    showDate: (Config.options.bar.verbose && root.useShortenedForm < 2)
+                }
             }
 
             // Weather

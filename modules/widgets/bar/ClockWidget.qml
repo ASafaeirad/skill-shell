@@ -10,7 +10,7 @@ Item {
     property bool borderless: Config.options.bar.borderless
     property bool showDate: Config.options.bar.verbose
 
-    implicitWidth: rowLayout.implicitWidth
+    implicitWidth: rowLayout.implicitWidth + Appearance.font.pixelSize.smaller * 2
     implicitHeight: Appearance.sizes.barHeight
 
     RowLayout {

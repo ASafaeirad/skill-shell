@@ -7,7 +7,7 @@ import qs.services
 MouseArea {
     id: root
 
-    implicitWidth: rowLayout.implicitWidth
+    implicitWidth: rowLayout.implicitWidth + Appearance.font.pixelSize.smaller * 2
     implicitHeight: Appearance.sizes.barHeight
     hoverEnabled: !Config.options.bar.tooltips.clickToShow
     acceptedButtons: Qt.LeftButton | Qt.RightButton
