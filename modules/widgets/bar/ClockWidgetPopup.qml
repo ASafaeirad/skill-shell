@@ -9,7 +9,6 @@ StyledPopup {
 
     contentPadding: 0
     backgroundRadius: Appearance.rounding.normal + Appearance.rounding.unsharpen
-    clipContent: true
 
     readonly property var displayLocale: Qt.locale("en_US")
     readonly property string formattedDay: DateTime.clock.date.getDate().toString()
@@ -43,7 +42,6 @@ StyledPopup {
             RowLayout {
                 anchors {
                     left: parent.left
-                    right: parent.right
                     verticalCenter: parent.verticalCenter
                     leftMargin: Appearance.spacing.xl
                     rightMargin: Appearance.spacing.xl
@@ -53,8 +51,10 @@ StyledPopup {
                     Layout.alignment: Qt.AlignVCenter
                     text: root.formattedDay
                     color: Appearance.colors.colPrimary
+                    Layout.rightMargin: Appearance.spacing.m
                     font {
-                        family: Appearance.font.family.numbers
+                        family: Appearance.font.family.expressive
+                        features: ({ "tnum": 1 })
                         pixelSize: Appearance.font.pixelSize.huge * 3
                         weight: Font.Normal
                     }
@@ -74,7 +74,10 @@ StyledPopup {
                     StyledText {
                         text: root.formattedMonthAndWeek
                         color: Appearance.colors.colSubtext
-                        font.pixelSize: Appearance.font.pixelSize.normal
+                        font {
+                            features: ({ "tnum": 1 })
+                            pixelSize: Appearance.font.pixelSize.expressive
+                        }
                     }
                 }
             }
@@ -90,6 +93,8 @@ StyledPopup {
             width: card.width
             implicitHeight: Appearance.font.pixelSize.huge * 2 + Appearance.spacing.m
             color: Appearance.colors.colSurfaceContainerHigh
+            bottomLeftRadius: root.backgroundRadius
+            bottomRightRadius: root.backgroundRadius
 
             Column {
                 anchors {
@@ -112,7 +117,10 @@ StyledPopup {
                 StyledText {
                     text: root.formattedUptime
                     color: Appearance.colors.colOnSurface
-                    font.pixelSize: Appearance.font.pixelSize.small
+                    font {
+                        features: ({ "tnum": 1 })
+                        pixelSize: Appearance.font.pixelSize.small
+                    }
                 }
             }
         }
