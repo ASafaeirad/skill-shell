@@ -17,10 +17,11 @@ OverlayDialogCard {
     property var filteredEntries: PassService.fuzzyQuery(query)
     property var currentEntry: listView.currentIndex >= 0 && listView.currentIndex < filteredEntries.length
                                ? filteredEntries[listView.currentIndex] : null
+    property bool detailsOpen: false
+    property var detailEntry: null
     readonly property real lineWidth: Appearance.sizes.elevationMargin / 10
     readonly property color mildBorderColor: ColorUtils.mix(Appearance.colors.colOutline,
                                                             Appearance.colors.colLayer1, 0.45)
-    readonly property real listWidth: Appearance.sizes.sidebarWidth
     readonly property real entryHeight: Appearance.sizes.barHeight + Appearance.rounding.normal
     readonly property real groupHeight: Appearance.sizes.barHeight + Appearance.rounding.verysmall
 
@@ -48,17 +49,53 @@ OverlayDialogCard {
         listView.currentIndex = Math.max(0, Math.min(listView.currentIndex + delta, filteredEntries.length
                                                      - 1));
         listView.positionViewAtIndex(listView.currentIndex, ListView.Contain);
-        detailDelay.restart();
     }
 
     function activate(action) {
+        const entry = detailsOpen ? detailEntry : currentEntry;
+        if (!entry)
+            return;
+        PassService.requestAction(action, entry.name);
+    }
+
+    function openDetails() {
         if (!currentEntry)
             return;
-        PassService.requestAction(action, currentEntry.name);
+        detailEntry = currentEntry;
+        detailsOpen = true;
+        detailsFlickable.contentY = 0;
+        PassService.loadEntry(detailEntry.name);
+        root.forceActiveFocus();
+    }
+
+    function closeDetails() {
+        detailsOpen = false;
+        detailEntry = null;
+        PassService.clearSecrets();
+        searchField.forceActiveFocus();
     }
 
     function handleKey(event) {
         const control = event.modifiers & Qt.ControlModifier;
+        if (detailsOpen) {
+            if (event.key === Qt.Key_Escape || event.key === Qt.Key_Left
+                    || (control && event.key === Qt.Key_H)) {
+                root.closeDetails();
+            } else if (control && event.key === Qt.Key_O) {
+                root.activate("otp");
+            } else if (control && event.key === Qt.Key_U) {
+                root.activate("autotype");
+            } else if (control && event.key === Qt.Key_R) {
+                root.activate("reveal");
+            } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                root.activate("copy");
+            } else {
+                event.accepted = false;
+                return;
+            }
+            event.accepted = true;
+            return;
+        }
         if (event.key === Qt.Key_Escape) {
             if (searchField.text.length > 0)
                 searchField.text = "";
@@ -70,10 +107,8 @@ OverlayDialogCard {
             root.selectRelative(-1);
         } else if (control && event.key === Qt.Key_O) {
             root.activate("otp");
-        } else if (control && event.key === Qt.Key_U) {
-            root.activate("autotype");
-        } else if (control && event.key === Qt.Key_R) {
-            root.activate("reveal");
+        } else if (event.key === Qt.Key_Right || (control && event.key === Qt.Key_L)) {
+            root.openDetails();
         } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
             root.activate("copy");
         } else {
@@ -111,8 +146,10 @@ OverlayDialogCard {
         return Qt.formatDate(new Date(timestamp), "MMM d, yyyy");
     }
 
-    implicitWidth: 1000
+    implicitWidth: Appearance.sizes.sidebarWidthExtended
     implicitHeight: Appearance.sizes.wallpaperSelectorHeight + Appearance.sizes.barHeight * 3
+    focus: detailsOpen
+    Keys.onPressed: event => root.handleKey(event)
 
     Component.onCompleted: {
         searchField.forceActiveFocus();
@@ -120,22 +157,13 @@ OverlayDialogCard {
         animateIn();
     }
     onAboutToAnimateIn: {
+        detailsOpen = false;
+        detailEntry = null;
         searchField.text = "";
         searchField.forceActiveFocus();
     }
     onFilteredEntriesChanged: {
         listView.currentIndex = filteredEntries.length > 0 ? 0 : -1;
-        detailDelay.restart();
-    }
-
-    Timer {
-        id: detailDelay
-        interval: Appearance.animation.elementMoveFast.duration
-        onTriggered: {
-            detailsFlickable.contentY = 0;
-            if (root.currentEntry)
-                PassService.loadEntry(root.currentEntry.name);
-        }
     }
 
     Connections {
@@ -162,13 +190,23 @@ OverlayDialogCard {
                 anchors.rightMargin: Appearance.rounding.large
                 spacing: Appearance.rounding.normal
 
+                IconToolbarButton {
+                    visible: root.detailsOpen
+                    Layout.preferredWidth: Appearance.sizes.barHeight
+                    Layout.preferredHeight: Appearance.sizes.barHeight
+                    text: "arrow_back"
+                    onClicked: root.closeDetails()
+                }
+
                 MaterialSymbol {
+                    visible: !root.detailsOpen
                     text: "password"
                     iconSize: Appearance.font.pixelSize.hugeass
                     color: Appearance.colors.colOnSurface
                 }
 
                 Item {
+                    visible: !root.detailsOpen
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
@@ -201,7 +239,29 @@ OverlayDialogCard {
                     }
                 }
 
+                ColumnLayout {
+                    visible: root.detailsOpen
+                    Layout.fillWidth: true
+                    spacing: 0
+
+                    StyledText {
+                        Layout.fillWidth: true
+                        text: root.detailEntry?.relativeName ?? ""
+                        font.pixelSize: Appearance.font.pixelSize.huge
+                        font.weight: Font.Medium
+                        color: Appearance.colors.colOnSurface
+                        elide: Text.ElideRight
+                    }
+                    StyledText {
+                        Layout.fillWidth: true
+                        text: "Password details"
+                        font.pixelSize: Appearance.font.pixelSize.smaller
+                        color: Appearance.colors.colSubtext
+                    }
+                }
+
                 Rectangle {
+                    visible: !root.detailsOpen
                     implicitWidth: countText.implicitWidth + Appearance.rounding.normal * 2
                     implicitHeight: countText.implicitHeight + Appearance.rounding.verysmall
                     radius: Appearance.rounding.full
@@ -233,7 +293,8 @@ OverlayDialogCard {
             spacing: 0
 
             Item {
-                Layout.preferredWidth: 330
+                visible: !root.detailsOpen
+                Layout.fillWidth: true
                 Layout.fillHeight: true
 
                 StyledListView {
@@ -326,6 +387,12 @@ OverlayDialogCard {
                                     color: entryDelegate.selected ? Appearance.colors.colOnPrimaryContainer :
                                                                     Appearance.colors.colTertiary
                                 }
+                                MaterialSymbol {
+                                    text: "chevron_right"
+                                    iconSize: Appearance.font.pixelSize.larger
+                                    color: entryDelegate.selected ? Appearance.colors.colOnPrimaryContainer :
+                                                                    Appearance.colors.colSubtext
+                                }
                             }
 
                             MouseArea {
@@ -335,12 +402,10 @@ OverlayDialogCard {
                                 cursorShape: Qt.PointingHandCursor
                                 onEntered: {
                                     listView.currentIndex = entryDelegate.index;
-                                    detailDelay.restart();
                                 }
                                 onClicked: {
                                     listView.currentIndex = entryDelegate.index;
                                     searchField.forceActiveFocus();
-                                    detailDelay.restart();
                                 }
                                 onDoubleClicked: root.activate("copy")
                             }
@@ -357,13 +422,8 @@ OverlayDialogCard {
                 }
             }
 
-            Rectangle {
-                Layout.fillHeight: true
-                implicitWidth: root.lineWidth
-                color: root.mildBorderColor
-            }
-
             ColumnLayout {
+                visible: root.detailsOpen
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 spacing: 0
@@ -385,11 +445,11 @@ OverlayDialogCard {
                         y: Appearance.rounding.large
                         width: detailsFlickable.width - Appearance.rounding.large * 2
                         spacing: Appearance.rounding.normal
-                        visible: root.currentEntry !== null
+                        visible: root.detailsOpen && root.detailEntry !== null
 
                         StyledText {
                             Layout.fillWidth: true
-                            text: root.currentEntry ? `${root.currentEntry.name}.gpg` : ""
+                            text: root.detailEntry ? `${root.detailEntry.name}.gpg` : ""
                             font.family: Appearance.font.family.monospace
                             font.pixelSize: Appearance.font.pixelSize.smaller
                             color: Appearance.colors.colSubtext
@@ -398,7 +458,7 @@ OverlayDialogCard {
 
                         StyledText {
                             Layout.fillWidth: true
-                            text: root.currentEntry?.relativeName ?? ""
+                            text: root.detailEntry?.relativeName ?? ""
                             font.pixelSize: Appearance.font.pixelSize.title
                             font.weight: Font.DemiBold
                             color: Appearance.colors.colOnLayer0
@@ -442,7 +502,7 @@ OverlayDialogCard {
                                     StyledText {
                                         Layout.fillWidth: true
                                         text: PassService.loading ? "Unlocking…" : PassService.revealedEntry
-                                                                    === root.currentEntry?.name
+                                                                    === root.detailEntry?.name
                                                                     ? PassService.secret : "••••••••••••••••"
                                         font.family: Appearance.font.family.monospace
                                         font.pixelSize: Appearance.font.pixelSize.normal
@@ -454,7 +514,7 @@ OverlayDialogCard {
                                 RowLayout {
                                     spacing: Appearance.rounding.verysmall / 2
                                     MaterialSymbol {
-                                        text: PassService.revealedEntry === root.currentEntry?.name
+                                        text: PassService.revealedEntry === root.detailEntry?.name
                                               ? "visibility_off" : "visibility"
                                         iconSize: Appearance.font.pixelSize.normal
                                         color: Appearance.colors.colSubtext
@@ -469,7 +529,7 @@ OverlayDialogCard {
                         }
 
                         Repeater {
-                            model: PassService.loadedEntry === root.currentEntry?.name ? PassService.fields :
+                            model: PassService.loadedEntry === root.detailEntry?.name ? PassService.fields :
                                                                                          []
                             delegate: Rectangle {
                                 required property var modelData
@@ -514,65 +574,59 @@ OverlayDialogCard {
                         }
                     }
 
-                    StyledText {
-                        x: (detailsFlickable.width - width) / 2
-                        y: (detailsFlickable.height - height) / 2
-                        visible: root.currentEntry === null
-                        text: "Select a password"
-                        color: Appearance.colors.colSubtext
+                }
+            }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            implicitHeight: root.lineWidth
+            color: root.mildBorderColor
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: footerHints.implicitHeight + Appearance.rounding.normal * 2
+            color: Appearance.colors.colLayer1
+
+            Column {
+                id: footerHints
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.leftMargin: Appearance.rounding.large
+                anchors.rightMargin: Appearance.rounding.large
+                spacing: Appearance.rounding.normal
+
+                Row {
+                    spacing: Appearance.rounding.normal
+                    Hint {
+                        keys: root.detailsOpen ? "←" : "↑↓"
+                        label: root.detailsOpen ? "back" : "move"
+                    }
+                    Hint {
+                        keys: "↵"
+                        label: "copy password"
+                    }
+                    Hint {
+                        keys: "^O"
+                        label: "copy OTP"
+                    }
+                    Hint {
+                        keys: root.detailsOpen ? "^U" : "^L / →"
+                        label: root.detailsOpen ? "autotype" : "open details"
                     }
                 }
-
-                Rectangle {
-                    Layout.fillWidth: true
-                    implicitHeight: root.lineWidth
-                    color: root.mildBorderColor
-                }
-
-                Rectangle {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: footerHints.implicitHeight + Appearance.rounding.normal * 2
-                    color: Appearance.colors.colLayer1
-
-                    Column {
-                        id: footerHints
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.leftMargin: Appearance.rounding.large
-                        anchors.rightMargin: Appearance.rounding.large
-                        spacing: Appearance.rounding.normal
-
-                        Row {
-                            spacing: Appearance.rounding.normal
-                            Hint {
-                                keys: "↑↓"
-                                label: "move"
-                            }
-                            Hint {
-                                keys: "↵"
-                                label: "copy password"
-                            }
-                            Hint {
-                                keys: "^O"
-                                label: "copy OTP"
-                            }
-                            Hint {
-                                keys: "^U"
-                                label: "autotype"
-                            }
-                        }
-                        Row {
-                            spacing: Appearance.rounding.normal
-                            Hint {
-                                keys: "^R"
-                                label: "reveal"
-                            }
-                            Hint {
-                                keys: "esc"
-                                label: "clear"
-                            }
-                        }
+                Row {
+                    visible: root.detailsOpen
+                    spacing: Appearance.rounding.normal
+                    Hint {
+                        keys: "^R"
+                        label: "reveal"
+                    }
+                    Hint {
+                        keys: "esc"
+                        label: "back"
                     }
                 }
             }
