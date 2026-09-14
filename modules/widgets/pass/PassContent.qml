@@ -86,8 +86,8 @@ OverlayDialogCard {
             return;
         }
         if (detailsOpen) {
-            if (event.key === Qt.Key_Escape || event.key === Qt.Key_Left
-                    || (control && event.key === Qt.Key_H)) {
+            if (event.key === Qt.Key_Escape || event.key === Qt.Key_Left || (control && event.key
+                                                                             === Qt.Key_H)) {
                 root.closeDetails();
             } else if (control && event.key === Qt.Key_O) {
                 root.activate("otp");
@@ -539,7 +539,7 @@ OverlayDialogCard {
 
                         Repeater {
                             model: PassService.loadedEntry === root.detailEntry?.name ? PassService.fields :
-                                                                                         []
+                                                                                        []
                             delegate: Rectangle {
                                 required property var modelData
                                 Layout.fillWidth: true
@@ -559,7 +559,7 @@ OverlayDialogCard {
                                         text: modelData.key.toLowerCase()
                                         font.family: Appearance.font.family.monospace
                                         font.pixelSize: Appearance.font.pixelSize.smaller
-                                        color: Appearance.colors.colSubtext
+                                        color: Appearance.colors.colSubtleText
                                         elide: Text.ElideRight
                                     }
                                     StyledText {
@@ -582,7 +582,6 @@ OverlayDialogCard {
                             font.pixelSize: Appearance.font.pixelSize.smaller
                         }
                     }
-
                 }
             }
         }

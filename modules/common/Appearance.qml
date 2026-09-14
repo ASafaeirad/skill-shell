@@ -110,6 +110,7 @@ Singleton {
 
     colors: QtObject {
         property color colSubtext: m3colors.m3outline
+        property color colSubtleText: ColorUtils.mix(m3colors.m3onBackground, m3colors.m3background, 0.9)
         // Layer 0
         property color colLayer0Base: ColorUtils.mix(m3colors.m3background, m3colors.m3primary, Config.options.appearance.extraBackgroundTint ? 0.99 : 1)
         property color colLayer0: ColorUtils.transparentize(colLayer0Base, root.backgroundTransparency)

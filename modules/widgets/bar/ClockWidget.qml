@@ -17,20 +17,20 @@ Item {
         id: rowLayout
 
         anchors.centerIn: parent
-        spacing: 4
+        spacing: Appearance.rounding.verysmall
 
         StyledText {
             visible: root.showDate
             font.pixelSize: Appearance.font.pixelSize.small
-            color: Appearance.colors.colOnLayer1
-            text: DateTime.longDate
+            color: Appearance.colors.colSubtext
+            text: Qt.locale().toString(DateTime.clock.date, "ddd dd/MM")
         }
 
-        StyledText {
+        Rectangle {
             visible: root.showDate
-            font.pixelSize: Appearance.font.pixelSize.small
-            color: Appearance.colors.colOnLayer1
-            text: "•"
+            Layout.preferredWidth: 1
+            Layout.preferredHeight: Appearance.font.pixelSize.normal
+            color: Appearance.colors.colOutlineVariant
         }
 
         StyledText {
@@ -38,7 +38,6 @@ Item {
             color: Appearance.colors.colOnLayer1
             text: DateTime.time
         }
-
     }
 
     MouseArea {
@@ -50,7 +49,5 @@ Item {
         ClockWidgetPopup {
             hoverTarget: mouseArea
         }
-
     }
-
 }
