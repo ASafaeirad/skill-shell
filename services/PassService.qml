@@ -54,11 +54,26 @@ Singleton {
         entriesProc.running = true;
     }
 
-    function fuzzyQuery(search) {
+    function isIgnored(name, ignoredPatterns) {
+        return ignoredPatterns.some(pattern => {
+            if (typeof pattern !== "string" || pattern.trim().length === 0)
+                return false;
+            try {
+                return new RegExp(pattern, "i").test(name);
+            } catch (error) {
+                return false;
+            }
+        });
+    }
+
+    function fuzzyQuery(search, showIgnored = false, ignoredPatterns = []) {
+        const visibleEntries = showIgnored ? root.preparedEntries
+                                           : root.preparedEntries.filter(item => !root.isIgnored(item.entry.name,
+                                                                                                  ignoredPatterns));
         const query = search.trim();
         if (query.length === 0)
-            return root.entries;
-        return Fuzzy.go(query, root.preparedEntries, {
+            return visibleEntries.map(item => item.entry);
+        return Fuzzy.go(query, visibleEntries, {
                             all: true,
                             key: "name"
                         }).map(result => result.obj.entry);

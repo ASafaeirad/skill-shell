@@ -14,7 +14,9 @@ OverlayDialogCard {
     signal closeRequested
 
     property string query: searchField.text
-    property var filteredEntries: PassService.fuzzyQuery(query)
+    property bool showIgnored: false
+    readonly property var ignoredEntryPatterns: Config.options.pass.ignoredEntryPatterns
+    property var filteredEntries: PassService.fuzzyQuery(query, showIgnored, ignoredEntryPatterns)
     property var currentEntry: listView.currentIndex >= 0 && listView.currentIndex < filteredEntries.length
                                ? filteredEntries[listView.currentIndex] : null
     property bool detailsOpen: false
@@ -77,6 +79,12 @@ OverlayDialogCard {
 
     function handleKey(event) {
         const control = event.modifiers & Qt.ControlModifier;
+        if (control && event.key === Qt.Key_I) {
+            showIgnored = !showIgnored;
+            PassService.showStatus(showIgnored ? "Ignored entries shown" : "Ignored entries hidden");
+            event.accepted = true;
+            return;
+        }
         if (detailsOpen) {
             if (event.key === Qt.Key_Escape || event.key === Qt.Key_Left
                     || (control && event.key === Qt.Key_H)) {
@@ -159,6 +167,7 @@ OverlayDialogCard {
     onAboutToAnimateIn: {
         detailsOpen = false;
         detailEntry = null;
+        showIgnored = false;
         searchField.text = "";
         searchField.forceActiveFocus();
     }
@@ -618,13 +627,18 @@ OverlayDialogCard {
                     }
                 }
                 Row {
-                    visible: root.detailsOpen
                     spacing: Appearance.rounding.normal
                     Hint {
+                        keys: "^I"
+                        label: root.showIgnored ? "hide ignored" : "show ignored"
+                    }
+                    Hint {
+                        visible: root.detailsOpen
                         keys: "^R"
                         label: "reveal"
                     }
                     Hint {
+                        visible: root.detailsOpen
                         keys: "esc"
                         label: "back"
                     }

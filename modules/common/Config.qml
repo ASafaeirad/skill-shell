@@ -266,6 +266,11 @@ Singleton {
                 property bool centerIcons: true
             }
 
+            property JsonObject pass: JsonObject {
+                // Case-insensitive regular expressions matched against store-relative entry paths.
+                property list<string> ignoredEntryPatterns: []
+            }
+
             property JsonObject regionSelector: JsonObject {
                 property JsonObject targetRegions: JsonObject {
                     property bool windows: true
