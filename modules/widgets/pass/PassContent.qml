@@ -635,7 +635,7 @@ OverlayDialogCard {
                     Hint {
                         visible: root.detailsOpen
                         keys: "^R"
-                        label: "reveal"
+                        label: PassService.revealedEntry === root.detailEntry?.name ? "hide" : "reveal"
                     }
                     Hint {
                         visible: root.detailsOpen

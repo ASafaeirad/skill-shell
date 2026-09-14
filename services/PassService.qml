@@ -129,8 +129,13 @@ Singleton {
             root.copyToClipboard(root.secret, "Password copied");
             root.closeRequested();
         } else if (action === "reveal") {
-            root.revealedEntry = name;
-            revealTimer.restart();
+            if (root.revealedEntry === name) {
+                root.revealedEntry = "";
+                revealTimer.stop();
+            } else {
+                root.revealedEntry = name;
+                revealTimer.restart();
+            }
         } else if (action === "autotype") {
             autotypeTimer.payload = root.secret;
             autotypeTimer.restart();
