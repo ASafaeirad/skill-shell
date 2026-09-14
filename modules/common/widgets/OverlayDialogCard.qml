@@ -18,7 +18,7 @@ Item {
     property real slideDistance: 40
     property real yOffset: slideDistance
     // Matches WindowDialog, which pads its content by the surface radius.
-    property real padding: Appearance.rounding.large
+    property real padding: Appearance.spacing.xl
     property color surfaceColor: Appearance.colors.colBackgroundSurfaceContainerHigh
 
     // Emitted at the start of animateIn(), for resetting stale input before

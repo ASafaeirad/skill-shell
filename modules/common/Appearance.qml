@@ -13,6 +13,7 @@ Singleton {
     property QtObject rounding
     property QtObject font
     property QtObject sizes
+    property QtObject spacing
     property string syntaxHighlightingTheme
 
     // Transparency. The quadratic functions were derived from analysis of hand-picked transparency values.
@@ -211,6 +212,16 @@ Singleton {
         property int full: 9999
         property int screenRounding: large
         property int windowRounding: 18
+    }
+
+    spacing: QtObject {
+        property int xxs: 2
+        property int xs: 6
+        property int s: 8
+        property int m: 12
+        property int lg: 17
+        property int xl: 23
+        property int xxl: 30
     }
 
     font: QtObject {

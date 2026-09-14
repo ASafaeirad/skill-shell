@@ -12,7 +12,7 @@ LazyLoader {
     property Item hoverTarget
     default property Item contentItem
     property real popupBackgroundMargin: 0
-    property real contentPadding: Appearance.rounding.verysmall + Appearance.rounding.unsharpen
+    property real contentPadding: Appearance.spacing.s + Appearance.spacing.xxs
     property real backgroundRadius: Appearance.rounding.small
     property bool clipContent: false
 

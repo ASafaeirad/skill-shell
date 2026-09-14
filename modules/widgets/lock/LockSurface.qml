@@ -141,7 +141,7 @@ MouseArea {
 
         scale: root.toolbarScale
         opacity: root.toolbarOpacity
-        padding: Appearance.rounding.small
+        padding: Appearance.spacing.m
         colBackground: ColorUtils.transparentize(Appearance.m3colors.m3surfaceContainer, 1)
         enableShadow: false
 
@@ -151,7 +151,7 @@ MouseArea {
         }
 
         ColumnLayout {
-            spacing: Appearance.rounding.verysmall
+            spacing: Appearance.spacing.s
 
             StyledText {
                 Layout.alignment: Qt.AlignHCenter

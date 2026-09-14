@@ -34,7 +34,7 @@ MouseArea {
     RowLayout {
         id: rowLayout
         anchors.centerIn: parent
-        spacing: Appearance.rounding.unsharpenmore
+        spacing: Appearance.spacing.xs
 
         Repeater {
             model: [
@@ -54,14 +54,14 @@ MouseArea {
                 required property var modelData
 
                 Layout.alignment: Qt.AlignVCenter
-                spacing: Appearance.rounding.verysmall
+                spacing: Appearance.spacing.s
 
                 Rectangle {
                     visible: providerMeter.modelData.label === "CX"
                     Layout.alignment: Qt.AlignVCenter
-                    Layout.rightMargin: Appearance.rounding.unshapen
-                    Layout.leftMargin: Appearance.rounding.unshapen
-                    implicitWidth: Appearance.rounding.unsharpen
+                    Layout.rightMargin: Appearance.spacing.xxs
+                    Layout.leftMargin: Appearance.spacing.xxs
+                    implicitWidth: Appearance.spacing.xxs
                     implicitHeight: Appearance.font.pixelSize.normal
                     radius: Appearance.rounding.full
                     color: Appearance.colors.colOnLayer1Inactive

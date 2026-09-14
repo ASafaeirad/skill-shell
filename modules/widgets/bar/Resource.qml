@@ -31,7 +31,7 @@ Item {
             id: resourceCircProg
 
             Layout.alignment: Qt.AlignVCenter
-            lineWidth: Appearance.rounding.unsharpen
+            lineWidth: Appearance.spacing.xxs
             value: percentage
             implicitSize: 20
             colPrimary: root.warning ? Appearance.colors.colError : Appearance.colors.colOnSecondaryContainer

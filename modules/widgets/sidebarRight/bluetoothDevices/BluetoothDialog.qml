@@ -28,16 +28,16 @@ WindowDialog {
         Layout.fillWidth: true
         Layout.topMargin: -8
         Layout.bottomMargin: -8
-        Layout.leftMargin: -Appearance.rounding.large
-        Layout.rightMargin: -Appearance.rounding.large
+        Layout.leftMargin: -Appearance.spacing.xl
+        Layout.rightMargin: -Appearance.spacing.xl
     }
     StyledListView {
         Layout.fillHeight: true
         Layout.fillWidth: true
         Layout.topMargin: -15
         Layout.bottomMargin: -16
-        Layout.leftMargin: -Appearance.rounding.large
-        Layout.rightMargin: -Appearance.rounding.large
+        Layout.leftMargin: -Appearance.spacing.xl
+        Layout.rightMargin: -Appearance.spacing.xl
 
         clip: true
         spacing: 0

@@ -41,11 +41,11 @@ StyledPopup {
         id: popupContent
 
         anchors.centerIn: parent
-        spacing: Appearance.rounding.small
+        spacing: Appearance.spacing.m
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: Appearance.rounding.unsharpenmore
+            spacing: Appearance.spacing.xs
 
             MaterialSymbol {
                 text: "data_usage"
@@ -72,7 +72,7 @@ StyledPopup {
                 font {
                     pixelSize: Appearance.font.pixelSize.smallest
                     capitalization: Font.AllUppercase
-                    letterSpacing: Appearance.rounding.unsharpen / 2
+                    letterSpacing: Appearance.spacing.xxs / 2
                 }
             }
         }
@@ -81,8 +81,8 @@ StyledPopup {
             id: providerGrid
 
             columns: 2
-            columnSpacing: Appearance.rounding.small
-            rowSpacing: Appearance.rounding.small
+            columnSpacing: Appearance.spacing.m
+            rowSpacing: Appearance.spacing.m
 
             ProviderCard {
                 Layout.fillHeight: true
@@ -103,7 +103,7 @@ StyledPopup {
 
         required property string providerName
         required property var provider
-        readonly property real contentPadding: Appearance.rounding.normal
+        readonly property real contentPadding: Appearance.spacing.lg
 
         implicitWidth: Math.max(cardContent.implicitWidth + contentPadding * 2,
             Appearance.font.pixelSize.normal * 13)
@@ -118,7 +118,7 @@ StyledPopup {
                 fill: parent
                 margins: providerCard.contentPadding
             }
-            spacing: Appearance.rounding.small
+            spacing: Appearance.spacing.m
 
             StyledText {
                 text: providerCard.providerName
@@ -154,13 +154,13 @@ StyledPopup {
         required property string icon
         readonly property var remaining: root.remainingPercent(windowData)
 
-        spacing: Appearance.rounding.unsharpenmore
+        spacing: Appearance.spacing.xs
 
         IconCircularProgress {
             id: windowProgress
 
-            implicitSize: Appearance.font.pixelSize.hugeass + Appearance.rounding.small
-            lineWidth: Appearance.rounding.unsharpenmore / 2
+            implicitSize: Appearance.font.pixelSize.hugeass + Appearance.spacing.m
+            lineWidth: Appearance.spacing.xs / 2
             value: (usageRow.remaining ?? 0) / 100
             colPrimary: root.progressColor(usageRow.provider, usageRow.windowData)
             icon: usageRow.icon

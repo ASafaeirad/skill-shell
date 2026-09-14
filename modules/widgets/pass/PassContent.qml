@@ -24,14 +24,14 @@ OverlayDialogCard {
     readonly property real lineWidth: Appearance.sizes.elevationMargin / 10
     readonly property color mildBorderColor: ColorUtils.mix(Appearance.colors.colOutline,
                                                             Appearance.colors.colLayer1, 0.45)
-    readonly property real entryHeight: Appearance.sizes.barHeight + Appearance.rounding.normal
-    readonly property real groupHeight: Appearance.sizes.barHeight + Appearance.rounding.verysmall
+    readonly property real entryHeight: Appearance.sizes.barHeight + Appearance.spacing.lg
+    readonly property real groupHeight: Appearance.sizes.barHeight + Appearance.spacing.s
 
     component Hint: Row {
         id: hint
         required property string keys
         required property string label
-        spacing: Appearance.rounding.verysmall
+        spacing: Appearance.spacing.s
 
         KeyboardKey {
             anchors.verticalCenter: parent.verticalCenter
@@ -195,9 +195,9 @@ OverlayDialogCard {
 
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: Appearance.rounding.large
-                anchors.rightMargin: Appearance.rounding.large
-                spacing: Appearance.rounding.normal
+                anchors.leftMargin: Appearance.spacing.xl
+                anchors.rightMargin: Appearance.spacing.xl
+                spacing: Appearance.spacing.lg
 
                 IconToolbarButton {
                     visible: root.detailsOpen
@@ -271,8 +271,8 @@ OverlayDialogCard {
 
                 Rectangle {
                     visible: !root.detailsOpen
-                    implicitWidth: countText.implicitWidth + Appearance.rounding.normal * 2
-                    implicitHeight: countText.implicitHeight + Appearance.rounding.verysmall
+                    implicitWidth: countText.implicitWidth + Appearance.spacing.lg * 2
+                    implicitHeight: countText.implicitHeight + Appearance.spacing.s
                     radius: Appearance.rounding.full
                     color: Appearance.colors.colLayer3
 
@@ -309,8 +309,8 @@ OverlayDialogCard {
                 StyledListView {
                     id: listView
                     anchors.fill: parent
-                    anchors.leftMargin: Appearance.rounding.small
-                    anchors.rightMargin: Appearance.rounding.small
+                    anchors.leftMargin: Appearance.spacing.m
+                    anchors.rightMargin: Appearance.spacing.m
                     clip: true
                     model: root.filteredEntries
                     currentIndex: -1
@@ -333,10 +333,10 @@ OverlayDialogCard {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.top: parent.top
-                            anchors.leftMargin: Appearance.rounding.normal
-                            anchors.rightMargin: Appearance.rounding.normal
+                            anchors.leftMargin: Appearance.spacing.lg
+                            anchors.rightMargin: Appearance.spacing.lg
                             height: root.groupHeight
-                            spacing: Appearance.rounding.verysmall
+                            spacing: Appearance.spacing.s
 
                             MaterialSymbol {
                                 text: "folder"
@@ -371,9 +371,9 @@ OverlayDialogCard {
 
                             RowLayout {
                                 anchors.fill: parent
-                                anchors.leftMargin: Appearance.rounding.normal
-                                anchors.rightMargin: Appearance.rounding.normal
-                                spacing: Appearance.rounding.verysmall
+                                anchors.leftMargin: Appearance.spacing.lg
+                                anchors.rightMargin: Appearance.spacing.lg
+                                spacing: Appearance.spacing.s
 
                                 MaterialSymbol {
                                     text: entryDelegate.modelData.icon
@@ -443,17 +443,17 @@ OverlayDialogCard {
                     Layout.fillHeight: true
                     clip: true
                     contentWidth: width
-                    contentHeight: Math.max(height, detailsColumn.implicitHeight + Appearance.rounding.large
+                    contentHeight: Math.max(height, detailsColumn.implicitHeight + Appearance.spacing.xl
                                             * 2)
                     boundsBehavior: Flickable.StopAtBounds
                     ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
                     ColumnLayout {
                         id: detailsColumn
-                        x: Appearance.rounding.large
-                        y: Appearance.rounding.large
-                        width: detailsFlickable.width - Appearance.rounding.large * 2
-                        spacing: Appearance.rounding.normal
+                        x: Appearance.spacing.xl
+                        y: Appearance.spacing.xl
+                        width: detailsFlickable.width - Appearance.spacing.xl * 2
+                        spacing: Appearance.spacing.lg
                         visible: root.detailsOpen && root.detailEntry !== null
 
                         StyledText {
@@ -475,7 +475,7 @@ OverlayDialogCard {
                         }
 
                         Item {
-                            Layout.preferredHeight: Appearance.rounding.verysmall
+                            Layout.preferredHeight: Appearance.spacing.s
                         }
 
                         Rectangle {
@@ -488,9 +488,9 @@ OverlayDialogCard {
 
                             RowLayout {
                                 anchors.fill: parent
-                                anchors.leftMargin: Appearance.rounding.normal
-                                anchors.rightMargin: Appearance.rounding.normal
-                                spacing: Appearance.rounding.normal
+                                anchors.leftMargin: Appearance.spacing.lg
+                                anchors.rightMargin: Appearance.spacing.lg
+                                spacing: Appearance.spacing.lg
 
                                 MaterialSymbol {
                                     text: "key"
@@ -500,7 +500,7 @@ OverlayDialogCard {
 
                                 ColumnLayout {
                                     Layout.fillWidth: true
-                                    spacing: Appearance.rounding.verysmall / 2
+                                    spacing: Appearance.spacing.s / 2
 
                                     StyledText {
                                         text: "PASSWORD"
@@ -521,7 +521,7 @@ OverlayDialogCard {
                                 }
 
                                 RowLayout {
-                                    spacing: Appearance.rounding.verysmall / 2
+                                    spacing: Appearance.spacing.s / 2
                                     MaterialSymbol {
                                         text: PassService.revealedEntry === root.detailEntry?.name
                                               ? "visibility_off" : "visibility"
@@ -544,15 +544,15 @@ OverlayDialogCard {
                                 required property var modelData
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: Appearance.sizes.barHeight
-                                                        + Appearance.rounding.normal
+                                                        + Appearance.spacing.lg
                                 radius: Appearance.rounding.small
                                 color: Appearance.colors.colLayer1
 
                                 RowLayout {
                                     anchors.fill: parent
-                                    anchors.leftMargin: Appearance.rounding.normal
-                                    anchors.rightMargin: Appearance.rounding.normal
-                                    spacing: Appearance.rounding.normal
+                                    anchors.leftMargin: Appearance.spacing.lg
+                                    anchors.rightMargin: Appearance.spacing.lg
+                                    spacing: Appearance.spacing.lg
 
                                     StyledText {
                                         Layout.preferredWidth: Appearance.sizes.barCenterSideModuleWidth
@@ -594,7 +594,7 @@ OverlayDialogCard {
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: footerHints.implicitHeight + Appearance.rounding.normal * 2
+            Layout.preferredHeight: footerHints.implicitHeight + Appearance.spacing.lg * 2
             color: Appearance.colors.colLayer1
 
             Column {
@@ -602,12 +602,12 @@ OverlayDialogCard {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.leftMargin: Appearance.rounding.large
-                anchors.rightMargin: Appearance.rounding.large
-                spacing: Appearance.rounding.normal
+                anchors.leftMargin: Appearance.spacing.xl
+                anchors.rightMargin: Appearance.spacing.xl
+                spacing: Appearance.spacing.lg
 
                 Row {
-                    spacing: Appearance.rounding.normal
+                    spacing: Appearance.spacing.lg
                     Hint {
                         keys: root.detailsOpen ? "←" : "↑↓"
                         label: root.detailsOpen ? "back" : "move"
@@ -626,7 +626,7 @@ OverlayDialogCard {
                     }
                 }
                 Row {
-                    spacing: Appearance.rounding.normal
+                    spacing: Appearance.spacing.lg
                     Hint {
                         keys: "^I"
                         label: root.showIgnored ? "hide ignored" : "show ignored"

@@ -17,7 +17,7 @@ Item {
         id: rowLayout
 
         anchors.centerIn: parent
-        spacing: Appearance.rounding.verysmall
+        spacing: Appearance.spacing.s
 
         StyledText {
             visible: root.showDate

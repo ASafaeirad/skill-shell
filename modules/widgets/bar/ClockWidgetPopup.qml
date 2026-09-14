@@ -31,22 +31,22 @@ StyledPopup {
     Column {
         id: card
         anchors.centerIn: parent
-        width: Appearance.sizes.notificationPopupWidth + Appearance.rounding.normal
+        width: Appearance.sizes.notificationPopupWidth + Appearance.spacing.lg
         spacing: 0
 
         Item {
             id: dateSection
 
             width: card.width
-            implicitHeight: Appearance.font.pixelSize.huge * 4 + Appearance.rounding.verysmall
+            implicitHeight: Appearance.font.pixelSize.huge * 4 + Appearance.spacing.s
 
             RowLayout {
                 anchors {
                     left: parent.left
                     right: parent.right
                     verticalCenter: parent.verticalCenter
-                    leftMargin: Appearance.rounding.large
-                    rightMargin: Appearance.rounding.large
+                    leftMargin: Appearance.spacing.xl
+                    rightMargin: Appearance.spacing.xl
                 }
 
                 StyledText {
@@ -82,22 +82,22 @@ StyledPopup {
 
         Rectangle {
             width: card.width
-            height: Appearance.rounding.unsharpen / 2
+            height: Appearance.spacing.xxs / 2
             color: Appearance.colors.colOutlineVariant
         }
 
         Rectangle {
             width: card.width
-            implicitHeight: Appearance.font.pixelSize.huge * 2 + Appearance.rounding.small
+            implicitHeight: Appearance.font.pixelSize.huge * 2 + Appearance.spacing.m
             color: Appearance.colors.colSurfaceContainerHigh
 
             Column {
                 anchors {
                     left: parent.left
                     verticalCenter: parent.verticalCenter
-                    leftMargin: Appearance.rounding.large
+                    leftMargin: Appearance.spacing.xl
                 }
-                spacing: Appearance.rounding.unsharpen
+                spacing: Appearance.spacing.xxs
 
                 StyledText {
                     text: "Uptime"
@@ -105,7 +105,7 @@ StyledPopup {
                     font {
                         pixelSize: Appearance.font.pixelSize.smallest
                         capitalization: Font.AllUppercase
-                        letterSpacing: Appearance.rounding.unsharpen / 2
+                        letterSpacing: Appearance.spacing.xxs / 2
                     }
                 }
 

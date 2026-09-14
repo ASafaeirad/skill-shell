@@ -51,7 +51,7 @@ Item {
         ClippedFilledCircularProgress {
             id: mediaCircProg
             Layout.alignment: Qt.AlignVCenter
-            lineWidth: Appearance.rounding.unsharpen
+            lineWidth: Appearance.spacing.xxs
             value: activePlayer?.position / activePlayer?.length
             implicitSize: 20
             colPrimary: Appearance.colors.colOnSecondaryContainer

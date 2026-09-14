@@ -46,7 +46,7 @@ Colors come from **matugen** (Material You from the wallpaper) → `~/.local/sta
 - **Never hardcode colors, sizes, fonts, or animation durations.** Use:
   - `Appearance.colors.*` (e.g. `colLayer0`, `colOnLayer1`, `colPrimaryContainer`) and `Appearance.m3colors.*`
   - `Appearance.font.pixelSize.*` / `Appearance.font.family.*`
-  - `Appearance.rounding.*`, `Appearance.sizes.*`
+  - `Appearance.rounding.*`, `Appearance.spacing.*`, `Appearance.sizes.*`
   - `Appearance.animation.*` (e.g. `Appearance.animation.elementMoveFast.colorAnimation.createObject(this)`)
 - Prefer existing widgets from `modules/common/widgets/`: `StyledText`, `StyledRectangularShadow`, `RippleButton`, `MaterialSymbol` (Material Symbols icon font), `Revealer`, ...
 - Write user-visible strings directly in English; this configuration intentionally has no i18n layer.

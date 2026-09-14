@@ -46,7 +46,7 @@ MouseArea {
         anchors.centerIn: parent
         implicitSize: 20
 
-        lineWidth: Appearance.rounding.unsharpen
+        lineWidth: Appearance.spacing.xxs
         value: activePlayer?.position / activePlayer?.length
         colPrimary: Appearance.colors.colOnSecondaryContainer
         enableAnimation: false
