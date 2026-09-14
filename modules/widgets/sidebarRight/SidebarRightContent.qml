@@ -76,9 +76,12 @@ Item {
                 Layout.fillWidth: true
                 visible: active
                 active: {
-                    const configQuickSliders = Config.options.sidebar.quickSliders
-                    if (!configQuickSliders.enable) return false
-                    if (!configQuickSliders.showMic && !configQuickSliders.showVolume && !configQuickSliders.showBrightness) return false;
+                    const configQuickSliders = Config.options.sidebar.quickSliders;
+                    if (!configQuickSliders.enable)
+                        return false;
+                    if (!configQuickSliders.showMic && !configQuickSliders.showVolume &&
+                            !configQuickSliders.showBrightness)
+                        return false;
                     return true;
                 }
                 sourceComponent: QuickSliders {}
@@ -147,7 +150,8 @@ Item {
         shownPropertyString: "showWifiDialog"
         dialog: WifiDialog {}
         onShownChanged: {
-            if (!shown) return;
+            if (!shown)
+                return;
             Network.enableWifi();
             Network.rescanWifi();
         }
@@ -160,7 +164,8 @@ Item {
         readonly property bool shown: root[shownPropertyString]
         anchors.fill: parent
 
-        onShownChanged: if (shown) toggleDialogLoader.active = true;
+        onShownChanged: if (shown)
+                            toggleDialogLoader.active = true
         active: shown
         onActiveChanged: {
             if (active) {
@@ -171,11 +176,12 @@ Item {
         Connections {
             target: toggleDialogLoader.item
             function onDismiss() {
-                toggleDialogLoader.item.show = false
+                toggleDialogLoader.item.show = false;
                 root[toggleDialogLoader.shownPropertyString] = false;
             }
             function onVisibleChanged() {
-                if (!toggleDialogLoader.item.visible && !root[toggleDialogLoader.shownPropertyString]) toggleDialogLoader.active = false;
+                if (!toggleDialogLoader.item.visible && !root[toggleDialogLoader.shownPropertyString])
+                    toggleDialogLoader.active = false;
             }
         }
     }
@@ -221,28 +227,6 @@ Item {
             radius: height / 2
             implicitWidth: uptimeRow.implicitWidth + 24
             implicitHeight: uptimeRow.implicitHeight + 8
-            
-            Row {
-                id: uptimeRow
-                anchors.centerIn: parent
-                spacing: 8
-                CustomIcon {
-                    id: distroIcon
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 25
-                    height: 25
-                    source: SystemInfo.distroIcon
-                    colorize: true
-                    color: Appearance.colors.colOnLayer0
-                }
-                StyledText {
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.pixelSize: Appearance.font.pixelSize.normal
-                    color: Appearance.colors.colOnLayer0
-                    text: "Up %1".arg(DateTime.uptime)
-                    textFormat: Text.MarkdownText
-                }
-            }
         }
 
         ButtonGroup {
@@ -261,14 +245,16 @@ Item {
                 buttonIcon: "edit"
                 onClicked: root.editMode = !root.editMode
                 StyledToolTip {
-                    text: "Edit quick toggles" + (root.editMode ? "\nLMB to enable/disable\nRMB to toggle size\nScroll to swap position" : "")
+                    text: "Edit quick toggles" + (root.editMode
+                                                  ? "\nLMB to enable/disable\nRMB to toggle size\nScroll to swap position" :
+                                                    "")
                 }
             }
             QuickToggleButton {
                 toggled: false
                 buttonIcon: "restart_alt"
                 onClicked: {
-                    Quickshell.execDetached(["hyprctl", "reload"])
+                    Quickshell.execDetached(["hyprctl", "reload"]);
                     Quickshell.reload(true);
                 }
                 StyledToolTip {
