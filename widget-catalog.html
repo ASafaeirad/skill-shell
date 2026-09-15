@@ -857,6 +857,7 @@ modules/common/widgets/DragManager.qml
 modules/common/widgets/ErrorShakeAnimation.qml
 modules/common/widgets/FadeLoader.qml
 modules/common/widgets/Favicon.qml
+modules/common/widgets/FilterableComboBox.qml
 modules/common/widgets/FloatingActionButton.qml
 modules/common/widgets/FlowButtonGroup.qml
 modules/common/widgets/FocusedScrollMouseArea.qml
@@ -951,6 +952,7 @@ modules/common/widgets/WindowDialogSlider.qml
 modules/common/widgets/WindowDialogTitle.qml
 modules/widgets/bar/AiUsagePopup.qml
 modules/widgets/bar/AiUsageWidget.qml
+modules/widgets/bar/ClockWidgetPopup.qml
 modules/widgets/pass/Pass.qml
 modules/widgets/pass/PassContent.qml`
         .trim()
@@ -963,6 +965,8 @@ modules/widgets/pass/PassContent.qml`
           "Two-column Claude and Codex usage panel with five-hour and seven-day limit rings, reset times, and sync state.",
         AiUsageWidget:
           "Two labeled Claude and Codex limit rings with manual sync on left-click and persistent automatic-refresh pause on right-click.",
+        ClockWidgetPopup:
+          "Clock hover panel with the full date plus local and configurable world clocks, including daylight-saving-aware zone abbreviations.",
         Pass:
           "Keyboard-first pass password-store panel with IPC and a global shortcut entry point.",
         PassContent:
@@ -989,6 +993,8 @@ modules/widgets/pass/PassContent.qml`
           "Captures deliberate wheel gestures and reports when the pointer moves away.",
         FullscreenPolkitWindow:
           "Secure fullscreen host used for shell-owned PolicyKit authentication.",
+        FilterableComboBox:
+          "Dropdown selector that filters an array-backed model as the user types and reports the selected value.",
         LightDarkPreferenceButton:
           "Compact chooser for light, dark, or system-driven appearance.",
         MaskMultiEffect:

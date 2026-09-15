@@ -17,8 +17,6 @@ StyledPopup {
                                                                            DateTime.clock.date,
                                                                            "MMMM yyyy")).arg(getIsoWeekNumber(
                                                                                                  DateTime.clock.date))
-    readonly property string formattedUptime: DateTime.uptime.split(", ").join(" ")
-
     function getIsoWeekNumber(date) {
         const target = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
         const day = target.getUTCDay() || 7;
@@ -76,7 +74,7 @@ StyledPopup {
                         color: Appearance.colors.colSubtext
                         font {
                             features: ({ "tnum": 1 })
-                            pixelSize: Appearance.font.pixelSize.expressive
+                            pixelSize: Appearance.font.pixelSize.normal
                         }
                     }
                 }
@@ -96,30 +94,91 @@ StyledPopup {
             bottomLeftRadius: root.backgroundRadius
             bottomRightRadius: root.backgroundRadius
 
-            Column {
-                anchors {
-                    left: parent.left
-                    verticalCenter: parent.verticalCenter
-                    leftMargin: Appearance.spacing.xl
-                }
-                spacing: Appearance.spacing.xxs
+            RowLayout {
+                anchors.fill: parent
+                spacing: 0
 
-                StyledText {
-                    text: "Uptime"
-                    color: Appearance.colors.colSubtext
-                    font {
-                        pixelSize: Appearance.font.pixelSize.smallest
-                        capitalization: Font.AllUppercase
-                        letterSpacing: Appearance.spacing.xxs / 2
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    Column {
+                        anchors {
+                            left: parent.left
+                            verticalCenter: parent.verticalCenter
+                            leftMargin: Appearance.spacing.xl
+                        }
+                        spacing: Appearance.spacing.xxs
+
+                        StyledText {
+                            text: `Local · ${DateTime.localTimeZone}`
+                            color: Appearance.colors.colSubtext
+                            font {
+                                pixelSize: Appearance.font.pixelSize.smallest
+                                capitalization: Font.AllUppercase
+                                letterSpacing: Appearance.spacing.xxs / 2
+                            }
+                        }
+
+                        StyledText {
+                            text: DateTime.time
+                            color: Appearance.colors.colOnSurface
+                            font {
+                                features: ({ "tnum": 1 })
+                                pixelSize: Appearance.font.pixelSize.small
+                            }
+                        }
                     }
                 }
 
-                StyledText {
-                    text: root.formattedUptime
-                    color: Appearance.colors.colOnSurface
-                    font {
-                        features: ({ "tnum": 1 })
-                        pixelSize: Appearance.font.pixelSize.small
+                Rectangle {
+                    Layout.preferredWidth: Appearance.spacing.xxs / 2
+                    Layout.preferredHeight: parent.height - Appearance.spacing.lg
+                    color: Appearance.colors.colOutlineVariant
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    Column {
+                        anchors {
+                            right: parent.right
+                            verticalCenter: parent.verticalCenter
+                            rightMargin: Appearance.spacing.xl
+                        }
+                        spacing: Appearance.spacing.xxs
+
+                        StyledText {
+                            anchors.right: parent.right
+                            text: `${DateTime.worldClockLocation} · ${DateTime.worldClockAbbreviation}`
+                            color: Appearance.colors.colSubtext
+                            font {
+                                pixelSize: Appearance.font.pixelSize.smallest
+                                capitalization: Font.AllUppercase
+                                letterSpacing: Appearance.spacing.xxs / 2
+                            }
+                        }
+
+                        Row {
+                            anchors.right: parent.right
+                            spacing: Appearance.spacing.xs
+
+                            StyledText {
+                                text: DateTime.worldClockTime
+                                color: Appearance.colors.colOnSurface
+                                font {
+                                    features: ({ "tnum": 1 })
+                                    pixelSize: Appearance.font.pixelSize.small
+                                }
+                            }
+
+                            StyledText {
+                                text: DateTime.worldClockWeekday
+                                color: Appearance.colors.colSubtext
+                                font.pixelSize: Appearance.font.pixelSize.small
+                            }
+                        }
                     }
                 }
             }

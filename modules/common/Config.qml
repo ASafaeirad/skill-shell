@@ -350,6 +350,9 @@ Singleton {
             property JsonObject time: JsonObject {
                 // https://doc.qt.io/qt-6/qtime.html#toString
                 property string format: "hh:mm"
+                property JsonObject worldClock: JsonObject {
+                    property string timeZone: "America/New_York"
+                }
                 property JsonObject pomodoro: JsonObject {
                     property int breakTime: 300
                     property int cyclesBeforeLongBreak: 4

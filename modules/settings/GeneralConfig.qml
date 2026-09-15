@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import QtQuick.Layouts
 import qs.services
 import qs.modules.common
@@ -7,6 +8,24 @@ import qs.modules.common.functions
 import qs.modules.common.widgets
 
 ContentPage {
+    id: root
+
+    property var timeZones: [Config.options.time.worldClock.timeZone]
+
+    Process {
+        running: true
+        command: ["timedatectl", "list-timezones"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const configured = Config.options.time.worldClock.timeZone;
+                const loaded = text.trim().split("\n").filter(zone => zone.length > 0);
+                if (!loaded.includes(configured))
+                    loaded.unshift(configured);
+                root.timeZones = loaded;
+            }
+        }
+    }
+
     forceWidth: true
 
     ContentSection {
@@ -163,6 +182,20 @@ ContentPage {
                 ]
             }
         }
-    }
 
+        ContentSubsection {
+            title: "World clock"
+            tooltip: "Choose the time zone shown beside your local clock."
+
+            FilterableComboBox {
+                buttonIcon: "globe"
+                sourceModel: root.timeZones
+                selectedValue: Config.options.time.worldClock.timeZone
+                filterPlaceholderText: "Filter time zones"
+                onValueActivated: value => {
+                    Config.options.time.worldClock.timeZone = value;
+                }
+            }
+        }
+    }
 }
