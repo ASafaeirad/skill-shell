@@ -43,8 +43,56 @@ Singleton {
         press: 0,
         temp: 0,
         tempFeelsLike: 0,
+        tempValue: 0,
+        tempUnit: "°C",
+        description: "",
+        hourly: [],
         lastRefresh: 0,
+        lastRefreshTime: 0,
     })
+
+    function formatForecastHour(date) {
+        return date.getHours().toString().padStart(2, "0");
+    }
+
+    function hourlyForecast(data, currentTemperature) {
+        const forecast = data?.forecast ?? [];
+        const entries = [];
+
+        for (const day of forecast) {
+            for (const hour of day?.hourly ?? []) {
+                const hourValue = Math.floor(Number(hour?.time ?? 0) / 100);
+                const timestamp = new Date(`${day.date}T${hourValue.toString().padStart(2, "0")}:00:00`);
+                entries.push({
+                    timestamp: timestamp,
+                    temp: Number(root.useUSCS ? hour?.tempF : hour?.tempC),
+                    chanceOfRain: Number(hour?.chanceofrain ?? 0),
+                    weatherCode: hour?.weatherCode ?? "113"
+                });
+            }
+        }
+
+        if (entries.length === 0)
+            return [];
+
+        const now = new Date();
+        let nearestIndex = 0;
+        let nearestDistance = Number.MAX_VALUE;
+        for (let index = 0; index < entries.length; index++) {
+            const distance = Math.abs(entries[index].timestamp.getTime() - now.getTime());
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestIndex = index;
+            }
+        }
+
+        return entries.slice(nearestIndex, nearestIndex + 6).map((entry, index) => ({
+            temp: index === 0 ? currentTemperature : entry.temp,
+            chanceOfRain: entry.chanceOfRain,
+            weatherCode: entry.weatherCode,
+            time: index === 0 ? "now" : root.formatForecastHour(new Date(now.getTime() + index * 3 * 60 * 60 * 1000))
+        }));
+    }
 
     function refineData(data) {
         let temp = {};
@@ -55,6 +103,7 @@ Singleton {
         temp.windDir = data?.current?.winddir16Point || "N";
         temp.wCode = data?.current?.weatherCode || "113";
         temp.city = data?.location?.areaName[0]?.value || "City";
+        temp.description = data?.current?.weatherDesc?.[0]?.value?.trim() || "Unknown";
         temp.temp = "";
         temp.tempFeelsLike = "";
         if (root.useUSCS) {
@@ -64,6 +113,8 @@ Singleton {
             temp.press = (data?.current?.pressureInches || 0) + " psi";
             temp.temp += (data?.current?.temp_F || 0);
             temp.tempFeelsLike += (data?.current?.FeelsLikeF || 0);
+            temp.tempValue = Number(data?.current?.temp_F || 0);
+            temp.tempUnit = "°F";
             temp.temp += "°F";
             temp.tempFeelsLike += "°F";
         } else {
@@ -73,10 +124,14 @@ Singleton {
             temp.press = (data?.current?.pressure || 0) + " hPa";
             temp.temp += (data?.current?.temp_C || 0);
             temp.tempFeelsLike += (data?.current?.FeelsLikeC || 0);
+            temp.tempValue = Number(data?.current?.temp_C || 0);
+            temp.tempUnit = "°C";
             temp.temp += "°C";
             temp.tempFeelsLike += "°C";
         }
+        temp.hourly = root.hourlyForecast(data, temp.tempValue);
         temp.lastRefresh = DateTime.time + " • " + DateTime.date;
+        temp.lastRefreshTime = DateTime.time;
         root.data = temp;
     }
 
@@ -92,8 +147,7 @@ Singleton {
         // format as json
         command += "?format=j1";
         command += " | ";
-        // only take the current weather, location, asytronmy data
-        command += "jq '{current: .current_condition[0], location: .nearest_area[0], astronomy: .weather[0].astronomy[0]}'";
+        command += "jq '{current: .current_condition[0], location: .nearest_area[0], astronomy: .weather[0].astronomy[0], forecast: [.weather[] | {date, hourly: [.hourly[] | {time, tempC, tempF, chanceofrain, weatherCode}]}]}'";
         fetcher.command[2] = command;
         fetcher.running = true;
     }

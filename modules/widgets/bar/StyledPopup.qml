@@ -12,6 +12,12 @@ LazyLoader {
     property Item hoverTarget
     default property Item contentItem
     property real popupBackgroundMargin: 0
+    property real shadowMargin: Appearance.sizes.elevationMargin
+    property real shadowBlur: 0.9 * Appearance.sizes.elevationMargin
+    property real shadowSpread: 1
+    property real shadowRadius: backgroundRadius
+    property color shadowColor: Appearance.colors.colShadow
+    property vector2d shadowOffset: Qt.vector2d(0, 1)
     property real contentPadding: Appearance.spacing.s + Appearance.spacing.xxs
     property real backgroundRadius: Appearance.rounding.small
     property bool clipContent: false
@@ -36,8 +42,8 @@ LazyLoader {
         anchors.top: Config.options.bar.vertical || (!Config.options.bar.vertical && !Config.options.bar.bottom)
         anchors.bottom: !Config.options.bar.vertical && Config.options.bar.bottom
 
-        implicitWidth: popupBackground.implicitWidth + Appearance.sizes.elevationMargin * 2 + root.popupBackgroundMargin
-        implicitHeight: popupBackground.implicitHeight + Appearance.sizes.elevationMargin * 2 + root.popupBackgroundMargin
+        implicitWidth: popupBackground.implicitWidth + root.shadowMargin * 2 + root.popupBackgroundMargin
+        implicitHeight: popupBackground.implicitHeight + root.shadowMargin * 2 + root.popupBackgroundMargin
 
         mask: Region {
             item: popupBackground
@@ -69,16 +75,21 @@ LazyLoader {
 
         StyledRectangularShadow {
             target: popupBackground
+            blur: root.shadowBlur
+            spread: root.shadowSpread
+            radius: root.shadowRadius
+            color: root.shadowColor
+            offset: root.shadowOffset
         }
 
         Rectangle {
             id: popupBackground
             anchors {
                 fill: parent
-                leftMargin: Appearance.sizes.elevationMargin + root.popupBackgroundMargin * (!popupWindow.anchors.left)
-                rightMargin: Appearance.sizes.elevationMargin + root.popupBackgroundMargin * (!popupWindow.anchors.right)
-                topMargin: Appearance.sizes.elevationMargin + root.popupBackgroundMargin * (!popupWindow.anchors.top)
-                bottomMargin: Appearance.sizes.elevationMargin + root.popupBackgroundMargin * (!popupWindow.anchors.bottom)
+                leftMargin: root.shadowMargin + root.popupBackgroundMargin * (!popupWindow.anchors.left)
+                rightMargin: root.shadowMargin + root.popupBackgroundMargin * (!popupWindow.anchors.right)
+                topMargin: root.shadowMargin + root.popupBackgroundMargin * (!popupWindow.anchors.top)
+                bottomMargin: root.shadowMargin + root.popupBackgroundMargin * (!popupWindow.anchors.bottom)
             }
             implicitWidth: root.contentItem.implicitWidth + root.contentPadding * 2
             implicitHeight: root.contentItem.implicitHeight + root.contentPadding * 2

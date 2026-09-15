@@ -953,6 +953,9 @@ modules/common/widgets/WindowDialogTitle.qml
 modules/widgets/bar/AiUsagePopup.qml
 modules/widgets/bar/AiUsageWidget.qml
 modules/widgets/bar/ClockWidgetPopup.qml
+modules/widgets/bar/weather/WeatherBar.qml
+modules/widgets/bar/weather/WeatherCard.qml
+modules/widgets/bar/weather/WeatherPopup.qml
 modules/widgets/pass/Pass.qml
 modules/widgets/pass/PassContent.qml`
         .trim()
@@ -967,6 +970,12 @@ modules/widgets/pass/PassContent.qml`
           "Two labeled Claude and Codex limit rings with manual sync on left-click and persistent automatic-refresh pause on right-click.",
         ClockWidgetPopup:
           "Clock hover panel with the full date plus local and configurable world clocks, including daylight-saving-aware zone abbreviations.",
+        WeatherBar:
+          "Compact current-temperature bar readout with a weather icon, manual refresh action, and detailed hover panel.",
+        WeatherCard:
+          "Small labeled weather metric tile retained for alternate weather layouts.",
+        WeatherPopup:
+          "Current conditions panel with metric chips and a six-point, three-hour rain-probability forecast with hourly temperatures.",
         Pass:
           "Keyboard-first pass password-store panel with IPC and a global shortcut entry point.",
         PassContent:
