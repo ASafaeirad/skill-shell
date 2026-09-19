@@ -1,4 +1,5 @@
 pragma ComponentBehavior: Bound
+import qs
 import qs.modules.common
 import qs.modules.common.models
 import qs.modules.common.widgets
@@ -142,6 +143,28 @@ Item { // Player instance
             maxVisualizerValue: root.maxVisualizerValue
             smoothing: root.visualizerSmoothing
             color: blendedColors.colPrimary
+        }
+
+        MouseArea {
+            id: rowClickArea
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            hoverEnabled: true
+            onClicked: {
+                MprisController.focusPlayer(root.player);
+                GlobalStates.mediaControlsOpen = false;
+            }
+        }
+
+        Rectangle {
+            id: hoverHighlight
+            anchors.fill: parent
+            radius: root.radius
+            color: blendedColors.colOnLayer0
+            opacity: rowClickArea.containsMouse ? 0.08 : 0
+            Behavior on opacity {
+                animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+            }
         }
 
         RowLayout {
