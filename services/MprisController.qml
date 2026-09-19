@@ -9,7 +9,10 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Mpris
+import Quickshell.Hyprland
+import Quickshell.Wayland
 import qs.modules.common
+import qs.services
 
 /**
  * A service that provides easy access to the active Mpris player.
@@ -167,6 +170,159 @@ Singleton {
 		this.trackedPlayer = targetPlayer;
 	}
 
+	function focusPlayer(player: var): bool {
+		if (!player) return false;
+
+		if (player.canRaise) {
+			player.raise();
+		}
+
+		const dbusName = player.dbusName || "";
+		const desktopEntry = player.desktopEntry || "";
+		const identity = player.identity || "";
+		const trackTitle = (player.trackTitle || "").toLowerCase().trim();
+		const trackArtist = (player.trackArtist || "").toLowerCase().trim();
+
+		const strippedBus = dbusName.replace(/^org\.mpris\.MediaPlayer2\./, "");
+		const busBase = strippedBus.split(".")[0];
+
+		const pidMatch = dbusName.match(/instance_?(\d+)/i);
+		const playerPid = pidMatch ? parseInt(pidMatch[1], 10) : null;
+
+		const genericPrefixes = ["org", "com", "net", "io", "app", "dev"];
+		const tokens = [];
+		function addToken(str) {
+			if (!str) return;
+			const clean = str.trim().toLowerCase();
+			if (clean.length >= 2 && !tokens.includes(clean) && !genericPrefixes.includes(clean)) {
+				tokens.push(clean);
+			}
+		}
+
+		addToken(desktopEntry);
+		if (desktopEntry) {
+			const parts = desktopEntry.toLowerCase().split(".");
+			for (let i = 0; i < parts.length; ++i) {
+				addToken(parts[i]);
+			}
+			addToken(parts.join(""));
+		}
+		addToken(identity);
+		if (identity) {
+			addToken(identity.replace(/\s+/g, ""));
+		}
+		addToken(busBase);
+		if (strippedBus) {
+			addToken(strippedBus);
+		}
+
+		const windows = HyprlandData.windowList || [];
+		let bestWindow = null;
+		let bestScore = 0;
+
+		for (let i = 0; i < windows.length; ++i) {
+			const win = windows[i];
+			let score = 0;
+			const winPid = win.pid;
+			const winClass = (win.class || "").toLowerCase();
+			const winInitialClass = (win.initialClass || "").toLowerCase();
+			const winTitle = (win.title || "").toLowerCase();
+			const winInitialTitle = (win.initialTitle || "").toLowerCase();
+
+			if (playerPid && winPid === playerPid) {
+				score += 1000;
+			}
+
+			for (let t = 0; t < tokens.length; ++t) {
+				const token = tokens[t];
+				if (winClass === token || winInitialClass === token) {
+					score += 500;
+					break;
+				} else if (winClass.replace(/[-_.]/g, "") === token.replace(/[-_.]/g, "")) {
+					score += 400;
+					break;
+				} else if (winClass.includes(token) || token.includes(winClass)) {
+					score += 250;
+					break;
+				}
+			}
+
+			if (score === 0) {
+				for (let t = 0; t < tokens.length; ++t) {
+					const token = tokens[t];
+					if (token.length >= 3 && (winTitle.includes(token) || winInitialTitle.includes(token))) {
+						score += 150;
+						break;
+					}
+				}
+			}
+
+			if (score > 0) {
+				if (trackTitle.length > 2 && winTitle.includes(trackTitle)) {
+					score += 200;
+				}
+				if (trackArtist.length > 2 && winTitle.includes(trackArtist)) {
+					score += 100;
+				}
+				if (typeof win.focusHistoryID === "number") {
+					score += Math.max(0, 50 - win.focusHistoryID);
+				}
+			}
+
+			if (score > bestScore) {
+				bestScore = score;
+				bestWindow = win;
+			}
+		}
+
+		if (bestWindow && bestScore > 0) {
+			const addr = bestWindow.address.startsWith("0x") ? bestWindow.address : `0x${bestWindow.address}`;
+			if (bestWindow.workspace && bestWindow.workspace.id < 0 && bestWindow.workspace.name && bestWindow.workspace.name.startsWith("special:")) {
+				const specialName = bestWindow.workspace.name.slice(8);
+				Hyprland.dispatch(`hl.dsp.workspace.toggle_special("${specialName}")`);
+			}
+			Hyprland.dispatch(`hl.dsp.focus({window = "address:${addr}"})`);
+
+			if (typeof ToplevelManager !== "undefined" && ToplevelManager.toplevels) {
+				const toplevels = ToplevelManager.toplevels.values;
+				for (let i = 0; i < toplevels.length; ++i) {
+					const tl = toplevels[i];
+					if (`0x${tl.HyprlandToplevel?.address}` === addr) {
+						tl.activate();
+						break;
+					}
+				}
+			}
+			return true;
+		}
+
+		if (typeof ToplevelManager !== "undefined" && ToplevelManager.toplevels) {
+			const toplevels = ToplevelManager.toplevels.values;
+			for (let i = 0; i < toplevels.length; ++i) {
+				const tl = toplevels[i];
+				const appId = (tl.appId || "").toLowerCase();
+				let matched = false;
+				for (let t = 0; t < tokens.length; ++t) {
+					const token = tokens[t];
+					if (appId === token || (token.length >= 3 && (appId.includes(token) || token.includes(appId)))) {
+						matched = true;
+						break;
+					}
+				}
+				if (matched) {
+					if (tl.HyprlandToplevel?.address) {
+						const addr = `0x${tl.HyprlandToplevel.address}`;
+						Hyprland.dispatch(`hl.dsp.focus({window = "address:${addr}"})`);
+					}
+					tl.activate();
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	IpcHandler {
 		target: "mpris"
 
@@ -179,5 +335,9 @@ Singleton {
 		function playPause(): void { root.togglePlaying(); }
 		function previous(): void { root.previous(); }
 		function next(): void { root.next(); }
+		function focus(playerName: string): void {
+			const target = root.players.find(p => p.identity === playerName || p.dbusName === playerName) ?? root.activePlayer;
+			if (target) root.focusPlayer(target);
+		}
 	}
 }
