@@ -7,14 +7,12 @@ import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
 import qs.modules.widgets.bar as Bar
-import qs.modules.widgets.verticalBar as VBar
 import qs.modules.widgets.bar.weather as BarWeather
 
 QtObject {
     id: root
 
-    // Component declarations for horizontal and vertical orientations
-    property Component activeWindowHorizontal: Component {
+    property Component activeWindow: Component {
         Bar.ActiveWindow {
             Layout.leftMargin: 10 + Appearance.rounding.screenRounding
             Layout.rightMargin: Appearance.rounding.screenRounding
@@ -23,15 +21,7 @@ QtObject {
         }
     }
 
-    property Component activeWindowVertical: Component {
-        Bar.ActiveWindow {
-            vertical: true
-            Layout.alignment: Qt.AlignHCenter
-            Layout.topMargin: Appearance.rounding.screenRounding
-        }
-    }
-
-    property Component workspacesHorizontal: Component {
+    property Component workspaces: Component {
         Bar.BarGroup {
             padding: workspacesWidget.widgetPadding
 
@@ -52,29 +42,7 @@ QtObject {
         }
     }
 
-    property Component workspacesVertical: Component {
-        Bar.BarGroup {
-            vertical: true
-            padding: 6
-
-            Bar.Workspaces {
-                id: workspacesWidget
-                vertical: true
-
-                MouseArea {
-                    anchors.fill: parent
-                    acceptedButtons: Qt.RightButton
-                    onPressed: event => {
-                        if (event.button === Qt.RightButton) {
-                            GlobalStates.overviewOpen = !GlobalStates.overviewOpen;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    property Component mediaHorizontal: Component {
+    property Component media: Component {
         Bar.BarGroup {
             Layout.alignment: Qt.AlignVCenter
 
@@ -84,52 +52,20 @@ QtObject {
         }
     }
 
-    property Component mediaVertical: Component {
-        Bar.BarGroup {
-            vertical: true
-            padding: 8
-
-            VBar.VerticalMedia {
-                Layout.fillWidth: true
-                Layout.fillHeight: false
-            }
-        }
-    }
-
-    property Component weatherHorizontal: Component {
+    property Component weather: Component {
         Bar.BarGroup {
             Layout.leftMargin: 4
             BarWeather.WeatherBar {}
         }
     }
 
-    property Component weatherVertical: Component {
-        Bar.BarGroup {
-            vertical: true
-            padding: 4
-            BarWeather.WeatherBar {
-                vertical: true
-            }
-        }
-    }
-
-    property Component aiUsageHorizontal: Component {
+    property Component aiUsage: Component {
         Bar.BarGroup {
             Bar.AiUsageWidget {}
         }
     }
 
-    property Component aiUsageVertical: Component {
-        Bar.BarGroup {
-            vertical: true
-            padding: 4
-            Bar.AiUsageWidget {
-                vertical: true
-            }
-        }
-    }
-
-    property Component clockHorizontal: Component {
+    property Component clock: Component {
         Bar.BarGroup {
             Layout.alignment: Qt.AlignVCenter
 
@@ -139,19 +75,7 @@ QtObject {
         }
     }
 
-    property Component clockVertical: Component {
-        Bar.BarGroup {
-            vertical: true
-            padding: 8
-
-            VBar.VerticalClockWidget {
-                Layout.fillWidth: true
-                Layout.fillHeight: false
-            }
-        }
-    }
-
-    property Component sysTrayHorizontal: Component {
+    property Component sysTray: Component {
         Bar.SysTray {
             Layout.fillWidth: false
             Layout.fillHeight: true
@@ -159,23 +83,8 @@ QtObject {
         }
     }
 
-    property Component sysTrayVertical: Component {
-        Bar.SysTray {
-            vertical: true
-            Layout.fillWidth: true
-            Layout.fillHeight: false
-            invertSide: Config?.options.bar.bottom
-        }
-    }
-
-    property Component statusIndicatorsHorizontal: Component {
+    property Component statusIndicators: Component {
         Bar.StatusIndicators {}
-    }
-
-    property Component statusIndicatorsVertical: Component {
-        Bar.StatusIndicators {
-            vertical: true
-        }
     }
 
     // The unified widget roster
@@ -184,55 +93,47 @@ QtObject {
             id: "activeWindow",
             section: "start",
             maxShortenForm: 0,
-            horizontalComponent: activeWindowHorizontal,
-            verticalComponent: activeWindowVertical
+            component: activeWindow
         },
         {
             id: "workspaces",
             section: "center",
-            horizontalComponent: workspacesHorizontal,
-            verticalComponent: workspacesVertical
+            component: workspaces
         },
         {
             id: "media",
             section: "end",
             maxShortenForm: 1,
-            horizontalComponent: mediaHorizontal,
-            verticalComponent: mediaVertical
+            component: media
         },
         {
             id: "weather",
             section: "end",
             enabled: () => (Config.options?.bar?.weather?.enable ?? false),
-            horizontalComponent: weatherHorizontal,
-            verticalComponent: weatherVertical
+            component: weather
         },
         {
             id: "aiUsage",
             section: "end",
             maxShortenForm: 0,
             enabled: () => (Config.options?.bar?.aiUsage?.enable ?? false),
-            horizontalComponent: aiUsageHorizontal,
-            verticalComponent: aiUsageVertical
+            component: aiUsage
         },
         {
             id: "clock",
             section: "end",
-            horizontalComponent: clockHorizontal,
-            verticalComponent: clockVertical
+            component: clock
         },
         {
             id: "sysTray",
             section: "end",
             maxShortenForm: 0,
-            horizontalComponent: sysTrayHorizontal,
-            verticalComponent: sysTrayVertical
+            component: sysTray
         },
         {
             id: "statusIndicators",
             section: "end",
-            horizontalComponent: statusIndicatorsHorizontal,
-            verticalComponent: statusIndicatorsVertical
+            component: statusIndicators
         }
     ]
 
@@ -240,7 +141,7 @@ QtObject {
         return widgets.filter(w => w.section === section);
     }
 
-    function isWidgetVisible(widget, isVertical, useShortenedForm) {
+    function isWidgetVisible(widget, useShortenedForm) {
         let enabled = true;
         if (typeof widget.enabled === "function")
             enabled = widget.enabled();
@@ -249,11 +150,9 @@ QtObject {
         if (!enabled)
             return false;
 
-        if (!isVertical) {
-            const maxShorten = widget.maxShortenForm ?? 2;
-            if (useShortenedForm > maxShorten)
-                return false;
-        }
+        const maxShorten = widget.maxShortenForm ?? 2;
+        if (useShortenedForm > maxShorten)
+            return false;
 
         return true;
     }

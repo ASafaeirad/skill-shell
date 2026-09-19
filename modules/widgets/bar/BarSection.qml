@@ -6,7 +6,6 @@ Repeater {
     id: root
 
     property string section: "end"
-    property bool vertical: false
     property real useShortenedForm: 0
     property bool areaHovered: false
 
@@ -17,17 +16,14 @@ Repeater {
 
         required property var modelData
 
-        active: Bar.BarRoster.isWidgetVisible(modelData, root.vertical, root.useShortenedForm)
+        active: Bar.BarRoster.isWidgetVisible(modelData, root.useShortenedForm)
         visible: active
 
-        sourceComponent: root.vertical
-            ? (modelData.verticalComponent ?? modelData.component)
-            : (modelData.horizontalComponent ?? modelData.component)
+        sourceComponent: modelData.component ?? modelData.horizontalComponent
 
         Layout.fillWidth: item ? (item.Layout.fillWidth ?? false) : false
         Layout.fillHeight: item ? (item.Layout.fillHeight ?? false) : false
-        Layout.alignment: item ? (item.Layout.alignment ?? (root.vertical ? Qt.AlignHCenter : Qt.AlignVCenter))
-                               : (root.vertical ? Qt.AlignHCenter : Qt.AlignVCenter)
+        Layout.alignment: item ? (item.Layout.alignment ?? Qt.AlignVCenter) : Qt.AlignVCenter
         Layout.preferredWidth: (item && item.Layout.preferredWidth > 0) ? item.Layout.preferredWidth : -1
         Layout.preferredHeight: (item && item.Layout.preferredHeight > 0) ? item.Layout.preferredHeight : -1
         Layout.leftMargin: item ? item.Layout.leftMargin : 0

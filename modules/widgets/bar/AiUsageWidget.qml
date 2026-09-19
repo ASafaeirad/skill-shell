@@ -7,10 +7,8 @@ import qs.services
 MouseArea {
     id: root
 
-    property bool vertical: false
-
-    implicitWidth: root.vertical ? Appearance.sizes.verticalBarWidth : (rowLayout.implicitWidth + Appearance.font.pixelSize.smaller * 2)
-    implicitHeight: root.vertical ? (colLayout.implicitHeight + Appearance.spacing.s * 2) : Appearance.sizes.barHeight
+    implicitWidth: rowLayout.implicitWidth + Appearance.font.pixelSize.smaller * 2
+    implicitHeight: Appearance.sizes.barHeight
     hoverEnabled: !Config.options.bar.tooltips.clickToShow
     acceptedButtons: Qt.LeftButton | Qt.RightButton
     cursorShape: Qt.PointingHandCursor
@@ -37,69 +35,8 @@ MouseArea {
             AiUsage.sync();
     }
 
-    ColumnLayout {
-        id: colLayout
-        visible: root.vertical
-        anchors.centerIn: parent
-        spacing: Appearance.spacing.xs
-
-        Repeater {
-            model: [
-                {
-                    provider: AiUsage.claude,
-                    label: "CL"
-                },
-                {
-                    provider: AiUsage.codex,
-                    label: "CX"
-                }
-            ]
-
-            delegate: ColumnLayout {
-                id: providerMeterCol
-                required property var modelData
-
-                Layout.alignment: Qt.AlignHCenter
-                spacing: 2
-
-                Rectangle {
-                    visible: providerMeterCol.modelData.label === "CX"
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.bottomMargin: Appearance.spacing.xxs
-                    implicitWidth: Appearance.font.pixelSize.normal
-                    implicitHeight: Appearance.spacing.xxs
-                    radius: Appearance.rounding.full
-                    color: Appearance.colors.colOnLayer1Inactive
-                }
-
-                IconCircularProgress {
-                    id: progressCol
-                    Layout.alignment: Qt.AlignHCenter
-                    implicitSize: Appearance.font.pixelSize.huge
-                    lineWidth: 2
-                    value: (AiUsage.remainingPercent(providerMeterCol.modelData.provider) ?? 0) / 100
-                    colPrimary: root.progressColor(providerMeterCol.modelData.provider)
-                    enableAnimation: true
-                    animationDuration: Appearance.animation.elementMove.duration
-                    opacity: AiUsage.paused ? 0.5 : 1
-
-                    Behavior on opacity {
-                        animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-                    }
-                }
-
-                StyledText {
-                    Layout.alignment: Qt.AlignHCenter
-                    font.pixelSize: Appearance.font.pixelSize.smallest
-                    text: providerMeterCol.modelData.label
-                }
-            }
-        }
-    }
-
     RowLayout {
         id: rowLayout
-        visible: !root.vertical
         anchors.centerIn: parent
         spacing: Appearance.spacing.xs
 

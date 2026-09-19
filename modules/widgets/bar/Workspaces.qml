@@ -14,7 +14,6 @@ import Qt5Compat.GraphicalEffects
 
 Item {
     id: root
-    property bool vertical: false
     property bool borderless: Config.options.bar.borderless
     readonly property HyprlandMonitor monitor: Hyprland.monitorFor(root.QsWindow.window?.screen)
     readonly property Toplevel activeWindow: ToplevelManager.activeToplevel
@@ -137,10 +136,7 @@ Item {
         radius: Appearance.rounding.full
         color: Appearance.colors.colPrimary
 
-        anchors {
-            verticalCenter: vertical ? undefined : parent.verticalCenter
-            horizontalCenter: vertical ? parent.horizontalCenter : undefined
-        }
+        anchors.verticalCenter: parent.verticalCenter
 
         AnimatedTabIndexPair {
             id: idxPair
@@ -172,11 +168,10 @@ Item {
             Button {
                 id: button
                 property int workspaceValue: workspaceGroup * root.workspacesShown + index + 1
-                implicitHeight: vertical ? Appearance.sizes.verticalBarWidth : Appearance.sizes.barHeight
-                implicitWidth: vertical ? Appearance.sizes.verticalBarWidth : Appearance.sizes.verticalBarWidth
+                implicitHeight: Appearance.sizes.barHeight
+                implicitWidth: root.workspaceButtonWidth
                 onPressed: Hyprland.dispatch(`hl.dsp.focus({ workspace = ${workspaceValue} })`)
-                width: vertical ? undefined : root.workspaceButtonWidth
-                height: vertical ? root.workspaceButtonWidth : undefined
+                width: root.workspaceButtonWidth
 
                 background: Item {
                     id: workspaceButtonBackground

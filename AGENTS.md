@@ -24,7 +24,7 @@ The shell uses the **widgets** panel family, loaded lazily in `shell.qml`.
 │   │   │                     #   ConfigSwitch/Slider/SpinBox/SelectionArray, ...
 │   │   ├── functions/        #   Fuzzy.qml (fuzzysort), StringUtils, ColorUtils
 │   │   └── models/           #   LauncherSearchResult.qml etc.
-│   ├── widgets/              # Panels: bar/, verticalBar/, dock/,
+│   ├── widgets/              # Panels: bar/, dock/,
 │   │                         #   overview/ (= the launcher), sidebarLeft/, sidebarRight/,
 │   │                         #   notificationPopup/, onScreenDisplay/, sessionScreen/,
 │   │                         #   lock/, polkit/, background/, ...
@@ -113,7 +113,7 @@ Features are **not self-contained** — one threads through service singletons, 
 ## Gotchas
 
 - **Launcher prefix logic spans several files.** Prefix definitions and helpers live in `modules/common/functions/SearchPrefixes.qml`, provider behavior in `services/LauncherSearch.qml`, and presentation in `modules/widgets/overview/SearchBar.qml` and `SearchWidget.qml`. Adding a prefix means touching all relevant call sites — see the skill.
-- **The bar exists in two widgets variants**: `modules/widgets/bar/BarContent.qml` (horizontal) and `modules/widgets/verticalBar/VerticalBarContent.qml` (separate composition with its own widget variants). A widget added to one does not appear in the other; decide scope consciously.
+- **The bar is horizontal**: entry point in `modules/widgets/bar/BarContent.qml`.
 - The bar adapts to screen width via `useShortenedForm` (0/1/2) and fixes middle-group widths via `centerSideModuleWidth` — gate wide widgets on `useShortenedForm`.
 - `config.json` is rewritten by the shell ~50 ms after any QML-side option change; schema defaults live in `Config.qml`, the JSON only reflects current values.
 - Single monitor setup; Hyprland master layout, gaps 5, rounding 8. Keyboard layouts `us,ir`.

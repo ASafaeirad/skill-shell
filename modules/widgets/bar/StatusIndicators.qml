@@ -6,22 +6,19 @@ import qs.modules.common
 import qs.modules.common.widgets
 import qs.modules.common.functions
 import qs.modules.widgets.bar as Bar
-import qs.modules.widgets.verticalBar as VBar
 
 RippleButton {
     id: rightSidebarButton
 
-    property bool vertical: false
     property bool parentHovered: false
 
-    Layout.alignment: rightSidebarButton.vertical ? (Qt.AlignBottom | Qt.AlignHCenter) : (Qt.AlignRight | Qt.AlignVCenter)
-    Layout.rightMargin: rightSidebarButton.vertical ? 0 : Appearance.rounding.screenRounding
-    Layout.bottomMargin: rightSidebarButton.vertical ? Appearance.rounding.screenRounding : 0
+    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+    Layout.rightMargin: Appearance.rounding.screenRounding
     Layout.fillWidth: false
     Layout.fillHeight: false
 
-    implicitWidth: rightSidebarButton.vertical ? (indicatorsColumnLayout.implicitWidth + 6 * 2) : (indicatorsRowLayout.implicitWidth + 10 * 2)
-    implicitHeight: rightSidebarButton.vertical ? (indicatorsColumnLayout.implicitHeight + 4 * 2) : (indicatorsRowLayout.implicitHeight + 5 * 2)
+    implicitWidth: indicatorsRowLayout.implicitWidth + 10 * 2
+    implicitHeight: indicatorsRowLayout.implicitHeight + 5 * 2
 
     buttonRadius: Appearance.rounding.full
     colBackground: (rightSidebarButton.containsMouse || rightSidebarButton.parentHovered)
@@ -45,10 +42,8 @@ RippleButton {
         GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen;
     }
 
-    // Horizontal layout
     RowLayout {
         id: indicatorsRowLayout
-        visible: !rightSidebarButton.vertical
         anchors.centerIn: parent
         property real realSpacing: 15
         spacing: 0
@@ -119,89 +114,6 @@ RippleButton {
             visible: BluetoothStatus.available
             text: BluetoothStatus.connected ? "bluetooth_connected" : BluetoothStatus.enabled
                                               ? "bluetooth" : "bluetooth_disabled"
-            iconSize: Appearance.font.pixelSize.larger
-            color: rightSidebarButton.colText
-        }
-    }
-
-    // Vertical layout
-    ColumnLayout {
-        id: indicatorsColumnLayout
-        visible: rightSidebarButton.vertical
-        anchors.centerIn: parent
-        property real realSpacing: 6
-        spacing: 0
-
-        Revealer {
-            vertical: true
-            reveal: Audio.sink?.audio?.muted ?? false
-            Layout.fillWidth: true
-            Layout.bottomMargin: reveal ? indicatorsColumnLayout.realSpacing : 0
-            Behavior on Layout.bottomMargin {
-                animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-            }
-            MaterialSymbol {
-                text: "volume_off"
-                iconSize: Appearance.font.pixelSize.larger
-                color: rightSidebarButton.colText
-            }
-        }
-
-        Revealer {
-            vertical: true
-            reveal: Audio.source?.audio?.muted ?? false
-            Layout.fillWidth: true
-            Layout.bottomMargin: reveal ? indicatorsColumnLayout.realSpacing : 0
-            Behavior on Layout.topMargin {
-                animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-            }
-            MaterialSymbol {
-                text: "mic_off"
-                iconSize: Appearance.font.pixelSize.larger
-                color: rightSidebarButton.colText
-            }
-        }
-
-        Bar.HyprlandXkbIndicator {
-            vertical: true
-            Layout.alignment: Qt.AlignHCenter
-            Layout.bottomMargin: indicatorsColumnLayout.realSpacing
-            color: rightSidebarButton.colText
-        }
-
-        Revealer {
-            vertical: true
-            reveal: Notifications.silent || Notifications.unread > 0
-            Layout.fillWidth: true
-            Layout.bottomMargin: reveal ? indicatorsColumnLayout.realSpacing : 0
-            implicitHeight: reveal ? notificationUnreadCountCol.implicitHeight : 0
-            implicitWidth: reveal ? notificationUnreadCountCol.implicitWidth : 0
-            Behavior on Layout.bottomMargin {
-                animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-            }
-            Bar.NotificationUnreadCount {
-                id: notificationUnreadCountCol
-            }
-        }
-
-        VBar.BatteryIndicator {
-            Layout.alignment: Qt.AlignHCenter
-            Layout.bottomMargin: indicatorsColumnLayout.realSpacing
-            Layout.preferredWidth: 20
-            Layout.preferredHeight: 36
-            visible: Battery.available
-        }
-
-        MaterialSymbol {
-            text: Network.materialSymbol
-            iconSize: Appearance.font.pixelSize.larger
-            color: rightSidebarButton.colText
-        }
-
-        MaterialSymbol {
-            Layout.topMargin: indicatorsColumnLayout.realSpacing
-            visible: BluetoothStatus.available
-            text: BluetoothStatus.connected ? "bluetooth_connected" : BluetoothStatus.enabled ? "bluetooth" : "bluetooth_disabled"
             iconSize: Appearance.font.pixelSize.larger
             color: rightSidebarButton.colText
         }

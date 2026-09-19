@@ -37,10 +37,10 @@ LazyLoader {
             return Math.max(0, Math.min(wantedPosition, availableSize - popupSize));
         }
 
-        anchors.left: !Config.options.bar.vertical || (Config.options.bar.vertical && !Config.options.bar.bottom)
-        anchors.right: Config.options.bar.vertical && Config.options.bar.bottom
-        anchors.top: Config.options.bar.vertical || (!Config.options.bar.vertical && !Config.options.bar.bottom)
-        anchors.bottom: !Config.options.bar.vertical && Config.options.bar.bottom
+        anchors.left: true
+        anchors.right: false
+        anchors.top: !Config.options.bar.bottom
+        anchors.bottom: Config.options.bar.bottom
 
         implicitWidth: popupBackground.implicitWidth + root.shadowMargin * 2 + root.popupBackgroundMargin
         implicitHeight: popupBackground.implicitHeight + root.shadowMargin * 2 + root.popupBackgroundMargin
@@ -53,21 +53,11 @@ LazyLoader {
         exclusiveZone: 0
         margins {
             left: {
-                if (!Config.options.bar.vertical) {
-                    const targetPosition = root.QsWindow?.mapFromItem(root.hoverTarget, 0, 0).x ?? 0;
-                    const wantedPosition = targetPosition + (root.hoverTarget.width - popupWindow.implicitWidth) / 2;
-                    return popupWindow.boundedPosition(wantedPosition, popupWindow.availableWidth, popupWindow.implicitWidth);
-                }
-                return Appearance.sizes.verticalBarWidth;
+                const targetPosition = root.QsWindow?.mapFromItem(root.hoverTarget, 0, 0).x ?? 0;
+                const wantedPosition = targetPosition + (root.hoverTarget.width - popupWindow.implicitWidth) / 2;
+                return popupWindow.boundedPosition(wantedPosition, popupWindow.availableWidth, popupWindow.implicitWidth);
             }
-            top: {
-                if (!Config.options.bar.vertical)
-                    return Appearance.sizes.barHeight;
-                const targetPosition = root.QsWindow?.mapFromItem(root.hoverTarget, 0, 0).y ?? 0;
-                const wantedPosition = targetPosition + (root.hoverTarget.height - popupWindow.implicitHeight) / 2;
-                return popupWindow.boundedPosition(wantedPosition, popupWindow.availableHeight, popupWindow.implicitHeight);
-            }
-            right: Appearance.sizes.verticalBarWidth
+            top: Appearance.sizes.barHeight
             bottom: Appearance.sizes.barHeight
         }
         WlrLayershell.namespace: "quickshell:popup"

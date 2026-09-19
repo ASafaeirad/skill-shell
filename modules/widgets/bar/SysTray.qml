@@ -11,7 +11,6 @@ Item {
     id: root
     implicitWidth: gridLayout.implicitWidth
     implicitHeight: gridLayout.implicitHeight
-    property bool vertical: false
     property bool invertSide: false
     property bool trayOverflowOpen: false
     property bool showSeparator: true
@@ -67,7 +66,7 @@ Item {
 
     GridLayout {
         id: gridLayout
-        columns: root.vertical ? 1 : -1
+        columns: -1
         anchors.fill: parent
         rowSpacing: 0
         columnSpacing: 8
@@ -80,8 +79,7 @@ Item {
 
             downAction: () => root.trayOverflowOpen = !root.trayOverflowOpen
 
-            Layout.fillHeight: !root.vertical
-            Layout.fillWidth: root.vertical
+            Layout.fillHeight: true
             background.implicitWidth: 24
             background.implicitHeight: 24
             background.anchors.centerIn: this
@@ -95,7 +93,7 @@ Item {
                 text: "expand_more"
                 horizontalAlignment: Text.AlignHCenter
                 color: root.trayOverflowOpen ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer2
-                rotation: (root.trayOverflowOpen ? 180 : 0) - (90 * root.vertical) + (180 * root.invertSide)
+                rotation: (root.trayOverflowOpen ? 180 : 0) + (180 * root.invertSide)
                 Behavior on rotation {
                     animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
                 }
@@ -119,8 +117,7 @@ Item {
                         delegate: SysTrayItem {
                             required property SystemTrayItem modelData
                             item: modelData
-                            Layout.fillHeight: !root.vertical
-                            Layout.fillWidth: root.vertical
+                            Layout.fillHeight: true
                             onMenuClosed: root.releaseFocus();
                             onMenuOpened: (qsWindow) => root.setExtraWindowAndGrabFocus(qsWindow);
                         }
@@ -137,8 +134,7 @@ Item {
             delegate: SysTrayItem {
                 required property SystemTrayItem modelData
                 item: modelData
-                Layout.fillHeight: !root.vertical
-                Layout.fillWidth: root.vertical
+                Layout.fillHeight: true
                 onMenuClosed: root.releaseFocus();
                 onMenuOpened: (qsWindow) => {
                     root.setExtraWindowAndGrabFocus(qsWindow);

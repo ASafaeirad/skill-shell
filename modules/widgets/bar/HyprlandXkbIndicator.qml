@@ -7,7 +7,6 @@ import qs.services
 Loader {
     id: root
 
-    property bool vertical: false
     property color color: Appearance.colors.colOnSurfaceVariant
 
     function abbreviateLayoutCode(fullCode) {
@@ -21,8 +20,8 @@ Loader {
     visible: active
 
     sourceComponent: Item {
-        implicitWidth: root.vertical ? null : layoutCodeText.implicitWidth
-        implicitHeight: root.vertical ? layoutCodeText.implicitHeight : null
+        implicitWidth: layoutCodeText.implicitWidth
+        implicitHeight: layoutCodeText.implicitHeight
 
         StyledText {
             id: layoutCodeText
