@@ -155,14 +155,6 @@ Singleton {
                     property int refreshIntervalMinutes: 5
                 }
                 property list<string> screenList: [] // List of names, like "eDP-1", find out with 'hyprctl monitors' command
-                property JsonObject utilButtons: JsonObject {
-                    property bool showScreenSnip: true
-                    property bool showColorPicker: false
-                    property bool showMicToggle: false
-                    property bool showDarkModeToggle: true
-                    property bool showPerformanceProfileToggle: false
-                    property bool showScreenRecord: false
-                }
                 property JsonObject weather: JsonObject {
                     property bool enable: false
                     property bool enableGPS: true // gps based location

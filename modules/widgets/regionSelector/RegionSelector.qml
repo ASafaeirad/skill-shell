@@ -50,6 +50,18 @@ Scope {
         GlobalStates.regionSelectorOpen = true
     }
 
+    Connections {
+        target: GlobalStates
+
+        function onRegionCaptureRequested() {
+            root.capture()
+        }
+
+        function onRegionSearchRequested() {
+            root.search()
+        }
+    }
+
     IpcHandler {
         target: "region"
 

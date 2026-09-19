@@ -1,6 +1,6 @@
 ---
 name: add-bar-widget
-description: Add or modify a widget in the illogical-impulse bar (indicators, clock area, resource monitors). Use when asked to add something to the bar / top panel / status bar.
+description: Add or modify a widget in the skill-shell bar (indicators, clock area, resource monitors). Use when asked to add something to the bar / top panel / status bar.
 ---
 
 # Add a bar widget
@@ -44,7 +44,7 @@ Edit `modules/widgets/bar/BarContent.qml`. Placement options:
 | ------------------ | ------------------------------------------------------------------------------------------- |
 | Left side          | `leftSectionRowLayout` (inside `barLeftSideMouseArea`; left side scroll = brightness)       |
 | Middle-left group  | `BarGroup { id: leftCenterGroup }` (Resources + Media)                                      |
-| Middle-right group | `BarGroup { id: rightCenterGroupContent }` (Clock, UtilButtons, Battery)                    |
+| Middle-right group | `BarGroup { id: rightCenterGroupContent }` (Clock, Battery)                                 |
 | Right side         | `rightSectionRowLayout` (`layoutDirection: Qt.RightToLeft` — first child renders rightmost) |
 
 Gotchas:
