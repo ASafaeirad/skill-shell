@@ -20,7 +20,7 @@ Singleton {
 
     property var codex: null
     property var claude: null
-    property bool syncing: false
+    readonly property bool syncing: codexSyncProcess.running || claudeSyncProcess.running
     property string lastError: ""
     property double nowSeconds: Date.now() / 1000
 
@@ -41,11 +41,11 @@ Singleton {
 
     function sync() {
         claudeCache.reload();
-        if (syncProcess.running)
-            return;
         root.lastError = "";
-        root.syncing = true;
-        syncProcess.running = true;
+        if (!codexSyncProcess.running)
+            codexSyncProcess.running = true;
+        if (!claudeSyncProcess.running)
+            claudeSyncProcess.running = true;
     }
 
     function togglePaused() {
@@ -148,20 +148,36 @@ Singleton {
     }
 
     Process {
-        id: syncProcess
+        id: codexSyncProcess
         command: [FileUtils.trimFileProtocol(`${Directories.scriptPath}/ai/codex-usage.sh`)]
 
         stderr: StdioCollector {
-            id: errorCollector
+            id: codexErrorCollector
         }
 
         onExited: exitCode => {
-            root.syncing = false;
             root.nowSeconds = Date.now() / 1000;
             codexCache.reload();
+            if (exitCode !== 0) {
+                root.lastError = codexErrorCollector.text.trim() || "Codex sync failed";
+                console.warn(`[AiUsage] ${root.lastError}`);
+            }
+        }
+    }
+
+    Process {
+        id: claudeSyncProcess
+        command: [FileUtils.trimFileProtocol(`${Directories.scriptPath}/ai/claude-usage.sh`)]
+
+        stderr: StdioCollector {
+            id: claudeErrorCollector
+        }
+
+        onExited: exitCode => {
+            root.nowSeconds = Date.now() / 1000;
             claudeCache.reload();
             if (exitCode !== 0) {
-                root.lastError = errorCollector.text.trim() || "Codex sync failed";
+                root.lastError = claudeErrorCollector.text.trim() || "Claude sync failed";
                 console.warn(`[AiUsage] ${root.lastError}`);
             }
         }
