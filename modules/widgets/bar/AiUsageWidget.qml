@@ -16,14 +16,18 @@ MouseArea {
     cursorShape: Qt.PointingHandCursor
 
     function progressColor(provider) {
-        if (AiUsage.isStale(provider))
-            return Appearance.colors.colOutline;
-        const remaining = AiUsage.remainingPercent(provider);
-        if (remaining <= 20)
+        const level = AiUsage.usageLevel(provider);
+        switch (level) {
+        case "critical":
             return Appearance.colors.colError;
-        if (remaining <= 40)
+        case "warning":
             return Appearance.colors.colTertiary;
-        return Appearance.colors.colPrimary;
+        case "normal":
+            return Appearance.colors.colPrimary;
+        case "unknown":
+        default:
+            return Appearance.colors.colOutline;
+        }
     }
 
     onClicked: event => {

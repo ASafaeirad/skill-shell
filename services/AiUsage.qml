@@ -60,11 +60,37 @@ Singleton {
         return root.nowSeconds - provider.capturedAt > root.staleAfterSeconds;
     }
 
-    function remainingPercent(provider) {
-        const used = provider?.fiveHour?.usedPercent;
+    function remainingPercent(target, window = "fiveHour") {
+        if (!target)
+            return null;
+        let used;
+        if (typeof window === "object" && window !== null) {
+            used = window.usedPercent;
+        } else if (target.usedPercent !== undefined) {
+            used = target.usedPercent;
+        } else {
+            used = target[window]?.usedPercent;
+        }
         if (used === undefined || used === null)
             return null;
         return Math.max(0, Math.min(100, Math.round(100 - used)));
+    }
+
+    function usageLevel(provider, window = "fiveHour") {
+        if (!provider || root.isStale(provider))
+            return "unknown";
+        const remaining = root.remainingPercent(provider, window);
+        if (remaining === null)
+            return "unknown";
+        if (remaining <= 20)
+            return "critical";
+        if (remaining <= 40)
+            return "warning";
+        return "normal";
+    }
+
+    function level(provider, window = "fiveHour") {
+        return root.usageLevel(provider, window);
     }
 
     function remainingText(provider) {

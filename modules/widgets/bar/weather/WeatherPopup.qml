@@ -21,22 +21,6 @@ StyledPopup {
 
     readonly property var forecast: Weather.data?.hourly ?? []
 
-    function shortFeelsLike(value) {
-        return String(value ?? "--").replace(/[CF]$/, "");
-    }
-
-    function shortSunTime(value) {
-        const match = String(value ?? "").match(/(\d+):(\d+)\s*(AM|PM)/i);
-        if (!match)
-            return value || "--:--";
-        let hour = Number(match[1]);
-        if (match[3].toUpperCase() === "PM" && hour !== 12)
-            hour += 12;
-        if (match[3].toUpperCase() === "AM" && hour === 12)
-            hour = 0;
-        return hour.toString().padStart(2, "0") + ":" + match[2];
-    }
-
     Column {
         id: card
 
@@ -86,7 +70,7 @@ StyledPopup {
                         spacing: Appearance.spacing.xxs
 
                         StyledText {
-                            text: Weather.data.tempValue ?? "--"
+                            text: WeatherUtils.formatTempValue(Weather.data)
                             color: Appearance.colors.colOnSurface
                             font {
                                 family: Appearance.font.family.expressive
@@ -124,8 +108,7 @@ StyledPopup {
                 }
 
                 StyledText {
-                    text: "%1 · feels like %2".arg(Weather.data.description).arg(root.shortFeelsLike(
-                                                                                     Weather.data.tempFeelsLike))
+                    text: "%1 · feels like %2".arg(Weather.data.description).arg(WeatherUtils.formatFeelsLike(Weather.data))
                     color: Appearance.colors.colOnSurfaceVariant
                     font.pixelSize: Appearance.font.pixelSize.small
                 }
@@ -137,15 +120,15 @@ StyledPopup {
                         model: [
                             {
                                 icon: "air",
-                                value: `${Weather.data.wind} ${Weather.data.windDir}`
+                                value: WeatherUtils.formatWind(Weather.data)
                             },
                             {
                                 icon: "humidity_low",
-                                value: Weather.data.humidity
+                                value: WeatherUtils.formatHumidity(Weather.data)
                             },
                             {
                                 icon: "light_mode",
-                                value: `UV ${Weather.data.uv}`
+                                value: WeatherUtils.formatUV(Weather.data)
                             }
                         ]
 
@@ -402,8 +385,7 @@ StyledPopup {
 
                         StyledText {
                             id: sunTimesText
-                            text: "%1 → %2".arg(root.shortSunTime(Weather.data.sunrise)).arg(root.shortSunTime(
-                                                                                                 Weather.data.sunset))
+                            text: WeatherUtils.formatSunTimes(Weather.data)
                             color: Appearance.colors.colSubtext
                             font.pixelSize: Appearance.font.pixelSize.smaller
                         }
