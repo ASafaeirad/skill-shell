@@ -1,5 +1,4 @@
 import QtQuick
-import Quickshell
 import qs
 import qs.modules.common
 import qs.modules.common.functions
@@ -23,7 +22,7 @@ QuickToggleModel {
         interval: 300
         repeat: false
         onTriggered: {
-            Quickshell.execDetached(["qs", "-p", Quickshell.shellPath(""), "ipc", "call", "region", "capture"]);
+            GlobalStates.regionCaptureRequested();
         }
     }
 

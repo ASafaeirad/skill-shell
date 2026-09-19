@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
-import Quickshell
 import qs
 import qs.services
 import qs.modules.common
@@ -77,7 +76,7 @@ RowLayout {
         Layout.rightMargin: 4
         onClicked: {
             GlobalStates.overviewOpen = false;
-            Quickshell.execDetached(["qs", "-p", Quickshell.shellPath(""), "ipc", "call", "region", "search"]);
+            GlobalStates.regionSearchRequested();
         }
         text: "image_search"
         StyledToolTip {

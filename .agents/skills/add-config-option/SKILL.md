@@ -1,6 +1,6 @@
 ---
 name: add-config-option
-description: Add a new user-configurable option to the shell (Config.options.*), optionally with a settings-app control. Use when adding any toggle, threshold, string, or list setting to illogical-impulse.
+description: Add a new user-configurable option to the shell (Config.options.*), optionally with a settings-app control. Use when adding any toggle, threshold, string, or list setting to skill-shell.
 ---
 
 # Add a config option

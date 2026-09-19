@@ -31,7 +31,7 @@ StyledOverlayWidget {
                     name: "Screenshot region"
                     onClicked: {
                         GlobalStates.overlayOpen = false;
-                        Quickshell.execDetached(["qs", "-p", Quickshell.shellPath(""), "ipc", "call", "region", "screenshot"]);
+                        GlobalStates.regionCaptureRequested();
                     }
                 }
 
@@ -49,7 +49,7 @@ StyledOverlayWidget {
                     name: "Record region"
                     onClicked: {
                         GlobalStates.overlayOpen = false;
-                        Quickshell.execDetached(["qs", "-p", Quickshell.shellPath(""), "ipc", "call", "region", "recordWithSound"]);
+                        GlobalStates.regionCaptureRequested();
                     }
                 }
                 

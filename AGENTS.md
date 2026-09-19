@@ -1,6 +1,6 @@
 # Quickshell config
 
-This is the end-4 **illogical-impulse** desktop shell for Quickshell (0.3.0, Qt 6.11) on Arch Linux + Hyprland. Entry point: `shell.qml`. It runs as `qs -c skill`, autostarted by Hyprland (`exec-once = qs -c skill` in `~/.config/hypr/autostart.conf`).
+This is the **skill** desktop shell for Quickshell (0.3.0, Qt 6.11) on Arch Linux + Hyprland. Entry point: `shell.qml`. It runs as `qs -c skill`, autostarted by Hyprland (`exec-once = qs -c skill` in `~/.config/hypr/autostart.conf`).
 
 The shell uses the **widgets** panel family, loaded lazily in `shell.qml`.
 
@@ -64,7 +64,7 @@ property JsonObject bar: JsonObject {
 
 - User file: `~/.config/skill-shell/config.json`. It hot-applies on edit (50 ms debounce) **and is auto-rewritten by the shell** whenever any option changes from QML — don't be surprised when it reformats itself, and don't fight it for formatting.
 - Read anywhere as `Config.options.bar.bottom` — fully reactive, no signal wiring needed.
-- Settings app UI lives in `modules/settings/*Config.qml` (see `.claude/skills/add-config-option`).
+- Settings app UI lives in `modules/settings/*Config.qml` (see `.agents/skills/add-config-option`).
 
 ## IPC & Hyprland keybinds
 
@@ -84,19 +84,19 @@ Quickshell **hot-reloads on file save** — no restart needed.
 4. **Settings app** can be tested standalone without touching the shell: `qs -p ~/.config/quickshell/settings.qml`.
 5. **Full restart — last resort only** (kills polkit agent + notifications briefly): `qs kill -c skill && qs -c skill -d`.
 
-Details in `.claude/skills/verify-shell`.
+Details in `.agents/skills/verify-shell`.
 
 ## Common tasks
 
-| Task                                  | How                                                                                                                                              |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Add launcher action (`/foo`)          | **Zero code**: drop an executable script in `~/.config/skill-shell/actions/` — auto-appears under the `/` prefix, remaining query passed as args |
-| Change a setting                      | Edit `~/.config/skill-shell/config.json` directly (hot-applies)                                                                                  |
-| Add a bar widget                      | `.claude/skills/add-bar-widget`                                                                                                                  |
-| Add a launcher search provider/prefix | `.claude/skills/add-launcher-provider`                                                                                                           |
-| Add a config option (+ settings UI)   | `.claude/skills/add-config-option`                                                                                                               |
-| Verify a change works                 | `.claude/skills/verify-shell`                                                                                                                    |
-| Sync the design system to Claude Design | `scripts/design/sync.sh`, then ask Claude Code to push `scripts/design/build/bundle`                                                           |
+| Task                                    | How                                                                                                                                              |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Add launcher action (`/foo`)            | **Zero code**: drop an executable script in `~/.config/skill-shell/actions/` — auto-appears under the `/` prefix, remaining query passed as args |
+| Change a setting                        | Edit `~/.config/skill-shell/config.json` directly (hot-applies)                                                                                  |
+| Add a bar widget                        | `.agents/skills/add-bar-widget`                                                                                                                  |
+| Add a launcher search provider/prefix   | `.agents/skills/add-launcher-provider`                                                                                                           |
+| Add a config option (+ settings UI)     | `.agents/skills/add-config-option`                                                                                                               |
+| Verify a change works                   | `.agents/skills/verify-shell`                                                                                                                    |
+| Sync the design system to Claude Design | `scripts/design/sync.sh`, then ask Claude Code to push `scripts/design/build/bundle`                                                             |
 
 ## Removing or refactoring a feature (hints)
 
@@ -117,7 +117,7 @@ Features are **not self-contained** — one threads through service singletons, 
 - The bar adapts to screen width via `useShortenedForm` (0/1/2) and fixes middle-group widths via `centerSideModuleWidth` — gate wide widgets on `useShortenedForm`.
 - `config.json` is rewritten by the shell ~50 ms after any QML-side option change; schema defaults live in `Config.qml`, the JSON only reflects current values.
 - Single monitor setup; Hyprland master layout, gaps 5, rounding 8. Keyboard layouts `us,ir`.
-- This directory is **not a git repo** — there is no diff safety net. When editing a file heavily, mention risky changes to the user; consider suggesting `git init`.
+- This directory is a git repository. Check the working tree before editing and preserve unrelated changes.
 
 <!-- graft:start -->
 ## Graft — repo context graph
