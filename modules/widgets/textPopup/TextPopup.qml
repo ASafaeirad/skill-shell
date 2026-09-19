@@ -1,9 +1,4 @@
-import qs
-import qs.modules.common
-import qs.modules.common.functions
 import qs.modules.common.widgets
-import qs.services
-import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
@@ -22,43 +17,22 @@ Scope {
     // script blocked on `cat "$fifo"` unblocks (and can clean up its temp file).
     property string donePath: ""
 
-    // True while the dialog's exit animation is playing; keeps the panel
-    // loaded until the animation finishes.
-    property bool closing: false
-
     function open(): void {
-        GlobalStates.textPopupOpen = true;
+        dialog.open();
     }
 
     function close(): void {
         if (root.donePath.length > 0) {
-            doneWriter.write(root.donePath);
+            dialog.writeResult(root.donePath, "");
             root.donePath = "";
         }
-        // Flip the public state now, but keep the window alive to play the
-        // slide-down; the content signals closeFinished when it's done.
-        const c = popupLoader.item?.popupContent ?? null;
-        if (c && GlobalStates.textPopupOpen) {
-            root.closing = true;
-            c.animateOut();
-        }
-        GlobalStates.textPopupOpen = false;
+        dialog.close();
     }
 
     function show(title: string, body: string): void {
         root.title = title;
         root.body = body;
         root.open();
-    }
-
-    Process {
-        id: doneWriter
-        property string outPath: ""
-        command: ["bash", "-c", `printf '\n' > '${StringUtils.shellSingleQuoteEscape(doneWriter.outPath)}'`]
-        function write(path) {
-            doneWriter.outPath = path;
-            doneWriter.running = true;
-        }
     }
 
     // Body text arrives via a file: IPC arguments can't carry newlines, and the
@@ -76,42 +50,19 @@ Scope {
         }
     }
 
-    Loader {
-        id: popupLoader
-        active: GlobalStates.textPopupOpen || root.closing
+    OverlayDialog {
+        id: dialog
 
-        sourceComponent: OverlayDialogWindow {
-            id: panelWindow
+        stateKey: "textPopupOpen"
+        layerNamespace: "quickshell:textPopup"
+        keyboardFocus: WlrKeyboardFocus.Exclusive // Modal like Pinentry: Esc/Enter dismiss without clicking first
+        onDismissed: root.close()
 
-            readonly property alias popupContent: content
-
-            layerNamespace: "quickshell:textPopup"
-            keyboardFocus: WlrKeyboardFocus.Exclusive // Modal like Pinentry: Esc/Enter dismiss without clicking first
-            // Dim everything behind the dialog and fade the scrim with it.
-            scrimOpacity: content.opacity
+        TextPopupContent {
+            focus: true
+            title: root.title
+            body: root.body
             onDismissed: root.close()
-
-            TextPopupContent {
-                id: content
-
-                anchors.centerIn: parent
-                focus: true
-                title: root.title
-                body: root.body
-                onDismissed: root.close()
-                onCloseFinished: root.closing = false
-            }
-        }
-    }
-
-    // If reopened mid-close, cancel the exit and slide back in.
-    Connections {
-        target: GlobalStates
-        function onTextPopupOpenChanged() {
-            if (GlobalStates.textPopupOpen && root.closing) {
-                root.closing = false;
-                popupLoader.item?.popupContent?.animateIn();
-            }
         }
     }
 

@@ -1,9 +1,6 @@
 pragma ComponentBehavior: Bound
-import qs
-import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
-import qs.modules.common.functions
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -18,13 +15,6 @@ Scope {
     property string errorText: ""
     property string fifoPath: ""
     property bool visibleInput: false
-
-    // True while the slide-up exit animation is playing; keeps the window
-    // loaded until it finishes (same approach as the selector).
-    property bool closing: false
-
-    signal animateOutRequested()
-    signal animateInRequested()
 
     // Decode base64 (from the pinentry script) into a proper UTF-8 string.
     function b64decode(s) {
@@ -43,12 +33,7 @@ Scope {
         root.errorText = b64decode(errB64);
         root.fifoPath = fifo;
         root.visibleInput = (visible === "1");
-        // Reopening while the previous exit animation is still playing reuses
-        // the same window instance, so replay the enter animation explicitly.
-        const wasClosing = root.closing;
-        root.closing = false;
-        GlobalStates.pinentryOpen = true;
-        if (wasClosing) root.animateInRequested();
+        dialog.open();
     }
 
     // Send the answer back to the script over the FIFO. The secret travels via
@@ -63,11 +48,7 @@ Scope {
         writer.stdinEnabled = true;
         writer.running = true;
         root.fifoPath = "";
-        if (GlobalStates.pinentryOpen) {
-            root.closing = true;
-            root.animateOutRequested();
-        }
-        GlobalStates.pinentryOpen = false;
+        dialog.close();
     }
 
     function submit(pass) { root.respond("D:", pass); }
@@ -97,137 +78,114 @@ Scope {
         }
     }
 
-    Loader {
-        // Stay loaded through the exit animation, then unload.
-        active: GlobalStates.pinentryOpen || root.closing
+    OverlayDialog {
+        id: dialog
 
-        sourceComponent: Variants {
-            model: Quickshell.screens
+        stateKey: "pinentryOpen"
+        layerNamespace: "quickshell:pinentry"
+        keyboardFocus: WlrKeyboardFocus.Exclusive
+        // The prompt is modal: only answering it closes the dialog, and it
+        // shows up wherever the user is looking.
+        dismissOnFocusGrab: false
+        allScreens: true
+        onDismissed: root.cancel()
 
-            delegate: OverlayDialogWindow {
-                id: panelWindow
+        OverlayDialogCard {
+            id: dialogCard
 
-                required property var modelData
-                screen: modelData
+            focus: true
+            implicitWidth: 450
+            implicitHeight: 2 * Appearance.sizes.elevationMargin + 2 * padding + contentColumn.implicitHeight
 
-                layerNamespace: "quickshell:pinentry"
-                keyboardFocus: WlrKeyboardFocus.Exclusive
-                // Dim everything behind the dialog and fade the scrim with it.
-                scrimOpacity: dialogCard.opacity
-                // The prompt is modal: only answering it closes the dialog.
-                dismissOnFocusGrab: false
-                onDismissed: root.cancel()
+            Component.onCompleted: {
+                inputField.forceActiveFocus();
+                animateIn();
+            }
+            // Reopening while the exit animation is still playing reuses
+            // this instance, so drop whatever was typed before.
+            onAboutToAnimateIn: {
+                inputField.text = "";
+                inputField.forceActiveFocus();
+            }
 
-                OverlayDialogCard {
-                    id: dialogCard
+            Keys.onPressed: event => {
+                if (event.key === Qt.Key_Escape) {
+                    root.cancel();
+                    event.accepted = true;
+                } else {
+                    event.accepted = false;
+                }
+            }
 
-                    anchors.centerIn: parent
+            ColumnLayout {
+                id: contentColumn
+
+                spacing: 16
+                anchors {
+                    fill: parent
+                    margins: dialogCard.padding
+                }
+
+                MaterialSymbol {
+                    Layout.alignment: Qt.AlignHCenter
+                    iconSize: 26
+                    text: "password"
+                    color: Appearance.colors.colSecondary
+                }
+
+                WindowDialogTitle {
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignHCenter
+                    text: "Passphrase required"
+                }
+
+                WindowDialogParagraph {
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignLeft
+                    visible: root.description.length > 0
+                    text: root.description
+                }
+
+                WindowDialogParagraph {
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignLeft
+                    visible: root.errorText.length > 0
+                    color: Appearance.m3colors.m3error
+                    text: root.errorText
+                }
+
+                MaterialTextField {
+                    id: inputField
+
+                    Layout.fillWidth: true
                     focus: true
-                    implicitWidth: 450
-                    implicitHeight: 2 * Appearance.sizes.elevationMargin + 2 * padding + contentColumn.implicitHeight
-
-                    Component.onCompleted: {
-                        inputField.forceActiveFocus();
-                        animateIn();
-                    }
-                    // Reopening while the exit animation is still playing reuses
-                    // this instance, so drop whatever was typed before.
-                    onAboutToAnimateIn: {
-                        inputField.text = "";
-                        inputField.forceActiveFocus();
-                    }
-                    onCloseFinished: root.closing = false
-
-                    Connections {
-                        target: root
-                        function onAnimateOutRequested() {
-                            dialogCard.animateOut();
-                        }
-                        function onAnimateInRequested() {
-                            dialogCard.animateIn();
-                        }
-                    }
+                    placeholderText: root.promptLabel
+                    echoMode: root.visibleInput ? TextInput.Normal : TextInput.Password
+                    onAccepted: root.submit(inputField.text)
 
                     Keys.onPressed: event => {
                         if (event.key === Qt.Key_Escape) {
                             root.cancel();
                             event.accepted = true;
-                        } else {
-                            event.accepted = false;
                         }
                     }
+                }
 
-                    ColumnLayout {
-                        id: contentColumn
+                WindowDialogButtonRow {
+                    Layout.bottomMargin: 10
 
-                        spacing: 16
-                        anchors {
-                            fill: parent
-                            margins: dialogCard.padding
-                        }
+                    Item {
+                        Layout.fillWidth: true
+                    }
 
-                        MaterialSymbol {
-                            Layout.alignment: Qt.AlignHCenter
-                            iconSize: 26
-                            text: "password"
-                            color: Appearance.colors.colSecondary
-                        }
+                    DialogButton {
+                        buttonText: "Cancel"
+                        onClicked: root.cancel()
+                    }
 
-                        WindowDialogTitle {
-                            Layout.fillWidth: true
-                            horizontalAlignment: Text.AlignHCenter
-                            text: "Passphrase required"
-                        }
-
-                        WindowDialogParagraph {
-                            Layout.fillWidth: true
-                            horizontalAlignment: Text.AlignLeft
-                            visible: root.description.length > 0
-                            text: root.description
-                        }
-
-                        WindowDialogParagraph {
-                            Layout.fillWidth: true
-                            horizontalAlignment: Text.AlignLeft
-                            visible: root.errorText.length > 0
-                            color: Appearance.m3colors.m3error
-                            text: root.errorText
-                        }
-
-                        MaterialTextField {
-                            id: inputField
-
-                            Layout.fillWidth: true
-                            focus: true
-                            placeholderText: root.promptLabel
-                            echoMode: root.visibleInput ? TextInput.Normal : TextInput.Password
-                            onAccepted: root.submit(inputField.text)
-
-                            Keys.onPressed: event => {
-                                if (event.key === Qt.Key_Escape) {
-                                    root.cancel();
-                                    event.accepted = true;
-                                }
-                            }
-                        }
-
-                        WindowDialogButtonRow {
-                            Layout.bottomMargin: 10
-
-                            Item {
-                                Layout.fillWidth: true
-                            }
-
-                            DialogButton {
-                                buttonText: "Cancel"
-                                onClicked: root.cancel()
-                            }
-
-                            DialogButton {
-                                buttonText: "OK"
-                                onClicked: root.submit(inputField.text)
-                            }
-                        }
+                    DialogButton {
+                        buttonText: "OK"
+                        onClicked: root.submit(inputField.text)
                     }
                 }
             }

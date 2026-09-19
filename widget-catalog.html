@@ -889,6 +889,7 @@ modules/common/widgets/NotificationGroup.qml
 modules/common/widgets/NotificationItem.qml
 modules/common/widgets/NotificationListView.qml
 modules/common/widgets/OptionalMaterialSymbol.qml
+modules/common/widgets/OverlayDialog.qml
 modules/common/widgets/OverlayDialogCard.qml
 modules/common/widgets/OverlayDialogWindow.qml
 modules/common/widgets/PagePlaceholder.qml
@@ -980,6 +981,8 @@ modules/widgets/pass/PassContent.qml`
           "Keyboard-first pass password-store panel with IPC and a global shortcut entry point.",
         PassContent:
           "One-column pass browser with search and detail stages, configurable ignored-entry patterns, and copy, OTP, and password visibility toggle actions.",
+        OverlayDialog:
+          "Lifecycle host for the script-driven overlay dialogs: owns the GlobalStates flag, the window that lives only while the dialog is open, the enter/exit animation handshake and the fifo result writer.",
         OverlayDialogCard:
           "Rounded dialog surface with the shared slide-and-fade transition, used by the script-driven overlay dialogs.",
         OverlayDialogWindow:

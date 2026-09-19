@@ -41,82 +41,48 @@ Scope {
         return (typeof item === "object" && item !== null) ? (item.value ?? item.name ?? "") : String(item);
     }
 
-    // True while the slide-down exit animation is playing; keeps the panel
-    // loaded until the animation finishes.
-    property bool closing: false
-
     // Called on confirm (text = the chosen line) and on cancel (text = "").
     // Always writes to resultPath if set, so a blocked reader unblocks either way.
     function finish(text): void {
         if (root.resultPath.length > 0) {
-            resultWriter.write(root.resultPath, text);
+            dialog.writeResult(root.resultPath, text);
             root.resultPath = "";
         }
-        // Flip the public state now, but keep the window alive to play the
-        // slide-down; the content signals closeFinished when it's done.
-        const c = selectorLoader.item?.selectorContent ?? null;
-        if (c && GlobalStates.selectorOpen) {
-            root.closing = true;
-            c.animateOut();
-        }
-        GlobalStates.selectorOpen = false;
+        dialog.close();
     }
 
     function open(): void {
-        GlobalStates.selectorOpen = true;
+        dialog.open();
     }
     function close(): void {
         // Treat an external close as a cancel so readers don't hang.
         root.finish("");
     }
     function toggle(): void {
-        if (GlobalStates.selectorOpen)
+        if (dialog.opened)
             root.finish("");
         else
             root.open();
     }
 
-    Process {
-        id: resultWriter
-        property string outPath: ""
-        property string outText: ""
-        command: ["bash", "-c", `printf '%s\n' '${StringUtils.shellSingleQuoteEscape(resultWriter.outText)}' > '${StringUtils.shellSingleQuoteEscape(resultWriter.outPath)}'`]
-        function write(path, text) {
-            resultWriter.outText = text;
-            resultWriter.outPath = path;
-            resultWriter.running = true;
-        }
-    }
+    OverlayDialog {
+        id: dialog
 
-    Loader {
-        id: selectorLoader
-        active: GlobalStates.selectorOpen || root.closing
+        stateKey: "selectorOpen"
+        layerNamespace: "quickshell:selector"
+        keyboardFocus: WlrKeyboardFocus.OnDemand
+        onDismissed: root.finish("")
 
-        sourceComponent: OverlayDialogWindow {
-            id: panelWindow
-
-            readonly property alias selectorContent: content
-
-            layerNamespace: "quickshell:selector"
-            keyboardFocus: WlrKeyboardFocus.OnDemand
-            // Dim everything behind the dialog and fade the scrim with it.
-            scrimOpacity: content.opacity
-            onDismissed: root.finish("")
-
-            SelectorContent {
-                id: content
-                anchors.centerIn: parent
-                items: root.items
-                prompt: root.prompt
-                allowCustom: root.allowCustom
-                onSelected: (item, index) => {
-                    root.selected(item, index);
-                    root.finish(root.textOf(item));
-                }
-                onSubmitted: text => root.finish(text)
-                onCancelled: root.finish("")
-                onCloseFinished: root.closing = false
+        SelectorContent {
+            items: root.items
+            prompt: root.prompt
+            allowCustom: root.allowCustom
+            onSelected: (item, index) => {
+                root.selected(item, index);
+                root.finish(root.textOf(item));
             }
+            onSubmitted: text => root.finish(text)
+            onCancelled: root.finish("")
         }
     }
 
@@ -189,17 +155,6 @@ Scope {
         }
         onLoadFailed: error => {
             console.warn("[Selector] fromFile() could not read", path, error);
-        }
-    }
-
-    // If reopened mid-close, cancel the exit and slide back in.
-    Connections {
-        target: GlobalStates
-        function onSelectorOpenChanged() {
-            if (GlobalStates.selectorOpen && root.closing) {
-                root.closing = false;
-                selectorLoader.item?.selectorContent?.animateIn();
-            }
         }
     }
 

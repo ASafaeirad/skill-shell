@@ -3,65 +3,39 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Wayland
-import qs
 import qs.services
 import qs.modules.common.widgets
 
 Scope {
     id: root
 
-    property bool closing: false
-
     function open() {
-        root.closing = false;
-        GlobalStates.passOpen = true;
+        dialog.open();
         PassService.refresh();
     }
 
     function close() {
-        const content = panelLoader.item?.passContent ?? null;
-        if (content && GlobalStates.passOpen) {
-            root.closing = true;
-            content.animateOut();
-        }
-        GlobalStates.passOpen = false;
+        dialog.close();
         PassService.clearSecrets();
     }
 
     function toggle() {
-        if (GlobalStates.passOpen)
+        if (dialog.opened)
             root.close();
         else
             root.open();
     }
 
-    Loader {
-        id: panelLoader
-        active: GlobalStates.passOpen || root.closing
+    OverlayDialog {
+        id: dialog
 
-        sourceComponent: OverlayDialogWindow {
-            readonly property alias passContent: content
-            layerNamespace: "quickshell:pass"
-            keyboardFocus: WlrKeyboardFocus.Exclusive
-            scrimOpacity: content.opacity
-            onDismissed: root.close()
+        stateKey: "passOpen"
+        layerNamespace: "quickshell:pass"
+        keyboardFocus: WlrKeyboardFocus.Exclusive
+        onDismissed: root.close()
 
-            PassContent {
-                id: content
-                anchors.centerIn: parent
-                onCloseRequested: root.close()
-                onCloseFinished: root.closing = false
-            }
-        }
-    }
-
-    Connections {
-        target: GlobalStates
-        function onPassOpenChanged() {
-            if (GlobalStates.passOpen && root.closing) {
-                root.closing = false;
-                panelLoader.item?.passContent?.animateIn();
-            }
+        PassContent {
+            onCloseRequested: root.close()
         }
     }
 
@@ -75,17 +49,17 @@ Scope {
     IpcHandler {
         target: "pass"
         function toggle(): void {
-        root.toggle();
-    }
+            root.toggle();
+        }
         function open(): void {
-                             root.open();
-                         }
+            root.open();
+        }
         function close(): void {
-        root.close();
-    }
+            root.close();
+        }
         function refresh(): void {
-                                PassService.refresh();
-                            }
+            PassService.refresh();
+        }
     }
 
     GlobalShortcut {
