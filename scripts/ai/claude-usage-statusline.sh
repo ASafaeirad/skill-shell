@@ -33,13 +33,9 @@ snapshot="$(jq -ce --argjson captured_at "${now}" '
 ' <<<"${input}" 2>/dev/null || true)"
 
 if [[ -n "${snapshot}" ]]; then
-    new_revision="$(jq -r '.sourceRevision' <<<"${snapshot}")"
-    old_revision="$(jq -r '.sourceRevision // empty' "${cache_file}" 2>/dev/null || true)"
-    if [[ "${new_revision}" != "${old_revision}" ]]; then
-        temporary_file="$(mktemp "${state_root}/claude-usage.XXXXXX")"
-        printf '%s\n' "${snapshot}" >"${temporary_file}"
-        mv -f -- "${temporary_file}" "${cache_file}"
-    fi
+    temporary_file="$(mktemp "${state_root}/claude-usage.XXXXXX")"
+    printf '%s\n' "${snapshot}" >"${temporary_file}"
+    mv -f -- "${temporary_file}" "${cache_file}"
 fi
 
 # Preserve the user's existing Claude Code status line.
