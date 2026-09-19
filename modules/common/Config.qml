@@ -148,7 +148,6 @@ Singleton {
                 property string topLeftIcon: "spark" // Options: "distro" or any icon name in ~/.config/quickshell/widgets/assets/icons
                 property bool showBackground: true
                 property bool verbose: true
-                property bool vertical: false
                 property JsonObject aiUsage: JsonObject {
                     property bool enable: true
                     property bool paused: false

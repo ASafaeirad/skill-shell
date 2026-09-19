@@ -51,14 +51,10 @@ Gotchas:
 - Middle `BarGroup`s have **fixed width** (`root.centerSideModuleWidth`) — a wide widget will squeeze its siblings.
 - The bar shortens on narrow screens: gate non-essential widgets with `visible: root.useShortenedForm === 0` (or `< 2`), matching how `ActiveWindow`/`SysTray` do it.
 
-## 3. Decide variant coverage (consciously, don't skip)
-
-- **Vertical bar** is a separate composition: `modules/widgets/verticalBar/VerticalBarContent.qml` with its own widget variants (`VerticalClockWidget.qml`...). If the user uses `Config.options.bar.vertical`, add a variant or state that you didn't.
-
-## 4. Optional: visibility toggle
+## 3. Optional: visibility toggle
 
 Add `property bool enable` under `Config.qml`'s `bar` JsonObject and gate the widget with `visible:`/`Loader { active: ... }` (see the weather Loader at the bottom of BarContent.qml for the pattern). Full recipe: `add-config-option` skill.
 
-## 5. Verify
+## 4. Verify
 
 Save → hot reload. Follow the `verify-shell` skill: `qs -c skill log -t 30` for QML errors, then eyeball the bar (or ask the user to).
