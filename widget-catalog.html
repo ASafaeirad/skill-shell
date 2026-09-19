@@ -953,7 +953,10 @@ modules/common/widgets/WindowDialogSlider.qml
 modules/common/widgets/WindowDialogTitle.qml
 modules/widgets/bar/AiUsagePopup.qml
 modules/widgets/bar/AiUsageWidget.qml
+modules/widgets/bar/BarRoster.qml
+modules/widgets/bar/BarSection.qml
 modules/widgets/bar/ClockWidgetPopup.qml
+modules/widgets/bar/StatusIndicators.qml
 modules/widgets/bar/weather/WeatherBar.qml
 modules/widgets/bar/weather/WeatherCard.qml
 modules/widgets/bar/weather/WeatherPopup.qml
@@ -971,6 +974,12 @@ modules/widgets/pass/PassContent.qml`
           "Two labeled Claude and Codex limit rings with manual sync on left-click and persistent automatic-refresh pause on right-click.",
         ClockWidgetPopup:
           "Clock hover panel with the full date plus local and configurable world clocks, including daylight-saving-aware zone abbreviations.",
+        BarRoster:
+          "Unified bar widget roster declaring section placement and screen-width gating consumed by both horizontal and vertical bars.",
+        BarSection:
+          "Repeater component rendering a section of widgets from BarRoster for the current bar orientation.",
+        StatusIndicators:
+          "Right-sidebar toggle button hosting audio, network, bluetooth, language, and notification indicators.",
         WeatherBar:
           "Compact current-temperature bar readout with a weather icon, manual refresh action, and detailed hover panel.",
         WeatherCard:

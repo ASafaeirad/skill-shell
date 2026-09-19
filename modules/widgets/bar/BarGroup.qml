@@ -6,18 +6,18 @@ Item {
     id: root
     property bool vertical: false
     property real padding: 5
-    implicitWidth: gridLayout.implicitWidth + padding * 2
-    implicitHeight: Appearance.sizes.baseBarHeight
+    implicitWidth: root.vertical ? Appearance.sizes.baseVerticalBarWidth : (gridLayout.implicitWidth + padding * 2)
+    implicitHeight: root.vertical ? (gridLayout.implicitHeight + padding * 2) : Appearance.sizes.baseBarHeight
     default property alias items: gridLayout.children
 
     Rectangle {
         id: background
         anchors {
             fill: parent
-            topMargin: Appearance.spacing.s
-            bottomMargin: Appearance.spacing.s
-            leftMargin: 0
-            rightMargin: 0
+            topMargin: root.vertical ? 0 : Appearance.spacing.s
+            bottomMargin: root.vertical ? 0 : Appearance.spacing.s
+            leftMargin: root.vertical ? Appearance.spacing.s : 0
+            rightMargin: root.vertical ? Appearance.spacing.s : 0
         }
         color: Config.options?.bar.borderless ? "transparent" : Appearance.colors.colLayer1
         radius: Appearance.rounding.small
@@ -25,11 +25,15 @@ Item {
 
     GridLayout {
         id: gridLayout
-        columns: -1
+        columns: root.vertical ? 1 : -1
+        rows: root.vertical ? -1 : 1
         anchors {
-            verticalCenter: parent.verticalCenter
-            left: parent.left
-            right: parent.right
+            verticalCenter: root.vertical ? undefined : parent.verticalCenter
+            horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
+            left: root.vertical ? undefined : parent.left
+            right: root.vertical ? undefined : parent.right
+            top: root.vertical ? parent.top : undefined
+            bottom: root.vertical ? parent.bottom : undefined
             margins: root.padding
         }
         columnSpacing: 4
