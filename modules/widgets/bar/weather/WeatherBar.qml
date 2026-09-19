@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import qs.modules.common
+import qs.modules.common.functions
 import qs.modules.common.widgets
 import qs.services
 import Quickshell
@@ -46,7 +47,7 @@ MouseArea {
             visible: true
             font.pixelSize: Appearance.font.pixelSize.small
             color: Appearance.colors.colOnLayer1
-            text: Weather.data?.temp ?? "--°"
+            text: WeatherUtils.formatTemperature(Weather.data)
             Layout.alignment: Qt.AlignVCenter
         }
     }
@@ -69,7 +70,7 @@ MouseArea {
             visible: true
             font.pixelSize: Appearance.font.pixelSize.smaller
             color: Appearance.colors.colOnLayer1
-            text: Weather.data?.temp ?? "--°"
+            text: WeatherUtils.formatTemperature(Weather.data)
             Layout.alignment: Qt.AlignHCenter
         }
     }

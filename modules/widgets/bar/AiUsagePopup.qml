@@ -7,21 +7,19 @@ import qs.services
 StyledPopup {
     id: root
 
-    function remainingPercent(windowData) {
-        if (!windowData || windowData.usedPercent === undefined || windowData.usedPercent === null)
-            return null;
-        return Math.max(0, Math.min(100, Math.round(100 - windowData.usedPercent)));
-    }
-
     function progressColor(provider, windowData) {
-        if (AiUsage.isStale(provider) || root.remainingPercent(windowData) === null)
-            return Appearance.colors.colOutline;
-        const remaining = root.remainingPercent(windowData);
-        if (remaining <= 20)
+        const level = AiUsage.usageLevel(provider, windowData);
+        switch (level) {
+        case "critical":
             return Appearance.colors.colError;
-        if (remaining <= 40)
+        case "warning":
             return Appearance.colors.colTertiary;
-        return Appearance.colors.colPrimary;
+        case "normal":
+            return Appearance.colors.colPrimary;
+        case "unknown":
+        default:
+            return Appearance.colors.colOutline;
+        }
     }
 
     function syncStatusText() {
@@ -152,7 +150,7 @@ StyledPopup {
         required property var windowData
         required property string windowLabel
         required property string icon
-        readonly property var remaining: root.remainingPercent(windowData)
+        readonly property var remaining: AiUsage.remainingPercent(usageRow.windowData)
 
         spacing: Appearance.spacing.xs
 

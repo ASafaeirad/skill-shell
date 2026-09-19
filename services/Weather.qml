@@ -32,24 +32,53 @@ Singleton {
     property var data: ({
         uv: 0,
         humidity: 0,
-        sunrise: 0,
-        sunset: 0,
-        windDir: 0,
-        wCode: 0,
-        city: 0,
+        sunrise: "--:--",
+        sunset: "--:--",
+        windDir: "N",
+        wCode: "113",
+        city: "",
         wind: 0,
         precip: 0,
         visib: 0,
         press: 0,
-        temp: 0,
-        tempFeelsLike: 0,
-        tempValue: 0,
-        tempUnit: "°C",
+        temp: null,
+        tempFeelsLike: null,
+        tempValue: null,
+        tempUnit: root.useUSCS ? "°F" : "°C",
+        unitSystem: root.useUSCS ? "imperial" : "metric",
+        units: root.useUSCS ? {
+            temp: "°F",
+            wind: "mph",
+            precip: "in",
+            visib: "m",
+            press: "psi"
+        } : {
+            temp: "°C",
+            wind: "km/h",
+            precip: "mm",
+            visib: "km",
+            press: "hPa"
+        },
         description: "",
         hourly: [],
-        lastRefresh: 0,
-        lastRefreshTime: 0,
+        lastRefresh: "",
+        lastRefreshTime: "",
     })
+
+    function normalizeSunTime(value) {
+        if (!value)
+            return "--:--";
+        const match = String(value).trim().match(/(\d+):(\d+)\s*(AM|PM)/i);
+        if (!match)
+            return String(value);
+        let hour = Number(match[1]);
+        const modifier = match[3].toUpperCase();
+        if (modifier === "PM" && hour !== 12)
+            hour += 12;
+        if (modifier === "AM" && hour === 12)
+            hour = 0;
+        return hour.toString().padStart(2, "0") + ":" + match[2];
+    }
 
     function formatForecastHour(date) {
         return date.getHours().toString().padStart(2, "0");
@@ -96,40 +125,51 @@ Singleton {
 
     function refineData(data) {
         let temp = {};
-        temp.uv = data?.current?.uvIndex || 0;
-        temp.humidity = (data?.current?.humidity || 0) + "%";
-        temp.sunrise = data?.astronomy?.sunrise || "0.0";
-        temp.sunset = data?.astronomy?.sunset || "0.0";
+        temp.uv = Number(data?.current?.uvIndex || 0);
+        temp.humidity = Number(data?.current?.humidity || 0);
+        temp.sunrise = root.normalizeSunTime(data?.astronomy?.sunrise);
+        temp.sunset = root.normalizeSunTime(data?.astronomy?.sunset);
         temp.windDir = data?.current?.winddir16Point || "N";
         temp.wCode = data?.current?.weatherCode || "113";
-        temp.city = data?.location?.areaName[0]?.value || "City";
+        temp.city = data?.location?.areaName?.[0]?.value || "City";
         temp.description = data?.current?.weatherDesc?.[0]?.value?.trim() || "Unknown";
-        temp.temp = "";
-        temp.tempFeelsLike = "";
+
         if (root.useUSCS) {
-            temp.wind = (data?.current?.windspeedMiles || 0) + " mph";
-            temp.precip = (data?.current?.precipInches || 0) + " in";
-            temp.visib = (data?.current?.visibilityMiles || 0) + " m";
-            temp.press = (data?.current?.pressureInches || 0) + " psi";
-            temp.temp += (data?.current?.temp_F || 0);
-            temp.tempFeelsLike += (data?.current?.FeelsLikeF || 0);
-            temp.tempValue = Number(data?.current?.temp_F || 0);
+            temp.unitSystem = "imperial";
+            temp.wind = Number(data?.current?.windspeedMiles || 0);
+            temp.precip = Number(data?.current?.precipInches || 0);
+            temp.visib = Number(data?.current?.visibilityMiles || 0);
+            temp.press = Number(data?.current?.pressureInches || 0);
+            temp.temp = Number(data?.current?.temp_F || 0);
+            temp.tempFeelsLike = Number(data?.current?.FeelsLikeF || 0);
+            temp.tempValue = temp.temp;
             temp.tempUnit = "°F";
-            temp.temp += "°F";
-            temp.tempFeelsLike += "°F";
+            temp.units = {
+                temp: "°F",
+                wind: "mph",
+                precip: "in",
+                visib: "m",
+                press: "psi"
+            };
         } else {
-            temp.wind = (data?.current?.windspeedKmph || 0) + " km/h";
-            temp.precip = (data?.current?.precipMM || 0) + " mm";
-            temp.visib = (data?.current?.visibility || 0) + " km";
-            temp.press = (data?.current?.pressure || 0) + " hPa";
-            temp.temp += (data?.current?.temp_C || 0);
-            temp.tempFeelsLike += (data?.current?.FeelsLikeC || 0);
-            temp.tempValue = Number(data?.current?.temp_C || 0);
+            temp.unitSystem = "metric";
+            temp.wind = Number(data?.current?.windspeedKmph || 0);
+            temp.precip = Number(data?.current?.precipMM || 0);
+            temp.visib = Number(data?.current?.visibility || 0);
+            temp.press = Number(data?.current?.pressure || 0);
+            temp.temp = Number(data?.current?.temp_C || 0);
+            temp.tempFeelsLike = Number(data?.current?.FeelsLikeC || 0);
+            temp.tempValue = temp.temp;
             temp.tempUnit = "°C";
-            temp.temp += "°C";
-            temp.tempFeelsLike += "°C";
+            temp.units = {
+                temp: "°C",
+                wind: "km/h",
+                precip: "mm",
+                visib: "km",
+                press: "hPa"
+            };
         }
-        temp.hourly = root.hourlyForecast(data, temp.tempValue);
+        temp.hourly = root.hourlyForecast(data, temp.temp);
         temp.lastRefresh = DateTime.time + " • " + DateTime.date;
         temp.lastRefreshTime = DateTime.time;
         root.data = temp;
@@ -139,7 +179,7 @@ Singleton {
         let command = "curl -s wttr.in";
 
         if (root.gpsActive && root.location.valid) {
-            command += `/${root.location.lat},${root.location.long}`;
+            command += `/${root.location.lat},${root.location.lon}`;
         } else {
             command += `/${formatCityName(root.city)}`;
         }
@@ -189,7 +229,7 @@ Singleton {
             // if it fails getting the location, use the last valid location
             if (position.latitudeValid && position.longitudeValid) {
                 root.location.lat = position.coordinate.latitude;
-                root.location.long = position.coordinate.longitude;
+                root.location.lon = position.coordinate.longitude;
                 root.location.valid = true;
                 // console.info(`📍 Location: ${position.coordinate.latitude}, ${position.coordinate.longitude}`);
                 root.getData();
