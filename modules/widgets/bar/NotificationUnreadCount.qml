@@ -10,7 +10,7 @@ MaterialSymbol {
 
     text: Notifications.silent ? "notifications_paused" : "notifications"
     iconSize: Appearance.font.pixelSize.larger
-    color: rightSidebarButton.colText
+    color: typeof rightSidebarButton !== "undefined" ? rightSidebarButton.colText : Appearance.colors.colOnLayer0
 
     Rectangle {
         id: notifPing
