@@ -30,7 +30,7 @@ StyledOverlayWidget {
                     materialSymbol: "screenshot_region"
                     name: "Screenshot region"
                     onClicked: {
-                        GlobalStates.overlayOpen = false;
+                        OverlayContext.overlayOpen = false;
                         GlobalStates.regionCaptureRequested();
                     }
                 }
@@ -39,7 +39,7 @@ StyledOverlayWidget {
                     materialSymbol: "photo_camera"
                     name: "Screenshot"
                     onClicked: {
-                        GlobalStates.overlayOpen = false;
+                        OverlayContext.overlayOpen = false;
                         Quickshell.execDetached(["bash", "-c", "grim - | wl-copy"]);
                     }
                 }
@@ -48,7 +48,7 @@ StyledOverlayWidget {
                     materialSymbol: "screen_record"
                     name: "Record region"
                     onClicked: {
-                        GlobalStates.overlayOpen = false;
+                        OverlayContext.overlayOpen = false;
                         GlobalStates.regionCaptureRequested();
                     }
                 }
@@ -57,7 +57,7 @@ StyledOverlayWidget {
                     materialSymbol: "capture"
                     name: "Record screen"
                     onClicked: {
-                        GlobalStates.overlayOpen = false;
+                        OverlayContext.overlayOpen = false;
                         Quickshell.execDetached([Directories.recordScriptPath, "--fullscreen", "--sound"]);
                     }
                 }
@@ -71,7 +71,7 @@ StyledOverlayWidget {
                 colBackgroundHover: Appearance.colors.colLayer3Hover
                 colRipple: Appearance.colors.colLayer3Active
                 onClicked: {
-                    GlobalStates.overlayOpen = false;
+                    OverlayContext.overlayOpen = false;
                     Qt.openUrlExternally(`file://${Config.options.screenRecord.savePath}`);
                 }
                 contentItem: Row {

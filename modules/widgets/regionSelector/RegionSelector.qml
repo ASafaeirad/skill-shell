@@ -1,16 +1,25 @@
 pragma ComponentBehavior: Bound
 import qs
 import qs.modules.common
+import qs.modules.common.widgets
 import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
 
-Scope {
+Panel {
     id: root
+    name: "region"
+    target: "region"
+    manageIpc: false
+    hasToggleShortcut: false
 
     function dismiss() {
-        GlobalStates.regionSelectorOpen = false
+        root.close();
+    }
+
+    Component.onCompleted: {
+        GlobalStates.regionSelector = root;
     }
 
     property var action: RegionSelection.SnipAction.Copy
@@ -20,7 +29,7 @@ Scope {
         delegate: Loader {
             id: regionSelectorLoader
             required property var modelData
-            active: GlobalStates.regionSelectorOpen
+            active: root.opened
 
             sourceComponent: RegionSelection {
                 screen: regionSelectorLoader.modelData
@@ -36,18 +45,18 @@ Scope {
     function capture() {
         root.action = RegionSelection.SnipAction.Copy
         // If already open then re-trigger so a running recording gets stopped
-        if (GlobalStates.regionSelectorOpen) GlobalStates.regionSelectorOpen = false
-        GlobalStates.regionSelectorOpen = true
+        if (root.opened) root.opened = false
+        root.open()
     }
 
     function search() {
         root.action = RegionSelection.SnipAction.Search
-        GlobalStates.regionSelectorOpen = true
+        root.open()
     }
 
     function ocr() {
         root.action = RegionSelection.SnipAction.CharRecognition
-        GlobalStates.regionSelectorOpen = true
+        root.open()
     }
 
     Connections {
@@ -73,6 +82,15 @@ Scope {
         }
         function ocr() {
             root.ocr()
+        }
+        function open() {
+            root.capture()
+        }
+        function close() {
+            root.close()
+        }
+        function toggle() {
+            root.toggle()
         }
     }
 

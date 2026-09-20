@@ -7,8 +7,11 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 
-Scope {
+Panel {
     id: root
+    name: "pinentry"
+    manageIpc: false
+    hasToggleShortcut: false
 
     property string description: ""
     property string promptLabel: "Passphrase"
@@ -33,6 +36,7 @@ Scope {
         root.errorText = b64decode(errB64);
         root.fifoPath = fifo;
         root.visibleInput = (visible === "1");
+        root.opened = true;
         dialog.open();
     }
 
@@ -48,6 +52,7 @@ Scope {
         writer.stdinEnabled = true;
         writer.running = true;
         root.fifoPath = "";
+        root.opened = false;
         dialog.close();
     }
 
@@ -81,7 +86,6 @@ Scope {
     OverlayDialog {
         id: dialog
 
-        stateKey: "pinentryOpen"
         layerNamespace: "quickshell:pinentry"
         keyboardFocus: WlrKeyboardFocus.Exclusive
         // The prompt is modal: only answering it closes the dialog, and it

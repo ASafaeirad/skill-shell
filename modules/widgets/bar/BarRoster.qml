@@ -34,7 +34,7 @@ QtObject {
                     acceptedButtons: Qt.RightButton
                     onPressed: event => {
                         if (event.button === Qt.RightButton) {
-                            GlobalStates.overviewOpen = !GlobalStates.overviewOpen;
+                            GlobalStates.search?.toggle();
                         }
                     }
                 }

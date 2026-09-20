@@ -20,7 +20,7 @@ QuickToggleButton {
     }
     altAction: () => {
         Quickshell.execDetached(["bash", "-c", "flatpak run com.github.wwmm.easyeffects || easyeffects"]);
-        GlobalStates.sidebarRightOpen = false;
+        GlobalStates.sidebarRight?.close();
     }
 
     StyledToolTip {

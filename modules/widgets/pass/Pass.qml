@@ -6,20 +6,25 @@ import Quickshell.Wayland
 import qs.services
 import qs.modules.common.widgets
 
-Scope {
+Panel {
     id: root
+    name: "pass"
+    description: "Toggle password helper"
+    manageIpc: false
 
-    function open() {
+    function open(): void {
+        root.opened = true;
         dialog.open();
         PassService.refresh();
     }
 
-    function close() {
+    function close(): void {
         dialog.close();
+        root.opened = false;
         PassService.clearSecrets();
     }
 
-    function toggle() {
+    function toggle(): void {
         if (dialog.opened)
             root.close();
         else
@@ -29,7 +34,6 @@ Scope {
     OverlayDialog {
         id: dialog
 
-        stateKey: "passOpen"
         layerNamespace: "quickshell:pass"
         keyboardFocus: WlrKeyboardFocus.Exclusive
         onDismissed: root.close()
@@ -60,11 +64,5 @@ Scope {
         function refresh(): void {
             PassService.refresh();
         }
-    }
-
-    GlobalShortcut {
-        name: "passToggle"
-        description: "Toggle password helper"
-        onPressed: root.toggle()
     }
 }

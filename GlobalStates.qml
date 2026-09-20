@@ -9,44 +9,41 @@ pragma ComponentBehavior: Bound
 
 Singleton {
     id: root
-    property bool barOpen: true
-    property bool keyDisplayOpen: false
-    property bool sidebarLeftOpen: false
-    property bool sidebarRightOpen: false
-    property bool mediaControlsOpen: false
+
+    // Panel references
+    property var bar: null
+    property var keyDisplay: null
+    property var mediaControls: null
+    property var osdBrightness: null
+    property var osdVolume: null
+    property var overlay: null
+    property var pass: null
+    property var pinentry: null
+    property var popup: null
+    property var region: null
+    property var regionSelector: null
+    property var search: null
+    property var overview: null
+    property var selector: null
+    property var screenTranslator: null
+    property var screenZoom: null
+    property var session: null
+    property var sidebarRight: null
+    property var wallpaperSelector: null
+
+    // Shared state
     property Item mediaBarItem: null
     property real mediaBarX: -1
     property real mediaBarWidth: 0
-    property bool osdBrightnessOpen: false
-    property bool osdVolumeOpen: false
-    property bool overlayOpen: false
-    property bool overviewOpen: false
-    property bool passOpen: false
-    property bool pinentryOpen: false
-    property bool regionSelectorOpen: false
-    property bool searchOpen: false
-    property bool selectorOpen: false
     property bool screenLocked: false
     property bool screenLockContainsCharacters: false
     property bool screenUnlockFailed: false
-    property bool screenTranslatorOpen: false
-    property bool screenZoomOpen: false
-    property bool sessionOpen: false
     property bool superDown: false
-    property bool textPopupOpen: false
     property bool superReleaseMightTrigger: true
-    property bool wallpaperSelectorOpen: false
     property bool workspaceShowNumbers: false
 
     signal regionCaptureRequested()
     signal regionSearchRequested()
-
-    onSidebarRightOpenChanged: {
-        if (GlobalStates.sidebarRightOpen) {
-            Notifications.timeoutAll();
-            Notifications.markAllRead();
-        }
-    }
 
     GlobalShortcut {
         name: "workspaceNumber"

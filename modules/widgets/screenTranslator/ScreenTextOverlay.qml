@@ -16,6 +16,8 @@ import qs.services
 Item {
     id: root
 
+    signal dismiss()
+
     property double scaleFactor: 1
     property color overlayColor: "#BB000000"
     property color textColor: "white"
@@ -125,7 +127,7 @@ Item {
                 color: root.textColor
                 onLinkActivated: (link) => {
                     Qt.openUrlExternally(link)
-                    GlobalStates.screenTranslatorOpen = false
+                    root.dismiss()
                 }
 
                 PointingHandLinkHover {}

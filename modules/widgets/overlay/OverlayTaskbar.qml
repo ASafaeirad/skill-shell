@@ -14,7 +14,7 @@ Rectangle {
 
     property real padding: 8
 
-    opacity: GlobalStates.overlayOpen ? 1 : 0
+    opacity: OverlayContext.overlayOpen ? 1 : 0
     implicitWidth: contentRow.implicitWidth + (padding * 2)
     implicitHeight: contentRow.implicitHeight + (padding * 2)
     color: Appearance.m3colors.m3surfaceContainer

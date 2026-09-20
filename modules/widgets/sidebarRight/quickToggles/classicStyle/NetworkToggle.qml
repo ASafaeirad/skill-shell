@@ -15,7 +15,7 @@ QuickToggleButton {
     onClicked: Network.toggleWifi()
     altAction: () => {
         Quickshell.execDetached(["bash", "-c", `${Network.ethernet ? Apps.networkEthernet : Apps.network}`]);
-        GlobalStates.sidebarRightOpen = false;
+        GlobalStates.sidebarRight?.close();
     }
 
     StyledToolTip {

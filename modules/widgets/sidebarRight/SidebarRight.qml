@@ -1,28 +1,39 @@
 import qs
 import qs.services
 import qs.modules.common
+import qs.modules.common.widgets
 import QtQuick
 import Quickshell.Io
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
-Scope {
+Panel {
     id: root
+    name: "sidebarRight"
+    description: "Toggles right sidebar on press"
+    hasOpenCloseShortcuts: true
     property int sidebarWidth: Appearance.sizes.sidebarWidth
+
+    onOpenedChanged: {
+        if (root.opened) {
+            Notifications.timeoutAll();
+            Notifications.markAllRead();
+        }
+    }
 
     PanelWindow {
         id: panelWindow
-        visible: GlobalStates.sidebarRightOpen
+        visible: root.opened
 
         function hide() {
-            GlobalStates.sidebarRightOpen = false;
+            root.close();
         }
 
         exclusiveZone: 0
         implicitWidth: sidebarWidth
         WlrLayershell.namespace: "quickshell:sidebarRight"
-        WlrLayershell.keyboardFocus: GlobalStates.sidebarRightOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+        WlrLayershell.keyboardFocus: root.opened ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         color: "transparent"
 
         anchors {
@@ -41,13 +52,13 @@ Scope {
         Connections {
             target: GlobalFocusGrab
             function onDismissed() {
-                panelWindow.hide();
+                root.close();
             }
         }
 
         Loader {
             id: sidebarContentLoader
-            active: GlobalStates.sidebarRightOpen || Config?.options.sidebar.keepRightSidebarLoaded
+            active: root.opened || Config?.options.sidebar.keepRightSidebarLoaded
             anchors {
                 fill: parent
                 margins: Appearance.sizes.hyprlandGapsOut
@@ -56,55 +67,14 @@ Scope {
             width: sidebarWidth - Appearance.sizes.hyprlandGapsOut - Appearance.sizes.elevationMargin
             height: parent.height - Appearance.sizes.hyprlandGapsOut * 2
 
-            focus: GlobalStates.sidebarRightOpen
+            focus: root.opened
             Keys.onPressed: event => {
                 if (event.key === Qt.Key_Escape) {
-                    panelWindow.hide();
+                    root.close();
                 }
             }
 
             sourceComponent: SidebarRightContent {}
-        }
-    }
-
-    IpcHandler {
-        target: "sidebarRight"
-
-        function toggle(): void {
-            GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen;
-        }
-
-        function close(): void {
-            GlobalStates.sidebarRightOpen = false;
-        }
-
-        function open(): void {
-            GlobalStates.sidebarRightOpen = true;
-        }
-    }
-
-    GlobalShortcut {
-        name: "sidebarRightToggle"
-        description: "Toggles right sidebar on press"
-
-        onPressed: {
-            GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen;
-        }
-    }
-    GlobalShortcut {
-        name: "sidebarRightOpen"
-        description: "Opens right sidebar on press"
-
-        onPressed: {
-            GlobalStates.sidebarRightOpen = true;
-        }
-    }
-    GlobalShortcut {
-        name: "sidebarRightClose"
-        description: "Closes right sidebar on press"
-
-        onPressed: {
-            GlobalStates.sidebarRightOpen = false;
         }
     }
 }

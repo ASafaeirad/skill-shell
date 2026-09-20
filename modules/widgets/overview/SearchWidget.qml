@@ -115,7 +115,7 @@ Item { // Wrapper
 
         Behavior on implicitHeight {
             id: searchHeightBehavior
-            enabled: GlobalStates.overviewOpen && root.showResults
+            enabled: (GlobalStates.search?.opened ?? false) && root.showResults
             animation: Appearance.animation.elementMove.numberAnimation.createObject(this)
         }
 

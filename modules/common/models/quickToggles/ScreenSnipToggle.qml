@@ -11,7 +11,7 @@ QuickToggleModel {
     toggled: false
     icon: "screenshot_region"
     mainAction: () => {
-        GlobalStates.sidebarRightOpen = false;
+        GlobalStates.sidebarRight?.close();
         delayedActionTimer.start();
     }
     tooltipText: "Screen snip"

@@ -107,7 +107,7 @@ RippleButton {
     }
 
     onClicked: {
-        GlobalStates.overviewOpen = false
+        GlobalStates.search?.close()
         root.itemExecute()
     }
     Keys.onPressed: (event) => {

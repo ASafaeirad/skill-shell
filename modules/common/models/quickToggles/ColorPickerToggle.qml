@@ -12,7 +12,7 @@ QuickToggleModel {
     toggled: false
     icon: "colorize"
     mainAction: () => {
-        GlobalStates.sidebarRightOpen = false;
+        GlobalStates.sidebarRight?.close();
         delayedActionTimer.start();
     }
     tooltipText: "Color picker"

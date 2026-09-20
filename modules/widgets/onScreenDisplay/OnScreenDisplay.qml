@@ -10,8 +10,12 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
-Scope {
+Panel {
     id: root
+    name: "osdVolume"
+    manageIpc: false
+    hasToggleShortcut: false
+
     property var focusedScreen: Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name)
 
     property string currentIndicator: "volume"
@@ -31,7 +35,7 @@ Scope {
     ]
 
     function triggerOsd() {
-        GlobalStates.osdVolumeOpen = true;
+        root.open();
         osdTimeout.restart();
     }
 
@@ -41,7 +45,7 @@ Scope {
         repeat: false
         running: false
         onTriggered: {
-            GlobalStates.osdVolumeOpen = false;
+            root.close();
         }
     }
 
@@ -80,7 +84,7 @@ Scope {
 
     Loader {
         id: osdLoader
-        active: GlobalStates.osdVolumeOpen
+        active: root.opened
 
         sourceComponent: PanelWindow {
             id: osdRoot
@@ -128,7 +132,7 @@ Scope {
                     MouseArea {
                         anchors.fill: parent
                         hoverEnabled: true
-                        onEntered: GlobalStates.osdVolumeOpen = false
+                        onEntered: root.close()
                     }
 
                     Column {
@@ -158,11 +162,19 @@ Scope {
         }
 
         function hide() {
-            GlobalStates.osdVolumeOpen = false;
+            root.close();
         }
 
         function toggle() {
-            GlobalStates.osdVolumeOpen = !GlobalStates.osdVolumeOpen;
+            root.toggle();
+        }
+
+        function open() {
+            root.triggerOsd();
+        }
+
+        function close() {
+            root.close();
         }
     }
     GlobalShortcut {
@@ -178,7 +190,7 @@ Scope {
         description: "Hides volume OSD on press"
 
         onPressed: {
-            GlobalStates.osdVolumeOpen = false;
+            root.close();
         }
     }
 }

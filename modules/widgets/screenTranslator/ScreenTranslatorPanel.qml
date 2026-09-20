@@ -126,6 +126,7 @@ PanelWindow {
             sourceComponent: ScreenTextOverlay {
                 screenshotPath: root.screenshotPath
                 scaleFactor: root.scale
+                onDismiss: root.dismiss()
             }
         }
     }

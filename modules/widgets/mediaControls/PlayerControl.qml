@@ -152,7 +152,7 @@ Item { // Player instance
             hoverEnabled: true
             onClicked: {
                 MprisController.focusPlayer(root.player);
-                GlobalStates.mediaControlsOpen = false;
+                GlobalStates.mediaControls?.close();
             }
         }
 

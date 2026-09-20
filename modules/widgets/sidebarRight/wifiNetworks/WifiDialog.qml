@@ -60,7 +60,7 @@ WindowDialog {
             buttonText: "Details"
             onClicked: {
                 Quickshell.execDetached(["bash", "-c", `${Network.ethernet ? Apps.networkEthernet : Apps.network}`]);
-                GlobalStates.sidebarRightOpen = false;
+                GlobalStates.sidebarRight?.close();
             }
         }
 

@@ -30,9 +30,9 @@ Item {
     property bool editMode: false
 
     Connections {
-        target: GlobalStates
-        function onSidebarRightOpenChanged() {
-            if (!GlobalStates.sidebarRightOpen) {
+        target: GlobalStates.sidebarRight
+        function onOpenedChanged() {
+            if (!GlobalStates.sidebarRight?.opened) {
                 root.showWifiDialog = false;
                 root.showBluetoothDialog = false;
                 root.showAudioOutputDialog = false;
@@ -265,7 +265,7 @@ Item {
                 toggled: false
                 buttonIcon: "settings"
                 onClicked: {
-                    GlobalStates.sidebarRightOpen = false;
+                    GlobalStates.sidebarRight?.close();
                     Quickshell.execDetached(["qs", "-p", root.settingsQmlPath]);
                 }
                 StyledToolTip {
@@ -276,7 +276,7 @@ Item {
                 toggled: false
                 buttonIcon: "power_settings_new"
                 onClicked: {
-                    GlobalStates.sessionOpen = true;
+                    GlobalStates.session?.open();
                 }
                 StyledToolTip {
                     text: "Session"

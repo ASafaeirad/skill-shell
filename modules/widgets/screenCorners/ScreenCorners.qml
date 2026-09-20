@@ -13,10 +13,10 @@ Scope {
     id: screenCorners
     readonly property Toplevel activeWindow: ToplevelManager.activeToplevel
     property var actionForCorner: ({
-        [RoundCorner.CornerEnum.TopLeft]: () => GlobalStates.sidebarLeftOpen = !GlobalStates.sidebarLeftOpen,
-        [RoundCorner.CornerEnum.BottomLeft]: () => GlobalStates.sidebarLeftOpen = !GlobalStates.sidebarLeftOpen,
-        [RoundCorner.CornerEnum.TopRight]: () => GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen,
-        [RoundCorner.CornerEnum.BottomRight]: () => GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen
+        [RoundCorner.CornerEnum.TopLeft]: () => {},
+        [RoundCorner.CornerEnum.BottomLeft]: () => {},
+        [RoundCorner.CornerEnum.TopRight]: () => GlobalStates.sidebarRight?.toggle(),
+        [RoundCorner.CornerEnum.BottomRight]: () => GlobalStates.sidebarRight?.toggle()
     })
 
     component CornerPanelWindow: PanelWindow {
@@ -111,9 +111,9 @@ Scope {
                         if (!Config.options.sidebar.cornerOpen.valueScroll)
                             return;
                         if (cornerWidget.isLeft)
-                            GlobalStates.osdBrightnessOpen = false;
+                            GlobalStates.osdBrightness?.close();
                         else
-                            GlobalStates.osdVolumeOpen = false;
+                            GlobalStates.osdVolume?.close();
                     }
 
                     Loader {

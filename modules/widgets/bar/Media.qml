@@ -40,9 +40,9 @@ Item {
     onWidthChanged: updateBarPosition()
 
     Connections {
-        target: GlobalStates
-        function onMediaControlsOpenChanged() {
-            if (GlobalStates.mediaControlsOpen) {
+        target: GlobalStates.mediaControls
+        function onOpenedChanged() {
+            if (GlobalStates.mediaControls?.opened) {
                 root.updateBarPosition();
             }
         }
@@ -62,7 +62,7 @@ Item {
         onTriggered: {
             if (mouseArea.containsMouse && !Config.options.bar.tooltips.clickToShow) {
                 root.updateBarPosition();
-                GlobalStates.mediaControlsOpen = true;
+                GlobalStates.mediaControls?.open();
             }
         }
     }
@@ -87,7 +87,7 @@ Item {
             } else if (event.button === Qt.ForwardButton || event.button === Qt.RightButton) {
                 activePlayer.next();
             } else if (event.button === Qt.LeftButton) {
-                GlobalStates.mediaControlsOpen = !GlobalStates.mediaControlsOpen;
+                GlobalStates.mediaControls?.toggle();
             }
         }
     }
