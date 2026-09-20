@@ -12,8 +12,17 @@ import Quickshell.Services.Mpris
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
-Scope {
+Panel {
     id: root
+    name: "mediaControls"
+    description: "Toggles media controls on press"
+    hasOpenCloseShortcuts: true
+
+    function open(): void {
+        root.opened = true;
+        Notifications.timeoutAll();
+    }
+
     property bool visible: false
     readonly property MprisPlayer activePlayer: MprisController.activePlayer
     readonly property var realPlayers: MprisController.players
@@ -73,10 +82,10 @@ Scope {
 
     Loader {
         id: mediaControlsLoader
-        active: GlobalStates.mediaControlsOpen
+        active: root.opened
         onActiveChanged: {
             if (!mediaControlsLoader.active && root.realPlayers.length === 0) {
-                GlobalStates.mediaControlsOpen = false;
+                root.close();
             }
         }
 
@@ -132,7 +141,7 @@ Scope {
             Connections {
                 target: GlobalFocusGrab
                 function onDismissed() {
-                    GlobalStates.mediaControlsOpen = false;
+                    root.close();
                 }
             }
 
@@ -196,48 +205,5 @@ Scope {
             }
         }
     }
-
-    IpcHandler {
-        target: "mediaControls"
-
-        function toggle(): void {
-            GlobalStates.mediaControlsOpen = !GlobalStates.mediaControlsOpen;
-            if (GlobalStates.mediaControlsOpen)
-                Notifications.timeoutAll();
-        }
-
-        function close(): void {
-            GlobalStates.mediaControlsOpen = false;
-        }
-
-        function open(): void {
-            GlobalStates.mediaControlsOpen = true;
-            Notifications.timeoutAll();
-        }
-    }
-
-    GlobalShortcut {
-        name: "mediaControlsToggle"
-        description: "Toggles media controls on press"
-
-        onPressed: {
-            GlobalStates.mediaControlsOpen = !GlobalStates.mediaControlsOpen;
-        }
-    }
-    GlobalShortcut {
-        name: "mediaControlsOpen"
-        description: "Opens media controls on press"
-
-        onPressed: {
-            GlobalStates.mediaControlsOpen = true;
-        }
-    }
-    GlobalShortcut {
-        name: "mediaControlsClose"
-        description: "Closes media controls on press"
-
-        onPressed: {
-            GlobalStates.mediaControlsOpen = false;
-        }
-    }
 }
+

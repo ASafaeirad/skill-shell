@@ -29,7 +29,7 @@ RippleButton {
     colBackgroundToggled: Appearance.colors.colSecondaryContainer
     colBackgroundToggledHover: Appearance.colors.colSecondaryContainerHover
     colRippleToggled: Appearance.colors.colSecondaryContainerActive
-    toggled: GlobalStates.sidebarRightOpen
+    toggled: GlobalStates.sidebarRight?.opened ?? false
 
     property color colText: toggled ? Appearance.m3colors.m3onSecondaryContainer :
                                       Appearance.colors.colOnLayer0
@@ -39,7 +39,7 @@ RippleButton {
     }
 
     onPressed: {
-        GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen;
+        GlobalStates.sidebarRight?.toggle();
     }
 
     RowLayout {

@@ -32,7 +32,7 @@ WindowDialog {
             buttonText: "Details"
             onClicked: {
                 Quickshell.execDetached(["bash", "-c", `${Apps.volumeMixer}`]);
-                GlobalStates.sidebarRightOpen = false;
+                GlobalStates.sidebarRight?.close();
             }
         }
 

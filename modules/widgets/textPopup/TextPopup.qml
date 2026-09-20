@@ -7,8 +7,11 @@ import Quickshell.Wayland
  * A read-only text dialog, the shell-native replacement for `zenity --text-info`.
  * Driven from scripts through the "popup" IPC target; see ~/.local/bin/popup.
  */
-Scope {
+Panel {
     id: root
+    name: "popup"
+    manageIpc: false
+    hasToggleShortcut: false
 
     property string title: ""
     property string body: ""
@@ -18,10 +21,12 @@ Scope {
     property string donePath: ""
 
     function open(): void {
+        root.opened = true;
         dialog.open();
     }
 
     function close(): void {
+        root.opened = false;
         if (root.donePath.length > 0) {
             dialog.writeResult(root.donePath, "");
             root.donePath = "";
@@ -53,7 +58,6 @@ Scope {
     OverlayDialog {
         id: dialog
 
-        stateKey: "textPopupOpen"
         layerNamespace: "quickshell:textPopup"
         keyboardFocus: WlrKeyboardFocus.Exclusive // Modal like Pinentry: Esc/Enter dismiss without clicking first
         onDismissed: root.close()

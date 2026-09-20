@@ -11,13 +11,17 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
-Scope {
+Panel {
     id: root
+    name: "session"
+    description: "Toggles session screen on press"
+    hasOpenCloseShortcuts: true
+
     property var focusedScreen: Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name)
 
     Loader {
         id: sessionLoader
-        active: GlobalStates.sessionOpen
+        active: root.opened
         onActiveChanged: {
             if (sessionLoader.active)
                 SessionWarnings.refresh();
@@ -27,7 +31,7 @@ Scope {
             target: GlobalStates
             function onScreenLockedChanged() {
                 if (GlobalStates.screenLocked) {
-                    GlobalStates.sessionOpen = false;
+                    root.close();
                 }
             }
         }
@@ -38,7 +42,7 @@ Scope {
             property string subtitle
 
             function hide() {
-                GlobalStates.sessionOpen = false;
+                root.close();
             }
 
             exclusionMode: ExclusionMode.Ignore
@@ -276,47 +280,5 @@ Scope {
             text: descriptionLabel.text
         }
     }
-
-    IpcHandler {
-        target: "session"
-
-        function toggle(): void {
-            GlobalStates.sessionOpen = !GlobalStates.sessionOpen;
-        }
-
-        function close(): void {
-            GlobalStates.sessionOpen = false;
-        }
-
-        function open(): void {
-            GlobalStates.sessionOpen = true;
-        }
-    }
-
-    GlobalShortcut {
-        name: "sessionToggle"
-        description: "Toggles session screen on press"
-
-        onPressed: {
-            GlobalStates.sessionOpen = !GlobalStates.sessionOpen;
-        }
-    }
-
-    GlobalShortcut {
-        name: "sessionOpen"
-        description: "Opens session screen on press"
-
-        onPressed: {
-            GlobalStates.sessionOpen = true;
-        }
-    }
-
-    GlobalShortcut {
-        name: "sessionClose"
-        description: "Closes session screen on press"
-
-        onPressed: {
-            GlobalStates.sessionOpen = false;
-        }
-    }
 }
+

@@ -93,7 +93,7 @@ Item { // Window
     ScreencopyView {
         id: windowPreview
         anchors.fill: parent
-        captureSource: GlobalStates.overviewOpen ? root.toplevel : null
+        captureSource: (GlobalStates.search?.opened ?? false) ? root.toplevel : null
         live: true
 
         // Color overlay for interactions

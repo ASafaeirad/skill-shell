@@ -114,7 +114,7 @@ Item { // Bar content region
         hoverEnabled: true
         onPressed: event => {
             if (event.button === Qt.LeftButton) {
-                GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen;
+                GlobalStates.sidebarRight?.toggle();
             }
         }
 

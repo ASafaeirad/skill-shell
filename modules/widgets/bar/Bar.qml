@@ -10,8 +10,11 @@ import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
 
-Scope {
+Panel {
     id: bar
+    name: "bar"
+    opened: true
+    hasOpenCloseShortcuts: true
     property bool showBarBackground: Config.options.bar.showBackground
 
     Variants {
@@ -25,7 +28,7 @@ Scope {
         }
         LazyLoader {
             id: barLoader
-            active: GlobalStates.barOpen && !GlobalStates.screenLocked
+            active: bar.opened && !GlobalStates.screenLocked
             required property ShellScreen modelData
             component: PanelWindow { // Bar window
                 id: barRoot
@@ -203,49 +206,6 @@ Scope {
                     }
                 }
             }
-        }
-    }
-
-    IpcHandler {
-        target: "bar"
-
-        function toggle(): void {
-            GlobalStates.barOpen = !GlobalStates.barOpen
-        }
-
-        function close(): void {
-            GlobalStates.barOpen = false
-        }
-
-        function open(): void {
-            GlobalStates.barOpen = true
-        }
-    }
-
-    GlobalShortcut {
-        name: "barToggle"
-        description: "Toggles bar on press"
-
-        onPressed: {
-            GlobalStates.barOpen = !GlobalStates.barOpen;
-        }
-    }
-
-    GlobalShortcut {
-        name: "barOpen"
-        description: "Opens bar on press"
-
-        onPressed: {
-            GlobalStates.barOpen = true;
-        }
-    }
-
-    GlobalShortcut {
-        name: "barClose"
-        description: "Closes bar on press"
-
-        onPressed: {
-            GlobalStates.barOpen = false;
         }
     }
 }

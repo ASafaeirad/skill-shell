@@ -19,7 +19,7 @@ QuickToggleButton {
     }
     altAction: () => {
         Quickshell.execDetached(["bash", "-c", `${Apps.bluetooth}`])
-        GlobalStates.sidebarRightOpen = false
+        GlobalStates.sidebarRight?.close()
     }
     StyledToolTip {
         text: "%1 | Right-click to configure".arg(

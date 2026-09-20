@@ -31,10 +31,9 @@ import Quickshell.Wayland
 Scope {
     id: root
 
-    // Name of the GlobalStates bool holding this dialog's open state, e.g.
-    // "selectorOpen". That flag stays the public source of truth: anything may
-    // read it, and setting it from outside opens/closes the dialog.
-    required property string stateKey
+    // Optional name of a GlobalStates bool holding this dialog's open state.
+    // Kept during migration; new panels drive opened directly.
+    property string stateKey: ""
 
     property string layerNamespace: "quickshell:overlayDialog"
     property var keyboardFocus: WlrKeyboardFocus.OnDemand
@@ -51,13 +50,15 @@ Scope {
     // same way they answer a cancel.
     signal dismissed()
 
-    readonly property bool opened: GlobalStates[root.stateKey] ?? false
+    property bool opened: root.stateKey.length > 0 ? (GlobalStates[root.stateKey] ?? false) : false
     // True while the exit animation plays; keeps the window loaded until it
     // finishes. Internal — panels drive the dialog through open()/close().
     property bool closing: false
 
     function open(): void {
-        GlobalStates[root.stateKey] = true;
+        root.opened = true;
+        if (root.stateKey.length > 0 && (root.stateKey in GlobalStates))
+            GlobalStates[root.stateKey] = true;
     }
 
     function close(): void {
@@ -65,7 +66,9 @@ Scope {
         // slide-down; the card signals closeFinished when it's done.
         if (root.opened && dialogLoader.item)
             root.closing = true;
-        GlobalStates[root.stateKey] = false;
+        root.opened = false;
+        if (root.stateKey.length > 0 && (root.stateKey in GlobalStates))
+            GlobalStates[root.stateKey] = false;
     }
 
     function toggle(): void {

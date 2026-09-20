@@ -5,6 +5,7 @@ import Quickshell
 Singleton {
     id: root
     
+    property bool overlayOpen: false
     signal requestCenter(string identifier)
 
     readonly property list<var> availableWidgets: [

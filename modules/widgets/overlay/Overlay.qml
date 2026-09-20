@@ -10,8 +10,23 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
-Scope {
+Panel {
     id: root
+    name: "overlay"
+    description: "Toggles overlay on press"
+
+    onOpenedChanged: {
+        if (OverlayContext.overlayOpen !== root.opened)
+            OverlayContext.overlayOpen = root.opened;
+    }
+
+    Connections {
+        target: OverlayContext
+        function onOverlayOpenChanged() {
+            if (root.opened !== OverlayContext.overlayOpen)
+                root.opened = OverlayContext.overlayOpen;
+        }
+    }
 
     property Component regionComponent: Component {
         Region {}
@@ -19,19 +34,19 @@ Scope {
     
     Loader {
         id: overlayLoader
-        active: GlobalStates.overlayOpen || OverlayContext.hasPinnedWidgets
+        active: root.opened || OverlayContext.hasPinnedWidgets
         sourceComponent: PanelWindow {
             id: overlayWindow
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.namespace: "quickshell:overlay"
             WlrLayershell.layer: WlrLayer.Overlay
             // Use OnDemand for pinned widgets to allow focus switching with mouse clicks
-            WlrLayershell.keyboardFocus: GlobalStates.overlayOpen ? WlrKeyboardFocus.Exclusive : (OverlayContext.clickableWidgets.length > 0 ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None)
+            WlrLayershell.keyboardFocus: root.opened ? WlrKeyboardFocus.Exclusive : (OverlayContext.clickableWidgets.length > 0 ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None)
             visible: true
             color: "transparent"
 
             mask: Region {
-                item: GlobalStates.overlayOpen ? overlayContent : null
+                item: root.opened ? overlayContent : null
                 regions: OverlayContext.clickableWidgets.map((widget) => regionComponent.createObject(this, {
                     item: widget
                 }));
@@ -49,13 +64,13 @@ Scope {
                 windows: [overlayWindow]
                 active: false
                 onCleared: () => {
-                    if (!active) GlobalStates.overlayOpen = false;
+                    if (!active) root.close();
                 }
             }
 
             Connections {
-                target: GlobalStates
-                function onOverlayOpenChanged() {
+                target: root
+                function onOpenedChanged() {
                     delayedGrabTimer.restart();
                 }
             }
@@ -64,7 +79,7 @@ Scope {
                 id: delayedGrabTimer
                 interval: Appearance.animation.elementMoveFast.duration
                 onTriggered: {
-                    grab.active = GlobalStates.overlayOpen;
+                    grab.active = root.opened;
                 }
             }
 
@@ -72,23 +87,6 @@ Scope {
                 id: overlayContent
                 anchors.fill: parent
             }
-        }
-    }
-
-    IpcHandler {
-        target: "overlay"
-
-        function toggle(): void {
-            GlobalStates.overlayOpen = !GlobalStates.overlayOpen;
-        }
-    }
-
-    GlobalShortcut {
-        name: "overlayToggle"
-        description: "Toggles overlay on press"
-
-        onPressed: {
-            GlobalStates.overlayOpen = !GlobalStates.overlayOpen;
         }
     }
 }

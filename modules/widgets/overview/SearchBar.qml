@@ -32,7 +32,7 @@ RowLayout {
         Layout.topMargin: 4
         Layout.bottomMargin: 4
         implicitHeight: 40
-        focus: GlobalStates.overviewOpen
+        focus: GlobalStates.search?.opened ?? false
         font.pixelSize: Appearance.font.pixelSize.small
         placeholderText: "Search apps and actions"
         implicitWidth: root.searchingText == "" ? Appearance.sizes.searchWidthCollapsed : Appearance.sizes.searchWidth
@@ -75,7 +75,7 @@ RowLayout {
         Layout.bottomMargin: 4
         Layout.rightMargin: 4
         onClicked: {
-            GlobalStates.overviewOpen = false;
+            GlobalStates.search?.close();
             GlobalStates.regionSearchRequested();
         }
         text: "image_search"

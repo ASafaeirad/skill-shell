@@ -12,6 +12,12 @@ import Quickshell.Io
 
 MouseArea {
     id: root
+    signal dismissRequested()
+
+    Component.onCompleted: {
+        filterField.forceActiveFocus();
+    }
+
     property int columns: 4
     property real previewCellAspectRatio: 4 / 3
     property bool useDarkMode: Appearance.m3colors.darkmode
@@ -58,7 +64,7 @@ MouseArea {
 
     Keys.onPressed: event => {
         if (event.key === Qt.Key_Escape) {
-            GlobalStates.wallpaperSelectorOpen = false;
+            root.dismissRequested();
             event.accepted = true;
         } else if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_V) { // Intercept Ctrl+V to handle "paste to go to" in pickers
             root.handleFilePasting(event);
@@ -350,11 +356,11 @@ MouseArea {
                                 implicitWidth: height
                                 onClicked: {
                                     Wallpapers.openFallbackPicker(root.useDarkMode);
-                                    GlobalStates.wallpaperSelectorOpen = false;
+                                    root.dismissRequested();
                                 }
                                 altAction: () => {
                                     Wallpapers.openFallbackPicker(root.useDarkMode);
-                                    GlobalStates.wallpaperSelectorOpen = false;
+                                    root.dismissRequested();
                                     Config.options.wallpaperSelector.useSystemFileDialog = true;
                                 }
                                 text: "open_in_new"
@@ -420,7 +426,7 @@ MouseArea {
 
                         ToolbarPairedFab {
                             iconText: "close"
-                            onClicked: GlobalStates.wallpaperSelectorOpen = false;
+                            onClicked: root.dismissRequested();
                             StyledToolTip {
                                 text: "Cancel wallpaper selection"
                             }
@@ -432,18 +438,9 @@ MouseArea {
     }
 
     Connections {
-        target: GlobalStates
-        function onWallpaperSelectorOpenChanged() {
-            if (GlobalStates.wallpaperSelectorOpen && monitorIsFocused) {
-                filterField.forceActiveFocus();
-            }
-        }
-    }
-
-    Connections {
         target: Wallpapers
         function onChanged() {
-            GlobalStates.wallpaperSelectorOpen = false;
+            root.dismissRequested();
         }
     }
 }

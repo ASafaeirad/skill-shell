@@ -9,8 +9,11 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
-Scope {
+Panel {
     id: root
+    name: "selector"
+    description: "Toggle the generic selector"
+    manageIpc: false
 
     // The list of choices to show. Either plain strings, or objects
     // like { name: "Foo", icon: "settings" }.
@@ -44,6 +47,7 @@ Scope {
     // Called on confirm (text = the chosen line) and on cancel (text = "").
     // Always writes to resultPath if set, so a blocked reader unblocks either way.
     function finish(text): void {
+        root.opened = false;
         if (root.resultPath.length > 0) {
             dialog.writeResult(root.resultPath, text);
             root.resultPath = "";
@@ -52,6 +56,7 @@ Scope {
     }
 
     function open(): void {
+        root.opened = true;
         dialog.open();
     }
     function close(): void {
@@ -68,7 +73,6 @@ Scope {
     OverlayDialog {
         id: dialog
 
-        stateKey: "selectorOpen"
         layerNamespace: "quickshell:selector"
         keyboardFocus: WlrKeyboardFocus.OnDemand
         onDismissed: root.finish("")
@@ -156,11 +160,5 @@ Scope {
         onLoadFailed: error => {
             console.warn("[Selector] fromFile() could not read", path, error);
         }
-    }
-
-    GlobalShortcut {
-        name: "selectorToggle"
-        description: "Toggle the generic selector"
-        onPressed: root.toggle()
     }
 }

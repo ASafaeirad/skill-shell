@@ -12,24 +12,31 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
-Scope {
-    id: overviewScope
+Panel {
+    id: root
+    name: "search"
+    manageIpc: false
+    hasToggleShortcut: false
     property bool dontAutoCancelSearch: false
+
+    Component.onCompleted: {
+        GlobalStates.overview = root;
+    }
 
     PanelWindow {
         id: panelWindow
         property string searchingText: ""
         readonly property HyprlandMonitor monitor: Hyprland.monitorFor(panelWindow.screen)
         property bool monitorIsFocused: (Hyprland.focusedMonitor?.id == monitor?.id)
-        visible: GlobalStates.overviewOpen
+        visible: root.opened
 
         WlrLayershell.namespace: "quickshell:overview"
         WlrLayershell.layer: WlrLayer.Top
-        WlrLayershell.keyboardFocus: GlobalStates.overviewOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+        WlrLayershell.keyboardFocus: root.opened ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         color: "transparent"
 
         mask: Region {
-            item: GlobalStates.overviewOpen ? columnLayout : null
+            item: root.opened ? columnLayout : null
         }
 
         anchors {
@@ -40,14 +47,14 @@ Scope {
         }
 
         Connections {
-            target: GlobalStates
-            function onOverviewOpenChanged() {
-                if (!GlobalStates.overviewOpen) {
+            target: root
+            function onOpenedChanged() {
+                if (!root.opened) {
                     searchWidget.disableExpandAnimation();
-                    overviewScope.dontAutoCancelSearch = false;
+                    root.dontAutoCancelSearch = false;
                     GlobalFocusGrab.dismiss();
                 } else {
-                    if (!overviewScope.dontAutoCancelSearch) {
+                    if (!root.dontAutoCancelSearch) {
                         searchWidget.cancelSearch();
                     }
                     GlobalFocusGrab.addDismissable(panelWindow);
@@ -58,7 +65,7 @@ Scope {
         Connections {
             target: GlobalFocusGrab
             function onDismissed() {
-                GlobalStates.overviewOpen = false;
+                root.close();
             }
         }
         implicitWidth: columnLayout.implicitWidth
@@ -71,7 +78,7 @@ Scope {
 
         Column {
             id: columnLayout
-            visible: GlobalStates.overviewOpen
+            visible: root.opened
             anchors {
                 horizontalCenter: parent.horizontalCenter
                 top: parent.top
@@ -80,7 +87,7 @@ Scope {
 
             Keys.onPressed: event => {
                 if (event.key === Qt.Key_Escape) {
-                    GlobalStates.overviewOpen = false;
+                    root.close();
                 }
             }
 
@@ -95,7 +102,7 @@ Scope {
             Loader {
                 id: overviewLoader
                 anchors.horizontalCenter: parent.horizontalCenter
-                active: GlobalStates.overviewOpen && (Config?.options.overview.enable ?? true)
+                active: root.opened && (Config?.options.overview.enable ?? true)
                 sourceComponent: OverviewWidget {
                     screen: panelWindow.screen
                     visible: (panelWindow.searchingText == "")
@@ -105,45 +112,45 @@ Scope {
     }
 
     function toggleClipboard() {
-        if (GlobalStates.overviewOpen && overviewScope.dontAutoCancelSearch) {
-            GlobalStates.overviewOpen = false;
+        if (root.opened && root.dontAutoCancelSearch) {
+            root.close();
             return;
         }
-        overviewScope.dontAutoCancelSearch = true;
+        root.dontAutoCancelSearch = true;
         panelWindow.setSearchingText(SearchPrefixes.clipboard);
-        GlobalStates.overviewOpen = true;
+        root.open();
     }
 
     function toggleEmojis() {
-        if (GlobalStates.overviewOpen && overviewScope.dontAutoCancelSearch) {
-            GlobalStates.overviewOpen = false;
+        if (root.opened && root.dontAutoCancelSearch) {
+            root.close();
             return;
         }
-        overviewScope.dontAutoCancelSearch = true;
+        root.dontAutoCancelSearch = true;
         panelWindow.setSearchingText(SearchPrefixes.emojis);
-        GlobalStates.overviewOpen = true;
+        root.open();
     }
 
     IpcHandler {
         target: "search"
 
         function toggle() {
-            GlobalStates.overviewOpen = !GlobalStates.overviewOpen;
+            root.toggle();
         }
         function workspacesToggle() {
-            GlobalStates.overviewOpen = !GlobalStates.overviewOpen;
+            root.toggle();
         }
         function close() {
-            GlobalStates.overviewOpen = false;
+            root.close();
         }
         function open() {
-            GlobalStates.overviewOpen = true;
+            root.open();
         }
         function toggleReleaseInterrupt() {
             GlobalStates.superReleaseMightTrigger = false;
         }
         function clipboardToggle() {
-            overviewScope.toggleClipboard();
+            root.toggleClipboard();
         }
     }
 
@@ -152,7 +159,7 @@ Scope {
         description: "Toggles search on press"
 
         onPressed: {
-            GlobalStates.overviewOpen = !GlobalStates.overviewOpen;
+            root.toggle();
         }
     }
     GlobalShortcut {
@@ -160,7 +167,7 @@ Scope {
         description: "Closes overview on press"
 
         onPressed: {
-            GlobalStates.overviewOpen = false;
+            root.close();
         }
     }
     GlobalShortcut {
@@ -168,7 +175,7 @@ Scope {
         description: "Toggles overview on press"
 
         onPressed: {
-            GlobalStates.overviewOpen = !GlobalStates.overviewOpen;
+            root.toggle();
         }
     }
     GlobalShortcut {
@@ -184,7 +191,7 @@ Scope {
                 GlobalStates.superReleaseMightTrigger = true;
                 return;
             }
-            GlobalStates.overviewOpen = !GlobalStates.overviewOpen;
+            root.toggle();
         }
     }
     GlobalShortcut {
@@ -200,7 +207,7 @@ Scope {
         description: "Toggle clipboard query on overview widget"
 
         onPressed: {
-            overviewScope.toggleClipboard();
+            root.toggleClipboard();
         }
     }
 
@@ -209,7 +216,7 @@ Scope {
         description: "Toggle emoji query on overview widget"
 
         onPressed: {
-            overviewScope.toggleEmojis();
+            root.toggleEmojis();
         }
     }
 }

@@ -10,12 +10,16 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
-Scope {
+Panel {
     id: root
+    name: "wallpaperSelector"
+    description: "Toggle wallpaper selector"
+    manageIpc: false
+    hasToggleShortcut: false
 
     Loader {
         id: wallpaperSelectorLoader
-        active: GlobalStates.wallpaperSelectorOpen
+        active: root.opened
 
         sourceComponent: PanelWindow {
             id: panelWindow
@@ -49,7 +53,7 @@ Scope {
             Connections {
                 target: GlobalFocusGrab
                 function onDismissed() {
-                    GlobalStates.wallpaperSelectorOpen = false;
+                    root.close();
                 }
             }
 
@@ -58,6 +62,7 @@ Scope {
                 anchors {
                     fill: parent
                 }
+                onDismissRequested: root.close()
             }
         }
     }
@@ -67,7 +72,7 @@ Scope {
             Wallpapers.openFallbackPicker(Appearance.m3colors.darkmode);
             return;
         }
-        GlobalStates.wallpaperSelectorOpen = !GlobalStates.wallpaperSelectorOpen
+        root.toggle();
     }
 
     IpcHandler {
@@ -75,6 +80,14 @@ Scope {
 
         function toggle(): void {
             root.toggleWallpaperSelector();
+        }
+
+        function open(): void {
+            root.open();
+        }
+
+        function close(): void {
+            root.close();
         }
 
         function random(): void {

@@ -9,8 +9,10 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
-Scope {
+Panel {
     id: root
+    name: "keyDisplay"
+    description: "Toggles on-screen key press display"
     property var focusedScreen: Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name)
 
     // Modifier keys currently held down, e.g. { "KEY_LEFTCTRL": true }
@@ -143,9 +145,9 @@ Scope {
     }
 
     Connections {
-        target: GlobalStates
-        function onKeyDisplayOpenChanged() {
-            if (GlobalStates.keyDisplayOpen)
+        target: root
+        function onOpenedChanged() {
+            if (root.opened)
                 keyReader.running = true;
             else
                 keyReader.requestStop();
@@ -156,7 +158,7 @@ Scope {
 
     Loader {
         id: panelLoader
-        active: GlobalStates.keyDisplayOpen && keyChips.count > 0
+        active: root.opened && keyChips.count > 0
 
         sourceComponent: PanelWindow {
             id: panelRoot
@@ -232,31 +234,6 @@ Scope {
                     }
                 }
             }
-        }
-    }
-
-    IpcHandler {
-        target: "keyDisplay"
-
-        function open(): void {
-            GlobalStates.keyDisplayOpen = true;
-        }
-
-        function close(): void {
-            GlobalStates.keyDisplayOpen = false;
-        }
-
-        function toggle(): void {
-            GlobalStates.keyDisplayOpen = !GlobalStates.keyDisplayOpen;
-        }
-    }
-
-    GlobalShortcut {
-        name: "keyDisplayToggle"
-        description: "Toggles on-screen key press display"
-
-        onPressed: {
-            GlobalStates.keyDisplayOpen = !GlobalStates.keyDisplayOpen;
         }
     }
 }
