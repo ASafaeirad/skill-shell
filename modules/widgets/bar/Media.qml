@@ -6,6 +6,7 @@ import qs.modules.common.functions
 
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import Quickshell.Services.Mpris
 import Quickshell.Hyprland
 
@@ -18,6 +19,34 @@ Item {
     Layout.fillHeight: true
     implicitWidth: rowLayout.implicitWidth + rowLayout.spacing * 2
     implicitHeight: Appearance.sizes.barHeight
+
+    function updateBarPosition() {
+        const mappedX = root.mapToItem(null, 0, 0).x;
+        GlobalStates.mediaBarItem = root;
+        GlobalStates.mediaBarX = mappedX;
+        GlobalStates.mediaBarWidth = root.width;
+    }
+
+    Component.onCompleted: updateBarPosition()
+    Component.onDestruction: {
+        if (GlobalStates.mediaBarItem === root) {
+            GlobalStates.mediaBarItem = null;
+            GlobalStates.mediaBarX = -1;
+            GlobalStates.mediaBarWidth = 0;
+        }
+    }
+
+    onXChanged: updateBarPosition()
+    onWidthChanged: updateBarPosition()
+
+    Connections {
+        target: GlobalStates
+        function onMediaControlsOpenChanged() {
+            if (GlobalStates.mediaControlsOpen) {
+                root.updateBarPosition();
+            }
+        }
+    }
 
     Timer {
         running: activePlayer?.playbackState == MprisPlaybackState.Playing
@@ -32,6 +61,7 @@ Item {
         repeat: false
         onTriggered: {
             if (mouseArea.containsMouse && !Config.options.bar.tooltips.clickToShow) {
+                root.updateBarPosition();
                 GlobalStates.mediaControlsOpen = true;
             }
         }
@@ -42,9 +72,13 @@ Item {
         anchors.fill: parent
         hoverEnabled: !Config.options.bar.tooltips.clickToShow
         acceptedButtons: Qt.MiddleButton | Qt.BackButton | Qt.ForwardButton | Qt.RightButton | Qt.LeftButton
-        onEntered: hoverTimer.restart()
+        onEntered: {
+            root.updateBarPosition();
+            hoverTimer.restart();
+        }
         onExited: hoverTimer.stop()
         onPressed: (event) => {
+            root.updateBarPosition();
             hoverTimer.stop();
             if (event.button === Qt.MiddleButton) {
                 activePlayer.togglePlaying();

@@ -14,6 +14,9 @@ Singleton {
     property bool sidebarLeftOpen: false
     property bool sidebarRightOpen: false
     property bool mediaControlsOpen: false
+    property Item mediaBarItem: null
+    property real mediaBarX: -1
+    property real mediaBarWidth: 0
     property bool osdBrightnessOpen: false
     property bool osdVolumeOpen: false
     property bool overlayOpen: false

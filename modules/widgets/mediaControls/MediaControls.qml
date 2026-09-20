@@ -91,15 +91,32 @@ Scope {
             color: "transparent"
             WlrLayershell.namespace: "quickshell:mediaControls"
 
+            function boundedPosition(wantedPosition, availableSize, popupSize) {
+                if (availableSize <= 0)
+                    return wantedPosition;
+                return Math.max(Appearance.sizes.hyprlandGapsOut, Math.min(wantedPosition, availableSize - popupSize - Appearance.sizes.hyprlandGapsOut));
+            }
+
             anchors {
                 top: !Config.options.bar.bottom
                 bottom: Config.options.bar.bottom
-                right: true
+                left: true
+                right: false
             }
             margins {
                 top: Appearance.sizes.barHeight
                 bottom: Appearance.sizes.barHeight
-                right: widgetWidth
+                left: {
+                    const item = GlobalStates.mediaBarItem;
+                    const availW = panelWindow.screen?.width ?? 0;
+                    if (item) {
+                        const targetPosition = (GlobalStates.mediaBarX >= 0) ? GlobalStates.mediaBarX : item.mapToItem(null, 0, 0).x;
+                        const targetWidth = (GlobalStates.mediaBarWidth > 0) ? GlobalStates.mediaBarWidth : item.width;
+                        const wantedPosition = targetPosition + (targetWidth - panelWindow.implicitWidth) / 2;
+                        return panelWindow.boundedPosition(wantedPosition, availW, panelWindow.implicitWidth);
+                    }
+                    return availW > 0 ? (availW - panelWindow.implicitWidth) / 2 : 0;
+                }
             }
 
             mask: Region {
@@ -140,13 +157,7 @@ Scope {
 
                 Item {
                     // No player placeholder
-                    Layout.alignment: {
-                        if (panelWindow.anchors.left)
-                            return Qt.AlignLeft;
-                        if (panelWindow.anchors.right)
-                            return Qt.AlignRight;
-                        return Qt.AlignHCenter;
-                    }
+                    Layout.alignment: Qt.AlignHCenter
                     Layout.leftMargin: Appearance.sizes.hyprlandGapsOut
                     Layout.rightMargin: Appearance.sizes.hyprlandGapsOut
                     visible: root.meaningfulPlayers.length === 0
