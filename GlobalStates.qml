@@ -32,9 +32,6 @@ Singleton {
     property var wallpaperSelector: null
 
     // Shared state
-    property Item mediaBarItem: null
-    property real mediaBarX: -1
-    property real mediaBarWidth: 0
     property bool screenLocked: false
     property bool screenLockContainsCharacters: false
     property bool screenUnlockFailed: false

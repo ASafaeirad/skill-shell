@@ -20,32 +20,8 @@ Item {
     implicitWidth: rowLayout.implicitWidth + rowLayout.spacing * 2
     implicitHeight: Appearance.sizes.barHeight
 
-    function updateBarPosition() {
-        const mappedX = root.mapToItem(null, 0, 0).x;
-        GlobalStates.mediaBarItem = root;
-        GlobalStates.mediaBarX = mappedX;
-        GlobalStates.mediaBarWidth = root.width;
-    }
-
-    Component.onCompleted: updateBarPosition()
-    Component.onDestruction: {
-        if (GlobalStates.mediaBarItem === root) {
-            GlobalStates.mediaBarItem = null;
-            GlobalStates.mediaBarX = -1;
-            GlobalStates.mediaBarWidth = 0;
-        }
-    }
-
-    onXChanged: updateBarPosition()
-    onWidthChanged: updateBarPosition()
-
-    Connections {
-        target: GlobalStates.mediaControls
-        function onOpenedChanged() {
-            if (GlobalStates.mediaControls?.opened) {
-                root.updateBarPosition();
-            }
-        }
+    BarAnchor {
+        name: "media"
     }
 
     Timer {
@@ -61,7 +37,6 @@ Item {
         repeat: false
         onTriggered: {
             if (mouseArea.containsMouse && !Config.options.bar.tooltips.clickToShow) {
-                root.updateBarPosition();
                 GlobalStates.mediaControls?.open();
             }
         }
@@ -73,12 +48,10 @@ Item {
         hoverEnabled: !Config.options.bar.tooltips.clickToShow
         acceptedButtons: Qt.MiddleButton | Qt.BackButton | Qt.ForwardButton | Qt.RightButton | Qt.LeftButton
         onEntered: {
-            root.updateBarPosition();
             hoverTimer.restart();
         }
         onExited: hoverTimer.stop()
         onPressed: (event) => {
-            root.updateBarPosition();
             hoverTimer.stop();
             if (event.button === Qt.MiddleButton) {
                 activePlayer.togglePlaying();

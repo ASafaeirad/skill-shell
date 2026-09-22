@@ -833,6 +833,8 @@
     <script>
       const paths = `modules/common/widgets/AddressBar.qml
 modules/common/widgets/AddressBreadcrumb.qml
+modules/common/widgets/BarAnchor.qml
+modules/common/widgets/BarAnchoredPopover.qml
 modules/common/widgets/ButtonGroup.qml
 modules/common/widgets/Circle.qml
 modules/common/widgets/CircularProgress.qml
@@ -1003,6 +1005,10 @@ modules/widgets/pass/PassContent.qml`
           "Editable location bar that turns a filesystem path into a navigation surface.",
         AddressBreadcrumb:
           "One clickable path segment used inside the address bar.",
+        BarAnchor:
+          "Declarative anchor registration for bar widgets that host popovers, handling position tracking and lifecycle without manual bookkeeping.",
+        BarAnchoredPopover:
+          "Top-level popover window that anchors to a named bar widget, centers underneath it with screen-edge clamping, and tracks bar position dynamically.",
         ConfigSelectionArray:
           "Settings selection group with an optional configKey for live two-way configuration binding.",
         ConfigSpinBox:
