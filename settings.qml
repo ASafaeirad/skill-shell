@@ -56,6 +56,11 @@ ApplicationWindow {
             component: "modules/settings/ServicesConfig.qml"
         },
         {
+            name: "Gmail",
+            icon: "mail",
+            component: "modules/settings/GmailConfig.qml"
+        },
+        {
             name: "Advanced",
             icon: "construction",
             component: "modules/settings/AdvancedConfig.qml"

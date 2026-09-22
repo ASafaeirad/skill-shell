@@ -18,6 +18,7 @@ Singleton {
     signal dataChanged()
 
     property bool loaded: false
+    property bool savePending: false
     property var keyringData: ({})
     
     property var properties: {
@@ -31,7 +32,7 @@ Singleton {
     )
     property string keyringLabel: "%1 Safe Storage".arg("illogical-impulse")
 
-    function setNestedField(path, value) {
+    function setNestedField(path, value, save = true) {
         if (!root.keyringData) root.keyringData = {};
         let keys = path;
         let obj = root.keyringData;
@@ -60,6 +61,39 @@ Singleton {
         // Finally, reassign root.keyringData to trigger top-level change
         root.keyringData = Object.assign({}, root.keyringData);
 
+        if (save)
+            saveKeyringData();
+    }
+
+    function setNestedFields(fields) {
+        for (const field of fields)
+            setNestedField(field.path, field.value, false);
+        saveKeyringData();
+    }
+
+    function removeNestedField(path) {
+        if (!root.keyringData || path.length === 0)
+            return;
+
+        let obj = root.keyringData;
+        let parents = [obj];
+        for (let i = 0; i < path.length - 1; ++i) {
+            if (!obj[path[i]] || typeof obj[path[i]] !== "object")
+                return;
+            obj = obj[path[i]];
+            parents.push(obj);
+        }
+
+        if (!Object.prototype.hasOwnProperty.call(obj, path[path.length - 1]))
+            return;
+        delete obj[path[path.length - 1]];
+
+        for (let i = path.length - 2; i >= 0; --i) {
+            const parent = parents[i];
+            const key = path[i];
+            parent[key] = Object.assign({}, parent[key]);
+        }
+        root.keyringData = Object.assign({}, root.keyringData);
         saveKeyringData();
     }
 
@@ -70,6 +104,10 @@ Singleton {
     }
 
     function saveKeyringData() {
+        if (saveData.running) {
+            root.savePending = true;
+            return;
+        }
         saveData.stdinEnabled = true;
         saveData.running = true;
     }
@@ -87,6 +125,12 @@ Singleton {
                 root.dataChanged()
                 stdinEnabled = false // End input stream
             }
+        }
+        onExited: {
+            if (!root.savePending)
+                return;
+            root.savePending = false;
+            Qt.callLater(() => root.saveKeyringData());
         }
     }
 

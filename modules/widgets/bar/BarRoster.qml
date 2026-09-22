@@ -65,6 +65,12 @@ QtObject {
         }
     }
 
+    property Component gmail: Component {
+        Bar.BarGroup {
+            Bar.GmailWidget {}
+        }
+    }
+
     property Component clock: Component {
         Bar.BarGroup {
             Layout.alignment: Qt.AlignVCenter
@@ -118,6 +124,13 @@ QtObject {
             maxShortenForm: 0,
             enabled: () => (Config.options?.bar?.aiUsage?.enable ?? false),
             component: aiUsage
+        },
+        {
+            id: "gmail",
+            section: "end",
+            maxShortenForm: 0,
+            enabled: () => Gmail.visible,
+            component: gmail
         },
         {
             id: "clock",

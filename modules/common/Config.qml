@@ -171,6 +171,12 @@ Singleton {
                 }
             }
 
+            property JsonObject gmail: JsonObject {
+                property bool enable: false
+                property int refreshIntervalMinutes: 5
+                property list<var> accounts: []
+            }
+
             property JsonObject battery: JsonObject {
                 property int low: 20
                 property int critical: 10
