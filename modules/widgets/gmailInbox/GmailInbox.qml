@@ -16,6 +16,7 @@ Panel {
 
     property string accountFilter: ""
     property bool showAccounts: false
+    property var selectedMessage: null
     property var labelMessage: null
     property point labelAnchor: Qt.point(0, 0)
     readonly property string labelAccountId: root.labelMessage?.accountId ?? ""
@@ -25,6 +26,7 @@ Panel {
             Gmail.preloadLabels();
         } else {
             showAccounts = false;
+            selectedMessage = null;
             labelMessage = null;
         }
     }
@@ -34,6 +36,16 @@ Panel {
         function onCredentialsAvailableChanged() {
             if (root.opened && Gmail.credentialsAvailable)
                 Gmail.preloadLabels();
+        }
+        function onMessageActionCompleted(success, operation, accountId, messageId) {
+            if (!success || root.selectedMessage?.id !== messageId
+                    || root.selectedMessage?.accountId !== accountId)
+                return;
+            if (operation === "archive" || operation === "trash") {
+                root.selectedMessage = null;
+            } else if (operation === "read" || operation === "unread") {
+                root.selectedMessage = Object.assign({}, root.selectedMessage, { read: operation === "read" });
+            }
         }
     }
     readonly property var filteredMessages: Gmail.messages.filter(message => !root.accountFilter
@@ -94,7 +106,14 @@ Panel {
         return Math.max(0, Gmail.accounts.findIndex(account => account.id === accountId));
     }
 
-    function openMessage(message) {
+    function readMessage(message) {
+        root.selectedMessage = message;
+        root.labelMessage = null;
+        Gmail.clearActionError();
+        Gmail.readMessage(message);
+    }
+
+    function openMessageInBrowser(message) {
         const index = root.accountIndex(message.accountId);
         const thread = encodeURIComponent(message.threadId);
         Qt.openUrlExternally(`https://mail.google.com/mail/u/${index}/#all/${thread}`);
@@ -116,7 +135,8 @@ Panel {
             layerNamespace: "quickshell:gmailInbox"
             implicitWidth: Appearance.sizes.gmailPopoverWidth
             // Keep the layer window still while the visible card changes height.
-            implicitHeight: Math.max(accountsView.implicitHeight, inboxView.implicitHeight)
+            implicitHeight: Math.max(accountsView.implicitHeight, inboxView.implicitHeight,
+                                     readingView.implicitHeight)
             onDismissed: root.close()
 
             mask: Region {
@@ -154,9 +174,31 @@ Panel {
                         onBackRequested: root.showAccounts = false
                     }
 
+                    GmailReadingView {
+                        id: readingView
+                        visible: !root.showAccounts && root.selectedMessage !== null
+                        Layout.fillWidth: true
+                        message: root.selectedMessage ?? ({ id: "", sender: "", subject: "", timestamp: 0,
+                                                          accountId: "", accountEmail: "", threadId: "" })
+                        maximumHeight: (popup.screen?.height ?? Appearance.sizes.barHeight * 12)
+                                       - Appearance.sizes.barHeight - Appearance.spacing.xxl
+                        onBackRequested: root.selectedMessage = null
+                        onBrowserRequested: root.openMessageInBrowser(root.selectedMessage)
+                        onActionRequested: (operation, anchor) => {
+                            if (operation === "labels") {
+                                if (Gmail.fetchLabels(root.selectedMessage.accountId)) {
+                                    root.labelAnchor = readingView.mapToItem(surface, anchor.x, anchor.y);
+                                    root.labelMessage = root.selectedMessage;
+                                }
+                            } else {
+                                Gmail.messageAction(root.selectedMessage, operation);
+                            }
+                        }
+                    }
+
                     ColumnLayout {
                         id: inboxView
-                        visible: !root.showAccounts
+                        visible: !root.showAccounts && root.selectedMessage === null
                         Layout.fillWidth: true
                         spacing: 0
 
@@ -468,7 +510,7 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                         MouseArea {
                                             anchors.fill: parent
                                             cursorShape: Qt.PointingHandCursor
-                                            onClicked: root.openMessage(row.modelData)
+                                            onClicked: root.readMessage(row.modelData)
                                         }
 
                                         RowLayout {
@@ -613,7 +655,7 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                                             onClicked: mouse => {
                                                                 const operation = actionButton.modelData.operation;
                                                                 if (operation === "open")
-                                                                    root.openMessage(row.modelData);
+                                                                    root.openMessageInBrowser(row.modelData);
                                                                 else if (operation === "labels") {
                                                                     if (Gmail.fetchLabels(row.modelData.accountId)) {
                                                                         root.labelAnchor = actionHover.mapToItem(surface, mouse.x, mouse.y);

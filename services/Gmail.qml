@@ -34,12 +34,20 @@ Singleton {
     readonly property bool syncing: syncProcess.running
     readonly property bool signingIn: loginProcess.running
     readonly property bool acting: actionProcess.running
+    readonly property bool reading: readProcess.running
+    property var readDetail: null
+    property string readError: ""
+    property var requestedRead: null
+    property var activeRead: null
     property var labelsByAccount: ({})
     property var labelErrorsByAccount: ({})
     property var pendingLabelAccounts: []
     property string activeLabelAccountId: ""
     property string actionError: ""
     property string actionAccountId: ""
+    property string actionMessageId: ""
+    property string actionOperation: ""
+    signal messageActionCompleted(bool success, string operation, string accountId, string messageId)
     property bool refreshAfterAction: false
     readonly property string savedClientId: keyring?.clientId ?? ""
     readonly property bool hasSavedClientSecret: (keyring?.clientSecret?.length ?? 0) > 0
@@ -179,6 +187,8 @@ Singleton {
             return false;
         root.actionError = "";
         root.actionAccountId = message.accountId;
+        root.actionMessageId = message.id;
+        root.actionOperation = operation;
         root.startProcess(actionProcess, {
             clientId: root.keyring.clientId,
             clientSecret: root.keyring.clientSecret,
@@ -188,6 +198,50 @@ Singleton {
             labelId: labelId ?? ""
         });
         return true;
+    }
+
+    function readMessage(message) {
+        root.requestedRead = message;
+        root.readDetail = null;
+        root.readError = "";
+        if (!root.reading)
+            root.startRead();
+    }
+
+    function startRead() {
+        const message = root.requestedRead;
+        if (!message)
+            return;
+        const refreshToken = root.keyring?.refreshTokens?.[message.accountId] ?? "";
+        if (!root.credentialsAvailable || !refreshToken) {
+            root.readError = "Sign in again to read this message";
+            return;
+        }
+        root.activeRead = message;
+        root.startProcess(readProcess, {
+            clientId: root.keyring.clientId,
+            clientSecret: root.keyring.clientSecret,
+            refreshToken: refreshToken,
+            messageId: message.id
+        });
+    }
+
+    function finishRead(exitCode) {
+        const active = root.activeRead;
+        root.activeRead = null;
+        if (active?.id !== root.requestedRead?.id
+                || active?.accountId !== root.requestedRead?.accountId) {
+            Qt.callLater(() => root.startRead());
+            return;
+        }
+        const detail = root.parseOutput(readOutput.text);
+        if (exitCode === 0 && detail?.id === active.id) {
+            root.readDetail = detail;
+            root.readError = "";
+        } else {
+            root.readError = exitCode === root.exitExpired
+                ? "Sign in again to read this message" : "Could not load this message";
+        }
     }
 
     function labelsForAccount(accountId) {
@@ -260,9 +314,11 @@ Singleton {
                 ? "Sign in again to allow mail actions"
                 : "Could not update this message";
             root.statusMessage = root.actionError;
+            root.messageActionCompleted(false, root.actionOperation, root.actionAccountId, root.actionMessageId);
             return;
         }
         root.actionError = "";
+        root.messageActionCompleted(true, root.actionOperation, root.actionAccountId, root.actionMessageId);
         if (root.syncing)
             root.refreshAfterAction = true;
         else
@@ -711,6 +767,23 @@ Singleton {
             stdinEnabled = false;
         }
         onExited: exitCode => root.finishAction(exitCode)
+    }
+
+    Process {
+        id: readProcess
+        property string payload: ""
+        command: ["/usr/bin/python3", Quickshell.shellPath("scripts/gmail/gmail_helper.py"), "read"]
+
+        stdout: StdioCollector { id: readOutput }
+
+        onRunningChanged: {
+            if (!running)
+                return;
+            write(payload);
+            payload = "";
+            stdinEnabled = false;
+        }
+        onExited: exitCode => root.finishRead(exitCode)
     }
 
     Process {

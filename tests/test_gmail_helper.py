@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import json
 import os
 import socket
@@ -24,6 +25,7 @@ class GmailFixtureHandler(BaseHTTPRequestHandler):
     history_id = "100"
     history_expired = False
     mutations: list[tuple[str, str, dict]] = []
+    read_payload: dict | None = None
 
     def send_json(self, status: int, payload: dict) -> None:
         body = json.dumps(payload).encode()
@@ -88,6 +90,9 @@ class GmailFixtureHandler(BaseHTTPRequestHandler):
                 self.send_json(200, {"id": message_id, "labelIds": self.message_label_ids})
                 return
             self.message_fetches[message_id] = self.message_fetches.get(message_id, 0) + 1
+            if self.read_payload is not None:
+                self.send_json(200, self.read_payload)
+                return
             self.send_json(200, {
                 "id": message_id,
                 "threadId": f"thread-{message_id}",
@@ -115,6 +120,7 @@ class GmailHelperContractTest(unittest.TestCase):
         GmailFixtureHandler.history_id = "100"
         GmailFixtureHandler.history_expired = False
         GmailFixtureHandler.mutations = []
+        GmailFixtureHandler.read_payload = None
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), GmailFixtureHandler)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
@@ -150,6 +156,59 @@ class GmailHelperContractTest(unittest.TestCase):
             }),
             text=True, capture_output=True, env=self.environment, check=False,
         )
+
+    def run_read(self):
+        return subprocess.run(
+            [sys.executable, str(HELPER), "read"],
+            input=json.dumps({
+                "clientId": "desktop-client", "clientSecret": "secret-on-stdin",
+                "refreshToken": "personal-token", "messageId": "personal-1",
+            }),
+            text=True, capture_output=True, env=self.environment, check=False,
+        )
+
+    def test_read_prefers_plain_text_and_lists_attachments_without_mutation(self) -> None:
+        encode = lambda value: base64.urlsafe_b64encode(value.encode()).decode().rstrip("=")
+        GmailFixtureHandler.read_payload = {
+            "id": "personal-1", "threadId": "thread-personal-1",
+            "internalDate": "1700000000000", "labelIds": ["INBOX", "UNREAD"],
+            "payload": {
+                "headers": [
+                    {"name": "From", "value": "Alice <alice@example.com>"},
+                    {"name": "To", "value": "Me <personal@example.com>"},
+                    {"name": "Subject", "value": "Viewing"},
+                ],
+                "parts": [
+                    {"mimeType": "text/html", "body": {"data": encode("<p>HTML fallback</p>")}},
+                    {"mimeType": "text/plain", "body": {"data": encode("Plain message")}},
+                    {"filename": "draft.pdf", "body": {"size": 253952, "attachmentId": "att-1"}},
+                ],
+            },
+        }
+        result = self.run_read()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        detail = json.loads(result.stdout)
+        self.assertEqual(detail["body"], "Plain message")
+        self.assertEqual(detail["attachments"], [{"filename": "draft.pdf", "size": 253952}])
+        self.assertEqual(detail["recipient"], "Me <personal@example.com>")
+        self.assertEqual(detail["sender"], "Alice")
+        self.assertEqual(GmailFixtureHandler.mutations, [])
+        self.assertEqual(GmailFixtureHandler.read_payload["labelIds"], ["INBOX", "UNREAD"])
+
+    def test_read_flattens_html_only_message(self) -> None:
+        html = "<style>.x{display:none}</style><p>Hello &amp; welcome</p><div>Second line</div>"
+        html += "<script>ignored()</script>"
+        GmailFixtureHandler.read_payload = {
+            "id": "personal-1", "internalDate": "1700000000000",
+            "payload": {"mimeType": "text/html", "body": {
+                "data": base64.urlsafe_b64encode(html.encode()).decode().rstrip("=")
+            }},
+        }
+        result = self.run_read()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        detail = json.loads(result.stdout)
+        self.assertEqual(detail["body"], "Hello & welcome\nSecond line")
+        self.assertEqual(detail["attachments"], [])
 
     def test_message_actions_use_modify_scope_operations(self) -> None:
         cases = [
