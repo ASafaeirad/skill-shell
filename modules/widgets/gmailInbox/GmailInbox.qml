@@ -24,6 +24,10 @@ Panel {
     readonly property int filteredTotal: root.accountFilter ? (Gmail.accounts.find(account => account.id
                                                                                               === root.accountFilter)
                                                                ?.total ?? 0) : Gmail.totalMessages
+    readonly property int unreadTotal: Gmail.accounts.reduce((sum, account) => sum + (account.unread ?? 0), 0)
+    readonly property int filteredUnread: root.accountFilter ? (Gmail.accounts.find(account => account.id
+                                                                                               === root.accountFilter)
+                                                                ?.unread ?? 0) : root.unreadTotal
 
     // Seconds until the service's next scheduled poll, ticked only while the
     // failure sections that display it are on screen.
@@ -36,6 +40,21 @@ Panel {
 
     function formatCountdown(seconds) {
         return `${("0" + Math.floor(seconds / 60)).slice(-2)}:${("0" + seconds % 60).slice(-2)}`;
+    }
+
+    function messageTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        if (date.toDateString() === now.toDateString())
+            return Qt.formatTime(date, "HH:mm");
+        if (now.getTime() - date.getTime() < 6 * 24 * 60 * 60 * 1000)
+            return Qt.formatDate(date, "ddd");
+        return Qt.formatDate(date, "d MMM");
+    }
+
+    function categoryName(category) {
+        return category?.startsWith("CATEGORY_") ? category.slice(9).toLowerCase().replace(/^./,
+                                                                                          letter => letter.toUpperCase()) : category;
     }
 
     Timer {
@@ -118,7 +137,51 @@ Panel {
 
                     RowLayout {
                         Layout.fillWidth: true
-                        Layout.margins: Appearance.spacing.m
+                        Layout.leftMargin: Appearance.spacing.lg
+                        Layout.rightMargin: Appearance.spacing.m
+                        Layout.topMargin: Appearance.spacing.m
+                        Layout.bottomMargin: Appearance.spacing.xs
+                        spacing: Appearance.spacing.xs
+
+                        StyledText {
+                            Layout.fillWidth: true
+                            text: "Inbox"
+                            font.pixelSize: Appearance.font.pixelSize.normal
+                            font.weight: Font.DemiBold
+                            color: Appearance.colors.colOnSurface
+                        }
+                        StyledText {
+                            text: `${root.filteredUnread} unread`
+                            font.pixelSize: Appearance.font.pixelSize.smallie
+                            color: Appearance.colors.colSubtext
+                        }
+                        MaterialSymbol {
+                            text: "settings"
+                            iconSize: Appearance.font.pixelSize.large
+                            color: Appearance.colors.colSubtext
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: root.showAccounts = true
+                            }
+                        }
+                        MaterialSymbol {
+                            text: "close"
+                            iconSize: Appearance.font.pixelSize.large
+                            color: Appearance.colors.colSubtext
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: root.close()
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.leftMargin: Appearance.spacing.m
+                        Layout.rightMargin: Appearance.spacing.m
+                        Layout.bottomMargin: Appearance.spacing.m
                         spacing: Appearance.spacing.xs
 
                         Rectangle {
@@ -139,7 +202,7 @@ Panel {
                                 }
                                 StyledText {
                                     text: `All ${Gmail.totalMessages}`
-                                    font.pixelSize: Appearance.font.pixelSize.smaller
+                                    font.pixelSize: Appearance.font.pixelSize.smallie
                                     color: Appearance.colors.colOnPrimaryContainer
                                 }
                             }
@@ -177,25 +240,13 @@ Panel {
                         Item {
                             Layout.fillWidth: true
                         }
-                        MaterialSymbol {
-                            text: "settings"
-                            iconSize: Appearance.font.pixelSize.large
+                        StyledText {
+                            visible: root.accountFilter !== ""
+                            text: Gmail.accounts.find(account => account.id === root.accountFilter)?.label ?? ""
+                            font.pixelSize: Appearance.font.pixelSize.smaller
                             color: Appearance.colors.colSubtext
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: root.showAccounts = true
-                            }
-                        }
-                        MaterialSymbol {
-                            text: "close"
-                            iconSize: Appearance.font.pixelSize.large
-                            color: Appearance.colors.colSubtext
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: root.close()
-                            }
+                            elide: Text.ElideRight
+                            Layout.maximumWidth: Appearance.sizes.gmailPopoverWidth / 4
                         }
                     }
 
@@ -375,7 +426,7 @@ Panel {
                     Flickable {
                         visible: root.filteredMessages.length > 0
                         Layout.fillWidth: true
-                        implicitHeight: Math.min(rows.implicitHeight, Appearance.sizes.barHeight * 7)
+                        implicitHeight: Math.min(rows.implicitHeight, Appearance.sizes.barHeight * 8)
                         contentHeight: rows.implicitHeight
                         clip: true
 
@@ -388,10 +439,16 @@ Panel {
                                     id: row
                                     required property var modelData
                                     width: rows.width
-                                    height: Appearance.sizes.barHeight + Appearance.spacing.s
+                                    height: Appearance.sizes.barHeight + Appearance.spacing.xxl
                                     color: hover.containsMouse ? Appearance.colors.colSurfaceContainerHigh :
                                                                  "transparent"
-                                    opacity: modelData.read ? 0.7 : 1
+
+                                    Rectangle {
+                                        anchors.bottom: parent.bottom
+                                        width: parent.width
+                                        height: Appearance.spacing.xxs / 2
+                                        color: Appearance.colors.colLayer0Border
+                                    }
 
                                     MouseArea {
                                         id: hover
@@ -405,7 +462,14 @@ Panel {
                                         anchors.fill: parent
                                         anchors.leftMargin: Appearance.spacing.lg
                                         anchors.rightMargin: Appearance.spacing.lg
-                                        spacing: Appearance.spacing.m
+                                        spacing: Appearance.spacing.s
+                                        Rectangle {
+                                            Layout.alignment: Qt.AlignVCenter
+                                            implicitWidth: Appearance.spacing.s
+                                            implicitHeight: implicitWidth
+                                            radius: Appearance.rounding.full
+                                            color: row.modelData.read ? "transparent" : Appearance.colors.colPrimary
+                                        }
                                         Rectangle {
                                             Layout.alignment: Qt.AlignVCenter
                                             implicitWidth: Appearance.spacing.xxl
@@ -415,64 +479,66 @@ Panel {
                                             StyledText {
                                                 anchors.centerIn: parent
                                                 text: row.modelData.sender.charAt(0).toUpperCase()
-                                                font.pixelSize: Appearance.font.pixelSize.smaller
+                                                font.pixelSize: Appearance.font.pixelSize.small
                                                 color: Appearance.m3colors.m3onPrimary
                                             }
                                         }
                                         ColumnLayout {
                                             Layout.fillWidth: true
                                             spacing: Appearance.spacing.xxs
-                                            RowLayout {
+                                            StyledText {
                                                 Layout.fillWidth: true
-                                                StyledText {
-                                                    text: row.modelData.sender
-                                                    font.pixelSize: Appearance.font.pixelSize.smallie
-                                                    color: Appearance.colors.colOnSurface
-                                                    elide: Text.ElideRight
-                                                    Layout.maximumWidth: Appearance.sizes.gmailPopoverWidth
-                                                                         / 3
-                                                }
-                                                StyledText {
-                                                    Layout.fillWidth: true
-                                                    text: row.modelData.subject
-                                                    font.pixelSize: Appearance.font.pixelSize.smaller
-                                                    color: Appearance.colors.colOnLayer1
-                                                    elide: Text.ElideRight
-                                                }
+                                                text: row.modelData.sender
+                                                font.pixelSize: Appearance.font.pixelSize.small
+                                                color: Appearance.colors.colSubtext
+                                                elide: Text.ElideRight
+                                            }
+                                            StyledText {
+                                                Layout.fillWidth: true
+                                                text: row.modelData.subject
+                                                font.pixelSize: Appearance.font.pixelSize.small
+                                                font.weight: row.modelData.read ? Font.Normal : Font.DemiBold
+                                                color: row.modelData.read ? Appearance.colors.colOnLayer1 :
+                                                                            Appearance.colors.colOnSurface
+                                                elide: Text.ElideRight
                                             }
                                             RowLayout {
                                                 spacing: Appearance.spacing.xs
                                                 Repeater {
-                                                    model: [row.modelData.category, ...(row.modelData.labels
-                                                                                        ?? [])].filter(
-                                                        Boolean).slice(0, 3)
+                                                    model: [root.categoryName(row.modelData.category), ...(row.modelData.labels
+                                                                                                           ?? [])].filter(
+                                                        Boolean).slice(0, 2)
                                                     delegate: Rectangle {
                                                         id: tagRect
                                                         required property string modelData
-                                                        implicitWidth: tag.implicitWidth
-                                                                       + Appearance.spacing.s * 2
+                                                        implicitWidth: Math.min(tag.implicitWidth
+                                                                                + Appearance.spacing.s * 2,
+                                                                                Appearance.sizes.gmailPopoverWidth / 3.5)
                                                         implicitHeight: tag.implicitHeight
                                                                         + Appearance.spacing.xxs * 2
                                                         radius: Appearance.rounding.full
-                                                        color: Appearance.colors.colPrimaryContainer
+                                                        color: Appearance.colors.colSurfaceContainerHigh
                                                         StyledText {
                                                             id: tag
                                                             anchors.centerIn: parent
+                                                            width: parent.width - Appearance.spacing.s * 2
                                                             text: tagRect.modelData
-                                                            font.pixelSize: Appearance.font.pixelSize.smallest
-                                                            color: Appearance.colors.colOnPrimaryContainer
+                                                            font.pixelSize: Appearance.font.pixelSize.smaller
+                                                            color: Appearance.colors.colSubtext
+                                                            elide: Text.ElideRight
                                                         }
                                                     }
                                                 }
                                             }
                                         }
                                         ColumnLayout {
-                                            Layout.alignment: Qt.AlignVCenter
+                                            Layout.alignment: Qt.AlignTop
+                                            Layout.topMargin: Appearance.spacing.m
+                                            spacing: Appearance.spacing.xs
                                             StyledText {
                                                 visible: !hover.containsMouse
-                                                text: Qt.formatDateTime(new Date(row.modelData.timestamp),
-                                                                        "ddd hh:mm")
-                                                font.pixelSize: Appearance.font.pixelSize.smaller
+                                                text: root.messageTime(row.modelData.timestamp)
+                                                font.pixelSize: Appearance.font.pixelSize.smallie
                                                 color: Appearance.colors.colSubtext
                                             }
                                             MaterialSymbol {
@@ -559,16 +625,24 @@ Panel {
                             color: Appearance.colors.colSubtext
                         }
                         Rectangle {
-                            implicitWidth: openLabel.implicitWidth + Appearance.spacing.m * 2
+                            implicitWidth: openContent.implicitWidth + Appearance.spacing.m * 2
                             implicitHeight: Appearance.spacing.xxl
                             radius: Appearance.rounding.full
                             color: Appearance.colors.colSurfaceContainerHigh
-                            StyledText {
-                                id: openLabel
+                            RowLayout {
+                                id: openContent
                                 anchors.centerIn: parent
-                                text: "Open Gmail ↗"
-                                font.pixelSize: Appearance.font.pixelSize.smaller
-                                color: Appearance.colors.colOnLayer1
+                                spacing: Appearance.spacing.xs
+                                MaterialSymbol {
+                                    text: "open_in_new"
+                                    iconSize: Appearance.font.pixelSize.normal
+                                    color: Appearance.colors.colOnLayer1
+                                }
+                                StyledText {
+                                    text: "Open Gmail"
+                                    font.pixelSize: Appearance.font.pixelSize.smaller
+                                    color: Appearance.colors.colOnLayer1
+                                }
                             }
                             MouseArea {
                                 anchors.fill: parent

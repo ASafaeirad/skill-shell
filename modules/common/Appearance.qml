@@ -411,7 +411,7 @@ Singleton {
         property real fabHoveredShadowRadius: 7
         property real hyprlandGapsOut: 5
         property real mediaControlsWidth: 440
-        property real gmailPopoverWidth: 380
+        property real gmailPopoverWidth: 480
         property real mediaControlsHeight: 160
         property real notificationPopupWidth: 410
         property real osdWidth: 180
