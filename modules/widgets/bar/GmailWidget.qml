@@ -31,13 +31,6 @@ MouseArea {
         anchors.centerIn: parent
         spacing: Appearance.spacing.xs
 
-        MaterialSymbol {
-            text: "mail"
-            iconSize: Appearance.font.pixelSize.larger
-            color: Appearance.colors.colOnLayer1
-            fill: Gmail.accounts.some(account => (account.unread ?? 0) > 0) ? 1 : 0
-        }
-
         Repeater {
             model: Gmail.accounts
 
