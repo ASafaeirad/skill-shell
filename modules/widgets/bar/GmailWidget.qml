@@ -19,7 +19,9 @@ MouseArea {
             GlobalStates.gmailInbox?.toggle();
     }
 
-    BarAnchor { name: "gmail" }
+    BarAnchor {
+        name: "gmail"
+    }
 
     function accountColor(account) {
         const paletteColor = Appearance.m3colors[account.color];
@@ -38,7 +40,7 @@ MouseArea {
                 id: accountCount
 
                 required property var modelData
-                spacing: Appearance.spacing.xxs
+                spacing: Appearance.spacing.s
 
                 Rectangle {
                     Layout.alignment: Qt.AlignVCenter
@@ -50,10 +52,9 @@ MouseArea {
 
                 StyledText {
                     Layout.alignment: Qt.AlignVCenter
-                    text: accountCount.modelData.unread ?? "--"
-                    color: accountCount.modelData.error
-                        ? Appearance.colors.colError
-                        : Appearance.colors.colOnLayer1
+                    text: accountCount.modelData.unread ?? ""
+                    color: accountCount.modelData.error ? Appearance.colors.colError :
+                                                          Appearance.colors.colOnLayer1
                     font.pixelSize: Appearance.font.pixelSize.small
                     font.family: Appearance.font.family.numbers
                 }
@@ -75,9 +76,5 @@ MouseArea {
                 duration: Appearance.animation.elementMove.duration * 4
             }
         }
-    }
-
-    StyledToolTip {
-        text: Gmail.syncing ? "Checking Gmail" : "Right-click to refresh Gmail"
     }
 }
