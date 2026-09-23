@@ -16,9 +16,26 @@ Singleton {
     property var cachedLayoutCodes: ({})
     property string currentLayoutName: ""
     property string currentLayoutCode: ""
+    readonly property int currentLayoutIndex: {
+        for (let i = 0; i < root.layoutCodes.length; i++) {
+            if (root.layoutCodes[i] === root.currentLayoutCode) return i;
+        }
+        return -1;
+    }
+    // Layout a password can actually be typed in, for the lock screen
+    readonly property int latinLayoutIndex: {
+        for (let i = 0; i < root.layoutCodes.length; i++) {
+            if (root.layoutCodes[i].startsWith("us")) return i;
+        }
+        return 0;
+    }
     // For the service
     property var baseLayoutFilePath: "/usr/share/X11/xkb/rules/base.lst"
-    property bool needsLayoutRefresh: false
+
+    function switchToLayoutIndex(index) {
+        if (index < 0 || index >= root.layoutCodes.length) return;
+        Quickshell.execDetached(["hyprctl", "switchxkblayout", "all", `${index}`]);
+    }
 
     // Update the layout code according to the layout name (Hyprland gives the name not the code)
     onCurrentLayoutNameChanged: root.updateLayoutCode()
@@ -81,8 +98,10 @@ Singleton {
         stdout: StdioCollector {
             id: devicesCollector
             onStreamFinished: {
+                if (!devicesCollector.text.trim()) return;
                 const parsedOutput = JSON.parse(devicesCollector.text);
                 const hyprlandKeyboard = parsedOutput["keyboards"].find(kb => kb.main === true);
+                if (!hyprlandKeyboard) return;
                 root.layoutCodes = hyprlandKeyboard["layout"].split(",");
                 root.currentLayoutName = hyprlandKeyboard["active_keymap"];
                 // console.log("[HyprlandXkb] Fetched | Layouts (multiple: " + (root.layoutCodes.length > 1) + "): "
@@ -91,26 +110,20 @@ Singleton {
         }
     }
 
-    // Update the layout name when it changes
+    // Update the layout when it changes. Hyprland emits activelayout once per keyboard
+    // device and the seat types with whichever one was used last, so re-read the main
+    // keyboard rather than trusting the device that happened to emit the event.
+    Timer {
+        id: refetchTimer
+        interval: 30
+        onTriggered: fetchLayoutsProc.running = true
+    }
+
     Connections {
         target: Hyprland
         function onRawEvent(event) {
-            if (event.name === "activelayout") {
-                if (root.needsLayoutRefresh) {
-                    root.needsLayoutRefresh = false;
-                    fetchLayoutsProc.running = true;
-                }
-
-                // If there's only one layout, the updated layout is always the same
-                if (root.layoutCodes.length <= 1) return;
-
-                // Update when layout might have changed
-                const dataString = event.data;
-                root.currentLayoutName = dataString.substring(dataString.indexOf(",") + 1);
-
-            } else if (event.name == "configreloaded") {
-                // Mark layout code list to be updated when config is reloaded
-                root.needsLayoutRefresh = true;
+            if (event.name === "activelayout" || event.name === "configreloaded") {
+                refetchTimer.restart();
             }
         }
     }
