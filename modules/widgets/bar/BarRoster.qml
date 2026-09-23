@@ -48,7 +48,7 @@ QtObject {
             Layout.alignment: Qt.AlignVCenter
 
             Bar.Media {
-                Layout.preferredWidth: Math.min(implicitWidth, Appearance.sizes.barCenterSideModuleWidth)
+                Layout.maximumWidth: Appearance.sizes.barCenterSideModuleWidth
             }
         }
     }

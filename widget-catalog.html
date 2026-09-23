@@ -960,12 +960,15 @@ modules/widgets/bar/BarRoster.qml
 modules/widgets/bar/BarSection.qml
 modules/widgets/bar/ClockWidgetPopup.qml
 modules/widgets/bar/GmailWidget.qml
+modules/widgets/bar/Media.qml
 modules/widgets/gmailInbox/GmailInbox.qml
 modules/widgets/gmailInbox/GmailAccountsView.qml
 modules/widgets/bar/StatusIndicators.qml
 modules/widgets/bar/weather/WeatherBar.qml
 modules/widgets/bar/weather/WeatherCard.qml
 modules/widgets/bar/weather/WeatherPopup.qml
+modules/widgets/sidebarRight/QuickSliders.qml
+modules/widgets/sidebarRight/SidebarRightContent.qml
 modules/widgets/pass/Pass.qml
 modules/widgets/pass/PassContent.qml`
         .trim()
@@ -982,6 +985,8 @@ modules/widgets/pass/PassContent.qml`
           "Clock hover panel with the full date plus local and configurable world clocks, including daylight-saving-aware zone abbreviations.",
         GmailWidget:
           "Gmail bar chip with account dots and unread counts; left-click opens the inbox and right-click refreshes it.",
+        Media:
+          "Bar media controls with a capped width, playback progress, and an optional track title.",
         GmailInbox:
           "Bar-anchored Gmail inbox with account filters, message metadata, loading, empty, cached-offline and expired-sign-in states, account management, retry controls, and browser actions.",
         GmailAccountsView:
@@ -998,6 +1003,10 @@ modules/widgets/pass/PassContent.qml`
           "Small labeled weather metric tile retained for alternate weather layouts.",
         WeatherPopup:
           "Current conditions panel with metric chips and a six-point, three-hour rain-probability forecast with hourly temperatures.",
+        QuickSliders:
+          "Brightness, volume, and microphone sliders that wait for their hardware services before accepting input.",
+        SidebarRightContent:
+          "Right sidebar content with system buttons, quick controls, and widget groups.",
         Pass:
           "Keyboard-first pass password-store panel with IPC and a global shortcut entry point.",
         PassContent:
