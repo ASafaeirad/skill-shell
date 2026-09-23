@@ -28,6 +28,27 @@ Scope {
         }
     }
 
+    // The password box is always typed in a latin layout, so the lock takes over the
+    // keyboard layout and puts the previous one back on unlock. Without this the
+    // layout chip and the characters you actually get can disagree.
+    property int layoutBeforeLock: -1
+
+    function claimLatinLayout() {
+        root.layoutBeforeLock = -1;
+        if (HyprlandXkb.layoutCodes.length <= 1) return;
+        const current = HyprlandXkb.currentLayoutIndex;
+        const latin = HyprlandXkb.latinLayoutIndex;
+        if (current < 0 || current === latin) return;
+        root.layoutBeforeLock = current;
+        HyprlandXkb.switchToLayoutIndex(latin);
+    }
+
+    function restoreLayoutBeforeLock() {
+        if (root.layoutBeforeLock < 0) return;
+        HyprlandXkb.switchToLayoutIndex(root.layoutBeforeLock);
+        root.layoutBeforeLock = -1;
+    }
+
     Process {
         id: unlockKeyringProc
         onExited: (exitCode, exitStatus) => {
@@ -54,6 +75,9 @@ Scope {
                 if (GlobalStates.screenLocked) {
                     lockContext.reset();
                     lockContext.tryFingerUnlock();
+                    root.claimLatinLayout();
+                } else {
+                    root.restoreLayoutBeforeLock();
                 }
             }
         }
