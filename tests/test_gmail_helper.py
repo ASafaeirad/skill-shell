@@ -210,6 +210,29 @@ class GmailHelperContractTest(unittest.TestCase):
         self.assertEqual(detail["body"], "Hello & welcome\nSecond line")
         self.assertEqual(detail["attachments"], [])
 
+    def test_read_decodes_each_text_parts_declared_charset(self) -> None:
+        cases = [
+            ("text/plain", "Café", "iso-8859-1", "iso-8859-1", "Café"),
+            ("text/html", "<p>Olá &amp; café</p>", "iso-8859-1", "iso-8859-1",
+             "Olá & café"),
+            ("text/plain", "Fallback café", "utf-8", "unknown-charset", "Fallback café"),
+        ]
+        for mime_type, content, encoding, declared_charset, expected in cases:
+            with self.subTest(mime_type=mime_type, charset=declared_charset):
+                GmailFixtureHandler.read_payload = {
+                    "id": "personal-1", "internalDate": "1700000000000",
+                    "payload": {
+                        "mimeType": mime_type,
+                        "headers": [{"name": "Content-Type", "value":
+                                     f"{mime_type}; charset={declared_charset}"}],
+                        "body": {"data": base64.urlsafe_b64encode(
+                            content.encode(encoding)).decode().rstrip("=")},
+                    },
+                }
+                result = self.run_read()
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(json.loads(result.stdout)["body"], expected)
+
     def test_message_actions_use_modify_scope_operations(self) -> None:
         cases = [
             ("archive", {"removeLabelIds": ["INBOX"]}, "modify"),
