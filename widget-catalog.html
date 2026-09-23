@@ -962,6 +962,7 @@ modules/widgets/bar/ClockWidgetPopup.qml
 modules/widgets/bar/GmailWidget.qml
 modules/widgets/bar/Media.qml
 modules/widgets/gmailInbox/GmailInbox.qml
+modules/widgets/gmailInbox/GmailReadingView.qml
 modules/widgets/gmailInbox/GmailAccountsView.qml
 modules/widgets/bar/StatusIndicators.qml
 modules/widgets/bar/weather/WeatherBar.qml
@@ -988,7 +989,9 @@ modules/widgets/pass/PassContent.qml`
         Media:
           "Bar media controls with a capped width, playback progress, and an optional track title.",
         GmailInbox:
-          "Bar-anchored Gmail inbox with account filters, unread dots, dates, hover actions for archive, mark as read, trash and browser opening, an opaque pointer-anchored label picker using cached per-account labels and closing on outside clicks, account management, a mail-action error banner cleared on close or reconnect, loading and failure states, and retry controls.",
+          "Bar-anchored Gmail inbox with account filters, unread dots, dates, hover actions for archive, mark as read, trash and browser opening, an opaque pointer-anchored label picker using cached per-account labels and closing on outside clicks, account management, a mail-action error banner cleared on close or reconnect, loading and failure states, retry controls, and in-popover message reading.",
+        GmailReadingView:
+          "Scrollable Gmail message view with subject, sender and recipient, account-coloured avatar, plain-text body, attachment metadata, back navigation, archive, trash, label and read-status controls, and a Reply in Gmail browser action.",
         GmailAccountsView:
           "Gmail account manager with inline label editing, wallpaper-palette color selection, removal, sign-in, and the active poll interval.",
         BarRoster:

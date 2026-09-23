@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import base64
 import hashlib
+from html.parser import HTMLParser
 from email.utils import parseaddr
 import http.client
 import json
@@ -210,6 +211,101 @@ def normalize_message(message: dict[str, Any], labels: dict[str, str]) -> dict[s
         "attachment": has_attachment(message.get("payload", {})),
         **label_fields(label_ids, labels),
     }
+
+
+class MessageTextParser(HTMLParser):
+    """Flatten HTML mail without loading remote content or exposing markup."""
+
+    BLOCKS = {"address", "article", "blockquote", "br", "div", "h1", "h2", "h3",
+              "h4", "h5", "h6", "hr", "li", "ol", "p", "pre", "section", "table",
+              "tr", "ul"}
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.chunks: list[str] = []
+        self.hidden = 0
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag in ("script", "style"):
+            self.hidden += 1
+        if tag in self.BLOCKS:
+            self.chunks.append("\n")
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in ("script", "style"):
+            self.hidden = max(0, self.hidden - 1)
+        if tag in self.BLOCKS:
+            self.chunks.append("\n")
+
+    def handle_data(self, data: str) -> None:
+        if not self.hidden:
+            self.chunks.append(data)
+
+    def text(self) -> str:
+        return "\n".join(line.strip() for line in "".join(self.chunks).splitlines()
+                         if line.strip())
+
+
+def flatten_message(payload: dict[str, Any]) -> tuple[str, list[dict[str, Any]]]:
+    plain: list[str] = []
+    html: list[str] = []
+    attachments: list[dict[str, Any]] = []
+
+    def visit(part: dict[str, Any]) -> None:
+        filename = part.get("filename", "")
+        body = part.get("body") or {}
+        if filename:
+            attachments.append({"filename": str(filename), "size": int(body.get("size", 0))})
+            return
+        data = body.get("data")
+        if data:
+            decoded = base64.urlsafe_b64decode(data + "=" * (-len(data) % 4)).decode(
+                "utf-8", errors="replace")
+            mime_type = part.get("mimeType", "")
+            if mime_type == "text/plain":
+                plain.append(decoded)
+            elif mime_type == "text/html":
+                parser = MessageTextParser()
+                parser.feed(decoded)
+                html.append(parser.text())
+        for child in part.get("parts", []):
+            if isinstance(child, dict):
+                visit(child)
+
+    visit(payload)
+    preferred = plain if any(text.strip() for text in plain) else html
+    return ("\n\n".join(text.strip() for text in preferred if text.strip()), attachments)
+
+
+def read_message(request: dict[str, Any]) -> tuple[dict[str, Any], int]:
+    client_id = require_string(request, "clientId")
+    client_secret = require_string(request, "clientSecret")
+    refresh_token = require_string(request, "refreshToken")
+    message_id = require_string(request, "messageId")
+    client = JsonHttpClient()
+    try:
+        token = exchange_refresh_token(client, client_id, client_secret, refresh_token)
+        detail = gmail_get(client, f"/users/me/messages/{urllib.parse.quote(message_id, safe='')}?format=full", token)
+        payload = detail.get("payload", {})
+        headers = {
+            str(header.get("name", "")).lower(): str(header.get("value", ""))
+            for header in payload.get("headers", []) if isinstance(header, dict)
+        }
+        sender_name, sender_address = parseaddr(headers.get("from", ""))
+        body, attachments = flatten_message(payload)
+        return {
+            "id": detail["id"],
+            "threadId": detail.get("threadId", detail["id"]),
+            "subject": headers.get("subject", "(no subject)"),
+            "sender": sender_name or sender_address or "Unknown sender",
+            "senderAddress": sender_address,
+            "recipient": headers.get("to", ""),
+            "timestamp": int(detail.get("internalDate", 0)),
+            "body": body,
+            "attachments": attachments,
+        }, EXIT_SUCCESS
+    finally:
+        client.close()
 
 
 def update_known_labels(
@@ -490,7 +586,7 @@ def action(request: dict[str, Any]) -> tuple[dict[str, Any], int]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=("login", "sync", "action"))
+    parser.add_argument("command", choices=("login", "sync", "action", "read"))
     args = parser.parse_args()
     try:
         request = read_request()
@@ -498,6 +594,8 @@ def main() -> int:
             payload, exit_code = login(request)
         elif args.command == "sync":
             payload, exit_code = sync(request)
+        elif args.command == "read":
+            payload, exit_code = read_message(request)
         else:
             payload, exit_code = action(request)
     except AuthorizationExpired as error:
