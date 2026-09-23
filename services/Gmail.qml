@@ -27,6 +27,7 @@ Singleton {
 
     property var syncedAccounts: []
     property var messageCache: ({})
+    property var historyIds: ({})
     property date lastSync: new Date(0)
     property var pendingAccount: null
     property string lastOutcome: credentialsAvailable ? "idle" : "signin"
@@ -114,7 +115,8 @@ Singleton {
                 id: account.id,
                 email: account.email,
                 refreshToken: refreshTokens[account.id] ?? "",
-                knownMessages: root.messageCache[account.id] ?? []
+                knownMessages: root.messageCache[account.id] ?? [],
+                historyId: root.historyIds[account.id] ?? ""
             }));
         root.lastOutcome = "syncing";
         root.statusMessage = "Checking Gmail";
@@ -136,11 +138,15 @@ Singleton {
         if (response?.accounts) {
             root.syncedAccounts = response.accounts;
             const updatedCache = Object.assign({}, root.messageCache);
+            const updatedHistoryIds = Object.assign({}, root.historyIds);
             for (const account of response.accounts) {
-                if (!account.error)
+                if (!account.error) {
                     updatedCache[account.id] = account.messages ?? [];
+                    updatedHistoryIds[account.id] = account.historyId ?? "";
+                }
             }
             root.messageCache = updatedCache;
+            root.historyIds = updatedHistoryIds;
         }
         if (exitCode === 0) {
             root.lastSync = new Date();
@@ -218,6 +224,9 @@ Singleton {
         const updatedCache = Object.assign({}, root.messageCache);
         delete updatedCache[accountId];
         root.messageCache = updatedCache;
+        const updatedHistoryIds = Object.assign({}, root.historyIds);
+        delete updatedHistoryIds[accountId];
+        root.historyIds = updatedHistoryIds;
         root.statusMessage = "Gmail account removed";
     }
 
