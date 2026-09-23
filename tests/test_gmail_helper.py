@@ -18,6 +18,7 @@ OAUTH_BROWSER = Path(__file__).with_name("oauth_browser_callback.py")
 
 class GmailFixtureHandler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
+    message_fetches: dict[str, int] = {}
 
     def send_json(self, status: int, payload: dict) -> None:
         body = json.dumps(payload).encode()
@@ -51,6 +52,29 @@ class GmailFixtureHandler(BaseHTTPRequestHandler):
         if authorization not in counts:
             self.send_json(401, {"error": {"status": "UNAUTHENTICATED"}})
             return
+        if self.path.startswith("/gmail/v1/users/me/messages?labelIds=INBOX"):
+            prefix = "personal" if "personal" in authorization else "work"
+            self.send_json(200, {"messages": [{"id": f"{prefix}-1"}], "resultSizeEstimate": 2})
+            return
+        if self.path == "/gmail/v1/users/me/labels":
+            self.send_json(200, {"labels": [{"id": "Label_1", "name": "Projects", "type": "user"}]})
+            return
+        if self.path.startswith("/gmail/v1/users/me/messages/"):
+            message_id = self.path.split("/")[-1].split("?")[0]
+            self.message_fetches[message_id] = self.message_fetches.get(message_id, 0) + 1
+            self.send_json(200, {
+                "id": message_id,
+                "threadId": f"thread-{message_id}",
+                "snippet": "A short preview",
+                "internalDate": "1700000000000",
+                "labelIds": ["INBOX", "UNREAD", "CATEGORY_PRIMARY", "Label_1"],
+                "payload": {
+                    "headers": [{"name": "From", "value": "Alice <alice@example.com>"},
+                                {"name": "Subject", "value": "Hello"}],
+                    "parts": [{"filename": "report.pdf"}],
+                },
+            })
+            return
         self.send_json(200, {"messagesUnread": counts[authorization]})
 
     def log_message(self, _format: str, *_args: object) -> None:
@@ -59,6 +83,7 @@ class GmailFixtureHandler(BaseHTTPRequestHandler):
 
 class GmailHelperContractTest(unittest.TestCase):
     def setUp(self) -> None:
+        GmailFixtureHandler.message_fetches = {}
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), GmailFixtureHandler)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
@@ -132,25 +157,26 @@ class GmailHelperContractTest(unittest.TestCase):
         )
 
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(
-            json.loads(result.stdout),
-            {
-                "accounts": [
-                    {
-                        "id": "personal",
-                        "email": "personal@example.com",
-                        "unread": 4,
-                        "error": None,
-                    },
-                    {
-                        "id": "work",
-                        "email": "work@example.com",
-                        "unread": 12,
-                        "error": None,
-                    },
-                ]
-            },
-        )
+        accounts = json.loads(result.stdout)["accounts"]
+        self.assertEqual([account["unread"] for account in accounts], [4, 12])
+        self.assertEqual([account["total"] for account in accounts], [2, 2])
+        self.assertEqual(accounts[0]["messages"][0], {
+            "id": "personal-1", "threadId": "thread-personal-1",
+            "sender": "Alice", "subject": "Hello",
+            "snippet": "A short preview", "timestamp": 1700000000000,
+            "read": False, "attachment": True, "category": "Primary",
+            "labels": ["Projects"],
+        })
+
+        cached = self.run_sync({
+            "clientId": "desktop-client", "clientSecret": "secret-on-stdin",
+            "accounts": [{"id": "personal", "email": "personal@example.com",
+                          "refreshToken": "personal-token",
+                          "knownMessages": accounts[0]["messages"]}],
+        })
+        self.assertEqual(cached.returncode, 0, cached.stderr)
+        self.assertEqual(json.loads(cached.stdout)["accounts"][0]["messages"], accounts[0]["messages"])
+        self.assertEqual(GmailFixtureHandler.message_fetches["personal-1"], 1)
 
     def test_expired_authorisation_has_distinct_exit_code(self) -> None:
         result = self.run_sync(

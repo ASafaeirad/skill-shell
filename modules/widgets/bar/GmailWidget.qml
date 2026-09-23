@@ -14,7 +14,11 @@ MouseArea {
     onClicked: event => {
         if (event.button === Qt.RightButton)
             Gmail.sync();
+        else
+            GlobalStates.gmailInbox?.toggle();
     }
+
+    BarAnchor { name: "gmail" }
 
     function accountColor(account) {
         const paletteColor = Appearance.m3colors[account.color];

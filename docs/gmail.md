@@ -1,7 +1,9 @@
-# Gmail unread counts
+# Gmail inbox
 
 The Gmail widget shows one wallpaper-themed account dot and unread count per
-enabled account in the bar. Right-click the chip to refresh immediately. This
+enabled account in the bar. Left-click opens the inbox. Use its account dots to
+filter messages, or open a message in Gmail from its row. Right-click the chip
+to refresh immediately. This
 version requests `https://www.googleapis.com/auth/gmail.readonly` and cannot
 change messages.
 

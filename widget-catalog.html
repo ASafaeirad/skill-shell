@@ -960,6 +960,7 @@ modules/widgets/bar/BarRoster.qml
 modules/widgets/bar/BarSection.qml
 modules/widgets/bar/ClockWidgetPopup.qml
 modules/widgets/bar/GmailWidget.qml
+modules/widgets/gmailInbox/GmailInbox.qml
 modules/widgets/bar/StatusIndicators.qml
 modules/widgets/bar/weather/WeatherBar.qml
 modules/widgets/bar/weather/WeatherCard.qml
@@ -979,7 +980,9 @@ modules/widgets/pass/PassContent.qml`
         ClockWidgetPopup:
           "Clock hover panel with the full date plus local and configurable world clocks, including daylight-saving-aware zone abbreviations.",
         GmailWidget:
-          "Read-only Gmail bar chip with a wallpaper-palette account dot and unread count for each enabled account; right-click refreshes the counts.",
+          "Gmail bar chip with account dots and unread counts; left-click opens the inbox and right-click refreshes it.",
+        GmailInbox:
+          "Bar-anchored Gmail inbox with account filters, message metadata, loading and empty states, and browser actions.",
         BarRoster:
           "Unified bar widget roster declaring section placement and screen-width gating consumed by the bar.",
         BarSection:

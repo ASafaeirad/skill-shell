@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import base64
 import hashlib
+from email.utils import parseaddr
 import http.client
 import json
 import os
@@ -165,6 +166,35 @@ def stable_account_id(email: str) -> str:
     return hashlib.sha256(email.strip().lower().encode("utf-8")).hexdigest()[:16]
 
 
+def has_attachment(part: dict[str, Any]) -> bool:
+    if part.get("filename"):
+        return True
+    return any(has_attachment(child) for child in part.get("parts", []) if isinstance(child, dict))
+
+
+def normalize_message(message: dict[str, Any], labels: dict[str, str]) -> dict[str, Any]:
+    headers = {
+        str(header.get("name", "")).lower(): str(header.get("value", ""))
+        for header in message.get("payload", {}).get("headers", [])
+        if isinstance(header, dict)
+    }
+    sender_name, sender_address = parseaddr(headers.get("from", ""))
+    label_ids = message.get("labelIds", [])
+    return {
+        "id": message["id"],
+        "threadId": message.get("threadId", message["id"]),
+        "sender": sender_name or sender_address or "Unknown sender",
+        "subject": headers.get("subject", "(no subject)"),
+        "snippet": message.get("snippet", ""),
+        "timestamp": int(message.get("internalDate", 0)),
+        "read": "UNREAD" not in label_ids,
+        "attachment": has_attachment(message.get("payload", {})),
+        "category": next((labels.get(label, label.removeprefix("CATEGORY_").title())
+                          for label in label_ids if label.startswith("CATEGORY_")), ""),
+        "labels": [labels[label] for label in label_ids if label in labels],
+    }
+
+
 class OAuthCallbackHandler(BaseHTTPRequestHandler):
     server: "OAuthCallbackServer"
 
@@ -287,6 +317,8 @@ def sync(request: dict[str, Any]) -> tuple[dict[str, Any], int]:
                 "id": account_id,
                 "email": email,
                 "unread": None,
+                "messages": account.get("knownMessages", []),
+                "total": 0,
                 "error": None,
             }
             try:
@@ -299,6 +331,31 @@ def sync(request: dict[str, Any]) -> tuple[dict[str, Any], int]:
                 )
                 unread_label = gmail_get(client, "/users/me/labels/UNREAD", access_token)
                 result["unread"] = int(unread_label.get("messagesUnread", 0))
+                inbox = gmail_get(client, "/users/me/messages?labelIds=INBOX&maxResults=12", access_token)
+                listed = inbox.get("messages", [])
+                result["total"] = int(inbox.get("resultSizeEstimate", len(listed)))
+                known = {
+                    item["id"]: item for item in account.get("knownMessages", [])
+                    if isinstance(item, dict) and isinstance(item.get("id"), str)
+                }
+                new_ids = [item["id"] for item in listed if item.get("id") not in known]
+                labels: dict[str, str] = {}
+                if new_ids:
+                    label_response = gmail_get(client, "/users/me/labels", access_token)
+                    labels = {
+                        label["id"]: label.get("name", label["id"])
+                        for label in label_response.get("labels", [])
+                        if label.get("type") == "user" or label.get("id", "").startswith("CATEGORY_")
+                    }
+                messages = []
+                for item in listed:
+                    message_id = item["id"]
+                    if message_id in known:
+                        messages.append(known[message_id])
+                    else:
+                        detail = gmail_get(client, f"/users/me/messages/{urllib.parse.quote(message_id)}?format=full", access_token)
+                        messages.append(normalize_message(detail, labels))
+                result["messages"] = messages
                 outcomes.append("success")
             except GmailError as error:
                 result["error"] = error.outcome
