@@ -308,9 +308,9 @@ def sync(request: dict[str, Any]) -> tuple[dict[str, Any], int]:
         client.close()
 
     exit_code = EXIT_SUCCESS
-    if outcomes and all(outcome == "expired" for outcome in outcomes):
+    if "expired" in outcomes:
         exit_code = EXIT_EXPIRED
-    elif outcomes and all(outcome == "network" for outcome in outcomes):
+    elif "network" in outcomes:
         exit_code = EXIT_NETWORK
     return {"accounts": results}, exit_code
 

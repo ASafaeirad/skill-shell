@@ -88,7 +88,7 @@ class GmailHelperContractTest(unittest.TestCase):
         environment = {
             **self.environment,
             "GMAIL_AUTHORIZATION_URL": "https://accounts.example.test/authorize",
-            "BROWSER": f"{sys.executable} {OAUTH_BROWSER} %s",
+            "BROWSER": f"{sys.executable} {OAUTH_BROWSER} %s &",
         }
         result = subprocess.run(
             [sys.executable, str(HELPER), "login"],
@@ -169,6 +169,31 @@ class GmailHelperContractTest(unittest.TestCase):
 
         self.assertEqual(result.returncode, 2)
         self.assertEqual(json.loads(result.stdout)["accounts"][0]["error"], "expired")
+
+    def test_mixed_results_report_failure_and_keep_successful_counts(self) -> None:
+        result = self.run_sync(
+            {
+                "clientId": "desktop-client",
+                "clientSecret": "secret-on-stdin",
+                "accounts": [
+                    {
+                        "id": "personal",
+                        "email": "personal@example.com",
+                        "refreshToken": "personal-token",
+                    },
+                    {
+                        "id": "work",
+                        "email": "work@example.com",
+                        "refreshToken": "expired-token",
+                    },
+                ],
+            }
+        )
+
+        self.assertEqual(result.returncode, 2)
+        accounts = json.loads(result.stdout)["accounts"]
+        self.assertEqual(accounts[0]["unread"], 4)
+        self.assertEqual(accounts[1]["error"], "expired")
 
     def test_unreachable_network_has_distinct_exit_code(self) -> None:
         with socket.socket() as probe:

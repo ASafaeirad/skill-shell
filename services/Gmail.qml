@@ -26,6 +26,7 @@ Singleton {
     readonly property bool hasSavedClientSecret: (keyring?.clientSecret?.length ?? 0) > 0
 
     property var syncedAccounts: []
+    property var pendingAccount: null
     property string lastOutcome: credentialsAvailable ? "idle" : "signin"
     property string statusMessage: credentialsAvailable ? "" : "Sign in to Gmail"
 
@@ -142,7 +143,16 @@ Singleton {
             return;
         }
 
+        root.pendingAccount = account;
+        root.statusMessage = `Saving ${account.email}`;
         KeyringStorage.setNestedField(["gmail", "refreshTokens", account.id], account.refreshToken);
+    }
+
+    function recordPendingAccount() {
+        const account = root.pendingAccount;
+        if (!account)
+            return;
+        root.pendingAccount = null;
         const accounts = Array.from(root.configuredAccounts);
         const existingIndex = accounts.findIndex(item => item.id === account.id);
         if (existingIndex >= 0) {
@@ -196,11 +206,15 @@ Singleton {
     }
 
     onConfiguredAccountsChanged: {
-        if (root.enabled)
-            deferredSync.restart();
+        KeyringStorage.fetchKeyringData();
     }
 
-    Component.onCompleted: deferredSync.restart()
+    Component.onCompleted: {
+        if (KeyringStorage.loaded)
+            deferredSync.restart();
+        else
+            KeyringStorage.fetchKeyringData();
+    }
 
     Connections {
         target: KeyringStorage
@@ -208,6 +222,22 @@ Singleton {
         function onLoadedChanged() {
             if (KeyringStorage.loaded)
                 deferredSync.restart();
+        }
+
+        function onDataLoaded() {
+            deferredSync.restart();
+        }
+
+        function onSaveFinished(success) {
+            if (!root.pendingAccount)
+                return;
+            if (success) {
+                root.recordPendingAccount();
+                return;
+            }
+            root.pendingAccount = null;
+            root.lastOutcome = "error";
+            root.statusMessage = "Could not save the Gmail refresh token";
         }
     }
 

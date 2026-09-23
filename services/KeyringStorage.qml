@@ -16,6 +16,8 @@ Singleton {
     id: root
 
     signal dataChanged()
+    signal dataLoaded()
+    signal saveFinished(bool success)
 
     property bool loaded: false
     property bool savePending: false
@@ -100,7 +102,8 @@ Singleton {
     function fetchKeyringData() {
         // console.log("[KeyringStorage] Fetching keyring data...");
         // console.log("[KeyringStorage] getData command:'" + getData.command.join("' '") + "'");
-        getData.running = true;
+        if (!getData.running)
+            getData.running = true;
     }
 
     function saveKeyringData() {
@@ -126,9 +129,11 @@ Singleton {
                 stdinEnabled = false // End input stream
             }
         }
-        onExited: {
-            if (!root.savePending)
+        onExited: exitCode => {
+            if (!root.savePending) {
+                root.saveFinished(exitCode === 0);
                 return;
+            }
             root.savePending = false;
             Qt.callLater(() => root.saveKeyringData());
         }
@@ -163,6 +168,7 @@ Singleton {
             }
             if (exitCode !== 2) {
                 root.loaded = true;
+                root.dataLoaded();
             }
         }
     }
