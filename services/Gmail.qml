@@ -34,7 +34,10 @@ Singleton {
     readonly property bool syncing: syncProcess.running
     readonly property bool signingIn: loginProcess.running
     readonly property bool acting: actionProcess.running
-    property var availableLabels: []
+    property var labelsByAccount: ({})
+    property var labelErrorsByAccount: ({})
+    property var pendingLabelAccounts: []
+    property string activeLabelAccountId: ""
     property string actionError: ""
     property string actionAccountId: ""
     property bool refreshAfterAction: false
@@ -139,6 +142,7 @@ Singleton {
     function reconnect(accountId) {
         if (root.signingIn)
             return;
+        root.clearActionError();
         if (!root.credentialsAvailable) {
             root.lastOutcome = "signin";
             root.statusMessage = "Add the OAuth client in Settings > Gmail first";
@@ -149,6 +153,7 @@ Singleton {
     }
 
     function startLogin() {
+        root.clearActionError();
         root.lastOutcome = "signin";
         root.statusMessage = "Complete sign-in in your browser";
         root.startProcess(loginProcess, {
@@ -160,6 +165,10 @@ Singleton {
     function retryNow() {
         pollTimer.stop();
         root.sync();
+    }
+
+    function clearActionError() {
+        root.actionError = "";
     }
 
     function messageAction(message, operation, labelId) {
@@ -181,35 +190,76 @@ Singleton {
         return true;
     }
 
+    function labelsForAccount(accountId) {
+        return root.labelsByAccount[accountId] ?? [];
+    }
+
+    function isFetchingLabels(accountId) {
+        return root.activeLabelAccountId === accountId || root.pendingLabelAccounts.includes(accountId);
+    }
+
+    function preloadLabels() {
+        for (const account of root.accounts)
+            root.fetchLabels(account.id);
+    }
+
     function fetchLabels(accountId) {
-        if (root.acting || !root.credentialsAvailable)
+        if (!root.credentialsAvailable)
             return false;
         const refreshToken = root.keyring?.refreshTokens?.[accountId] ?? "";
         if (!refreshToken)
             return false;
-        root.actionError = "";
-        root.actionAccountId = accountId;
-        root.availableLabels = [];
-        root.startProcess(actionProcess, {
+        if (Object.prototype.hasOwnProperty.call(root.labelsByAccount, accountId)
+                || root.isFetchingLabels(accountId))
+            return true;
+        const errors = Object.assign({}, root.labelErrorsByAccount);
+        delete errors[accountId];
+        root.labelErrorsByAccount = errors;
+        root.pendingLabelAccounts = root.pendingLabelAccounts.concat(accountId);
+        root.startNextLabelFetch();
+        return true;
+    }
+
+    function startNextLabelFetch() {
+        if (labelProcess.running || root.activeLabelAccountId || root.pendingLabelAccounts.length === 0)
+            return;
+        const accountId = root.pendingLabelAccounts[0];
+        root.pendingLabelAccounts = root.pendingLabelAccounts.slice(1);
+        const refreshToken = root.keyring?.refreshTokens?.[accountId] ?? "";
+        if (!root.credentialsAvailable || !refreshToken) {
+            root.startNextLabelFetch();
+            return;
+        }
+        root.activeLabelAccountId = accountId;
+        root.startProcess(labelProcess, {
             clientId: root.keyring.clientId,
             clientSecret: root.keyring.clientSecret,
             refreshToken: refreshToken,
             operation: "labels"
         });
-        return true;
+    }
+
+    function finishLabelFetch(exitCode) {
+        const accountId = root.activeLabelAccountId;
+        const response = root.parseOutput(labelOutput.text);
+        if (exitCode === 0 && Array.isArray(response?.labels)) {
+            root.labelsByAccount = Object.assign({}, root.labelsByAccount, { [accountId]: response.labels });
+        } else {
+            root.labelErrorsByAccount = Object.assign({}, root.labelErrorsByAccount, {
+                [accountId]: exitCode === root.exitExpired
+                    ? "Sign in again to load labels" : "Could not load labels"
+            });
+        }
+        root.activeLabelAccountId = "";
+        Qt.callLater(() => root.startNextLabelFetch());
     }
 
     function finishAction(exitCode) {
-        const response = root.parseOutput(actionOutput.text);
         if (exitCode !== 0) {
             root.actionError = exitCode === root.exitExpired
                 ? "Sign in again to allow mail actions"
                 : "Could not update this message";
             root.statusMessage = root.actionError;
-            return;
-        }
-        if (response?.labels) {
-            root.availableLabels = response.labels;
             return;
         }
         root.actionError = "";
@@ -418,6 +468,7 @@ Singleton {
         root.pendingAccount = null;
         const reconnectId = root.reconnectAccountId;
         root.reconnectAccountId = "";
+        root.invalidateLabels(account.id);
 
         const accounts = Array.from(root.configuredAccounts);
         const existingIndex = accounts.findIndex(item => item.id === account.id);
@@ -488,6 +539,7 @@ Singleton {
     }
 
     function removeAccount(accountId) {
+        root.invalidateLabels(accountId);
         Config.options.gmail.accounts = root.configuredAccounts.filter(account => account.id !== accountId);
         KeyringStorage.removeNestedField(["gmail", "refreshTokens", accountId]);
         root.syncedAccounts = root.syncedAccounts.filter(account => account.id !== accountId);
@@ -496,6 +548,16 @@ Singleton {
         root.inboxCache = updated;
         root.persistCache();
         root.statusMessage = "Gmail account removed";
+    }
+
+    function invalidateLabels(accountId) {
+        const labels = Object.assign({}, root.labelsByAccount);
+        delete labels[accountId];
+        root.labelsByAccount = labels;
+        const errors = Object.assign({}, root.labelErrorsByAccount);
+        delete errors[accountId];
+        root.labelErrorsByAccount = errors;
+        root.pendingLabelAccounts = root.pendingLabelAccounts.filter(id => id !== accountId);
     }
 
     function setAccountLabel(accountId, label) {
@@ -649,6 +711,23 @@ Singleton {
             stdinEnabled = false;
         }
         onExited: exitCode => root.finishAction(exitCode)
+    }
+
+    Process {
+        id: labelProcess
+        property string payload: ""
+        command: ["/usr/bin/python3", Quickshell.shellPath("scripts/gmail/gmail_helper.py"), "action"]
+
+        stdout: StdioCollector { id: labelOutput }
+
+        onRunningChanged: {
+            if (!running)
+                return;
+            write(payload);
+            payload = "";
+            stdinEnabled = false;
+        }
+        onExited: exitCode => root.finishLabelFetch(exitCode)
     }
 
     IpcHandler {

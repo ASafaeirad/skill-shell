@@ -17,9 +17,24 @@ Panel {
     property string accountFilter: ""
     property bool showAccounts: false
     property var labelMessage: null
-    onOpenedChanged: if (!opened) {
-        showAccounts = false;
-        labelMessage = null;
+    property point labelAnchor: Qt.point(0, 0)
+    readonly property string labelAccountId: root.labelMessage?.accountId ?? ""
+    onOpenedChanged: {
+        Gmail.clearActionError();
+        if (opened) {
+            Gmail.preloadLabels();
+        } else {
+            showAccounts = false;
+            labelMessage = null;
+        }
+    }
+
+    Connections {
+        target: Gmail
+        function onCredentialsAvailableChanged() {
+            if (root.opened && Gmail.credentialsAvailable)
+                Gmail.preloadLabels();
+        }
     }
     readonly property var filteredMessages: Gmail.messages.filter(message => !root.accountFilter
                                                                              || message.accountId
@@ -569,9 +584,7 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                                 Repeater {
                                                     model: [
                                                         { icon: "archive", operation: "archive", title: "Archive" },
-                                                        { icon: row.modelData.read ? "mark_email_unread" : "mark_email_read",
-                                                          operation: row.modelData.read ? "unread" : "read",
-                                                          title: row.modelData.read ? "Mark unread" : "Mark read" },
+                                                        { icon: "drafts", operation: "read", title: "Mark as read" },
                                                         { icon: "label", operation: "labels", title: "Add label" },
                                                         { icon: "delete", operation: "trash", title: "Move to trash" },
                                                         { icon: "open_in_new", operation: "open", title: "Open in Gmail" }
@@ -597,13 +610,15 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                                             hoverEnabled: true
                                                             enabled: !Gmail.acting
                                                             cursorShape: Qt.PointingHandCursor
-                                                            onClicked: {
+                                                            onClicked: mouse => {
                                                                 const operation = actionButton.modelData.operation;
                                                                 if (operation === "open")
                                                                     root.openMessage(row.modelData);
                                                                 else if (operation === "labels") {
-                                                                    if (Gmail.fetchLabels(row.modelData.accountId))
+                                                                    if (Gmail.fetchLabels(row.modelData.accountId)) {
+                                                                        root.labelAnchor = actionHover.mapToItem(surface, mouse.x, mouse.y);
                                                                         root.labelMessage = row.modelData;
+                                                                    }
                                                                 } else
                                                                     Gmail.messageAction(row.modelData, operation);
                                                             }
@@ -670,26 +685,51 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                             implicitHeight: Appearance.spacing.xxs / 2
                             color: Appearance.colors.colLayer0Border
                         }
-                        RowLayout {
+                        Rectangle {
                             visible: Gmail.actionError.length > 0
                             Layout.fillWidth: true
-                            Layout.leftMargin: Appearance.spacing.m
-                            Layout.rightMargin: Appearance.spacing.m
-                            StyledText {
-                                Layout.fillWidth: true
-                                text: Gmail.actionError
-                                font.pixelSize: Appearance.font.pixelSize.smaller
-                                color: Appearance.colors.colError
-                            }
-                            StyledText {
-                                visible: Gmail.actionError.includes("Sign in again")
-                                text: "Sign in"
-                                font.pixelSize: Appearance.font.pixelSize.smaller
-                                color: Appearance.colors.colPrimary
-                                MouseArea {
-                                    anchors.fill: parent
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: Gmail.reconnect(Gmail.actionAccountId)
+                            implicitHeight: actionErrorContent.implicitHeight + Appearance.spacing.m * 2
+                            color: Appearance.colors.colErrorContainer
+
+                            RowLayout {
+                                id: actionErrorContent
+                                anchors.fill: parent
+                                anchors.margins: Appearance.spacing.m
+                                spacing: Appearance.spacing.s
+                                MaterialSymbol {
+                                    text: "error"
+                                    iconSize: Appearance.font.pixelSize.larger
+                                    color: Appearance.colors.colOnErrorContainer
+                                }
+                                StyledText {
+                                    Layout.fillWidth: true
+                                    Layout.minimumWidth: 0
+                                    text: Gmail.actionError
+                                    font.pixelSize: Appearance.font.pixelSize.smaller
+                                    color: Appearance.colors.colOnErrorContainer
+                                    wrapMode: Text.WordWrap
+                                }
+                                Rectangle {
+                                    visible: Gmail.actionError.includes("Sign in again")
+                                    implicitWidth: signInLabel.implicitWidth + Appearance.spacing.m * 2
+                                    implicitHeight: Appearance.spacing.xxl
+                                    radius: Appearance.rounding.full
+                                    color: signInHover.containsMouse
+                                           ? Appearance.colors.colErrorHover : Appearance.colors.colError
+                                    StyledText {
+                                        id: signInLabel
+                                        anchors.centerIn: parent
+                                        text: "Sign in"
+                                        font.pixelSize: Appearance.font.pixelSize.smaller
+                                        color: Appearance.colors.colOnError
+                                    }
+                                    MouseArea {
+                                        id: signInHover
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: Gmail.reconnect(Gmail.actionAccountId)
+                                    }
                                 }
                             }
                         }
@@ -738,16 +778,23 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                         }
                     }
                 }
+                MouseArea {
+                    anchors.fill: parent
+                    visible: root.labelMessage !== null && !root.showAccounts
+                    z: 2
+                    onClicked: root.labelMessage = null
+                }
                 Rectangle {
                     visible: root.labelMessage !== null && !root.showAccounts
-                    anchors.right: parent.right
-                    anchors.rightMargin: Appearance.spacing.m
-                    anchors.verticalCenter: parent.verticalCenter
+                    x: Math.max(Appearance.spacing.m,
+                                Math.min(root.labelAnchor.x, parent.width - width - Appearance.spacing.m))
+                    y: Math.max(Appearance.spacing.m,
+                                Math.min(root.labelAnchor.y, parent.height - height - Appearance.spacing.m))
                     width: Appearance.sizes.gmailPopoverWidth / 2
                     height: Math.min(labelChoices.implicitHeight + Appearance.spacing.m * 2,
                                      Appearance.sizes.barHeight * 6)
                     radius: Appearance.rounding.normal
-                    color: Appearance.colors.colSurfaceContainerHigh
+                    color: Appearance.m3colors.m3surfaceContainerHigh
                     border.color: Appearance.colors.colLayer0Border
                     z: 3
 
@@ -767,37 +814,44 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                 color: Appearance.colors.colOnSurface
                             }
                             StyledText {
-                                visible: Gmail.acting || Gmail.availableLabels.length === 0
+                                visible: Gmail.isFetchingLabels(root.labelAccountId)
+                                         || Gmail.labelsForAccount(root.labelAccountId).length === 0
                                 width: parent.width
-                                text: Gmail.acting ? "Loading labels…"
-                                                   : (Gmail.actionError || "No labels available")
+                                text: Gmail.isFetchingLabels(root.labelAccountId) ? "Loading labels…"
+                                      : (Gmail.labelErrorsByAccount[root.labelAccountId] || "No labels available")
                                 font.pixelSize: Appearance.font.pixelSize.smaller
                                 color: Appearance.colors.colSubtext
                             }
-                            Repeater {
-                                model: Gmail.availableLabels
-                                delegate: Rectangle {
-                                    id: labelChoice
-                                    required property var modelData
-                                    width: labelChoices.width
-                                    height: Appearance.spacing.xxl
-                                    radius: Appearance.rounding.small
-                                    color: labelHover.containsMouse
-                                           ? Appearance.colors.colLayer3Hover : "transparent"
-                                    StyledText {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        text: labelChoice.modelData.name
-                                        font.pixelSize: Appearance.font.pixelSize.smaller
-                                        color: Appearance.colors.colOnLayer2
-                                    }
-                                    MouseArea {
-                                        id: labelHover
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: {
-                                            Gmail.messageAction(root.labelMessage, "label", labelChoice.modelData.id);
-                                            root.labelMessage = null;
+                            Column {
+                                width: parent.width
+                                spacing: Appearance.spacing.xxs
+                                Repeater {
+                                    model: Gmail.labelsForAccount(root.labelAccountId)
+                                    delegate: Rectangle {
+                                        id: labelChoice
+                                        required property var modelData
+                                        width: labelChoices.width
+                                        height: Appearance.spacing.xl
+                                        radius: Appearance.rounding.unsharpenmore
+                                        color: labelHover.containsMouse
+                                               ? Appearance.colors.colLayer3Hover : "transparent"
+                                        StyledText {
+                                            anchors.left: parent.left
+                                            anchors.leftMargin: Appearance.spacing.s
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            text: labelChoice.modelData.name
+                                            font.pixelSize: Appearance.font.pixelSize.smaller
+                                            color: Appearance.colors.colOnLayer2
+                                        }
+                                        MouseArea {
+                                            id: labelHover
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: {
+                                                Gmail.messageAction(root.labelMessage, "label", labelChoice.modelData.id);
+                                                root.labelMessage = null;
+                                            }
                                         }
                                     }
                                 }
