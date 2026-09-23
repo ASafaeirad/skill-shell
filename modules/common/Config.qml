@@ -271,7 +271,11 @@ Singleton {
             property JsonObject pass: JsonObject {
                 // Case-insensitive regular expressions matched against store-relative entry paths.
                 property list<string> ignoredEntryPatterns: []
+                property int clipboardClearSeconds: 45
+                property int revealSeconds: 8
+                property int statusMessageSeconds: 2
             }
+
 
             property JsonObject regionSelector: JsonObject {
                 property JsonObject targetRegions: JsonObject {

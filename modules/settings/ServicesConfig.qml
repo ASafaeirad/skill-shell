@@ -94,4 +94,37 @@ ContentPage {
 
     }
 
+    ContentSection {
+        icon: "password_2"
+        title: "Password manager"
+
+        ConfigSpinBox {
+            icon: "content_paste_off"
+            text: "Clipboard clear lifetime (s)"
+            configKey: "pass.clipboardClearSeconds"
+            from: 5
+            to: 300
+            stepSize: 5
+        }
+
+        ConfigSpinBox {
+            icon: "visibility"
+            text: "Password reveal lifetime (s)"
+            configKey: "pass.revealSeconds"
+            from: 1
+            to: 60
+            stepSize: 1
+        }
+
+        ConfigSpinBox {
+            icon: "info"
+            text: "Status message lifetime (s)"
+            configKey: "pass.statusMessageSeconds"
+            from: 1
+            to: 10
+            stepSize: 1
+        }
+    }
+
 }
+

@@ -49,6 +49,9 @@ Scope {
     // An outside click, or another panel grabbing focus. Panels answer this the
     // same way they answer a cancel.
     signal dismissed()
+    // Emitted once the card's exit animation finishes and the dialog is fully closed.
+    signal closeFinished()
+
 
     property bool opened: root.stateKey.length > 0 ? (GlobalStates[root.stateKey] ?? false) : false
     // True while the exit animation plays; keeps the window loaded until it
@@ -153,7 +156,10 @@ Scope {
                         ignoreUnknownSignals: true
 
                         function onCloseFinished(): void {
-                            root.closing = false;
+                            if (root.closing) {
+                                root.closing = false;
+                                root.closeFinished();
+                            }
                         }
                     }
                 }
