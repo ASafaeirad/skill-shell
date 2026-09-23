@@ -26,6 +26,8 @@ Singleton {
     readonly property bool hasSavedClientSecret: (keyring?.clientSecret?.length ?? 0) > 0
 
     property var syncedAccounts: []
+    property var messageCache: ({})
+    property date lastSync: new Date(0)
     property var pendingAccount: null
     property string lastOutcome: credentialsAvailable ? "idle" : "signin"
     property string statusMessage: credentialsAvailable ? "" : "Sign in to Gmail"
@@ -40,10 +42,25 @@ Singleton {
                 const synced = syncedById[account.id];
                 return Object.assign({}, account, {
                     unread: synced?.unread ?? null,
-                    error: synced?.error ?? null
+                    error: synced?.error ?? null,
+                    messages: synced?.messages ?? root.messageCache[account.id] ?? [],
+                    total: synced?.total ?? 0
                 });
             });
     }
+
+    readonly property var messages: {
+        let combined = [];
+        for (const account of root.accounts) {
+            combined = combined.concat((account.messages ?? []).map(message => Object.assign({}, message, {
+                accountId: account.id,
+                accountEmail: account.email,
+                accountColor: account.color
+            })));
+        }
+        return combined.sort((a, b) => b.timestamp - a.timestamp);
+    }
+    readonly property int totalMessages: root.accounts.reduce((sum, account) => sum + (account.total ?? 0), 0)
 
     function saveCredentials(clientId, clientSecret) {
         if (!KeyringStorage.loaded) {
@@ -96,7 +113,8 @@ Singleton {
             .map(account => ({
                 id: account.id,
                 email: account.email,
-                refreshToken: refreshTokens[account.id] ?? ""
+                refreshToken: refreshTokens[account.id] ?? "",
+                knownMessages: root.messageCache[account.id] ?? []
             }));
         root.lastOutcome = "syncing";
         root.statusMessage = "Checking Gmail";
@@ -115,9 +133,17 @@ Singleton {
 
     function finishSync(exitCode) {
         const response = root.parseOutput(syncOutput.text);
-        if (response?.accounts)
+        if (response?.accounts) {
             root.syncedAccounts = response.accounts;
+            const updatedCache = Object.assign({}, root.messageCache);
+            for (const account of response.accounts) {
+                if (!account.error)
+                    updatedCache[account.id] = account.messages ?? [];
+            }
+            root.messageCache = updatedCache;
+        }
         if (exitCode === 0) {
+            root.lastSync = new Date();
             root.lastOutcome = "success";
             root.statusMessage = "Unread counts updated";
         } else if (exitCode === 2) {
@@ -189,6 +215,9 @@ Singleton {
         Config.options.gmail.accounts = root.configuredAccounts.filter(account => account.id !== accountId);
         KeyringStorage.removeNestedField(["gmail", "refreshTokens", accountId]);
         root.syncedAccounts = root.syncedAccounts.filter(account => account.id !== accountId);
+        const updatedCache = Object.assign({}, root.messageCache);
+        delete updatedCache[accountId];
+        root.messageCache = updatedCache;
         root.statusMessage = "Gmail account removed";
     }
 
