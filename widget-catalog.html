@@ -961,6 +961,7 @@ modules/widgets/bar/BarSection.qml
 modules/widgets/bar/ClockWidgetPopup.qml
 modules/widgets/bar/GmailWidget.qml
 modules/widgets/gmailInbox/GmailInbox.qml
+modules/widgets/gmailInbox/GmailAccountsView.qml
 modules/widgets/bar/StatusIndicators.qml
 modules/widgets/bar/weather/WeatherBar.qml
 modules/widgets/bar/weather/WeatherCard.qml
@@ -982,7 +983,9 @@ modules/widgets/pass/PassContent.qml`
         GmailWidget:
           "Gmail bar chip with account dots and unread counts; left-click opens the inbox and right-click refreshes it.",
         GmailInbox:
-          "Bar-anchored Gmail inbox with account filters, message metadata, loading, empty, cached-offline and expired-sign-in states, retry controls, and browser actions.",
+          "Bar-anchored Gmail inbox with account filters, message metadata, loading, empty, cached-offline and expired-sign-in states, account management, retry controls, and browser actions.",
+        GmailAccountsView:
+          "Gmail account manager with inline label editing, wallpaper-palette color selection, removal, sign-in, and the active poll interval.",
         BarRoster:
           "Unified bar widget roster declaring section placement and screen-width gating consumed by the bar.",
         BarSection:

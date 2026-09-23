@@ -15,6 +15,8 @@ Panel {
     hasOpenCloseShortcuts: true
 
     property string accountFilter: ""
+    property bool showAccounts: false
+    onOpenedChanged: if (!opened) showAccounts = false
     readonly property var filteredMessages: Gmail.messages.filter(message => !root.accountFilter
                                                                              || message.accountId
                                                                              === root.accountFilter).slice(0,
@@ -90,10 +92,29 @@ Panel {
                 radius: Appearance.rounding.normal
                 clip: true
 
+                Behavior on implicitHeight {
+                    NumberAnimation {
+                        duration: Appearance.animation.elementMoveFast.duration
+                        easing.type: Appearance.animation.elementMoveFast.type
+                        easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+                    }
+                }
+
                 ColumnLayout {
                     id: content
                     width: parent.width
                     spacing: 0
+
+                    GmailAccountsView {
+                        visible: root.showAccounts
+                        Layout.fillWidth: true
+                        onBackRequested: root.showAccounts = false
+                    }
+
+                    ColumnLayout {
+                        visible: !root.showAccounts
+                        Layout.fillWidth: true
+                        spacing: 0
 
                     RowLayout {
                         Layout.fillWidth: true
@@ -155,6 +176,16 @@ Panel {
                         }
                         Item {
                             Layout.fillWidth: true
+                        }
+                        MaterialSymbol {
+                            text: "settings"
+                            iconSize: Appearance.font.pixelSize.large
+                            color: Appearance.colors.colSubtext
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: root.showAccounts = true
+                            }
                         }
                         MaterialSymbol {
                             text: "close"
@@ -545,6 +576,7 @@ Panel {
                                 onClicked: root.openGmail()
                             }
                         }
+                    }
                     }
                 }
             }

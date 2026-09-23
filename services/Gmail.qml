@@ -24,6 +24,7 @@ Singleton {
     readonly property int refreshIntervalMinutes: Math.max(1, options?.refreshIntervalMinutes ?? 5)
     readonly property bool notifyOnNewMail: options?.notifyOnNewMail ?? false
     readonly property var configuredAccounts: options?.accounts ?? []
+    readonly property var accountColorKeys: ["term6", "term2", "term3", "term4", "term5", "term1"]
     readonly property var keyring: KeyringStorage.keyringData?.gmail ?? null
     readonly property bool credentialsAvailable: KeyringStorage.loaded
         && (keyring?.clientId?.length ?? 0) > 0
@@ -360,12 +361,14 @@ Singleton {
                 enabled: true
             });
         } else {
-            const palette = ["term1", "term2", "term3", "term4", "term5", "term6"];
+            const usedColors = accounts.map(item => item.color);
+            const color = root.accountColorKeys.find(key => !usedColors.includes(key))
+                ?? root.accountColorKeys[accounts.length % root.accountColorKeys.length];
             accounts.push({
                 id: account.id,
                 label: account.email,
                 email: account.email,
-                color: palette[accounts.length % palette.length],
+                color: color,
                 enabled: true,
                 notify: true
             });
@@ -427,6 +430,23 @@ Singleton {
         root.inboxCache = updated;
         root.persistCache();
         root.statusMessage = "Gmail account removed";
+    }
+
+    function setAccountLabel(accountId, label) {
+        const trimmed = label.trim();
+        if (!trimmed)
+            return;
+        Config.options.gmail.accounts = root.configuredAccounts.map(account =>
+            account.id === accountId ? Object.assign({}, account, { label: trimmed }) : account
+        );
+    }
+
+    function setAccountColor(accountId, colorKey) {
+        if (!root.accountColorKeys.includes(colorKey))
+            return;
+        Config.options.gmail.accounts = root.configuredAccounts.map(account =>
+            account.id === accountId ? Object.assign({}, account, { color: colorKey }) : account
+        );
     }
 
     function setAccountEnabled(accountId, enabled) {
