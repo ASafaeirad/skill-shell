@@ -2,9 +2,11 @@
 
 The Gmail widget shows one wallpaper-themed account dot and unread count per
 enabled account in the bar. Left-click opens the inbox. Use its account dots to
-filter messages, or open a message in Gmail from its row. Right-click the chip
-to refresh immediately. This version requests
-`https://www.googleapis.com/auth/gmail.readonly` and cannot change messages.
+filter messages, or open a message in Gmail from its row. Hover over a message
+to archive it, mark it read or unread, add a label, move it to trash, or open it
+in Gmail. Right-click the chip to refresh immediately. These actions use
+`https://www.googleapis.com/auth/gmail.modify`. Accounts signed in with the
+earlier read-only permission must sign in again before mail actions work.
 
 The shell keeps the last successful inbox in its cache. If Gmail is unreachable,
 the popover continues to show that inbox, labels it with the cache time, and
@@ -43,7 +45,7 @@ address, palette key, enabled state, notification preference, widget state, and
 refresh interval. The last successful inbox is stored in
 `~/.cache/quickshell/gmail/inbox.json` so it survives a shell restart.
 
-The shell invokes `scripts/gmail/gmail_helper.py` with only `login` or `sync`
+The shell invokes `scripts/gmail/gmail_helper.py` with `login`, `sync`, or `action`
 on the command line. It sends credentials as JSON over stdin. The helper uses
 the system Python standard library, owns every Google and Gmail endpoint, and
 returns normalized JSON. Exit code 2 means authorization expired, and exit code

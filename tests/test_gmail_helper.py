@@ -23,6 +23,7 @@ class GmailFixtureHandler(BaseHTTPRequestHandler):
     history_changes: list[dict] = []
     history_id = "100"
     history_expired = False
+    mutations: list[tuple[str, str, dict]] = []
 
     def send_json(self, status: int, payload: dict) -> None:
         body = json.dumps(payload).encode()
@@ -34,7 +35,13 @@ class GmailFixtureHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
         length = int(self.headers.get("Content-Length", "0"))
-        form = urllib.parse.parse_qs(self.rfile.read(length).decode())
+        body = self.rfile.read(length).decode()
+        if self.path.startswith("/gmail/v1/users/me/messages/"):
+            payload = json.loads(body) if body else {}
+            self.mutations.append((self.path, self.headers.get("Authorization", ""), payload))
+            self.send_json(200, {"id": self.path.split("/")[6], "labelIds": ["INBOX"]})
+            return
+        form = urllib.parse.parse_qs(body)
         refresh_token = form.get("refresh_token", [""])[0]
         if form.get("grant_type") == ["authorization_code"]:
             self.send_json(
@@ -107,6 +114,7 @@ class GmailHelperContractTest(unittest.TestCase):
         GmailFixtureHandler.history_changes = []
         GmailFixtureHandler.history_id = "100"
         GmailFixtureHandler.history_expired = False
+        GmailFixtureHandler.mutations = []
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), GmailFixtureHandler)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
@@ -131,6 +139,42 @@ class GmailHelperContractTest(unittest.TestCase):
             env=environment or self.environment,
             check=False,
         )
+
+    def run_action(self, operation: str, **extra: object):
+        return subprocess.run(
+            [sys.executable, str(HELPER), "action"],
+            input=json.dumps({
+                "clientId": "desktop-client", "clientSecret": "secret-on-stdin",
+                "refreshToken": "personal-token", "operation": operation,
+                "messageId": "personal-1", **extra,
+            }),
+            text=True, capture_output=True, env=self.environment, check=False,
+        )
+
+    def test_message_actions_use_modify_scope_operations(self) -> None:
+        cases = [
+            ("archive", {"removeLabelIds": ["INBOX"]}, "modify"),
+            ("read", {"removeLabelIds": ["UNREAD"]}, "modify"),
+            ("unread", {"addLabelIds": ["UNREAD"]}, "modify"),
+            ("label", {"addLabelIds": ["Label_2"]}, "modify"),
+            ("trash", {}, "trash"),
+        ]
+        for operation, expected_body, endpoint in cases:
+            with self.subTest(operation=operation):
+                result = self.run_action(operation, labelId="Label_2")
+                self.assertEqual(result.returncode, 0, result.stdout)
+                self.assertEqual(GmailFixtureHandler.mutations[-1], (
+                    f"/gmail/v1/users/me/messages/personal-1/{endpoint}",
+                    "Bearer access-personal-token", expected_body,
+                ))
+
+    def test_labels_action_lists_user_labels(self) -> None:
+        result = self.run_action("labels")
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertEqual(json.loads(result.stdout)["labels"], [
+            {"id": "Label_2", "name": "Personal"},
+            {"id": "Label_1", "name": "Projects"},
+        ])
 
     def test_login_uses_loopback_pkce_and_returns_account(self) -> None:
         environment = {

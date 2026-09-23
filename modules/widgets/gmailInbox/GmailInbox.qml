@@ -16,8 +16,11 @@ Panel {
 
     property string accountFilter: ""
     property bool showAccounts: false
-    onOpenedChanged: if (!opened)
-                         showAccounts = false
+    property var labelMessage: null
+    onOpenedChanged: if (!opened) {
+        showAccounts = false;
+        labelMessage = null;
+    }
     readonly property var filteredMessages: Gmail.messages.filter(message => !root.accountFilter
                                                                              || message.accountId
                                                                              === root.accountFilter).slice(0,
@@ -433,8 +436,12 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                         required property var modelData
                                         width: rows.width
                                         height: Appearance.sizes.barHeight + Appearance.spacing.xxl
-                                        color: hover.containsMouse
+                                        color: rowHover.hovered
                                                ? Appearance.colors.colSurfaceContainerHigh : "transparent"
+
+                                        HoverHandler {
+                                            id: rowHover
+                                        }
 
                                         Rectangle {
                                             anchors.bottom: parent.bottom
@@ -444,9 +451,7 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                         }
 
                                         MouseArea {
-                                            id: hover
                                             anchors.fill: parent
-                                            hoverEnabled: true
                                             cursorShape: Qt.PointingHandCursor
                                             onClicked: root.openMessage(row.modelData)
                                         }
@@ -533,23 +538,81 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                                 Layout.topMargin: Appearance.spacing.m
                                                 spacing: Appearance.spacing.xs
                                                 StyledText {
-                                                    visible: !hover.containsMouse
+                                                    visible: !rowHover.hovered
                                                     text: root.messageTime(row.modelData.timestamp)
                                                     font.pixelSize: Appearance.font.pixelSize.smallie
                                                     color: Appearance.colors.colSubtext
                                                 }
                                                 MaterialSymbol {
-                                                    visible: !hover.containsMouse && row.modelData.attachment
+                                                    visible: !rowHover.hovered && row.modelData.attachment
                                                     Layout.alignment: Qt.AlignRight
                                                     text: "attach_file"
                                                     iconSize: Appearance.font.pixelSize.smaller
                                                     color: Appearance.colors.colSubtext
                                                 }
-                                                MaterialSymbol {
-                                                    visible: hover.containsMouse
-                                                    text: "open_in_new"
-                                                    iconSize: Appearance.font.pixelSize.large
-                                                    color: Appearance.colors.colOnLayer1
+                                            }
+                                        }
+                                        Rectangle {
+                                            visible: rowHover.hovered
+                                            anchors.right: parent.right
+                                            anchors.rightMargin: Appearance.spacing.s
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            width: actions.implicitWidth + Appearance.spacing.s
+                                            height: Appearance.spacing.xxl + Appearance.spacing.xs
+                                            z: 2
+                                            color: Appearance.colors.colBackgroundSurfaceContainerHigh
+                                            Row {
+                                                id: actions
+                                                anchors.right: parent.right
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                spacing: Appearance.spacing.xxs
+                                                Repeater {
+                                                    model: [
+                                                        { icon: "archive", operation: "archive", title: "Archive" },
+                                                        { icon: row.modelData.read ? "mark_email_unread" : "mark_email_read",
+                                                          operation: row.modelData.read ? "unread" : "read",
+                                                          title: row.modelData.read ? "Mark unread" : "Mark read" },
+                                                        { icon: "label", operation: "labels", title: "Add label" },
+                                                        { icon: "delete", operation: "trash", title: "Move to trash" },
+                                                        { icon: "open_in_new", operation: "open", title: "Open in Gmail" }
+                                                    ]
+                                                    delegate: Rectangle {
+                                                        id: actionButton
+                                                        required property var modelData
+                                                        width: Appearance.spacing.xxl + Appearance.spacing.xs
+                                                        height: width
+                                                        radius: Appearance.rounding.full
+                                                        color: actionHover.containsMouse
+                                                               ? Appearance.colors.colLayer3Hover : "transparent"
+                                                        MaterialSymbol {
+                                                            anchors.centerIn: parent
+                                                            text: actionButton.modelData.icon
+                                                            iconSize: Appearance.font.pixelSize.huge
+                                                            color: actionButton.modelData.operation === "trash"
+                                                                   ? Appearance.colors.colError : Appearance.colors.colOnLayer2
+                                                        }
+                                                        MouseArea {
+                                                            id: actionHover
+                                                            anchors.fill: parent
+                                                            hoverEnabled: true
+                                                            enabled: !Gmail.acting
+                                                            cursorShape: Qt.PointingHandCursor
+                                                            onClicked: {
+                                                                const operation = actionButton.modelData.operation;
+                                                                if (operation === "open")
+                                                                    root.openMessage(row.modelData);
+                                                                else if (operation === "labels") {
+                                                                    if (Gmail.fetchLabels(row.modelData.accountId))
+                                                                        root.labelMessage = row.modelData;
+                                                                } else
+                                                                    Gmail.messageAction(row.modelData, operation);
+                                                            }
+                                                        }
+                                                        StyledToolTip {
+                                                            extraVisibleCondition: actionHover.containsMouse
+                                                            text: actionButton.modelData.title
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -608,6 +671,29 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                             color: Appearance.colors.colLayer0Border
                         }
                         RowLayout {
+                            visible: Gmail.actionError.length > 0
+                            Layout.fillWidth: true
+                            Layout.leftMargin: Appearance.spacing.m
+                            Layout.rightMargin: Appearance.spacing.m
+                            StyledText {
+                                Layout.fillWidth: true
+                                text: Gmail.actionError
+                                font.pixelSize: Appearance.font.pixelSize.smaller
+                                color: Appearance.colors.colError
+                            }
+                            StyledText {
+                                visible: Gmail.actionError.includes("Sign in again")
+                                text: "Sign in"
+                                font.pixelSize: Appearance.font.pixelSize.smaller
+                                color: Appearance.colors.colPrimary
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: Gmail.reconnect(Gmail.actionAccountId)
+                                }
+                            }
+                        }
+                        RowLayout {
                             Layout.fillWidth: true
                             Layout.margins: Appearance.spacing.m
                             StyledText {
@@ -647,6 +733,84 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                     anchors.fill: parent
                                     cursorShape: Qt.PointingHandCursor
                                     onClicked: root.openGmail()
+                                }
+                            }
+                        }
+                    }
+                }
+                Rectangle {
+                    visible: root.labelMessage !== null && !root.showAccounts
+                    anchors.right: parent.right
+                    anchors.rightMargin: Appearance.spacing.m
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: Appearance.sizes.gmailPopoverWidth / 2
+                    height: Math.min(labelChoices.implicitHeight + Appearance.spacing.m * 2,
+                                     Appearance.sizes.barHeight * 6)
+                    radius: Appearance.rounding.normal
+                    color: Appearance.colors.colSurfaceContainerHigh
+                    border.color: Appearance.colors.colLayer0Border
+                    z: 3
+
+                    Flickable {
+                        anchors.fill: parent
+                        anchors.margins: Appearance.spacing.m
+                        contentHeight: labelChoices.implicitHeight
+                        clip: true
+                        Column {
+                            id: labelChoices
+                            width: parent.width
+                            spacing: Appearance.spacing.xs
+                            StyledText {
+                                width: parent.width
+                                text: "Add label"
+                                font.pixelSize: Appearance.font.pixelSize.small
+                                color: Appearance.colors.colOnSurface
+                            }
+                            StyledText {
+                                visible: Gmail.acting || Gmail.availableLabels.length === 0
+                                width: parent.width
+                                text: Gmail.acting ? "Loading labels…"
+                                                   : (Gmail.actionError || "No labels available")
+                                font.pixelSize: Appearance.font.pixelSize.smaller
+                                color: Appearance.colors.colSubtext
+                            }
+                            Repeater {
+                                model: Gmail.availableLabels
+                                delegate: Rectangle {
+                                    id: labelChoice
+                                    required property var modelData
+                                    width: labelChoices.width
+                                    height: Appearance.spacing.xxl
+                                    radius: Appearance.rounding.small
+                                    color: labelHover.containsMouse
+                                           ? Appearance.colors.colLayer3Hover : "transparent"
+                                    StyledText {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: labelChoice.modelData.name
+                                        font.pixelSize: Appearance.font.pixelSize.smaller
+                                        color: Appearance.colors.colOnLayer2
+                                    }
+                                    MouseArea {
+                                        id: labelHover
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            Gmail.messageAction(root.labelMessage, "label", labelChoice.modelData.id);
+                                            root.labelMessage = null;
+                                        }
+                                    }
+                                }
+                            }
+                            StyledText {
+                                width: parent.width
+                                text: "Cancel"
+                                font.pixelSize: Appearance.font.pixelSize.smaller
+                                color: Appearance.colors.colPrimary
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: root.labelMessage = null
                                 }
                             }
                         }
