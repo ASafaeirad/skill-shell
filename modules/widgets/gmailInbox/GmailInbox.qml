@@ -23,8 +23,26 @@ Panel {
                                                                                               === root.accountFilter)
                                                                ?.total ?? 0) : Gmail.totalMessages
 
+    // Seconds until the service's next scheduled poll, ticked only while the
+    // failure sections that display it are on screen.
+    property int retrySeconds: 0
+    readonly property bool degraded: Gmail.offline || Gmail.expiredAccounts.length > 0
+
     function accountColor(key) {
         return Appearance.m3colors[key] ?? Appearance.colors.colPrimary;
+    }
+
+    function formatCountdown(seconds) {
+        return `${("0" + Math.floor(seconds / 60)).slice(-2)}:${("0" + seconds % 60).slice(-2)}`;
+    }
+
+    Timer {
+        running: root.opened && root.degraded
+        interval: 1000
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: root.retrySeconds = Gmail.nextRetryAt > 0 ? Math.max(0, Math.round((Gmail.nextRetryAt
+                                                                                         - Date.now()) / 1000)) : 0
     }
 
     // Gmail addresses accounts by signed-in position (u/0, u/1, ...), not by
@@ -150,6 +168,100 @@ Panel {
                         }
                     }
 
+                    // Gmail is unreachable: say the list is cached rather than let it
+                    // read as an inbox that emptied itself.
+                    Rectangle {
+                        visible: Gmail.offline
+                        Layout.fillWidth: true
+                        implicitHeight: offlineBanner.implicitHeight + Appearance.spacing.m * 2
+                        color: Appearance.colors.colErrorContainer
+
+                        RowLayout {
+                            id: offlineBanner
+                            anchors.fill: parent
+                            anchors.margins: Appearance.spacing.m
+                            spacing: Appearance.spacing.s
+
+                            MaterialSymbol {
+                                Layout.alignment: Qt.AlignTop
+                                text: "cloud_off"
+                                iconSize: Appearance.font.pixelSize.larger
+                                color: Appearance.colors.colOnErrorContainer
+                            }
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: Appearance.spacing.xxs
+                                StyledText {
+                                    text: "Can't reach Gmail"
+                                    font.pixelSize: Appearance.font.pixelSize.smallie
+                                    color: Appearance.colors.colOnErrorContainer
+                                }
+                                StyledText {
+                                    Layout.fillWidth: true
+                                    text: Gmail.lastSync.getTime() ? `Showing the cached inbox from ${Qt.formatTime(
+                                                                         Gmail.lastSync,
+                                                                         "hh:mm")}.` : "No cached inbox to show yet."
+                                    font.pixelSize: Appearance.font.pixelSize.smaller
+                                    color: Appearance.colors.colOnErrorContainer
+                                    wrapMode: Text.Wrap
+                                }
+                            }
+                        }
+                    }
+
+                    // One expired account degrades to its own row; the rest keep syncing.
+                    Repeater {
+                        model: Gmail.expiredAccounts
+                        delegate: Rectangle {
+                            id: expiredRow
+                            required property var modelData
+                            Layout.fillWidth: true
+                            implicitHeight: expiredLayout.implicitHeight + Appearance.spacing.m * 2
+                            color: "transparent"
+
+                            RowLayout {
+                                id: expiredLayout
+                                anchors.fill: parent
+                                anchors.leftMargin: Appearance.spacing.m
+                                anchors.rightMargin: Appearance.spacing.m
+                                spacing: Appearance.spacing.s
+
+                                Rectangle {
+                                    Layout.alignment: Qt.AlignVCenter
+                                    implicitWidth: Appearance.spacing.xs
+                                    implicitHeight: Appearance.spacing.xs
+                                    radius: Appearance.rounding.full
+                                    color: root.accountColor(expiredRow.modelData.color)
+                                }
+                                StyledText {
+                                    Layout.fillWidth: true
+                                    text: `${expiredRow.modelData.label || expiredRow.modelData.email} — sign-in expired`
+                                    font.pixelSize: Appearance.font.pixelSize.smallie
+                                    color: Appearance.colors.colOnLayer1
+                                    elide: Text.ElideRight
+                                }
+                                StyledText {
+                                    text: Gmail.signingIn ? "Waiting for Google" : "Reconnect"
+                                    font.pixelSize: Appearance.font.pixelSize.smaller
+                                    color: Appearance.colors.colPrimary
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        enabled: !Gmail.signingIn
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: Gmail.reconnect(expiredRow.modelData.id)
+                                    }
+                                }
+                            }
+
+                            Rectangle {
+                                anchors.bottom: parent.bottom
+                                width: parent.width
+                                height: Appearance.spacing.xxs / 2
+                                color: Appearance.colors.colLayer0Border
+                            }
+                        }
+                    }
+
                     Rectangle {
                         visible: Gmail.syncing && Gmail.messages.length === 0
                         Layout.fillWidth: true
@@ -211,7 +323,7 @@ Panel {
                     }
 
                     ColumnLayout {
-                        visible: !Gmail.syncing && root.filteredMessages.length === 0
+                        visible: !Gmail.syncing && root.filteredMessages.length === 0 && !root.degraded
                         Layout.fillWidth: true
                         Layout.margins: Appearance.spacing.xxl
                         spacing: Appearance.spacing.s
@@ -348,6 +460,49 @@ Panel {
                                         }
                                     }
                                 }
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        visible: root.degraded
+                        Layout.fillWidth: true
+                        Layout.margins: Appearance.spacing.m
+                        StyledText {
+                            Layout.fillWidth: true
+                            text: Gmail.syncing ? "Retrying…" : `Next retry in ${root.formatCountdown(
+                                                                    root.retrySeconds)}`
+                            font.pixelSize: Appearance.font.pixelSize.smaller
+                            color: Appearance.colors.colSubtext
+                        }
+                        Rectangle {
+                            implicitWidth: retryLabel.implicitWidth + Appearance.spacing.m * 2
+                            implicitHeight: Appearance.spacing.xxl
+                            radius: Appearance.rounding.full
+                            color: retryHover.containsMouse ? Appearance.colors.colSurfaceContainerHighestHover :
+                                                              Appearance.colors.colSurfaceContainerHigh
+                            RowLayout {
+                                id: retryLabel
+                                anchors.centerIn: parent
+                                spacing: Appearance.spacing.xs
+                                MaterialSymbol {
+                                    text: "refresh"
+                                    iconSize: Appearance.font.pixelSize.normal
+                                    color: Appearance.colors.colOnLayer2
+                                }
+                                StyledText {
+                                    text: "Retry now"
+                                    font.pixelSize: Appearance.font.pixelSize.smaller
+                                    color: Appearance.colors.colOnLayer2
+                                }
+                            }
+                            MouseArea {
+                                id: retryHover
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                enabled: !Gmail.syncing
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: Gmail.retryNow()
                             }
                         }
                     }

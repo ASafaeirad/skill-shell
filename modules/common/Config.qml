@@ -174,6 +174,10 @@ Singleton {
             property JsonObject gmail: JsonObject {
                 property bool enable: false
                 property int refreshIntervalMinutes: 5
+                // Desktop notification when a poll finds unread mail that was not in the
+                // previous sync. Off by default; each account also carries a `notify` flag
+                // (default on) so one inbox can be silenced without the others.
+                property bool notifyOnNewMail: false
                 property list<var> accounts: []
             }
 
