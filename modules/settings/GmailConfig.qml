@@ -26,6 +26,19 @@ ContentPage {
             to: 60
             stepSize: 1
         }
+
+        ConfigSwitch {
+            buttonIcon: "notifications"
+            text: "Notify when new mail arrives"
+            configKey: "gmail.notifyOnNewMail"
+        }
+
+        StyledText {
+            Layout.fillWidth: true
+            text: "Only unread messages that were absent from the previous sync raise a notification, and more than three at once collapse into one summary. Silence a single inbox from its row below."
+            color: Appearance.colors.colSubtext
+            wrapMode: Text.Wrap
+        }
     }
 
     ContentSection {
@@ -139,6 +152,22 @@ ContentPage {
                             text: accountRow.modelData.email
                             color: Appearance.colors.colSubtext
                             font.pixelSize: Appearance.font.pixelSize.small
+                        }
+                    }
+
+                    MaterialSymbol {
+                        Layout.alignment: Qt.AlignVCenter
+                        visible: Gmail.notifyOnNewMail
+                        text: accountRow.modelData.notify === false ? "notifications_off" : "notifications_active"
+                        iconSize: Appearance.font.pixelSize.larger
+                        color: accountRow.modelData.notify === false ? Appearance.colors.colSubtext
+                                                                     : Appearance.colors.colOnLayer1
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: Gmail.setAccountNotify(accountRow.modelData.id,
+                                                              accountRow.modelData.notify === false)
                         }
                     }
 
