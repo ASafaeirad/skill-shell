@@ -33,6 +33,11 @@ Singleton {
     readonly property bool visible: enabled && hasEnabledAccounts
     readonly property bool syncing: syncProcess.running
     readonly property bool signingIn: loginProcess.running
+    readonly property bool acting: actionProcess.running
+    property var availableLabels: []
+    property string actionError: ""
+    property string actionAccountId: ""
+    property bool refreshAfterAction: false
     readonly property string savedClientId: keyring?.clientId ?? ""
     readonly property bool hasSavedClientSecret: (keyring?.clientSecret?.length ?? 0) > 0
 
@@ -155,6 +160,63 @@ Singleton {
     function retryNow() {
         pollTimer.stop();
         root.sync();
+    }
+
+    function messageAction(message, operation, labelId) {
+        if (root.acting || !root.credentialsAvailable)
+            return false;
+        const refreshToken = root.keyring?.refreshTokens?.[message.accountId] ?? "";
+        if (!refreshToken)
+            return false;
+        root.actionError = "";
+        root.actionAccountId = message.accountId;
+        root.startProcess(actionProcess, {
+            clientId: root.keyring.clientId,
+            clientSecret: root.keyring.clientSecret,
+            refreshToken: refreshToken,
+            operation: operation,
+            messageId: message.id,
+            labelId: labelId ?? ""
+        });
+        return true;
+    }
+
+    function fetchLabels(accountId) {
+        if (root.acting || !root.credentialsAvailable)
+            return false;
+        const refreshToken = root.keyring?.refreshTokens?.[accountId] ?? "";
+        if (!refreshToken)
+            return false;
+        root.actionError = "";
+        root.actionAccountId = accountId;
+        root.availableLabels = [];
+        root.startProcess(actionProcess, {
+            clientId: root.keyring.clientId,
+            clientSecret: root.keyring.clientSecret,
+            refreshToken: refreshToken,
+            operation: "labels"
+        });
+        return true;
+    }
+
+    function finishAction(exitCode) {
+        const response = root.parseOutput(actionOutput.text);
+        if (exitCode !== 0) {
+            root.actionError = exitCode === root.exitExpired
+                ? "Sign in again to allow mail actions"
+                : "Could not update this message";
+            root.statusMessage = root.actionError;
+            return;
+        }
+        if (response?.labels) {
+            root.availableLabels = response.labels;
+            return;
+        }
+        root.actionError = "";
+        if (root.syncing)
+            root.refreshAfterAction = true;
+        else
+            root.sync();
     }
 
     function sync() {
@@ -326,6 +388,10 @@ Singleton {
         // Back off while nothing gets through; one clean account restores the pace.
         root.failureStreak = succeeded ? 0 : Math.min(root.failureStreak + 1, root.maxFailureStreak);
         root.schedulePoll();
+        if (root.refreshAfterAction) {
+            root.refreshAfterAction = false;
+            root.sync();
+        }
     }
 
     function finishLogin(exitCode) {
@@ -566,6 +632,23 @@ Singleton {
             stdinEnabled = false;
         }
         onExited: exitCode => root.finishSync(exitCode)
+    }
+
+    Process {
+        id: actionProcess
+        property string payload: ""
+        command: ["/usr/bin/python3", Quickshell.shellPath("scripts/gmail/gmail_helper.py"), "action"]
+
+        stdout: StdioCollector { id: actionOutput }
+
+        onRunningChanged: {
+            if (!running)
+                return;
+            write(payload);
+            payload = "";
+            stdinEnabled = false;
+        }
+        onExited: exitCode => root.finishAction(exitCode)
     }
 
     IpcHandler {

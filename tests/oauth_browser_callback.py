@@ -5,13 +5,13 @@ import urllib.parse
 import urllib.request
 
 
-READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
+MODIFY_SCOPE = "https://www.googleapis.com/auth/gmail.modify"
 
 
 def main() -> int:
     authorization_url = sys.argv[1]
     query = urllib.parse.parse_qs(urllib.parse.urlsplit(authorization_url).query)
-    if query.get("scope") != [READONLY_SCOPE]:
+    if query.get("scope") != [MODIFY_SCOPE]:
         return 1
     if query.get("code_challenge_method") != ["S256"]:
         return 1

@@ -34,7 +34,7 @@ TOKEN_URL = os.environ.get("GMAIL_TOKEN_URL", "https://oauth2.googleapis.com/tok
 API_BASE_URL = os.environ.get(
     "GMAIL_API_BASE_URL", "https://gmail.googleapis.com/gmail/v1"
 ).rstrip("/")
-GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
+GMAIL_MODIFY_SCOPE = "https://www.googleapis.com/auth/gmail.modify"
 
 
 class GmailError(Exception):
@@ -72,6 +72,7 @@ class JsonHttpClient:
         *,
         headers: dict[str, str] | None = None,
         form: dict[str, str] | None = None,
+        json_body: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         parsed = urllib.parse.urlsplit(url)
         port = parsed.port
@@ -91,6 +92,9 @@ class JsonHttpClient:
         if form is not None:
             body = urllib.parse.urlencode(form).encode("utf-8")
             request_headers["Content-Type"] = "application/x-www-form-urlencoded"
+        elif json_body is not None:
+            body = json.dumps(json_body).encode("utf-8")
+            request_headers["Content-Type"] = "application/json"
         path = urllib.parse.urlunsplit(("", "", parsed.path or "/", parsed.query, ""))
 
         try:
@@ -111,7 +115,7 @@ class JsonHttpClient:
             reason = decoded.get("error")
             if isinstance(reason, dict):
                 reason = reason.get("status") or reason.get("message")
-            if response.status == 401 or reason == "invalid_grant":
+            if response.status in (401, 403) or reason == "invalid_grant":
                 raise AuthorizationExpired(str(reason or "authorisation expired"))
             if response.status == 404 and parsed.path.endswith("/history"):
                 raise HistoryExpired(str(reason or "history expired"))
@@ -297,7 +301,7 @@ def login(request: dict[str, Any]) -> tuple[dict[str, Any], int]:
             "client_id": client_id,
             "redirect_uri": redirect_uri,
             "response_type": "code",
-            "scope": GMAIL_READONLY_SCOPE,
+            "scope": GMAIL_MODIFY_SCOPE,
             "access_type": "offline",
             "prompt": "consent",
             "code_challenge": challenge,
@@ -444,13 +448,58 @@ def sync(request: dict[str, Any]) -> tuple[dict[str, Any], int]:
     return {"accounts": results}, exit_code
 
 
+def action(request: dict[str, Any]) -> tuple[dict[str, Any], int]:
+    client_id = require_string(request, "clientId")
+    client_secret = require_string(request, "clientSecret")
+    refresh_token = require_string(request, "refreshToken")
+    operation = require_string(request, "operation")
+    if operation not in ("archive", "read", "unread", "trash", "labels", "label"):
+        raise ValueError("unsupported Gmail operation")
+    message_id = require_string(request, "messageId") if operation != "labels" else ""
+    client = JsonHttpClient()
+    try:
+        token = exchange_refresh_token(client, client_id, client_secret, refresh_token)
+        headers = {"Authorization": f"Bearer {token}"}
+        if operation == "labels":
+            response = gmail_get(client, "/users/me/labels", token)
+            labels = [
+                {"id": item["id"], "name": item["name"]}
+                for item in response.get("labels", [])
+                if item.get("type") == "user" and item.get("id") and item.get("name")
+            ]
+            return {"labels": sorted(labels, key=lambda item: item["name"].lower())}, EXIT_SUCCESS
+
+        path = f"/users/me/messages/{urllib.parse.quote(message_id, safe='')}"
+        if operation == "trash":
+            response = client.request("POST", f"{API_BASE_URL}{path}/trash", headers=headers,
+                                      json_body={})
+        else:
+            label_id = require_string(request, "labelId") if operation == "label" else ""
+            changes = {
+                "archive": {"removeLabelIds": ["INBOX"]},
+                "read": {"removeLabelIds": ["UNREAD"]},
+                "unread": {"addLabelIds": ["UNREAD"]},
+                "label": {"addLabelIds": [label_id]},
+            }
+            response = client.request("POST", f"{API_BASE_URL}{path}/modify", headers=headers,
+                                      json_body=changes[operation])
+        return {"messageId": message_id, "labelIds": response.get("labelIds", [])}, EXIT_SUCCESS
+    finally:
+        client.close()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=("login", "sync"))
+    parser.add_argument("command", choices=("login", "sync", "action"))
     args = parser.parse_args()
     try:
         request = read_request()
-        payload, exit_code = login(request) if args.command == "login" else sync(request)
+        if args.command == "login":
+            payload, exit_code = login(request)
+        elif args.command == "sync":
+            payload, exit_code = sync(request)
+        else:
+            payload, exit_code = action(request)
     except AuthorizationExpired as error:
         payload, exit_code = {"error": error.outcome}, EXIT_EXPIRED
     except (NetworkUnavailable, OSError):

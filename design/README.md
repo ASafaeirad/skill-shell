@@ -60,17 +60,16 @@ colours. They must be referenced by palette key.
 | `isOffline` | cached-inbox banner, expired-account row, retry countdown | #24 |
 | `isSignin` | connect-a-Google-account card | #20 (in Settings), #24 (reconnect path) |
 
-**Two deliberate divergences from the design in version one**, both because the
-first release is read-only:
+**The original version-one divergences** were based on read-only access:
 
 1. The row hover strip in `isInbox` shows five actions (archive, mark read, label,
-   delete, open in browser). Ship **only open in browser**. The others need a write
-   scope and are a later ticket.
+   delete, open in browser). The inbox now implements these actions with Gmail
+   modify access. Delete moves a message to trash.
 2. The `isReading` header shows archive and delete icons, and the footer shows
    "Mark unread". Ship the header **without** them rather than with dead controls.
 
-The `isSignin` card's caption reads "Read, modify and send scopes". Version one
-requests **read-only**; the copy should say so.
+The `isSignin` card's caption reads "Read, modify and send scopes". The shell
+requests **modify** access and does not request send access.
 
 ## Upstream
 

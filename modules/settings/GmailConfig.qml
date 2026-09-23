@@ -47,7 +47,7 @@ ContentPage {
 
         StyledText {
             Layout.fillWidth: true
-            text: "Create a Google OAuth client of type Desktop app and enable the Gmail API. The widget requests read-only Gmail access."
+            text: "Create a Google OAuth client of type Desktop app and enable the Gmail API. Mail actions require Gmail modify access. Existing accounts may need to sign in again."
             color: Appearance.colors.colSubtext
             wrapMode: Text.Wrap
         }
