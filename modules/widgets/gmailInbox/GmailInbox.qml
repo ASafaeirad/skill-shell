@@ -94,7 +94,8 @@ Panel {
             anchorName: "gmail"
             layerNamespace: "quickshell:gmailInbox"
             implicitWidth: Appearance.sizes.gmailPopoverWidth
-            implicitHeight: surface.implicitHeight
+            // Keep the layer window still while the visible card changes height.
+            implicitHeight: Math.max(accountsView.implicitHeight, inboxView.implicitHeight)
             onDismissed: root.close()
 
             mask: Region {
@@ -103,6 +104,7 @@ Panel {
 
             Rectangle {
                 id: surface
+                y: Config.options.bar.bottom ? parent.height - height : 0
                 width: parent.width
                 implicitHeight: content.implicitHeight
                 color: Appearance.colors.colBackgroundSurfaceContainer
@@ -125,12 +127,14 @@ Panel {
                     spacing: 0
 
                     GmailAccountsView {
+                        id: accountsView
                         visible: root.showAccounts
                         Layout.fillWidth: true
                         onBackRequested: root.showAccounts = false
                     }
 
                     ColumnLayout {
+                        id: inboxView
                         visible: !root.showAccounts
                         Layout.fillWidth: true
                         spacing: 0
