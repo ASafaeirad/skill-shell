@@ -10,8 +10,9 @@ from __future__ import annotations
 import argparse
 import base64
 import hashlib
-from html.parser import HTMLParser
+from email.message import Message
 from email.utils import parseaddr
+from html.parser import HTMLParser
 import http.client
 import json
 import os
@@ -258,10 +259,19 @@ def flatten_message(payload: dict[str, Any]) -> tuple[str, list[dict[str, Any]]]
             attachments.append({"filename": str(filename), "size": int(body.get("size", 0))})
             return
         data = body.get("data")
-        if data:
-            decoded = base64.urlsafe_b64decode(data + "=" * (-len(data) % 4)).decode(
-                "utf-8", errors="replace")
-            mime_type = part.get("mimeType", "")
+        mime_type = part.get("mimeType", "")
+        if data and mime_type in ("text/plain", "text/html"):
+            raw = base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))
+            content_type = next((str(header.get("value", "")) for header in part.get("headers", [])
+                                 if isinstance(header, dict)
+                                 and str(header.get("name", "")).lower() == "content-type"), "")
+            header = Message()
+            header["Content-Type"] = content_type
+            charset = header.get_content_charset() or "utf-8"
+            try:
+                decoded = raw.decode(charset, errors="replace")
+            except LookupError:
+                decoded = raw.decode("utf-8", errors="replace")
             if mime_type == "text/plain":
                 plain.append(decoded)
             elif mime_type == "text/html":
