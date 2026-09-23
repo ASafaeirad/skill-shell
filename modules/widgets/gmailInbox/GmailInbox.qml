@@ -15,25 +15,35 @@ Panel {
     hasOpenCloseShortcuts: true
 
     property string accountFilter: ""
-    readonly property var filteredMessages: Gmail.messages.filter(message =>
-        !root.accountFilter || message.accountId === root.accountFilter).slice(0, 12)
-    readonly property int filteredTotal: root.accountFilter
-        ? (Gmail.accounts.find(account => account.id === root.accountFilter)?.total ?? 0)
-        : Gmail.totalMessages
+    readonly property var filteredMessages: Gmail.messages.filter(message => !root.accountFilter
+                                                                             || message.accountId
+                                                                             === root.accountFilter).slice(0,
+                                                                                                           12)
+    readonly property int filteredTotal: root.accountFilter ? (Gmail.accounts.find(account => account.id
+                                                                                              === root.accountFilter)
+                                                               ?.total ?? 0) : Gmail.totalMessages
 
     function accountColor(key) {
         return Appearance.m3colors[key] ?? Appearance.colors.colPrimary;
     }
 
+    // Gmail addresses accounts by signed-in position (u/0, u/1, ...), not by
+    // address, so map an account id onto its index in the configured list.
+    // Unknown or unfiltered ids fall back to the first account.
+    function accountIndex(accountId) {
+        return Math.max(0, Gmail.accounts.findIndex(account => account.id === accountId));
+    }
+
     function openMessage(message) {
-        Qt.openUrlExternally(`https://mail.google.com/mail/u/${encodeURIComponent(message.accountEmail)}/#all/${encodeURIComponent(message.threadId)}`);
+        const index = root.accountIndex(message.accountId);
+        const thread = encodeURIComponent(message.threadId);
+        Qt.openUrlExternally(`https://mail.google.com/mail/u/${index}/#all/${thread}`);
         root.close();
     }
 
     function openGmail() {
-        const account = Gmail.accounts.find(item => item.id === root.accountFilter) ?? Gmail.accounts[0];
-        const path = account ? `u/${encodeURIComponent(account.email)}/` : "";
-        Qt.openUrlExternally(`https://mail.google.com/mail/${path}`);
+        const index = root.accountIndex(root.accountFilter);
+        Qt.openUrlExternally(`https://mail.google.com/mail/u/${index}/`);
         root.close();
     }
 
@@ -48,7 +58,9 @@ Panel {
             implicitHeight: surface.implicitHeight
             onDismissed: root.close()
 
-            mask: Region { item: surface }
+            mask: Region {
+                item: surface
+            }
 
             Rectangle {
                 id: surface
@@ -74,7 +86,8 @@ Panel {
                             implicitWidth: allFilter.implicitWidth + Appearance.spacing.m * 2
                             implicitHeight: Appearance.spacing.xxl
                             radius: Appearance.rounding.full
-                            color: root.accountFilter === "" ? Appearance.colors.colPrimaryContainer : Appearance.colors.colSurfaceContainerHigh
+                            color: root.accountFilter === "" ? Appearance.colors.colPrimaryContainer :
+                                                               Appearance.colors.colSurfaceContainerHigh
 
                             RowLayout {
                                 id: allFilter
@@ -107,7 +120,7 @@ Panel {
                                 implicitHeight: Appearance.spacing.xxl
                                 radius: Appearance.rounding.full
                                 color: root.accountFilter === accountDot.modelData.id
-                                    ? Appearance.colors.colSurfaceContainerHigh : "transparent"
+                                       ? Appearance.colors.colSurfaceContainerHigh : "transparent"
                                 Rectangle {
                                     anchors.centerIn: parent
                                     width: Appearance.spacing.m
@@ -119,11 +132,12 @@ Panel {
                                     anchors.fill: parent
                                     cursorShape: Qt.PointingHandCursor
                                     onClicked: root.accountFilter = accountDot.modelData.id
-                                    StyledToolTip { text: accountDot.modelData.label || accountDot.modelData.email }
                                 }
                             }
                         }
-                        Item { Layout.fillWidth: true }
+                        Item {
+                            Layout.fillWidth: true
+                        }
                         MaterialSymbol {
                             text: "close"
                             iconSize: Appearance.font.pixelSize.large
@@ -148,8 +162,14 @@ Panel {
                             SequentialAnimation on x {
                                 running: Gmail.syncing && Gmail.messages.length === 0
                                 loops: Animation.Infinite
-                                NumberAnimation { to: Appearance.sizes.gmailPopoverWidth / 2; duration: Appearance.animation.elementMove.duration }
-                                NumberAnimation { to: 0; duration: Appearance.animation.elementMove.duration }
+                                NumberAnimation {
+                                    to: Appearance.sizes.gmailPopoverWidth / 2
+                                    duration: Appearance.animation.elementMove.duration
+                                }
+                                NumberAnimation {
+                                    to: 0
+                                    duration: Appearance.animation.elementMove.duration
+                                }
                             }
                         }
                     }
@@ -226,7 +246,8 @@ Panel {
                                     required property var modelData
                                     width: rows.width
                                     height: Appearance.sizes.barHeight + Appearance.spacing.s
-                                    color: hover.containsMouse ? Appearance.colors.colSurfaceContainerHigh : "transparent"
+                                    color: hover.containsMouse ? Appearance.colors.colSurfaceContainerHigh :
+                                                                 "transparent"
                                     opacity: modelData.read ? 0.7 : 1
 
                                     MouseArea {
@@ -265,7 +286,8 @@ Panel {
                                                     font.pixelSize: Appearance.font.pixelSize.smallie
                                                     color: Appearance.colors.colOnSurface
                                                     elide: Text.ElideRight
-                                                    Layout.maximumWidth: Appearance.sizes.gmailPopoverWidth / 3
+                                                    Layout.maximumWidth: Appearance.sizes.gmailPopoverWidth
+                                                                         / 3
                                                 }
                                                 StyledText {
                                                     Layout.fillWidth: true
@@ -278,12 +300,16 @@ Panel {
                                             RowLayout {
                                                 spacing: Appearance.spacing.xs
                                                 Repeater {
-                                                    model: [row.modelData.category, ...(row.modelData.labels ?? [])].filter(Boolean).slice(0, 3)
+                                                    model: [row.modelData.category, ...(row.modelData.labels
+                                                                                        ?? [])].filter(
+                                                        Boolean).slice(0, 3)
                                                     delegate: Rectangle {
                                                         id: tagRect
                                                         required property string modelData
-                                                        implicitWidth: tag.implicitWidth + Appearance.spacing.s * 2
-                                                        implicitHeight: tag.implicitHeight + Appearance.spacing.xxs * 2
+                                                        implicitWidth: tag.implicitWidth
+                                                                       + Appearance.spacing.s * 2
+                                                        implicitHeight: tag.implicitHeight
+                                                                        + Appearance.spacing.xxs * 2
                                                         radius: Appearance.rounding.full
                                                         color: Appearance.colors.colPrimaryContainer
                                                         StyledText {
@@ -301,7 +327,8 @@ Panel {
                                             Layout.alignment: Qt.AlignVCenter
                                             StyledText {
                                                 visible: !hover.containsMouse
-                                                text: Qt.formatDateTime(new Date(row.modelData.timestamp), "ddd hh:mm")
+                                                text: Qt.formatDateTime(new Date(row.modelData.timestamp),
+                                                                        "ddd hh:mm")
                                                 font.pixelSize: Appearance.font.pixelSize.smaller
                                                 color: Appearance.colors.colSubtext
                                             }
@@ -335,7 +362,13 @@ Panel {
                         Layout.margins: Appearance.spacing.m
                         StyledText {
                             Layout.fillWidth: true
-                            text: `${Math.max(0, root.filteredTotal - root.filteredMessages.length)} more · ${Gmail.lastSync.getTime() ? `Synced ${Qt.formatTime(Gmail.lastSync, "hh:mm")}` : "Waiting for sync"}`
+                            text: {
+                                const remaining = Math.max(0, root.filteredTotal - root.filteredMessages.length);
+                                const synced = Gmail.lastSync.getTime()
+                                    ? `Synced ${Qt.formatTime(Gmail.lastSync, "hh:mm")}`
+                                    : "Waiting for sync";
+                                return `${remaining} more · ${synced}`;
+                            }
                             font.pixelSize: Appearance.font.pixelSize.smallest
                             color: Appearance.colors.colSubtext
                         }
