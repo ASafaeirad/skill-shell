@@ -22,6 +22,7 @@ Singleton {
     property string errorText: ""
     property string revealedEntry: ""
     property string pendingAction: ""
+    property string pendingAutotypePayload: ""
     property string clipboardSecret: ""
     property string statusMessage: ""
 
@@ -137,8 +138,7 @@ Singleton {
                 revealTimer.restart();
             }
         } else if (action === "autotype") {
-            autotypeTimer.payload = root.secret;
-            autotypeTimer.restart();
+            root.pendingAutotypePayload = root.secret;
             root.closeRequested();
         }
     }
@@ -290,29 +290,30 @@ Singleton {
         }
     }
 
-    Timer {
-        id: autotypeTimer
-        property string payload: ""
-        interval: Appearance.animation.elementMoveExit.duration
-        onTriggered: {
-            autotypeProc.running = false;
-            autotypeProc.payload = payload;
-            payload = "";
-            autotypeProc.stdinEnabled = true;
-            autotypeProc.running = true;
-            root.clearSecrets();
-        }
+    function cancelAutotype() {
+        root.pendingAutotypePayload = "";
+    }
+
+    function triggerAutotype() {
+        if (!root.pendingAutotypePayload)
+            return;
+        autotypeProc.running = false;
+        autotypeProc.payload = root.pendingAutotypePayload;
+        root.pendingAutotypePayload = "";
+        autotypeProc.stdinEnabled = true;
+        autotypeProc.running = true;
+        root.clearSecrets();
     }
 
     Timer {
         id: revealTimer
-        interval: Appearance.animation.elementMove.duration * 16
+        interval: Math.max(1, Config.options.pass.revealSeconds) * 1000
         onTriggered: root.revealedEntry = ""
     }
 
     Timer {
         id: clipboardClearTimer
-        interval: Appearance.animation.elementMove.duration * 90
+        interval: Math.max(1, Config.options.pass.clipboardClearSeconds) * 1000
         onTriggered: {
             if (Quickshell.clipboardText === root.clipboardSecret)
                 Quickshell.clipboardText = "";
@@ -322,7 +323,7 @@ Singleton {
 
     Timer {
         id: statusTimer
-        interval: Appearance.animation.elementMove.duration * 4
+        interval: Math.max(1, Config.options.pass.statusMessageSeconds) * 1000
         onTriggered: root.statusMessage = ""
     }
 }

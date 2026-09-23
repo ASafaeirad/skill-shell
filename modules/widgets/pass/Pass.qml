@@ -13,6 +13,7 @@ Panel {
     manageIpc: false
 
     function open(): void {
+        PassService.cancelAutotype();
         root.opened = true;
         dialog.open();
         PassService.refresh();
@@ -36,7 +37,11 @@ Panel {
 
         layerNamespace: "quickshell:pass"
         keyboardFocus: WlrKeyboardFocus.Exclusive
-        onDismissed: root.close()
+        onDismissed: {
+            PassService.cancelAutotype();
+            root.close();
+        }
+        onCloseFinished: PassService.triggerAutotype()
 
         PassContent {
             onCloseRequested: root.close()
