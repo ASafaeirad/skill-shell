@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/skill-shell-9a9edf7b-7565-4dcb-a294-aed24a156f29/tokens.css">
+<script src="_ds/skill-shell-9a9edf7b-7565-4dcb-a294-aed24a156f29/_ds_bundle.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&family=Space+Grotesk:wght@400;500;600&display=swap">
+<style>
+  body { margin: 0; background: #0c0a0a; }
+  a { color: var(--qs-colPrimary); }
+  a:hover { color: var(--qs-colPrimaryHover); }
+  .ms { font-family: "Material Symbols Rounded"; font-weight: 400; font-style: normal; line-height: 1; text-transform: none; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'opsz' 24; }
+  .row-actions { opacity: 0; transition: opacity 150ms var(--qs-ease-standard); }
+  .mailrow:hover .row-actions { opacity: 1; }
+  .mailrow:hover .row-meta { opacity: 0; }
+  .row-meta { transition: opacity 150ms var(--qs-ease-standard); }
+</style>
+</helmet>
+
+<div style="min-height: 100vh; padding: 0 0 64px; font-family: 'Google Sans Flex', 'Space Grotesk', system-ui, sans-serif; color: var(--qs-colOnLayer1); background: radial-gradient(120% 80% at 70% -10%, #2a201d 0%, #16100f 45%, #0c0a0a 100%);">
+
+  <div style="height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; background: var(--qs-colLayer0); border-bottom: 1px solid var(--qs-colLayer0Border); backdrop-filter: blur(12px);">
+    <div style="display: flex; align-items: center; gap: 14px; font-size: var(--qs-text-smallie); color: var(--qs-colOnLayer1);">
+      <span class="ms" style="font-size: 18px; color: var(--qs-colPrimary);">workspaces</span>
+      <span style="font-variant-numeric: tabular-nums;">22/09, Tue &middot; 09:44</span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div style="display: flex; align-items: center; gap: 10px; height: 28px; padding: 0 12px; border-radius: var(--qs-rounding-full); background: var(--qs-colLayer1); border: 1px solid var(--qs-colLayer0Border); cursor: pointer;" style-hover="background: var(--qs-colLayer2Hover);">
+        <span class="ms" style="font-size: 16px; color: var(--qs-colPrimary);">mail</span>
+        <div style="display: flex; align-items: center; gap: 5px;">
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: #8d76ad;"></span>
+          <span style="font-size: var(--qs-text-smaller); color: var(--qs-colOnLayer2); font-variant-numeric: tabular-nums;">5</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 5px;">
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: #a97363;"></span>
+          <span style="font-size: var(--qs-text-smaller); color: var(--qs-colOnLayer2); font-variant-numeric: tabular-nums;">6</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 5px;">
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: #af535d;"></span>
+          <span style="font-size: var(--qs-text-smaller); color: var(--qs-colOnLayer2); font-variant-numeric: tabular-nums;">1</span>
+        </div>
+      </div>
+      <span class="ms" style="font-size: 18px; color: var(--qs-colSubtext);">wifi</span>
+      <span class="ms" style="font-size: 18px; color: var(--qs-colSubtext);">battery_full</span>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: flex-end; padding: 10px 12px 0;">
+    <div style="width: 380px; border-radius: var(--qs-rounding-normal); background: var(--qs-colBackgroundSurfaceContainer); border: 1px solid var(--qs-colLayer0Border); box-shadow: 0 18px 40px var(--qs-colShadow); overflow: hidden; backdrop-filter: blur(20px);">
+
+      <sc-if value="{{ isInbox }}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; align-items: center; gap: 4px; padding: 12px 12px 10px;">
+        <div style="display: flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px 0 10px; border-radius: var(--qs-rounding-full); background: var(--qs-colPrimaryContainer); cursor: pointer;">
+          <span class="ms" style="font-size: 16px; color: var(--qs-colOnPrimaryContainer);">all_inbox</span>
+          <span style="font-size: var(--qs-text-smaller); color: var(--qs-colOnPrimaryContainer);">All 12</span>
+        </div>
+        <div style="width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;" style-hover="background: var(--qs-colLayer3Hover);">
+          <span style="width: 10px; height: 10px; border-radius: 50%; background: #8d76ad;"></span>
+        </div>
+        <div style="width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;" style-hover="background: var(--qs-colLayer3Hover);">
+          <span style="width: 10px; height: 10px; border-radius: 50%; background: #a97363;"></span>
+        </div>
+        <div style="width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;" style-hover="background: var(--qs-colLayer3Hover);">
+          <span style="width: 10px; height: 10px; border-radius: 50%; background: #af535d;"></span>
+        </div>
+        <div style="flex: 1;"></div>
+        <span class="ms" onClick="{{ openSettings }}" style="font-size: 17px; color: var(--qs-colSubtext); cursor: pointer; margin-right: 6px;" style-hover="color: var(--qs-colOnSurface);">settings</span>
+      </div>
+
+      <div style="display: flex; flex-direction: column; padding: 0 0 4px;">
+
+        <div class="mailrow" onClick="{{ openReading }}" style="position: relative; display: grid; grid-template-columns: 26px 1fr auto; align-items: center; column-gap: 12px; height: 58px; padding: 0 16px; border-bottom: 1px solid var(--qs-colLayer0Border); cursor: pointer;" style-hover="background: var(--qs-colSurfaceContainerHigh);">
+          <span style="width: 26px; height: 26px; border-radius: var(--qs-rounding-unsharpenmore); background: #8d76ad; color: #f3eef8; display: flex; align-items: center; justify-content: center; font-size: var(--qs-text-smaller);">M</span>
+          <div style="display: flex; flex-direction: column; gap: 5px; min-width: 0;">
+            <div style="display: flex; align-items: baseline; gap: 8px; min-width: 0;">
+              <span style="font-size: var(--qs-text-smallie); color: var(--qs-colOnSurface); flex: none;">Maja L.</span>
+              <span style="font-size: var(--qs-text-smaller); color: var(--qs-colOnLayer1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Re: apartment viewing on Thursday</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: var(--qs-text-smallest); color: var(--qs-colOnPrimaryContainer); background: var(--qs-colPrimaryContainer); border-radius: var(--qs-rounding-full); padding: 2px 8px;">Primary</span>
+              <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext); border: 1px solid var(--qs-colOutlineVariant); border-radius: var(--qs-rounding-full); padding: 2px 8px;">Flat hunt</span>
+              <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext); border: 1px solid var(--qs-colOutlineVariant); border-radius: var(--qs-rounding-full); padding: 2px 8px;">Starred</span>
+            </div>
+          </div>
+          <div class="row-meta" style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+            <span style="font-size: var(--qs-text-smaller); color: var(--qs-colPrimary); font-variant-numeric: tabular-nums;">09:41</span>
+            <span class="ms" style="font-size: 14px; color: var(--qs-colSubtext);">attach_file</span>
+          </div>
+          <div class="row-actions" style="position: absolute; right: 10px; top: 0; height: 100%; display: flex; align-items: center; gap: 2px; background: var(--qs-colBackgroundSurfaceContainerHigh); padding-left: 12px;">
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">archive</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">mark_email_read</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">label</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colError);" style-hover="background: var(--qs-colLayer3Hover);">delete</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">open_in_new</span>
+          </div>
+        </div>
+
+        <div class="mailrow" style="position: relative; display: grid; grid-template-columns: 26px 1fr auto; align-items: center; column-gap: 12px; height: 58px; padding: 0 16px; border-bottom: 1px solid var(--qs-colLayer0Border); cursor: pointer;" style-hover="background: var(--qs-colSurfaceContainerHigh);">
+          <span style="width: 26px; height: 26px; border-radius: var(--qs-rounding-unsharpenmore); background: #a97363; color: #1d1412; display: flex; align-items: center; justify-content: center; font-size: var(--qs-text-smaller);">D</span>
+          <div style="display: flex; flex-direction: column; gap: 5px; min-width: 0;">
+            <div style="display: flex; align-items: baseline; gap: 8px; min-width: 0;">
+              <span style="font-size: var(--qs-text-smallie); color: var(--qs-colOnSurface); flex: none;">Deploy bot</span>
+              <span style="font-size: var(--qs-text-smaller); color: var(--qs-colOnLayer1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">staging build 4821 passed in 6m 12s</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: var(--qs-text-smallest); color: var(--qs-colOnPrimaryContainer); background: var(--qs-colPrimaryContainer); border-radius: var(--qs-rounding-full); padding: 2px 8px;">CI</span>
+              <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext); border: 1px solid var(--qs-colOutlineVariant); border-radius: var(--qs-rounding-full); padding: 2px 8px;">Automated</span>
+            </div>
+          </div>
+          <div class="row-meta" style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+            <span style="font-size: var(--qs-text-smaller); color: var(--qs-colPrimary); font-variant-numeric: tabular-nums;">09:12</span>
+          </div>
+          <div class="row-actions" style="position: absolute; right: 10px; top: 0; height: 100%; display: flex; align-items: center; gap: 2px; background: var(--qs-colBackgroundSurfaceContainerHigh); padding-left: 12px;">
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">archive</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">mark_email_read</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">label</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colError);" style-hover="background: var(--qs-colLayer3Hover);">delete</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">open_in_new</span>
+          </div>
+        </div>
+
+        <div class="mailrow" style="position: relative; display: grid; grid-template-columns: 26px 1fr auto; align-items: center; column-gap: 12px; height: 58px; padding: 0 16px; border-bottom: 1px solid var(--qs-colLayer0Border); cursor: pointer;" style-hover="background: var(--qs-colSurfaceContainerHigh);">
+          <span style="width: 26px; height: 26px; border-radius: var(--qs-rounding-unsharpenmore); background: #a97363; color: #1d1412; display: flex; align-items: center; justify-content: center; font-size: var(--qs-text-smaller);">R</span>
+          <div style="display: flex; flex-direction: column; gap: 5px; min-width: 0;">
+            <div style="display: flex; align-items: baseline; gap: 8px; min-width: 0;">
+              <span style="font-size: var(--qs-text-smallie); color: var(--qs-colOnSurface); flex: none;">Rin T.</span>
+              <span style="font-size: var(--qs-text-smaller); color: var(--qs-colOnLayer1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Notes from the Q4 planning sync</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: var(--qs-text-smallest); color: var(--qs-colOnPrimaryContainer); background: var(--qs-colPrimaryContainer); border-radius: var(--qs-rounding-full); padding: 2px 8px;">Primary</span>
+              <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext); border: 1px solid var(--qs-colOutlineVariant); border-radius: var(--qs-rounding-full); padding: 2px 8px;">Planning</span>
+              <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext); border: 1px solid var(--qs-colOutlineVariant); border-radius: var(--qs-rounding-full); padding: 2px 8px;">3 people</span>
+            </div>
+          </div>
+          <div class="row-meta" style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+            <span style="font-size: var(--qs-text-smaller); color: var(--qs-colPrimary); font-variant-numeric: tabular-nums;">08:55</span>
+            <span class="ms" style="font-size: 14px; color: var(--qs-colSubtext);">attach_file</span>
+          </div>
+          <div class="row-actions" style="position: absolute; right: 10px; top: 0; height: 100%; display: flex; align-items: center; gap: 2px; background: var(--qs-colBackgroundSurfaceContainerHigh); padding-left: 12px;">
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">archive</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">mark_email_read</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">label</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colError);" style-hover="background: var(--qs-colLayer3Hover);">delete</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">open_in_new</span>
+          </div>
+        </div>
+
+        <div class="mailrow" style="position: relative; display: grid; grid-template-columns: 26px 1fr auto; align-items: center; column-gap: 12px; height: 58px; padding: 0 16px; border-bottom: 1px solid var(--qs-colLayer0Border); cursor: pointer; opacity: 0.7;" style-hover="background: var(--qs-colSurfaceContainerHigh);">
+          <span style="width: 26px; height: 26px; border-radius: var(--qs-rounding-unsharpenmore); background: var(--qs-colLayer4Base); color: var(--qs-colOnLayer4); display: flex; align-items: center; justify-content: center; font-size: var(--qs-text-smaller);">S</span>
+          <div style="display: flex; flex-direction: column; gap: 5px; min-width: 0;">
+            <div style="display: flex; align-items: baseline; gap: 8px; min-width: 0;">
+              <span style="font-size: var(--qs-text-smallie); color: var(--qs-colOnLayer1); flex: none;">Stripe</span>
+              <span style="font-size: var(--qs-text-smaller); color: var(--qs-colSubtext); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">September invoice ready</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext); border: 1px solid var(--qs-colOutlineVariant); border-radius: var(--qs-rounding-full); padding: 2px 8px;">Receipts</span>
+              <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext); border: 1px solid var(--qs-colOutlineVariant); border-radius: var(--qs-rounding-full); padding: 2px 8px;">Studio</span>
+            </div>
+          </div>
+          <div class="row-meta" style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+            <span style="font-size: var(--qs-text-smaller); color: var(--qs-colSubtext); font-variant-numeric: tabular-nums;">Mon</span>
+          </div>
+          <div class="row-actions" style="position: absolute; right: 10px; top: 0; height: 100%; display: flex; align-items: center; gap: 2px; background: var(--qs-colBackgroundSurfaceContainerHigh); padding-left: 12px;">
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">archive</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">mark_email_unread</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">label</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colError);" style-hover="background: var(--qs-colLayer3Hover);">delete</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">open_in_new</span>
+          </div>
+        </div>
+
+        <div class="mailrow" style="position: relative; display: grid; grid-template-columns: 26px 1fr auto; align-items: center; column-gap: 12px; height: 58px; padding: 0 16px; cursor: pointer; opacity: 0.7;" style-hover="background: var(--qs-colSurfaceContainerHigh);">
+          <span style="width: 26px; height: 26px; border-radius: var(--qs-rounding-unsharpenmore); background: var(--qs-colLayer4Base); color: var(--qs-colOnLayer4); display: flex; align-items: center; justify-content: center; font-size: var(--qs-text-smaller);">K</span>
+          <div style="display: flex; flex-direction: column; gap: 5px; min-width: 0;">
+            <div style="display: flex; align-items: baseline; gap: 8px; min-width: 0;">
+              <span style="font-size: var(--qs-text-smallie); color: var(--qs-colOnLayer1); flex: none;">Kew CC</span>
+              <span style="font-size: var(--qs-text-smaller); color: var(--qs-colSubtext); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Sunday route change &mdash; start at the lock</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext); border: 1px solid var(--qs-colOutlineVariant); border-radius: var(--qs-rounding-full); padding: 2px 8px;">Forums</span>
+              <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext); border: 1px solid var(--qs-colOutlineVariant); border-radius: var(--qs-rounding-full); padding: 2px 8px;">Cycling</span>
+            </div>
+          </div>
+          <div class="row-meta" style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+            <span style="font-size: var(--qs-text-smaller); color: var(--qs-colSubtext); font-variant-numeric: tabular-nums;">Sun</span>
+          </div>
+          <div class="row-actions" style="position: absolute; right: 10px; top: 0; height: 100%; display: flex; align-items: center; gap: 2px; background: var(--qs-colBackgroundSurfaceContainerHigh); padding-left: 12px;">
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">archive</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">mark_email_unread</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">label</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colError);" style-hover="background: var(--qs-colLayer3Hover);">delete</span>
+            <span class="ms" style="font-size: 17px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full); color: var(--qs-colOnLayer2);" style-hover="background: var(--qs-colLayer3Hover);">open_in_new</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 14px; border-top: 1px solid var(--qs-colLayer0Border);">
+        <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext); letter-spacing: 0.06em;">7 MORE &middot; SYNCED 09:44</span>
+        <div style="display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px 0 10px; border-radius: var(--qs-rounding-full); background: var(--qs-colSurfaceContainerHigh); color: var(--qs-colOnLayer2); cursor: pointer;" style-hover="background: var(--qs-colSurfaceContainerHighestHover);">
+          <span class="ms" style="font-size: 16px;">open_in_new</span>
+          <span style="font-size: var(--qs-text-smaller);">Open Gmail</span>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ isReading }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; align-items: center; gap: 4px; padding: 10px 12px; border-bottom: 1px solid var(--qs-colLayer0Border);">
+          <span class="ms" onClick="{{ backToInbox }}" style="font-size: 18px; color: var(--qs-colOnLayer2); cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full);" style-hover="background: var(--qs-colLayer3Hover);">arrow_back</span>
+          <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext); letter-spacing: 0.06em;">PERSONAL &middot; 1 OF 12</span>
+          <div style="flex: 1;"></div>
+          <span class="ms" style="font-size: 18px; color: var(--qs-colOnLayer2); cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full);" style-hover="background: var(--qs-colLayer3Hover);">archive</span>
+          <span class="ms" style="font-size: 18px; color: var(--qs-colError); cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full);" style-hover="background: var(--qs-colLayer3Hover);">delete</span>
+          <span class="ms" style="font-size: 18px; color: var(--qs-colOnLayer2); cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full);" style-hover="background: var(--qs-colLayer3Hover);">open_in_new</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px; padding: 16px 18px 18px;">
+          <span style="font-size: var(--qs-text-large); color: var(--qs-colOnSurface); line-height: 1.3;">Re: apartment viewing on Thursday</span>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="width: 32px; height: 32px; border-radius: 50%; background: var(--qs-colPrimaryContainer); color: var(--qs-colOnPrimaryContainer); display: flex; align-items: center; justify-content: center; font-size: var(--qs-text-smallie); box-shadow: 0 0 0 2px #8d76ad;">M</span>
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-size: var(--qs-text-smallie); color: var(--qs-colOnSurface);">Maja Lindqvist</span>
+              <span style="font-size: var(--qs-text-smaller); color: var(--qs-colSubtext);">to Personal &middot; 09:41</span>
+            </div>
+          </div>
+          <p style="margin: 0; font-size: var(--qs-text-smallie); line-height: 1.6; color: var(--qs-colOnLayer1); text-wrap: pretty;">Thursday at 18:00 works for the landlord. He asked whether you want to see the storage unit in the basement too &mdash; it&rsquo;s an extra 15 minutes.</p>
+          <p style="margin: 0; font-size: var(--qs-text-smallie); line-height: 1.6; color: var(--qs-colOnLayer1); text-wrap: pretty;">Bring ID, they scan it at the door.</p>
+          <div style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: var(--qs-rounding-small); background: var(--qs-colSurfaceContainerHigh);">
+            <span class="ms" style="font-size: 18px; color: var(--qs-colOnLayer2);">description</span>
+            <div style="display: flex; flex-direction: column; min-width: 0;">
+              <span style="font-size: var(--qs-text-smaller); color: var(--qs-colOnSurface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">tenancy-draft.pdf</span>
+              <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext);">248 KB</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 4px;">
+            <div style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px 0 12px; border-radius: var(--qs-rounding-full); background: var(--qs-colPrimary); color: var(--qs-colOnPrimary); cursor: pointer;" style-hover="background: var(--qs-colPrimaryHover);">
+              <span class="ms" style="font-size: 16px;">reply</span>
+              <span style="font-size: var(--qs-text-smaller);">Reply in Gmail</span>
+            </div>
+            <div onClick="{{ backToInbox }}" style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px 0 12px; border-radius: var(--qs-rounding-full); background: var(--qs-colSurfaceContainerHigh); color: var(--qs-colOnLayer2); cursor: pointer;" style-hover="background: var(--qs-colSurfaceContainerHighestHover);">
+              <span class="ms" style="font-size: 16px;">mark_email_unread</span>
+              <span style="font-size: var(--qs-text-smaller);">Mark unread</span>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isSignin }}" hint-placeholder-val="{{ false }}">
+        <div style="padding: 30px 20px 26px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center;">
+          <span class="ms" style="font-size: 34px; color: var(--qs-colPrimary);">mark_email_unread</span>
+          <span style="font-size: var(--qs-text-small); color: var(--qs-colOnSurface);">Connect a Google account</span>
+          <span style="font-size: var(--qs-text-smaller); color: var(--qs-colSubtext); max-width: 250px;">Sign in once per inbox. Tokens stay on this machine.</span>
+          <div style="display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 16px; border-radius: var(--qs-rounding-full); background: var(--qs-colPrimary); color: var(--qs-colOnPrimary); cursor: pointer;" style-hover="background: var(--qs-colPrimaryHover);">
+            <span class="ms" style="font-size: 17px;">login</span>
+            <span style="font-size: var(--qs-text-smallie);">Sign in with Google</span>
+          </div>
+          <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext);">Read, modify and send scopes</span>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isSyncing }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="ms" style="font-size: 18px; color: var(--qs-colPrimary);">mail</span>
+            <span style="font-size: var(--qs-text-small); color: var(--qs-colOnSurface);">Inbox</span>
+          </div>
+          <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext); letter-spacing: 0.06em;">FETCHING&hellip;</span>
+        </div>
+        <div style="height: 3px; background: var(--qs-colOutlineVariant); overflow: hidden;">
+          <div style="width: 42%; height: 100%; background: var(--qs-colPrimary); border-radius: var(--qs-rounding-full);"></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px; padding: 14px 16px 20px;">
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <span style="width: 30px; height: 30px; border-radius: 50%; background: var(--qs-colSurfaceContainerHighest);"></span>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+              <span style="width: 45%; height: 9px; border-radius: var(--qs-rounding-full); background: var(--qs-colSurfaceContainerHighest);"></span>
+              <span style="width: 80%; height: 9px; border-radius: var(--qs-rounding-full); background: var(--qs-colSurfaceContainerHigh);"></span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <span style="width: 30px; height: 30px; border-radius: 50%; background: var(--qs-colSurfaceContainerHighest);"></span>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+              <span style="width: 38%; height: 9px; border-radius: var(--qs-rounding-full); background: var(--qs-colSurfaceContainerHighest);"></span>
+              <span style="width: 66%; height: 9px; border-radius: var(--qs-rounding-full); background: var(--qs-colSurfaceContainerHigh);"></span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <span style="width: 30px; height: 30px; border-radius: 50%; background: var(--qs-colSurfaceContainerHighest);"></span>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+              <span style="width: 52%; height: 9px; border-radius: var(--qs-rounding-full); background: var(--qs-colSurfaceContainerHighest);"></span>
+              <span style="width: 72%; height: 9px; border-radius: var(--qs-rounding-full); background: var(--qs-colSurfaceContainerHigh);"></span>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isZero }}" hint-placeholder-val="{{ false }}">
+        <div style="padding: 34px 20px 30px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;">
+          <span class="ms" style="font-size: 34px; color: #b5ccba;">check_circle</span>
+          <span style="font-size: var(--qs-text-small); color: var(--qs-colOnSurface);">All three inboxes clear</span>
+          <span style="font-size: var(--qs-text-smaller); color: var(--qs-colSubtext);">Last message archived 11 minutes ago</span>
+          <div style="display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px 0 10px; margin-top: 4px; border-radius: var(--qs-rounding-full); background: var(--qs-colSurfaceContainerHigh); color: var(--qs-colOnLayer2); cursor: pointer;" style-hover="background: var(--qs-colSurfaceContainerHighestHover);">
+            <span class="ms" style="font-size: 16px;">edit</span>
+            <span style="font-size: var(--qs-text-smaller);">Compose</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isOffline }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; gap: 10px; padding: 14px 16px; background: var(--qs-colErrorContainer); align-items: flex-start;">
+          <span class="ms" style="font-size: 18px; color: var(--qs-colOnErrorContainer); margin-top: 1px;">cloud_off</span>
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: var(--qs-text-smallie); color: var(--qs-colOnErrorContainer);">Can&rsquo;t reach Gmail</span>
+            <span style="font-size: var(--qs-text-smaller); color: var(--qs-colOnErrorContainer);">Showing the cached inbox from 08:12.</span>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--qs-colLayer0Border);">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #af535d;"></span>
+            <span style="font-size: var(--qs-text-smallie); color: var(--qs-colOnLayer1);">Studio &mdash; sign-in expired</span>
+          </div>
+          <span onClick="{{ goSignin }}" style="font-size: var(--qs-text-smaller); color: var(--qs-colPrimary); cursor: pointer;">Reconnect</span>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 14px;">
+          <span style="font-size: var(--qs-text-smaller); color: var(--qs-colSubtext);">Next retry in 00:42</span>
+          <div onClick="{{ goSyncing }}" style="display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px 0 10px; border-radius: var(--qs-rounding-full); background: var(--qs-colSurfaceContainerHigh); color: var(--qs-colOnLayer2); cursor: pointer;" style-hover="background: var(--qs-colSurfaceContainerHighestHover);">
+            <span class="ms" style="font-size: 16px;">refresh</span>
+            <span style="font-size: var(--qs-text-smaller);">Retry now</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; align-items: center; gap: 8px; padding: 12px 12px 8px;">
+          <span class="ms" onClick="{{ backToInbox }}" style="font-size: 18px; color: var(--qs-colOnLayer2); cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--qs-rounding-full);" style-hover="background: var(--qs-colLayer3Hover);">arrow_back</span>
+          <span style="font-size: var(--qs-text-small); color: var(--qs-colOnSurface);">Accounts</span>
+        </div>
+        <div style="display: flex; flex-direction: column; padding: 0 8px 8px;">
+          <div style="display: grid; grid-template-columns: 14px 1fr auto; align-items: center; column-gap: 10px; height: 48px; padding: 0 10px; border-radius: var(--qs-rounding-verysmall);" style-hover="background: var(--qs-colSurfaceContainerHigh);">
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #8d76ad; cursor: pointer;"></span>
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-size: var(--qs-text-smallie); color: var(--qs-colOnSurface);">Personal</span>
+              <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext);">you@gmail.com</span>
+            </div>
+            <span class="ms" style="font-size: 18px; color: var(--qs-colSubtext); cursor: pointer;">edit</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 14px 1fr auto; align-items: center; column-gap: 10px; height: 48px; padding: 0 10px; border-radius: var(--qs-rounding-verysmall);" style-hover="background: var(--qs-colSurfaceContainerHigh);">
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #a97363; cursor: pointer;"></span>
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-size: var(--qs-text-smallie); color: var(--qs-colOnSurface);">Work</span>
+              <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext);">you@company.com</span>
+            </div>
+            <span class="ms" style="font-size: 18px; color: var(--qs-colSubtext); cursor: pointer;">edit</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 14px 1fr auto; align-items: center; column-gap: 10px; height: 48px; padding: 0 10px; border-radius: var(--qs-rounding-verysmall);" style-hover="background: var(--qs-colSurfaceContainerHigh);">
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #af535d; cursor: pointer;"></span>
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-size: var(--qs-text-smallie); color: var(--qs-colOnSurface);">Studio</span>
+              <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext);">hello@studio.co</span>
+            </div>
+            <span class="ms" style="font-size: 18px; color: var(--qs-colSubtext); cursor: pointer;">edit</span>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px 14px; border-top: 1px solid var(--qs-colLayer0Border);">
+          <span style="font-size: var(--qs-text-smaller); color: var(--qs-colSubtext);">Poll every 2 min</span>
+          <div style="display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px 0 10px; border-radius: var(--qs-rounding-full); background: var(--qs-colSurfaceContainerHigh); color: var(--qs-colOnLayer2); cursor: pointer;" style-hover="background: var(--qs-colSurfaceContainerHighestHover);">
+            <span class="ms" style="font-size: 16px;">add</span>
+            <span style="font-size: var(--qs-text-smaller);">Add account</span>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; padding: 7px 8px; border-radius: var(--qs-rounding-full); background: var(--qs-colLayer0); border: 1px solid var(--qs-colLayer0Border); box-shadow: 0 10px 30px var(--qs-colShadow); backdrop-filter: blur(14px);">
+    <span style="font-size: var(--qs-text-smallest); color: var(--qs-colSubtext); letter-spacing: 0.08em; padding: 0 6px 0 8px;">STATE</span>
+    <sc-for list="{{ views }}" as="v" hint-placeholder-count="6">
+      <div onClick="{{ v.onClick }}" style="display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px 0 10px; border-radius: var(--qs-rounding-full); cursor: pointer; white-space: nowrap; flex: none; background: {{ v.bg }}; color: {{ v.fg }};">
+        <span class="ms" style="font-size: 15px;">{{ v.icon }}</span>
+        <span style="font-size: var(--qs-text-smaller);">{{ v.label }}</span>
+      </div>
+    </sc-for>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;view&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;inbox&quot;,&quot;reading&quot;,&quot;syncing&quot;,&quot;zero&quot;,&quot;offline&quot;,&quot;signin&quot;,&quot;settings&quot;],&quot;default&quot;:&quot;inbox&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Panel state&quot;}}">
+class Component extends DCLogic {
+  state = { view: null };
+
+  go(view) { return () => this.setState({ view }); }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.view !== this.props.view) this.setState({ view: null });
+  }
+
+  renderVals() {
+    const v = this.state.view ?? this.props.view ?? "inbox";
+    const defs = [
+      { key: "inbox", label: "Inbox", icon: "all_inbox" },
+      { key: "reading", label: "Reading", icon: "drafts" },
+      { key: "syncing", label: "Syncing", icon: "sync" },
+      { key: "zero", label: "Zero", icon: "check_circle" },
+      { key: "offline", label: "Offline", icon: "cloud_off" },
+      { key: "signin", label: "Sign in", icon: "login" },
+      { key: "settings", label: "Settings", icon: "settings" }
+    ];
+    return {
+      isInbox: v === "inbox",
+      isReading: v === "reading",
+      isSyncing: v === "syncing",
+      isZero: v === "zero",
+      isOffline: v === "offline",
+      isSignin: v === "signin",
+      isSettings: v === "settings",
+      openReading: this.go("reading"),
+      openSettings: this.go("settings"),
+      backToInbox: this.go("inbox"),
+      goSignin: this.go("signin"),
+      goSyncing: this.go("syncing"),
+      views: defs.map(d => ({
+        ...d,
+        onClick: this.go(d.key),
+        bg: v === d.key ? "var(--qs-colPrimary)" : "var(--qs-colLayer2Base)",
+        fg: v === d.key ? "var(--qs-colOnPrimary)" : "var(--qs-colOnLayer2)"
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>
