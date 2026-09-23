@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import qs
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
