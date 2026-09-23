@@ -8,11 +8,11 @@
 
 import "modules/common"
 import "services"
+import "modules/widgets/gmailInbox"
 import "modules/widgets/pass"
 
 import qs.modules.widgets.background
 import qs.modules.widgets.bar
-import qs.modules.widgets.gmailInbox
 import qs.modules.widgets.keyDisplay
 import qs.modules.widgets.lock
 import qs.modules.widgets.mediaControls
