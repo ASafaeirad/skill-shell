@@ -29,7 +29,8 @@ The shell uses the **widgets** panel family, loaded lazily in `shell.qml`.
 │   │                         #   notificationPopup/, onScreenDisplay/, sessionScreen/,
 │   │                         #   lock/, polkit/, background/, ...
 │   └── settings/             # Pages of the settings app (BarConfig.qml, ...)
-└── scripts/                  # Runtime helper scripts (colors, ai, ...) — not dev tools
+├── scripts/                  # Runtime helper scripts (colors, ai, ...) — not dev tools
+└── design/                   # Vendored design documents — read before building any UI
 ```
 
 Import scheme: `import qs.services`, `import qs.modules.common`, `import qs.modules.common.widgets`, etc. Services are `pragma Singleton` — reference them directly (`Audio.sink`, `Network.materialSymbol`).
@@ -38,6 +39,17 @@ Import scheme: `import qs.services`, `import qs.modules.common`, `import qs.modu
 
 You can find widgets in [widget catalog](./widget-catalog.html).
 Please keep it updated after making changes.
+
+## Designs
+
+`design/` holds vendored copies of the design documents this shell is built from,
+so a design is readable from a clone with no login or MCP access. **If you are
+implementing UI that has a design, read it first** — see `design/README.md` for how
+to read a `.dc.html` and which state maps to which ticket.
+
+⚠️ The hex values in `design/_ds/*/tokens.css` are a snapshot taken from one
+wallpaper. Map each `var(--qs-*)` to its `Appearance` counterpart; copying a hex
+literal into QML is a defect. See the theming rules below.
 
 ## Theming rules (non-negotiable)
 
