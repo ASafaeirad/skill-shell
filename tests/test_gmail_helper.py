@@ -19,6 +19,10 @@ OAUTH_BROWSER = Path(__file__).with_name("oauth_browser_callback.py")
 class GmailFixtureHandler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
     message_fetches: dict[str, int] = {}
+    message_label_ids = ["INBOX", "UNREAD", "CATEGORY_PRIMARY", "Label_1"]
+    history_changes: list[dict] = []
+    history_id = "100"
+    history_expired = False
 
     def send_json(self, status: int, payload: dict) -> None:
         body = json.dumps(payload).encode()
@@ -52,22 +56,37 @@ class GmailFixtureHandler(BaseHTTPRequestHandler):
         if authorization not in counts:
             self.send_json(401, {"error": {"status": "UNAUTHENTICATED"}})
             return
+        if self.path == "/gmail/v1/users/me/profile":
+            self.send_json(200, {"historyId": self.history_id})
+            return
+        if self.path.startswith("/gmail/v1/users/me/history?"):
+            if self.history_expired:
+                self.send_json(404, {"error": {"status": "NOT_FOUND"}})
+                return
+            self.send_json(200, {"historyId": self.history_id, "history": self.history_changes})
+            return
         if self.path.startswith("/gmail/v1/users/me/messages?labelIds=INBOX"):
             prefix = "personal" if "personal" in authorization else "work"
             self.send_json(200, {"messages": [{"id": f"{prefix}-1"}], "resultSizeEstimate": 2})
             return
         if self.path == "/gmail/v1/users/me/labels":
-            self.send_json(200, {"labels": [{"id": "Label_1", "name": "Projects", "type": "user"}]})
+            self.send_json(200, {"labels": [
+                {"id": "Label_1", "name": "Projects", "type": "user"},
+                {"id": "Label_2", "name": "Personal", "type": "user"},
+            ]})
             return
         if self.path.startswith("/gmail/v1/users/me/messages/"):
             message_id = self.path.split("/")[-1].split("?")[0]
+            if self.path.endswith("?format=minimal"):
+                self.send_json(200, {"id": message_id, "labelIds": self.message_label_ids})
+                return
             self.message_fetches[message_id] = self.message_fetches.get(message_id, 0) + 1
             self.send_json(200, {
                 "id": message_id,
                 "threadId": f"thread-{message_id}",
                 "snippet": "A short preview",
                 "internalDate": "1700000000000",
-                "labelIds": ["INBOX", "UNREAD", "CATEGORY_PRIMARY", "Label_1"],
+                "labelIds": self.message_label_ids,
                 "payload": {
                     "headers": [{"name": "From", "value": "Alice <alice@example.com>"},
                                 {"name": "Subject", "value": "Hello"}],
@@ -84,6 +103,10 @@ class GmailFixtureHandler(BaseHTTPRequestHandler):
 class GmailHelperContractTest(unittest.TestCase):
     def setUp(self) -> None:
         GmailFixtureHandler.message_fetches = {}
+        GmailFixtureHandler.message_label_ids = ["INBOX", "UNREAD", "CATEGORY_PRIMARY", "Label_1"]
+        GmailFixtureHandler.history_changes = []
+        GmailFixtureHandler.history_id = "100"
+        GmailFixtureHandler.history_expired = False
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), GmailFixtureHandler)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
@@ -164,6 +187,7 @@ class GmailHelperContractTest(unittest.TestCase):
             "id": "personal-1", "threadId": "thread-personal-1",
             "sender": "Alice", "subject": "Hello",
             "snippet": "A short preview", "timestamp": 1700000000000,
+            "labelIds": ["INBOX", "UNREAD", "CATEGORY_PRIMARY", "Label_1"],
             "read": False, "attachment": True, "category": "Primary",
             "labels": ["Projects"],
         })
@@ -172,10 +196,57 @@ class GmailHelperContractTest(unittest.TestCase):
             "clientId": "desktop-client", "clientSecret": "secret-on-stdin",
             "accounts": [{"id": "personal", "email": "personal@example.com",
                           "refreshToken": "personal-token",
-                          "knownMessages": accounts[0]["messages"]}],
+                          "knownMessages": accounts[0]["messages"],
+                          "historyId": accounts[0]["historyId"]}],
         })
         self.assertEqual(cached.returncode, 0, cached.stderr)
         self.assertEqual(json.loads(cached.stdout)["accounts"][0]["messages"], accounts[0]["messages"])
+        self.assertEqual(GmailFixtureHandler.message_fetches["personal-1"], 1)
+
+    def test_sync_updates_cached_labels_from_history_without_refetching_details(self) -> None:
+        account = {"id": "personal", "email": "personal@example.com", "refreshToken": "personal-token"}
+        first = self.run_sync({
+            "clientId": "desktop-client", "clientSecret": "secret-on-stdin", "accounts": [account],
+        })
+        self.assertEqual(first.returncode, 0, first.stderr)
+        cached = json.loads(first.stdout)["accounts"][0]
+        GmailFixtureHandler.history_id = "101"
+        GmailFixtureHandler.history_changes = [{
+            "labelsRemoved": [{"message": {"id": "personal-1"},
+                               "labelIds": ["UNREAD", "CATEGORY_PRIMARY", "Label_1"]}],
+            "labelsAdded": [{"message": {"id": "personal-1"},
+                             "labelIds": ["CATEGORY_SOCIAL", "Label_2"]}],
+        }]
+        second = self.run_sync({
+            "clientId": "desktop-client", "clientSecret": "secret-on-stdin",
+            "accounts": [{**account, "knownMessages": cached["messages"],
+                          "historyId": cached["historyId"]}],
+        })
+        self.assertEqual(second.returncode, 0, second.stderr)
+        refreshed = json.loads(second.stdout)["accounts"][0]["messages"][0]
+        self.assertTrue(refreshed["read"])
+        self.assertEqual(refreshed["category"], "Social")
+        self.assertEqual(refreshed["labels"], ["Personal"])
+        self.assertEqual(GmailFixtureHandler.message_fetches["personal-1"], 1)
+
+    def test_expired_history_fetches_only_current_labels(self) -> None:
+        account = {"id": "personal", "email": "personal@example.com", "refreshToken": "personal-token"}
+        first = self.run_sync({
+            "clientId": "desktop-client", "clientSecret": "secret-on-stdin", "accounts": [account],
+        })
+        self.assertEqual(first.returncode, 0, first.stderr)
+        cached = json.loads(first.stdout)["accounts"][0]
+        GmailFixtureHandler.history_expired = True
+        GmailFixtureHandler.message_label_ids = ["INBOX", "CATEGORY_PRIMARY", "Label_2"]
+        second = self.run_sync({
+            "clientId": "desktop-client", "clientSecret": "secret-on-stdin",
+            "accounts": [{**account, "knownMessages": cached["messages"],
+                          "historyId": cached["historyId"]}],
+        })
+        self.assertEqual(second.returncode, 0, second.stderr)
+        refreshed = json.loads(second.stdout)["accounts"][0]["messages"][0]
+        self.assertTrue(refreshed["read"])
+        self.assertEqual(refreshed["labels"], ["Personal"])
         self.assertEqual(GmailFixtureHandler.message_fetches["personal-1"], 1)
 
     def test_expired_authorisation_has_distinct_exit_code(self) -> None:

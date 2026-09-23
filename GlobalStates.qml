@@ -12,6 +12,7 @@ Singleton {
 
     // Panel references
     property var bar: null
+    property var gmailInbox: null
     property var keyDisplay: null
     property var mediaControls: null
     property var osdBrightness: null

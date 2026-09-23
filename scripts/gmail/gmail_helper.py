@@ -49,6 +49,10 @@ class NetworkUnavailable(GmailError):
     outcome = "network"
 
 
+class HistoryExpired(GmailError):
+    """Gmail no longer retains changes since the previous sync."""
+
+
 class JsonHttpClient:
     """Small JSON client that reuses one connection per origin."""
 
@@ -109,6 +113,8 @@ class JsonHttpClient:
                 reason = reason.get("status") or reason.get("message")
             if response.status == 401 or reason == "invalid_grant":
                 raise AuthorizationExpired(str(reason or "authorisation expired"))
+            if response.status == 404 and parsed.path.endswith("/history"):
+                raise HistoryExpired(str(reason or "history expired"))
             raise NetworkUnavailable(str(reason or f"HTTP {response.status}"))
         return decoded
 
@@ -172,6 +178,15 @@ def has_attachment(part: dict[str, Any]) -> bool:
     return any(has_attachment(child) for child in part.get("parts", []) if isinstance(child, dict))
 
 
+def label_fields(label_ids: list[str], labels: dict[str, str]) -> dict[str, Any]:
+    return {
+        "read": "UNREAD" not in label_ids,
+        "category": next((labels.get(label, label.removeprefix("CATEGORY_").title())
+                          for label in label_ids if label.startswith("CATEGORY_")), ""),
+        "labels": [labels[label] for label in label_ids if label in labels and not label.startswith("CATEGORY_")],
+    }
+
+
 def normalize_message(message: dict[str, Any], labels: dict[str, str]) -> dict[str, Any]:
     headers = {
         str(header.get("name", "")).lower(): str(header.get("value", ""))
@@ -187,12 +202,53 @@ def normalize_message(message: dict[str, Any], labels: dict[str, str]) -> dict[s
         "subject": headers.get("subject", "(no subject)"),
         "snippet": message.get("snippet", ""),
         "timestamp": int(message.get("internalDate", 0)),
-        "read": "UNREAD" not in label_ids,
+        "labelIds": label_ids,
         "attachment": has_attachment(message.get("payload", {})),
-        "category": next((labels.get(label, label.removeprefix("CATEGORY_").title())
-                          for label in label_ids if label.startswith("CATEGORY_")), ""),
-        "labels": [labels[label] for label in label_ids if label in labels],
+        **label_fields(label_ids, labels),
     }
+
+
+def update_known_labels(
+    client: JsonHttpClient, access_token: str, history_id: str,
+    known: dict[str, dict[str, Any]],
+) -> set[str]:
+    changed: set[str] = set()
+    page_token = ""
+    while True:
+        query = {"startHistoryId": history_id}
+        if page_token:
+            query["pageToken"] = page_token
+        path = f"/users/me/history?{urllib.parse.urlencode(query)}"
+        response = gmail_get(client, path, access_token)
+        for record in response.get("history", []):
+            for field, adding in (("labelsAdded", True), ("labelsRemoved", False)):
+                for change in record.get(field, []):
+                    message_id = change.get("message", {}).get("id")
+                    if message_id not in known:
+                        continue
+                    label_ids = set(known[message_id].get("labelIds", []))
+                    if adding:
+                        label_ids.update(change.get("labelIds", []))
+                    else:
+                        label_ids.difference_update(change.get("labelIds", []))
+                    known[message_id]["labelIds"] = sorted(label_ids)
+                    changed.add(message_id)
+        page_token = response.get("nextPageToken", "")
+        if not page_token:
+            return changed
+
+
+def reload_known_labels(
+    client: JsonHttpClient, access_token: str, known: dict[str, dict[str, Any]],
+) -> set[str]:
+    for message_id, message in known.items():
+        minimal = gmail_get(
+            client,
+            f"/users/me/messages/{urllib.parse.quote(message_id)}?format=minimal",
+            access_token,
+        )
+        message["labelIds"] = minimal.get("labelIds", [])
+    return set(known)
 
 
 class OAuthCallbackHandler(BaseHTTPRequestHandler):
@@ -318,6 +374,7 @@ def sync(request: dict[str, Any]) -> tuple[dict[str, Any], int]:
                 "email": email,
                 "unread": None,
                 "messages": account.get("knownMessages", []),
+                "historyId": account.get("historyId", ""),
                 "total": 0,
                 "error": None,
             }
@@ -329,24 +386,38 @@ def sync(request: dict[str, Any]) -> tuple[dict[str, Any], int]:
                 access_token = exchange_refresh_token(
                     client, client_id, client_secret, refresh_token
                 )
+                profile = gmail_get(client, "/users/me/profile", access_token)
                 unread_label = gmail_get(client, "/users/me/labels/UNREAD", access_token)
                 result["unread"] = int(unread_label.get("messagesUnread", 0))
                 inbox = gmail_get(client, "/users/me/messages?labelIds=INBOX&maxResults=12", access_token)
                 listed = inbox.get("messages", [])
                 result["total"] = int(inbox.get("resultSizeEstimate", len(listed)))
+                listed_ids = {item["id"] for item in listed if isinstance(item.get("id"), str)}
                 known = {
-                    item["id"]: item for item in account.get("knownMessages", [])
-                    if isinstance(item, dict) and isinstance(item.get("id"), str)
+                    item["id"]: dict(item) for item in account.get("knownMessages", [])
+                    if isinstance(item, dict) and item.get("id") in listed_ids
                 }
                 new_ids = [item["id"] for item in listed if item.get("id") not in known]
+                changed_ids: set[str] = set()
+                if known and account.get("historyId"):
+                    try:
+                        changed_ids = update_known_labels(
+                            client, access_token, str(account["historyId"]), known
+                        )
+                    except HistoryExpired:
+                        changed_ids = reload_known_labels(client, access_token, known)
+                elif known:
+                    changed_ids = reload_known_labels(client, access_token, known)
                 labels: dict[str, str] = {}
-                if new_ids:
+                if new_ids or changed_ids:
                     label_response = gmail_get(client, "/users/me/labels", access_token)
                     labels = {
                         label["id"]: label.get("name", label["id"])
                         for label in label_response.get("labels", [])
                         if label.get("type") == "user" or label.get("id", "").startswith("CATEGORY_")
                     }
+                for message_id in changed_ids:
+                    known[message_id].update(label_fields(known[message_id]["labelIds"], labels))
                 messages = []
                 for item in listed:
                     message_id = item["id"]
@@ -356,6 +427,7 @@ def sync(request: dict[str, Any]) -> tuple[dict[str, Any], int]:
                         detail = gmail_get(client, f"/users/me/messages/{urllib.parse.quote(message_id)}?format=full", access_token)
                         messages.append(normalize_message(detail, labels))
                 result["messages"] = messages
+                result["historyId"] = str(profile.get("historyId", ""))
                 outcomes.append("success")
             except GmailError as error:
                 result["error"] = error.outcome
