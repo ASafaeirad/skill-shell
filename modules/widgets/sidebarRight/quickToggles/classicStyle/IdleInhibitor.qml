@@ -1,17 +1,6 @@
-import qs.modules.common.widgets
-import qs.services
+import QtQuick
+import qs.modules.common.models.quickToggles as QuickToggleModels
 
 QuickToggleButton {
-    id: root
-
-    toggled: Idle.inhibit
-    buttonIcon: "coffee"
-    onClicked: {
-        Idle.toggleInhibit();
-    }
-
-    StyledToolTip {
-        text: "Keep system awake"
-    }
-
+    toggleModel: QuickToggleModels.IdleInhibitorToggle {}
 }

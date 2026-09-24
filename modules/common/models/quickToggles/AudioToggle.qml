@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 import qs.services
 import qs.modules.common
 import qs.modules.common.functions
@@ -14,4 +15,8 @@ QuickToggleModel {
         Audio.toggleMute()
     }
     hasMenu: true
+    altAction: () => {
+        Quickshell.execDetached(["bash", "-c", `${Apps.volumeMixer}`]);
+        GlobalStates.sidebarRight?.close();
+    }
 }

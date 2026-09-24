@@ -10,13 +10,13 @@ GroupButton {
     id: root
     
     // Info to be passed to by repeater
-    required property int buttonIndex
-    required property var buttonData
-    required property bool expandedSize
-    required property real baseCellWidth
-    required property real baseCellHeight
-    required property real cellSpacing
-    required property int cellSize
+    property int buttonIndex: 0
+    property var buttonData: null
+    property bool expandedSize: (cellSize > 1)
+    property real baseCellWidth: 0
+    property real baseCellHeight: 0
+    property real cellSpacing: 0
+    property int cellSize: buttonData?.size ?? 1
 
     // Signals
     signal openMenu()
