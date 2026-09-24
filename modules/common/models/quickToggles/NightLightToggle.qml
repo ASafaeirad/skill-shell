@@ -24,8 +24,15 @@ QuickToggleModel {
         Hyprsunset.toggleTemperature();
     }
     hasMenu: true
+    altAction: () => {
+        Config.options.light.night.automatic = !Config.options.light.night.automatic;
+    }
     Component.onCompleted: {
         Hyprsunset.fetchState();
     }
-    tooltipText: "Night Light | Right-click to configure"
+    tooltipText: `${"Night Light"} · ${
+        auto ? "Automatic" : "Manual"
+    } · ${
+        activeNow ? "Enabled now" : "Disabled now"
+    }`
 }

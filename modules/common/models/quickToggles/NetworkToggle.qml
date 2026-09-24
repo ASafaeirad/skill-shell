@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.widgets
@@ -14,4 +15,9 @@ QuickToggleModel {
         return Network.toggleWifi();
     }
     hasMenu: true
+    altAction: () => {
+        Quickshell.execDetached(["bash", "-c", `${Network.ethernet ? Apps.networkEthernet : Apps.network}`]);
+        GlobalStates.sidebarRight?.close();
+    }
 }
+

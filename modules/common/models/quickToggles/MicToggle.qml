@@ -15,6 +15,10 @@ QuickToggleModel {
         Audio.toggleMicMute()
     }
     hasMenu: true
+    altAction: () => {
+        Quickshell.execDetached(["bash", "-c", `${Apps.volumeMixer}`]);
+        GlobalStates.sidebarRight?.close();
+    }
 
     tooltipText: "Audio input | Right-click for volume mixer & device selector"
 }
