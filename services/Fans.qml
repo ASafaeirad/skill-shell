@@ -6,7 +6,7 @@ import Quickshell
 import Quickshell.Io
 
 /**
-* Fan sensors and fan-curve editing, backed by the `fan` CLI (~/.local/bin/fan), which is the
+* Fan sensors and fan-curve editing, backed by scripts/fan/fan.sh, which is the
 * single source of truth for what a fan action means. This service decides *when* to read or
 * write, never *what* a curve or the full-speed override does -- that lives in the script, so
 * the terminal and this page cannot drift apart.
@@ -18,6 +18,7 @@ import Quickshell.Io
 Singleton {
     id: root
 
+    readonly property string fanCommand: Quickshell.shellPath("scripts/fan/fan.sh")
     readonly property int sensorInterval: 2000
 
     // The settings page raises this while it is on screen. Nothing polls otherwise: this
@@ -97,7 +98,7 @@ Singleton {
                                          })
 
     function refresh() {
-        curveProc.exec(["fan", "curve", "get"]);
+        curveProc.exec([root.fanCommand, "curve", "get"]);
     }
 
     function setMode(mode) {
@@ -106,7 +107,7 @@ Singleton {
             return;
         root.busy = true;
         root.lastError = "";
-        writeProc.exec(["fan", command]);
+        writeProc.exec([root.fanCommand, command]);
     }
 
     function applyCurve(points) {
@@ -114,7 +115,7 @@ Singleton {
             return;
         root.busy = true;
         root.lastError = "";
-        writeProc.exec(["fan", "curve", "set", root.serialize(points)]);
+        writeProc.exec([root.fanCommand, "curve", "set", root.serialize(points)]);
     }
 
     function resetCurve() {
@@ -122,13 +123,13 @@ Singleton {
             return;
         root.busy = true;
         root.lastError = "";
-        writeProc.exec(["fan", "curve", "reset"]);
+        writeProc.exec([root.fanCommand, "curve", "reset"]);
     }
 
     onMonitoringChanged: {
         if (!root.monitoring)
             return;
-        sensorProc.exec(["fan", "sensors"]);
+        sensorProc.exec([root.fanCommand, "sensors"]);
         root.refresh();
     }
 
@@ -139,13 +140,13 @@ Singleton {
         // Skipping a tick while the previous read is still in flight keeps a slow nvidia-smi
         // (it is allowed to take up to 2s) from stacking up one subprocess per tick.
         onTriggered: if (!sensorProc.running)
-                         sensorProc.exec(["fan", "sensors"])
+                         sensorProc.exec([root.fanCommand, "sensors"])
     }
 
     Process {
         id: sensorProc
 
-        command: ["fan", "sensors"]
+        command: [root.fanCommand, "sensors"]
 
         stdout: StdioCollector {
             onStreamFinished: {
@@ -183,7 +184,7 @@ Singleton {
     Process {
         id: curveProc
 
-        command: ["fan", "curve", "get"]
+        command: [root.fanCommand, "curve", "get"]
 
         stdout: StdioCollector {
             onStreamFinished: {
@@ -224,7 +225,7 @@ Singleton {
     Process {
         id: writeProc
 
-        command: ["fan", "curve", "get"]
+        command: [root.fanCommand, "curve", "get"]
 
         stderr: StdioCollector {
             id: writeErr
