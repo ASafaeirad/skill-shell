@@ -46,6 +46,7 @@ colours. They must be referenced by palette key.
 | Document | Widget | States |
 | --- | --- | --- |
 | `Gmail Widget.dc.html` | Gmail widget | inbox, reading, syncing, zero, offline, signin, settings |
+| `Canvas-2.dc.html` | Media grabber (yt-dlp) | idle, fetching, ready, downloading, done, error |
 
 ### Gmail widget — which state belongs to which ticket
 
@@ -70,6 +71,21 @@ colours. They must be referenced by palette key.
 
 The `isSignin` card's caption reads "Read, modify and send scopes". The shell
 requests **modify** access and does not request send access.
+
+### Media grabber
+
+Implemented as `modules/widgets/mediaGrabber/` on top of the `YtDlp` service. Each
+`sc-if` block maps to one value of `YtDlp.view`. The floating STATE switcher at
+the bottom of the page is only for previewing the design and is not part of the widget.
+Where the design uses placeholder content, the widget shows real data instead:
+
+1. The thumbnail gradient and play glyph are placeholders. The widget shows the
+   fetched thumbnail and falls back to the play glyph on a
+   `colSurfaceContainerHighest` tile.
+2. The error card's second line is fixed copy in the design. The widget shows
+   yt-dlp's own error and uses the design copy only when there is none. When a
+   download fails (as opposed to a fetch), the title reads "Download failed" and
+   Retry restarts the download.
 
 ## Upstream
 

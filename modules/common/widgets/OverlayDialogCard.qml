@@ -20,6 +20,8 @@ Item {
     // Matches WindowDialog, which pads its content by the surface radius.
     property real padding: Appearance.spacing.xl
     property color surfaceColor: Appearance.colors.colBackgroundSurfaceContainerHigh
+    // The visible surface, for callers that restyle its radius or border.
+    readonly property alias surface: background
 
     // Emitted at the start of animateIn(), for resetting stale input before
     // the dialog slides back in (reopening mid-exit reuses the same instance).

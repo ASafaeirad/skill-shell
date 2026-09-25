@@ -15,6 +15,7 @@ Singleton {
     property var gmailInbox: null
     property var keyDisplay: null
     property var mediaControls: null
+    property var mediaGrabber: null
     property var osdBrightness: null
     property var osdVolume: null
     property var overlay: null

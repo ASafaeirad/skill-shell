@@ -16,6 +16,7 @@ import qs.modules.widgets.bar
 import qs.modules.widgets.keyDisplay
 import qs.modules.widgets.lock
 import qs.modules.widgets.mediaControls
+import qs.modules.widgets.mediaGrabber
 import qs.modules.widgets.notificationPopup
 import qs.modules.widgets.onScreenDisplay
 import qs.modules.widgets.overlay
@@ -61,6 +62,7 @@ ShellRoot {
     PanelLoader { component: KeyDisplay {} }
     PanelLoader { component: Lock {} }
     PanelLoader { component: MediaControls {} }
+    PanelLoader { component: MediaGrabber {} }
     PanelLoader { component: NotificationPopup {} }
     PanelLoader { component: OnScreenDisplay {} }
     PanelLoader { component: Overlay {} }

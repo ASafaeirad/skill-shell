@@ -971,7 +971,9 @@ modules/widgets/bar/weather/WeatherPopup.qml
 modules/widgets/sidebarRight/QuickSliders.qml
 modules/widgets/sidebarRight/SidebarRightContent.qml
 modules/widgets/pass/Pass.qml
-modules/widgets/pass/PassContent.qml`
+modules/widgets/pass/PassContent.qml
+modules/widgets/mediaGrabber/MediaGrabber.qml
+modules/widgets/mediaGrabber/MediaGrabberContent.qml`
         .trim()
         .split("\n");
 
@@ -1014,10 +1016,14 @@ modules/widgets/pass/PassContent.qml`
           "Keyboard-first pass password-store panel with IPC and a global shortcut entry point.",
         PassContent:
           "One-column pass browser with search and detail stages, configurable ignored-entry patterns, and copy, OTP, and password visibility toggle actions.",
+        MediaGrabber:
+          "yt-dlp media grabber overlay with IPC toggle, open, close and grab(url) plus a global shortcut; downloads continue in the YtDlp service after it closes.",
+        MediaGrabberContent:
+          "Media grabber card with link entry and clipboard paste, a shimmer metadata skeleton, thumbnail and platform summary, best, medium or audio-only quality choice, overall download progress with speed and ETA, cancel, a saved state with show-in-folder, and a fetch or download error state with retry.",
         OverlayDialog:
           "Lifecycle host for the script-driven overlay dialogs: owns the GlobalStates flag, the window that lives only while the dialog is open, the enter/exit animation handshake and the fifo result writer.",
         OverlayDialogCard:
-          "Rounded dialog surface with the shared slide-and-fade transition, used by the script-driven overlay dialogs.",
+          "Rounded dialog surface with the shared slide-and-fade transition, used by the script-driven overlay dialogs; exposes its surface for radius and border restyling.",
         OverlayDialogWindow:
           "Fullscreen layershell overlay with a dismissing scrim and focused content item, hosting an OverlayDialogCard.",
         Panel:
@@ -1089,7 +1095,7 @@ modules/widgets/pass/PassContent.qml`
           .replace(/([a-z0-9])([A-Z])/g, "$1 $2");
       }
       function scopeOf(path) {
-        if (path.includes("/widgets/pass/")) return "Panel widgets";
+        if (path.includes("/widgets/pass/") || path.includes("/widgets/mediaGrabber/")) return "Panel widgets";
         if (path.includes("/widgetCanvas/")) return "Canvas";
         if (path.includes("/shapes/")) return "Shape lab";
         return "Common toolkit";
