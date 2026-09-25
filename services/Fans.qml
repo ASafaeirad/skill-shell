@@ -4,6 +4,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.modules.common
+import Quickshell.Services.UPower
 
 /**
 * Fan sensors and fan-curve editing, backed by scripts/fan/fan.sh, which is the
@@ -97,16 +99,51 @@ Singleton {
                                              "max": "max"
                                          })
 
+    // "Auto" is not a state the machine has: the platform profile is always one concrete
+    // profile, and with auto power management on it is the power policy that picks which.
+    // This records whether the profile was overridden here since the policy last decided, so
+    // the page can light Auto instead of claiming a mode nobody chose.
+    property bool manualOverride: false
+
+    readonly property bool autoAvailable: Config.options.battery.autoPowerProfile
+
+    // The two things the policy re-decides on. Either one drops the override, because after
+    // it the profile is once again whatever policy wanted -- see services/PowerProfile.qml.
+    readonly property bool onBattery: UPower.onBattery
+    readonly property string powerMode: Config.options.battery.powerMode
+
+    onOnBatteryChanged: root.manualOverride = false
+    onPowerModeChanged: root.manualOverride = false
+
+    // What the profile row shows as selected, as opposed to `mode`, which is what the
+    // hardware is actually set to.
+    readonly property string selectedMode: (root.autoAvailable && !root.manualOverride) ? "auto" : root.mode
+
     function refresh() {
         curveProc.exec([root.fanCommand, "curve", "get"]);
     }
 
     function setMode(mode) {
+        if (mode === "auto") {
+            if (root.busy || !root.autoAvailable)
+                return;
+            root.busy = true;
+            root.lastError = "";
+            root.manualOverride = false;
+            // Nothing to run against the fans: handing the profile back to the power policy
+            // means asking the policy to decide again, right now. `power` owns what a mode
+            // means, the same way `fan` owns what a curve does -- and it has to be invoked
+            // rather than gone through services/PowerProfile.qml, because the settings app is
+            // a second process and would get an instance of that service of its own.
+            writeProc.exec(["power", "mode", root.powerMode]);
+            return;
+        }
         const command = root.modeCommands[mode];
         if (root.busy || !command)
             return;
         root.busy = true;
         root.lastError = "";
+        root.manualOverride = true;
         writeProc.exec([root.fanCommand, command]);
     }
 

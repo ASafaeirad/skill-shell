@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import qs.modules.common
+import qs.modules.common.functions
 import qs.modules.common.widgets
 import qs.services
 
@@ -11,7 +12,7 @@ ContentPage {
 
     // Working copy of the curve. The page edits this and writes it on Apply rather than on
     // every drag: `fan curve set` also hands fan control from the firmware to the custom
-    // curve, which is too large a change to make eight times during one gesture.
+    // curve, which is too large a change to make on every frame of one gesture.
     property var draft: []
 
     readonly property bool dirty: {
@@ -26,6 +27,63 @@ ContentPage {
     // over from another one must not be offered for Apply against the new profile.
     property string draftProfile: ""
 
+    // Set while an Apply this page started is still running, so the button can report what
+    // happened to it rather than to a write something else made.
+    property bool applying: false
+    property bool applied: false
+
+    readonly property string profileHint: {
+        const mode = Fans.selectedMode;
+        if (mode === "auto") {
+            if (Config.options.battery.powerMode === "performance")
+                return "Follows your power mode, which pins Performance on both power sources.";
+            if (Config.options.battery.powerMode === "powersaver")
+                return "Follows your power mode, which pins Quiet on both power sources.";
+            return "Follows your power mode — plugged in uses Default, on battery uses Quiet.";
+        }
+        if (Fans.autoAvailable)
+            return "Overrides your power mode until you pick Auto again.";
+        if (mode === "quiet")
+            return "Caps fan speed; runs warmer under load.";
+        if (mode === "default")
+            return "Balanced noise and temperature.";
+        if (mode === "max")
+            return "Fans at full speed. Loud.";
+        return "";
+    }
+
+    readonly property var profileOptions: {
+        let options = [];
+        if (Fans.autoAvailable)
+            options.push({
+                             "value": "auto",
+                             "icon": "bolt",
+                             "displayName": "Auto"
+                         });
+        return options.concat([
+                                  {
+                                      "value": "quiet",
+                                      "icon": "bedtime",
+                                      "displayName": "Quiet"
+                                  },
+                                  {
+                                      "value": "default",
+                                      "icon": "balance",
+                                      "displayName": "Default"
+                                  },
+                                  {
+                                      "value": "max",
+                                      "icon": "speed",
+                                      "displayName": "Max"
+                                  }
+                              ]);
+    }
+
+    function fanRpm(id) {
+        const fan = Fans.fanSpeeds.find(f => f.id === id);
+        return fan ? fan.rpm : -1;
+    }
+
     function seedDraft() {
         root.draftProfile = Fans.profile;
         root.draft = Fans.curve.map(p => ({
@@ -34,20 +92,24 @@ ContentPage {
         }));
     }
 
-    function setPoint(index, field, value) {
+    function setPoint(index, temp, percent) {
         let next = root.draft.map(p => ({
             "temp": p.temp,
             "pwm": p.pwm
         }));
-        next[index][field] = value;
 
         // Both series have to rise. A curve whose fan speeds dip is accepted by asusctl with
-        // exit 0 and then discarded by the firmware, so a dragged slider would appear to save
-        // and change nothing. Push the neighbours along instead of letting that be built.
-        for (let i = index + 1; i < next.length; i++)
-            next[i][field] = Math.max(next[i][field], next[index][field]);
-        for (let i = index - 1; i >= 0; i--)
-            next[i][field] = Math.min(next[i][field], next[index][field]);
+        // exit 0 and then discarded by the firmware, so a dragged point would appear to save
+        // and change nothing. A point is therefore penned in by its neighbours on both axes,
+        // which is also what stops a drag from reordering the curve under itself.
+        const low = index > 0 ? next[index - 1] : null;
+        const high = index < next.length - 1 ? next[index + 1] : null;
+        next[index] = {
+            "temp": Math.max(low ? low.temp : 0, Math.min(high ? high.temp : 110, temp)),
+            "pwm": Math.max(low ? low.pwm : 0, Math.min(high ? high.pwm : 255, Fans.percentToPwm(Math.max(0,
+                                                                                                          Math.min(100,
+                                                                                                                   percent)))))
+        };
 
         root.draft = next;
     }
@@ -60,6 +122,11 @@ ContentPage {
     }
     Component.onDestruction: Fans.monitoring = false
 
+    onDirtyChanged: {
+        if (root.dirty)
+            root.applied = false;
+    }
+
     Connections {
         target: Fans
 
@@ -70,20 +137,57 @@ ContentPage {
             if (!root.dirty || root.draftProfile !== Fans.profile)
                 root.seedDraft();
         }
+
+        function onBusyChanged() {
+            if (Fans.busy || !root.applying)
+                return;
+            root.applying = false;
+            root.applied = Fans.lastError.length === 0;
+        }
     }
 
-    // A live reading with its icon and caption. Inline rather than a file in this directory:
-    // modules/settings is not a registered QML module, so a sibling .qml here is not importable.
+    /**
+    * The fan glyph, turning at the speed of the fan it stands for.
+    *
+    * Geared down 40:1. A fan at 4700 rpm is 78 turns a second; drawn honestly it is a
+    * flicker, and the point of the thing is to show which fan is working, not to be read as
+    * a tachometer -- the number next to it is that. Driven from a frame callback rather than
+    * a looping animation so a new reading every two seconds changes the speed instead of
+    * restarting the turn from zero.
+    */
+    component FanSpinner: MaterialSymbol {
+        id: spinner
+
+        property int rpm: -1
+        readonly property real degreesPerSecond: spinner.rpm > 0 ? spinner.rpm / 60 / 40 * 360 : 0
+
+        text: "mode_fan"
+        iconSize: Appearance.font.pixelSize.smallie
+        color: Appearance.colors.colPrimary
+        opacity: spinner.rpm > 0 ? 1 : 0.4
+
+        FrameAnimation {
+            running: spinner.visible && spinner.rpm > 0
+            onTriggered: spinner.rotation = (spinner.rotation + frameTime * spinner.degreesPerSecond) % 360
+        }
+    }
+
+    // A live reading: what the sensor says, and under it the fan that answers to it, turning
+    // at its own speed. Inline rather than a file in this directory: modules/settings is not
+    // a registered QML module, so a sibling .qml here is not importable.
     component StatCard: Rectangle {
         id: card
 
         property string icon: ""
         property string label: ""
         property string value: ""
+        property string unit: ""
+        property string caption: ""
+        property int rpm: -1
 
         Layout.fillWidth: true
         implicitHeight: cardColumn.implicitHeight + Appearance.spacing.m * 2
-        radius: Appearance.rounding.small
+        radius: Appearance.rounding.normal
         color: Appearance.colors.colLayer1
 
         ColumnLayout {
@@ -91,7 +195,7 @@ ContentPage {
 
             anchors.fill: parent
             anchors.margins: Appearance.spacing.m
-            spacing: Appearance.spacing.xxs
+            spacing: Appearance.spacing.xs
 
             RowLayout {
                 spacing: Appearance.spacing.xs
@@ -105,206 +209,475 @@ ContentPage {
                 StyledText {
                     text: card.label
                     color: Appearance.colors.colSubtext
+                    font.pixelSize: Appearance.font.pixelSize.smallie
+                }
+            }
+
+            RowLayout {
+                spacing: Appearance.spacing.xxs
+
+                StyledText {
+                    Layout.alignment: Qt.AlignBaseline
+                    text: card.value
+                    color: Appearance.colors.colOnLayer1
+                    font.pixelSize: Appearance.font.pixelSize.hugeass
+                    font.family: Appearance.font.family.numbers
+                }
+
+                StyledText {
+                    Layout.alignment: Qt.AlignBaseline
+                    visible: card.unit.length > 0
+                    text: card.unit
+                    color: Appearance.colors.colSubtext
                     font.pixelSize: Appearance.font.pixelSize.small
                 }
             }
 
-            StyledText {
-                text: card.value
-                color: Appearance.colors.colOnLayer1
-                font.pixelSize: Appearance.font.pixelSize.huge
-                font.family: Appearance.font.family.numbers
+            RowLayout {
+                spacing: Appearance.spacing.xs
+
+                FanSpinner {
+                    rpm: card.rpm
+                }
+
+                StyledText {
+                    Layout.fillWidth: true
+                    text: card.caption
+                    color: Appearance.colors.colSubtext
+                    font.pixelSize: Appearance.font.pixelSize.smaller
+                    font.family: Appearance.font.family.numbers
+                    elide: Text.ElideRight
+                }
             }
         }
     }
 
     /**
-    * One point of the curve: a vertical slider for fan speed, the percentage above it and
-    * the temperature threshold below it.
+    * The curve, as a curve: fan speed against temperature, with a draggable handle per point
+    * and a marker for what the CPU is asking for right now.
     *
-    * StyledSlider is not reused. It lays its track and handle out along x and measures
-    * against effectiveDraggingWidth, so `orientation: Qt.Vertical` leaves the fill and the
-    * handle drawn horizontally across a vertical control. This draws the same Material
-    * tokens along y instead.
+    * Both axes are dragged at once, so the temperature thresholds need no separate control.
+    * Speed is carried as raw PWM in the model and only ever shown as a percentage: asusctl
+    * truncates when it renders one, so a curve that round-trips through percent loses ~1% per
+    * cycle and ratchets itself down. Only the point actually dragged is converted.
     */
-    component CurvePoint: ColumnLayout {
-        id: point
+    component CurvePlot: Rectangle {
+        id: plot
 
-        property int percent: 0
-        property int temperature: 0
+        property var points: []
         property bool editable: true
+        property int liveTemp: -1
+        property int activeIndex: -1
 
-        signal percentEdited(int value)
-        signal temperatureEdited(int value)
+        signal pointDragged(int index, int temp, int percent)
 
-        spacing: Appearance.spacing.xs
-        opacity: point.editable ? 1 : 0.4
+        // Geometry the design fixes and the theme has no token for: the height of a chart
+        // body, and the size of a grab handle.
+        readonly property real plotHeight: 230
+        readonly property real handleSize: 28
+        readonly property real dotSize: 12
+        readonly property real dotSizeActive: 18
+        // The line is punched out from under each handle, so the dots read as points on the
+        // curve rather than beads laid over it.
+        readonly property real ringRadius: plot.dotSize / 2 + 3
 
-        Behavior on opacity {
-            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+        // 40-100 °C covers every curve this machine ships with. Widen rather than clip if one
+        // reaches past it.
+        readonly property int xMin: {
+            let lowest = 40;
+            for (const point of plot.points)
+                lowest = Math.min(lowest, point.temp);
+            return Math.floor(lowest / 10) * 10;
+        }
+        readonly property int xMax: {
+            let highest = 100;
+            for (const point of plot.points)
+                highest = Math.max(highest, point.temp);
+            return Math.ceil(highest / 10) * 10;
+        }
+        readonly property var xTicks: {
+            let ticks = [];
+            for (let temp = plot.xMin; temp <= plot.xMax; temp += 10)
+                ticks.push(temp);
+            return ticks;
+        }
+        readonly property var yTicks: [100, 75, 50, 25, 0]
+
+        readonly property var activePoint: (plot.activeIndex >= 0 && plot.activeIndex < plot.points.length)
+                                           ? plot.points[plot.activeIndex] : ({
+                                                                                  "temp": 0,
+                                                                                  "pwm": 0
+                                                                              })
+
+        function xAt(temp) {
+            return (temp - plot.xMin) / (plot.xMax - plot.xMin) * plotArea.width;
         }
 
-        StyledText {
-            Layout.alignment: Qt.AlignHCenter
-            text: `${point.percent}%`
-            color: Appearance.colors.colOnLayer1
-            font.pixelSize: Appearance.font.pixelSize.small
-            font.family: Appearance.font.family.numbers
+        function yAt(percent) {
+            return (1 - percent / 100) * plotArea.height;
         }
+
+        function tempAt(x) {
+            return Math.round(plot.xMin + x / plotArea.width * (plot.xMax - plot.xMin));
+        }
+
+        function percentAt(y) {
+            return Math.round((1 - y / plotArea.height) * 100);
+        }
+
+        // What the curve asks for at a temperature, interpolated the way the firmware reads
+        // it: linear between points and flat outside the first and the last.
+        function percentFor(temp) {
+            const points = plot.points;
+            if (points.length === 0)
+                return 0;
+            if (temp <= points[0].temp)
+                return Fans.pwmToPercent(points[0].pwm);
+            for (let i = 1; i < points.length; i++) {
+                if (temp > points[i].temp)
+                    continue;
+                const from = points[i - 1];
+                const to = points[i];
+                if (to.temp === from.temp)
+                    return Fans.pwmToPercent(to.pwm);
+                return Fans.pwmToPercent(from.pwm + (to.pwm - from.pwm) * (temp - from.temp) / (to.temp
+                                                                                                - from.temp));
+            }
+            return Fans.pwmToPercent(points[points.length - 1].pwm);
+        }
+
+        implicitHeight: plot.plotHeight + chart.labelRowHeight + Appearance.spacing.m * 2
+        radius: Appearance.rounding.normal
+        color: Appearance.colors.colLayer1
 
         Item {
-            id: trackArea
+            id: chart
 
-            Layout.alignment: Qt.AlignHCenter
-            Layout.fillHeight: true
-            implicitWidth: 22
-            implicitHeight: 200
+            anchors.fill: parent
+            anchors.margins: Appearance.spacing.m
 
-            readonly property real trackWidth: 14
-            readonly property real handleHeight: 4
-            // The handle sits inside the track, so the reachable span is shortened by it:
-            // without this the fill can never quite reach 0% or 100% at the extremes.
-            readonly property real travel: Math.max(1, height - trackArea.handleHeight)
-            readonly property real fillHeight: (point.percent / 100) * trackArea.travel
-                                               + trackArea.handleHeight / 2
+            // The axes are sized from the tick text rather than from a fixed gutter, so they
+            // stay legible at any font scale.
+            readonly property real gutterWidth: tickMetrics.width + Appearance.spacing.s
+            readonly property real labelRowHeight: tickMetrics.height + Appearance.spacing.xs
 
-            Rectangle {
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: trackArea.trackWidth
-                height: parent.height
-                radius: Appearance.rounding.full
-                color: Appearance.colors.colSurfaceContainerHighest
-            }
+            TextMetrics {
+                id: tickMetrics
 
-            Rectangle {
-                anchors {
-                    horizontalCenter: parent.horizontalCenter
-                    bottom: parent.bottom
-                }
-                width: trackArea.trackWidth
-                height: trackArea.fillHeight
-                radius: Appearance.rounding.full
-                color: Appearance.colors.colPrimary
-
-                Behavior on height {
-                    enabled: !dragArea.pressed
-                    animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-                }
-            }
-
-            Rectangle {
-                anchors.horizontalCenter: parent.horizontalCenter
-                y: trackArea.height - trackArea.fillHeight - trackArea.handleHeight / 2
-                width: trackArea.trackWidth + 8
-                height: trackArea.handleHeight
-                radius: Appearance.rounding.full
-                color: Appearance.colors.colPrimary
-
-                Behavior on y {
-                    enabled: !dragArea.pressed
-                    animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-                }
-            }
-
-            MouseArea {
-                id: dragArea
-
-                anchors.fill: parent
-                enabled: point.editable
-                cursorShape: point.editable ? (pressed ? Qt.ClosedHandCursor : Qt.PointingHandCursor) :
-                                              Qt.ArrowCursor
-
-                function percentAt(y) {
-                    const offset = y - trackArea.handleHeight / 2;
-                    return Math.max(0, Math.min(100, Math.round((1 - offset / trackArea.travel) * 100)));
-                }
-
-                onPressed: mouse => point.percentEdited(percentAt(mouse.y))
-                onPositionChanged: mouse => {
-                    if (pressed)
-                        point.percentEdited(percentAt(mouse.y));
-                }
-                onWheel: wheel => point.percentEdited(Math.max(0, Math.min(100, point.percent + (
-                                                                               wheel.angleDelta.y > 0 ? 1 :
-                                                                                                        -1))))
-
-                StyledToolTip {
-                    extraVisibleCondition: dragArea.pressed
-                    text: `${point.temperature}°C → ${point.percent}%`
-                }
-            }
-        }
-
-        // The threshold is editable in place rather than through a separate control: a spin
-        // box under every one of eight columns would dominate the curve it annotates.
-        Item {
-            Layout.alignment: Qt.AlignHCenter
-            Layout.fillWidth: true
-            implicitHeight: tempInput.implicitHeight + 4
-
-            Rectangle {
-                anchors.fill: parent
-                radius: Appearance.rounding.verysmall
-                color: tempInput.activeFocus ? Appearance.colors.colSecondaryContainer : (tempHover.hovered
-                                                                                          ? Appearance.colors.colLayer1Hover :
-                                                                                            "transparent")
-
-                Behavior on color {
-                    animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
-                }
-            }
-
-            StyledTextInput {
-                id: tempInput
-
-                anchors.centerIn: parent
-                width: parent.width - 4
-                enabled: point.editable
-                horizontalAlignment: Text.AlignHCenter
                 font.family: Appearance.font.family.numbers
-                color: Appearance.colors.colSubtext
-                validator: IntValidator {
-                    bottom: 0
-                    top: 110
+                font.pixelSize: Appearance.font.pixelSize.smallest
+                text: "100%"
+            }
+
+            Repeater {
+                model: plot.yTicks
+
+                StyledText {
+                    required property int modelData
+
+                    x: chart.gutterWidth - Appearance.spacing.s - width
+                    y: plotArea.y + plot.yAt(modelData) - height / 2
+                    text: `${modelData}%`
+                    color: Appearance.colors.colSubtext
+                    font.pixelSize: Appearance.font.pixelSize.smallest
+                    font.family: Appearance.font.family.numbers
                 }
-                // Deliberately not bound: a binding would fight the user mid-keystroke. It is
-                // seeded here and re-seeded below whenever the model moves underneath.
-                text: `${point.temperature}°`
+            }
 
-                onActiveFocusChanged: {
-                    if (activeFocus)
-                        text = `${point.temperature}`;
-                    else
-                        commit();
+            Repeater {
+                model: plot.xTicks
+
+                StyledText {
+                    required property int modelData
+
+                    x: plotArea.x + plot.xAt(modelData) - width / 2
+                    y: plotArea.height + Appearance.spacing.xs
+                    text: `${modelData}°`
+                    color: Appearance.colors.colSubtext
+                    font.pixelSize: Appearance.font.pixelSize.smallest
+                    font.family: Appearance.font.family.numbers
                 }
-                onAccepted: focus = false
+            }
 
-                function commit() {
-                    const parsed = parseInt(text.replace(/[^0-9]/g, ""), 10);
-                    if (!isNaN(parsed) && parsed !== point.temperature)
-                        point.temperatureEdited(parsed);
-                    text = `${point.temperature}°`;
+            Item {
+                id: plotArea
+
+                anchors {
+                    left: parent.left
+                    leftMargin: chart.gutterWidth
+                    right: parent.right
+                    top: parent.top
+                    bottom: parent.bottom
+                    bottomMargin: chart.labelRowHeight
                 }
 
-                Connections {
-                    target: point
+                Repeater {
+                    model: plot.yTicks
 
-                    function onTemperatureChanged() {
-                        if (!tempInput.activeFocus)
-                            tempInput.text = `${point.temperature}°`;
+                    Rectangle {
+                        required property int modelData
+
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        y: Math.min(plot.yAt(modelData), plotArea.height - 1)
+                        implicitHeight: 1
+                        color: Appearance.colors.colOutlineVariant
+                        opacity: 0.5
+                    }
+                }
+
+                Canvas {
+                    id: curveCanvas
+
+                    // One binding to hang every repaint off: the point list, the live reading,
+                    // the size and the palette, which the wallpaper can change under us.
+                    readonly property var repaintTrigger: [plot.points, plot.liveTemp, width, height,
+                        Appearance.colors.colPrimary, Appearance.colors.colTertiary]
+
+                    anchors.fill: parent
+                    onRepaintTriggerChanged: curveCanvas.requestPaint()
+                    onPaint: {
+                        const ctx = curveCanvas.getContext("2d");
+                        ctx.reset();
+                        if (plot.points.length === 0)
+                            return;
+
+                        const xs = plot.points.map(point => plot.xAt(point.temp));
+                        const ys = plot.points.map(point => plot.yAt(Fans.pwmToPercent(point.pwm)));
+                        const last = xs.length - 1;
+
+                        ctx.beginPath();
+                        ctx.moveTo(0, height);
+                        ctx.lineTo(0, ys[0]);
+                        for (let i = 0; i <= last; i++)
+                            ctx.lineTo(xs[i], ys[i]);
+                        ctx.lineTo(width, ys[last]);
+                        ctx.lineTo(width, height);
+                        ctx.closePath();
+                        ctx.fillStyle = ColorUtils.transparentize(Appearance.colors.colPrimary, 0.88);
+                        ctx.fill();
+
+                        ctx.beginPath();
+                        ctx.moveTo(0, ys[0]);
+                        for (let i = 0; i <= last; i++)
+                            ctx.lineTo(xs[i], ys[i]);
+                        ctx.lineTo(width, ys[last]);
+                        ctx.lineWidth = 2.5;
+                        ctx.lineJoin = "round";
+                        ctx.lineCap = "round";
+                        ctx.strokeStyle = Appearance.colors.colPrimary;
+                        ctx.stroke();
+
+                        if (liveMarker.visible) {
+                            const markerX = plot.xAt(plot.liveTemp);
+                            ctx.beginPath();
+                            ctx.setLineDash([4, 4]);
+                            ctx.lineWidth = 1.5;
+                            ctx.strokeStyle = ColorUtils.transparentize(Appearance.colors.colTertiary, 0.2);
+                            ctx.moveTo(markerX, 0);
+                            ctx.lineTo(markerX, height);
+                            ctx.stroke();
+                            ctx.setLineDash([]);
+                        }
+
+                        // Clear a ring under every handle instead of drawing one: the card is
+                        // a translucent layer colour, so a ring painted in it would let the
+                        // line straight through.
+                        ctx.globalCompositeOperation = "destination-out";
+                        for (let i = 0; i <= last; i++) {
+                            ctx.beginPath();
+                            ctx.arc(xs[i], ys[i], plot.ringRadius, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                        ctx.globalCompositeOperation = "source-over";
+                    }
+                }
+
+                Item {
+                    id: liveMarker
+
+                    readonly property real markerX: plot.xAt(plot.liveTemp)
+                    readonly property real markerY: plot.yAt(plot.percentFor(plot.liveTemp))
+
+                    anchors.fill: parent
+                    visible: plot.points.length > 0 && plot.liveTemp >= plot.xMin && plot.liveTemp
+                             <= plot.xMax
+
+                    Rectangle {
+                        x: liveMarker.markerX - width / 2
+                        y: liveMarker.markerY - height / 2
+                        width: 18
+                        height: 18
+                        radius: Appearance.rounding.full
+                        color: Appearance.colors.colTertiaryContainer
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: 10
+                            height: 10
+                            radius: Appearance.rounding.full
+                            color: Appearance.colors.colTertiary
+                        }
+                    }
+
+                    Rectangle {
+                        // Sits beside the marker line, and flips to its other side rather than
+                        // running off the plot when the machine is hot.
+                        x: Math.max(0, Math.min(liveMarker.markerX + Appearance.spacing.xs, parent.width
+                                                - width))
+
+                        y: Appearance.spacing.xs
+                        width: liveLabel.implicitWidth + Appearance.spacing.s * 2
+                        height: liveLabel.implicitHeight + Appearance.spacing.xxs * 2
+                        radius: Appearance.rounding.verysmall
+                        color: Appearance.colors.colTertiaryContainer
+
+                        StyledText {
+                            id: liveLabel
+
+                            anchors.centerIn: parent
+                            text: `CPU ${plot.liveTemp}° → ${plot.percentFor(plot.liveTemp)}%`
+                            color: Appearance.colors.colOnTertiaryContainer
+                            font.pixelSize: Appearance.font.pixelSize.smaller
+                            font.family: Appearance.font.family.numbers
+                        }
+                    }
+                }
+
+                Repeater {
+                    // The model is the point count, not the array: `points` is reassigned on
+                    // every frame of a drag, and a Repeater told to watch the array itself
+                    // would rebuild its delegates and drop the grab mid-gesture.
+                    model: plot.points.length
+
+                    Item {
+                        id: handle
+
+                        required property int index
+                        readonly property var point: plot.points[handle.index] ?? ({
+                                                                                       "temp": plot.xMin,
+                                                                                       "pwm": 0
+                                                                                   })
+                        readonly property bool active: plot.activeIndex === handle.index
+
+                        x: plot.xAt(handle.point.temp) - width / 2
+                        y: plot.yAt(Fans.pwmToPercent(handle.point.pwm)) - height / 2
+                        implicitWidth: plot.handleSize
+                        implicitHeight: plot.handleSize
+                        z: 2
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: handle.active ? plot.dotSizeActive + 20 : plot.dotSizeActive
+                            height: width
+                            radius: Appearance.rounding.full
+                            color: Appearance.colors.colPrimaryActive
+                            opacity: handle.active ? 1 : 0
+
+                            Behavior on width {
+                                animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(
+                                               this)
+                            }
+
+                            Behavior on opacity {
+                                animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(
+                                               this)
+                            }
+                        }
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: handle.active ? plot.dotSizeActive : plot.dotSize
+                            height: width
+                            radius: Appearance.rounding.full
+                            color: Appearance.colors.colPrimary
+
+                            Behavior on width {
+                                animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(
+                                               this)
+                            }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            enabled: plot.editable
+                            cursorShape: plot.editable ? (pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor) :
+                                                         Qt.ArrowCursor
+
+                            onPressed: plot.activeIndex = handle.index
+                            onReleased: plot.activeIndex = -1
+                            onCanceled: plot.activeIndex = -1
+                            onPositionChanged: mouse => {
+                                if (!pressed)
+                                    return;
+                                const local = mapToItem(plotArea, mouse.x, mouse.y);
+                                plot.pointDragged(handle.index, plot.tempAt(local.x), plot.percentAt(
+                                                      local.y));
+
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    // Reads out the point being dragged. Above the handle rather than on it:
+                    // the finger, and the halo, are already there.
+                    x: Math.max(0, Math.min(plot.xAt(plot.activePoint.temp) - width / 2, parent.width
+                                            - width))
+
+                    y: plot.yAt(Fans.pwmToPercent(plot.activePoint.pwm)) - height - Appearance.spacing.xl
+                    width: dragLabel.implicitWidth + Appearance.spacing.s * 2
+                    height: dragLabel.implicitHeight + Appearance.spacing.xxs * 2
+                    radius: Appearance.rounding.verysmall
+                    color: Appearance.colors.colOnLayer1
+                    visible: plot.activeIndex >= 0
+                    z: 3
+
+                    StyledText {
+                        id: dragLabel
+
+                        anchors.centerIn: parent
+                        text: `${plot.activePoint.temp}° · ${Fans.pwmToPercent(plot.activePoint.pwm)}%`
+                        color: Appearance.colors.colLayer0Base
+                        font.pixelSize: Appearance.font.pixelSize.smaller
+                        font.family: Appearance.font.family.numbers
+                        font.weight: Font.Medium
                     }
                 }
             }
+        }
 
-            HoverHandler {
-                id: tempHover
-            }
+        StyledText {
+            anchors.centerIn: parent
+            visible: plot.points.length === 0
+            text: Fans.ready ? "No fan curve reported by asusctl." : "Reading the fan curve…"
+            color: Appearance.colors.colSubtext
         }
     }
 
     ContentSection {
         icon: "mode_fan"
         title: "Fans"
+
+        headerTrailing: Component {
+            RowLayout {
+                spacing: Appearance.spacing.xs
+                visible: Fans.monitoring && Fans.ready
+
+                Rectangle {
+                    implicitWidth: 6
+                    implicitHeight: 6
+                    radius: Appearance.rounding.full
+                    color: Appearance.colors.colPrimary
+                }
+
+                StyledText {
+                    text: "Live"
+                    color: Appearance.colors.colSubtext
+                    font.pixelSize: Appearance.font.pixelSize.smaller
+                }
+            }
+        }
 
         NoticeBox {
             Layout.fillWidth: true
@@ -314,8 +687,6 @@ ContentPage {
             text: Fans.lastError
         }
 
-        // Temperatures and fan speeds are laid out as two rows rather than one grid: there
-        // are two of the former and three of the latter, so a single row leaves a ragged gap.
         RowLayout {
             Layout.fillWidth: true
             spacing: Appearance.spacing.s
@@ -323,7 +694,10 @@ ContentPage {
             StatCard {
                 icon: "memory"
                 label: "CPU"
-                value: Fans.cpuTemp >= 0 ? `${Fans.cpuTemp} °C` : "--"
+                value: Fans.cpuTemp >= 0 ? `${Fans.cpuTemp}` : "--"
+                unit: Fans.cpuTemp >= 0 ? "°C" : ""
+                rpm: root.fanRpm("cpu")
+                caption: rpm >= 0 ? `${rpm} rpm` : "No reading"
             }
 
             StatCard {
@@ -332,25 +706,20 @@ ContentPage {
                 // The dGPU exposes no temperature while runtime-suspended, and the only way
                 // to ask is nvidia-smi, which wakes it and costs several watts. Naming the
                 // reason beats a dash that reads like a broken sensor.
-                value: Fans.gpuTemp >= 0 ? `${Fans.gpuTemp} °C` : (Fans.dgpuStatus === "suspended" ? "Asleep" :
-                                                                                                     "--")
+                value: Fans.gpuTemp >= 0 ? `${Fans.gpuTemp}` : (Fans.dgpuStatus === "suspended" ? "Asleep" :
+                                                                                                  "--")
+                unit: Fans.gpuTemp >= 0 ? "°C" : ""
+                rpm: root.fanRpm("gpu")
+                caption: rpm >= 0 ? `${rpm} rpm` : "No reading"
             }
-        }
 
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: Appearance.spacing.s
-
-            Repeater {
-                model: Fans.fanSpeeds
-
-                StatCard {
-                    required property var modelData
-
-                    icon: "mode_fan"
-                    label: `${modelData.label} fan`
-                    value: modelData.rpm >= 0 ? `${modelData.rpm} rpm` : "--"
-                }
+            StatCard {
+                icon: "mode_fan"
+                label: "Chassis"
+                value: root.fanRpm("mid") >= 0 ? `${root.fanRpm("mid")}` : "--"
+                unit: root.fanRpm("mid") >= 0 ? "rpm" : ""
+                rpm: root.fanRpm("mid")
+                caption: "Mid fan"
             }
         }
 
@@ -358,36 +727,31 @@ ContentPage {
             title: "Profile"
 
             ConfigSelectionArray {
-                currentValue: Fans.mode
+                currentValue: Fans.selectedMode
                 onSelected: newValue => Fans.setMode(newValue)
-                options: [
-                    {
-                        "value": "quiet",
-                        "icon": "bedtime",
-                        "displayName": "Quiet"
-                    },
-                    {
-                        "value": "default",
-                        "icon": "balance",
-                        "displayName": "Default"
-                    },
-                    {
-                        "value": "max",
-                        "icon": "speed",
-                        "displayName": "Max"
-                    }
-                ]
+                options: root.profileOptions
             }
 
-            NoticeBox {
+            RowLayout {
                 Layout.fillWidth: true
-                // Each profile carries its own curve, and the profile is one system-wide
-                // setting that the power policy also drives. Saying so beats the user
-                // wondering why their choice reverted when they unplugged.
-                visible: Config.options.battery.autoPowerProfile && Config.options.battery.powerMode
-                         === "auto"
-                materialIcon: "info"
-                text: "Automatic power management is on, so plugging in or unplugging sets the profile from your power mode and will override the choice above."
+                Layout.topMargin: Appearance.spacing.xxs
+                spacing: Appearance.spacing.s
+                visible: root.profileHint.length > 0
+
+                MaterialSymbol {
+                    Layout.alignment: Qt.AlignTop
+                    text: "info"
+                    iconSize: Appearance.font.pixelSize.large
+                    color: Appearance.colors.colSubtext
+                }
+
+                StyledText {
+                    Layout.fillWidth: true
+                    text: root.profileHint
+                    color: Appearance.colors.colSubtext
+                    font.pixelSize: Appearance.font.pixelSize.smallie
+                    wrapMode: Text.WordWrap
+                }
             }
         }
 
@@ -395,11 +759,43 @@ ContentPage {
             title: "Curve"
             tooltip: "Applies to the profile that is active right now. Your power mode switches profiles, so a curve saved here follows the profile it was saved on."
 
-            NoticeBox {
-                Layout.fillWidth: true
-                visible: Fans.fansDiffer && !Fans.fullSpeed
-                materialIcon: "info"
-                text: "The CPU, GPU and chassis fans currently use different curves. This editor shows the CPU fan and writes one curve to all three."
+            headerTrailing: Component {
+                Rectangle {
+                    implicitWidth: differLabel.implicitWidth + Appearance.spacing.m * 2
+                    implicitHeight: differLabel.implicitHeight + Appearance.spacing.xs * 2
+                    radius: Appearance.rounding.full
+                    color: Appearance.colors.colTertiaryContainer
+                    visible: Fans.fansDiffer && !Fans.fullSpeed
+
+                    RowLayout {
+                        id: differLabel
+
+                        anchors.centerIn: parent
+                        spacing: Appearance.spacing.xs
+
+                        MaterialSymbol {
+                            text: "call_split"
+                            iconSize: Appearance.font.pixelSize.smallie
+                            color: Appearance.colors.colOnTertiaryContainer
+                        }
+
+                        StyledText {
+                            text: "Fans differ · saving syncs all three"
+                            color: Appearance.colors.colOnTertiaryContainer
+                            font.pixelSize: Appearance.font.pixelSize.smaller
+                        }
+                    }
+
+                    HoverHandler {
+                        id: differHover
+                    }
+
+                    StyledToolTip {
+                        extraVisibleCondition: false
+                        alternativeVisibleCondition: differHover.hovered
+                        text: "The CPU, GPU and chassis fans currently use different curves. This editor shows the CPU fan and writes one curve to all three."
+                    }
+                }
             }
 
             NoticeBox {
@@ -409,87 +805,50 @@ ContentPage {
                 text: "Max runs every fan flat out, so the curve below is that override rather than your own. Choose Quiet or Default to edit it and put your saved curve back."
             }
 
-            Rectangle {
+            CurvePlot {
                 Layout.fillWidth: true
-                implicitHeight: curveRow.implicitHeight + Appearance.spacing.lg * 2
-                radius: Appearance.rounding.small
-                color: Appearance.colors.colLayer1
-
-                RowLayout {
-                    id: curveRow
-
-                    anchors.fill: parent
-                    anchors.margins: Appearance.spacing.lg
-                    spacing: Appearance.spacing.xs
-
-                    Repeater {
-                        model: root.draft
-
-                        CurvePoint {
-                            required property var modelData
-                            required property int index
-
-                            Layout.fillWidth: true
-                            editable: !root.locked
-                            percent: Fans.pwmToPercent(modelData.pwm)
-                            temperature: modelData.temp
-                            onPercentEdited: value => root.setPoint(index, "pwm", Fans.percentToPwm(value))
-                            onTemperatureEdited: value => root.setPoint(index, "temp", value)
-                        }
-                    }
-                }
-
-                StyledText {
-                    anchors.centerIn: parent
-                    visible: root.draft.length === 0
-                    text: Fans.ready ? "No fan curve reported by asusctl." : "Reading the fan curve…"
-                    color: Appearance.colors.colSubtext
-                }
+                Layout.topMargin: Appearance.spacing.xxs
+                points: root.draft
+                editable: !root.locked
+                liveTemp: Fans.cpuTemp
+                onPointDragged: (index, temp, percent) => root.setPoint(index, temp, percent)
             }
 
-            Revealer {
+            StyledText {
                 Layout.fillWidth: true
-                reveal: root.dirty
+                Layout.leftMargin: Appearance.spacing.xs
+                text: "Drag points to adjust. Speed stays flat beyond the first and last point."
+                color: Appearance.colors.colSubtext
+                font.pixelSize: Appearance.font.pixelSize.smaller
+                wrapMode: Text.WordWrap
+            }
 
-                RowLayout {
-                    width: parent.width
-                    spacing: Appearance.spacing.s
-
-                    StyledText {
-                        Layout.fillWidth: true
-                        text: Fans.profile.length > 0 ? `Unsaved changes to the ${Fans.profile} curve` :
-                                                        "Unsaved changes"
-                        color: Appearance.colors.colSubtext
-                        font.pixelSize: Appearance.font.pixelSize.small
-                    }
-
-                    RippleButtonWithIcon {
-                        materialIcon: "undo"
-                        mainText: "Revert"
-                        enabled: !Fans.busy
-                        onClicked: root.seedDraft()
-                    }
-
-                    RippleButtonWithIcon {
-                        materialIcon: "check"
-                        mainText: "Apply"
-                        primary: true
-                        enabled: !root.locked
-                        onClicked: Fans.applyCurve(root.draft)
-                    }
-                }
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.topMargin: Appearance.spacing.m
+                implicitHeight: 1
+                color: Appearance.colors.colOutlineVariant
             }
 
             RowLayout {
                 Layout.fillWidth: true
-                Layout.topMargin: Appearance.spacing.xs
+                Layout.topMargin: Appearance.spacing.s
                 spacing: Appearance.spacing.s
+
+                MaterialSymbol {
+                    text: "memory"
+                    iconSize: Appearance.font.pixelSize.large
+                    color: Appearance.colors.colSubtext
+                }
 
                 StyledText {
                     Layout.fillWidth: true
                     text: {
                         if (Fans.fullSpeed)
                             return "Overridden by Max";
+                        if (root.dirty)
+                            return Fans.profile.length > 0 ? `Unsaved changes to the ${Fans.profile} curve` :
+                                                             "Unsaved curve";
                         if (!Fans.ready)
                             return "";
                         // Split rather than one long ternary: qmlformat wraps at 110 columns
@@ -499,11 +858,19 @@ ContentPage {
                         return `${mode} ${Fans.profile}`;
                     }
                     color: Appearance.colors.colSubtext
-                    font.pixelSize: Appearance.font.pixelSize.small
-                    // One line: this sits beside a button, and wrapping shoves the row taller
-                    // for a status string that is never interesting enough to earn the space.
+                    font.pixelSize: Appearance.font.pixelSize.smallie
+                    // One line: this sits beside the buttons, and wrapping shoves the row
+                    // taller for a status string that is never interesting enough to earn it.
                     wrapMode: Text.NoWrap
                     elide: Text.ElideRight
+                }
+
+                RippleButtonWithIcon {
+                    visible: root.dirty
+                    materialIcon: "undo"
+                    mainText: "Revert"
+                    enabled: !Fans.busy
+                    onClicked: root.seedDraft()
                 }
 
                 RippleButtonWithIcon {
@@ -514,6 +881,17 @@ ContentPage {
 
                     StyledToolTip {
                         text: "Puts back the factory curve for this profile and hands fan control back to the firmware."
+                    }
+                }
+
+                RippleButtonWithIcon {
+                    materialIcon: root.applied ? "check" : "save"
+                    mainText: root.applied ? "Applied" : "Apply"
+                    primary: root.dirty
+                    enabled: root.dirty && !root.locked
+                    onClicked: {
+                        root.applying = true;
+                        Fans.applyCurve(root.draft);
                     }
                 }
             }
