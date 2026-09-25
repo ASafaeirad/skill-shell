@@ -135,8 +135,35 @@ Singleton {
         root.view = "idle";
     }
 
+    function resetPanel(): void {
+        autoPasteProcess.acceptResult = false;
+        autoPasteProcess.running = false;
+        reset();
+        root.url = "";
+        root.quality = "best";
+        root.title = "";
+        root.duration = "";
+        root.thumbnail = "";
+        root.extractor = "";
+        root.mediaId = "";
+        root.progress = 0;
+        root.speed = "";
+        root.eta = "";
+        root.savedPath = "";
+        root.failedStep = "";
+        root.errorMessage = "";
+    }
+
     function pasteUrl(): void {
         pasteProcess.running = true;
+    }
+
+    function autofillUrlFromClipboard(): void {
+        autoPasteProcess.acceptResult = false;
+        autoPasteProcess.running = false;
+        autoPasteProcess.previousUrl = root.url;
+        autoPasteProcess.acceptResult = true;
+        autoPasteProcess.running = true;
     }
 
     function showInFolder(): void {
@@ -264,6 +291,27 @@ Singleton {
                 const text = pasteOutput.text.trim();
                 if (text.length > 0)
                     root.url = text;
+            }
+        }
+    }
+
+    Process {
+        id: autoPasteProcess
+
+        property string previousUrl: ""
+        property bool acceptResult: false
+
+        command: ["wl-paste", "--no-newline", "--type", "text"]
+        stdout: StdioCollector {
+            id: autoPasteOutput
+
+            onStreamFinished: {
+                const text = autoPasteOutput.text.trim();
+                if (autoPasteProcess.acceptResult && root.view === "idle"
+                        && root.url === autoPasteProcess.previousUrl
+                        && /^https?:\/\/[^\s/?#]+(?:[/?#]\S*)?$/i.test(text))
+                    root.url = text;
+                autoPasteProcess.acceptResult = false;
             }
         }
     }

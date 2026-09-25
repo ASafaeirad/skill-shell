@@ -1017,9 +1017,9 @@ modules/widgets/mediaGrabber/MediaGrabberContent.qml`
         PassContent:
           "One-column pass browser with search and detail stages, configurable ignored-entry patterns, and copy, OTP, and password visibility toggle actions.",
         MediaGrabber:
-          "yt-dlp media grabber overlay with IPC toggle, open, close and grab(url) plus a global shortcut; downloads continue in the YtDlp service after it closes.",
+          "yt-dlp media grabber overlay with IPC toggle, open, close and grab(url) plus a global shortcut; opening the idle widget fills its link input from a clipboard HTTP(S) URL, closing resets the form, and active downloads finish in the YtDlp service after it closes.",
         MediaGrabberContent:
-          "Media grabber card with link entry and clipboard paste, a shimmer metadata skeleton, thumbnail and platform summary, best, medium or audio-only quality choice, overall download progress with speed and ETA, cancel, a saved state with show-in-folder, and a fetch or download error state with retry.",
+          "Media grabber card with link entry and clipboard paste, a shimmer metadata skeleton, thumbnail and platform summary, best, medium or audio-only quality choice, overall download progress with speed and ETA, cancel, a saved state with show-in-folder, a fetch or download error state with retry, and shared bottom padding across all states.",
         OverlayDialog:
           "Lifecycle host for the script-driven overlay dialogs: owns the GlobalStates flag, the window that lives only while the dialog is open, the enter/exit animation handshake and the fifo result writer.",
         OverlayDialogCard:

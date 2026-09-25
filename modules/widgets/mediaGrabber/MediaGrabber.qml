@@ -1,3 +1,4 @@
+import QtQml
 import Quickshell.Io
 import Quickshell.Wayland
 import qs.services
@@ -13,15 +14,27 @@ Panel {
     name: "mediaGrabber"
     description: "Toggle media grabber"
     manageIpc: false
+    property bool resetAfterDownload: false
 
-    function open(): void {
+    function showDialog(): void {
         root.opened = true;
         dialog.open();
+    }
+
+    function open(): void {
+        root.resetAfterDownload = false;
+        root.showDialog();
+        if (YtDlp.view === "idle")
+            YtDlp.autofillUrlFromClipboard();
     }
 
     function close(): void {
         dialog.close();
         root.opened = false;
+        if (YtDlp.view === "downloading")
+            root.resetAfterDownload = true;
+        else
+            YtDlp.resetPanel();
     }
 
     function toggle(): void {
@@ -33,10 +46,22 @@ Panel {
 
     // Open on a link and start fetching it straight away.
     function grab(url: string): void {
+        root.resetAfterDownload = false;
         YtDlp.reset();
         YtDlp.url = url;
-        root.open();
+        root.showDialog();
         YtDlp.fetch();
+    }
+
+    Connections {
+        target: YtDlp
+
+        function onViewChanged(): void {
+            if (root.resetAfterDownload && YtDlp.view !== "downloading") {
+                root.resetAfterDownload = false;
+                YtDlp.resetPanel();
+            }
+        }
     }
 
     OverlayDialog {

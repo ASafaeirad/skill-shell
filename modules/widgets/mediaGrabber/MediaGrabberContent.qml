@@ -9,26 +9,26 @@ import qs.modules.common.functions
 import qs.modules.common.widgets
 
 /**
- * The media grabber card: one view per YtDlp.view state (idle, fetching,
- * ready, downloading, done, error) under a shared header.
- */
+* The media grabber card: one view per YtDlp.view state (idle, fetching,
+* ready, downloading, done, error) under a shared header.
+*/
 OverlayDialogCard {
     id: root
 
-    signal closeRequested()
+    signal closeRequested
 
     readonly property string view: YtDlp.view
     readonly property bool hasUrl: YtDlp.url.trim().length > 0
-    readonly property real sectionPadding: Appearance.spacing.lg
+    readonly property real sectionPadding: Appearance.spacing.m
     readonly property real buttonHeight: Appearance.spacing.xxl + Appearance.spacing.s
     readonly property real smallButtonHeight: Appearance.spacing.xxl + Appearance.spacing.xxs * 2
 
     function focusView(): void {
-        if (root.view === "idle")
-            urlInput.forceActiveFocus();
-        else
-            root.forceActiveFocus();
-    }
+    if (root.view === "idle")
+    urlInput.forceActiveFocus();
+    else
+    root.forceActiveFocus();
+}
 
     Component.onCompleted: animateIn()
     onAboutToAnimateIn: root.focusView()
@@ -118,9 +118,18 @@ OverlayDialogCard {
             height: shimmer.height
             gradient: Gradient {
                 orientation: Gradient.Horizontal
-                GradientStop { position: 0; color: "transparent" }
-                GradientStop { position: 0.5; color: Appearance.colors.colSurfaceContainerHigh }
-                GradientStop { position: 1; color: "transparent" }
+                GradientStop {
+                    position: 0
+                    color: "transparent"
+                }
+                GradientStop {
+                    position: 0.5
+                    color: Appearance.colors.colSurfaceContainerHigh
+                }
+                GradientStop {
+                    position: 1
+                    color: "transparent"
+                }
             }
 
             NumberAnimation on x {
@@ -246,17 +255,14 @@ OverlayDialogCard {
 
             MaterialSymbol {
                 text: "download"
-                iconSize: Appearance.font.pixelSize.large
+                iconSize: Appearance.font.pixelSize.larger
                 color: Appearance.colors.colPrimary
             }
             StyledText {
                 Layout.fillWidth: true
                 text: "Media Grabber"
-                font.pixelSize: Appearance.font.pixelSize.small
+                font.pixelSize: Appearance.font.pixelSize.normal
                 color: Appearance.colors.colOnSurface
-            }
-            SectionLabel {
-                text: "YT-DLP"
             }
         }
         Rectangle {
@@ -270,13 +276,13 @@ OverlayDialogCard {
             visible: root.view === "idle"
             Layout.fillWidth: true
             Layout.margins: root.sectionPadding
-            Layout.topMargin: Appearance.spacing.lg + Appearance.spacing.xxs
+            Layout.topMargin: Appearance.spacing.lg
             spacing: Appearance.spacing.m
 
             StyledText {
                 Layout.fillWidth: true
                 text: "Paste a link from YouTube, Instagram or X to fetch and download it."
-                font.pixelSize: Appearance.font.pixelSize.smaller
+                font.pixelSize: Appearance.font.pixelSize.small
                 color: Appearance.colors.colSubtext
                 wrapMode: Text.Wrap
                 lineHeight: 1.2
@@ -288,7 +294,8 @@ OverlayDialogCard {
                 radius: Appearance.rounding.small
                 color: Appearance.colors.colSurfaceContainerHigh
                 border.width: Appearance.spacing.xxs / 2
-                border.color: urlInput.activeFocus ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant
+                border.color: urlInput.activeFocus ? Appearance.colors.colPrimary :
+                                                     Appearance.colors.colOutlineVariant
 
                 StyledTextInput {
                     id: urlInput
@@ -301,7 +308,7 @@ OverlayDialogCard {
                     clip: true
                     focus: true
                     color: Appearance.colors.colOnSurface
-                    font.pixelSize: Appearance.font.pixelSize.small
+                    font.pixelSize: Appearance.font.pixelSize.normal
                     text: YtDlp.url
                     onTextEdited: YtDlp.url = text
                     onAccepted: YtDlp.fetch()
@@ -310,7 +317,7 @@ OverlayDialogCard {
                         anchors.fill: parent
                         visible: urlInput.text.length === 0
                         text: "https://…"
-                        font.pixelSize: Appearance.font.pixelSize.small
+                        font.pixelSize: Appearance.font.pixelSize.normal
                         color: Appearance.colors.colSubtext
                         verticalAlignment: Text.AlignVCenter
                     }
@@ -332,7 +339,8 @@ OverlayDialogCard {
                         horizontalAlignment: Text.AlignHCenter
                         text: "content_paste"
                         iconSize: Appearance.font.pixelSize.large
-                        color: pasteButton.hovered ? Appearance.colors.colOnLayer2 : Appearance.colors.colSubtext
+                        color: pasteButton.hovered ? Appearance.colors.colOnLayer2 :
+                                                     Appearance.colors.colSubtext
                     }
                 }
             }
@@ -342,34 +350,15 @@ OverlayDialogCard {
                 implicitHeight: root.buttonHeight
                 symbol: "search"
                 label: "Fetch info"
-                labelSize: Appearance.font.pixelSize.smallie
-                colBackground: root.hasUrl ? Appearance.colors.colPrimary : Appearance.colors.colSurfaceContainerHigh
-                colBackgroundHover: root.hasUrl ? Appearance.colors.colPrimaryHover : Appearance.colors.colSurfaceContainerHigh
+                labelSize: Appearance.font.pixelSize.small
+                colBackground: root.hasUrl ? Appearance.colors.colPrimary :
+                                             Appearance.colors.colSurfaceContainerHigh
+                colBackgroundHover: root.hasUrl ? Appearance.colors.colPrimaryHover :
+                                                  Appearance.colors.colSurfaceContainerHigh
                 colRipple: root.hasUrl ? Appearance.colors.colPrimaryActive : "transparent"
                 foreground: root.hasUrl ? Appearance.colors.colOnPrimary : Appearance.colors.colSubtext
                 pointingHandCursor: root.hasUrl
                 onClicked: YtDlp.fetch()
-            }
-
-            RowLayout {
-                Layout.alignment: Qt.AlignHCenter
-                Layout.topMargin: Appearance.spacing.xxs
-                spacing: Appearance.spacing.xs
-
-                Repeater {
-                    model: ["smart_display", "photo_camera", "tag"]
-                    delegate: MaterialSymbol {
-                        required property string modelData
-                        text: modelData
-                        iconSize: Appearance.font.pixelSize.smallie
-                        color: Appearance.colors.colSubtext
-                    }
-                }
-                SectionLabel {
-                    Layout.leftMargin: Appearance.spacing.xxs
-                    text: "YouTube · Instagram · X"
-                    font.letterSpacing: 0
-                }
             }
         }
 
@@ -489,9 +478,18 @@ OverlayDialogCard {
 
                         Repeater {
                             model: [
-                                { key: "best", label: "Best" },
-                                { key: "medium", label: "Medium" },
-                                { key: "audio", label: "Audio only" }
+                                {
+                                    key: "best",
+                                    label: "Best"
+                                },
+                                {
+                                    key: "medium",
+                                    label: "Medium"
+                                },
+                                {
+                                    key: "audio",
+                                    label: "Audio only"
+                                }
                             ]
                             delegate: RippleButton {
                                 id: qualityOption
@@ -511,7 +509,8 @@ OverlayDialogCard {
                                     verticalAlignment: Text.AlignVCenter
                                     text: qualityOption.modelData.label
                                     font.pixelSize: Appearance.font.pixelSize.smaller
-                                    color: qualityOption.selected ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer1
+                                    color: qualityOption.selected ? Appearance.colors.colOnPrimary :
+                                                                    Appearance.colors.colOnLayer1
                                 }
                             }
                         }
@@ -589,7 +588,9 @@ OverlayDialogCard {
                     StyledText {
                         text: `${Math.round(YtDlp.progress * 100)}%`
                         font.pixelSize: Appearance.font.pixelSize.smaller
-                        font.features: ({ "tnum": 1 })
+                        font.features: ({
+                                            "tnum": 1
+                                        })
                         color: Appearance.colors.colPrimary
                     }
                 }
@@ -784,6 +785,11 @@ OverlayDialogCard {
                     onClicked: YtDlp.reset()
                 }
             }
+        }
+
+        Item {
+            Layout.fillWidth: true
+            implicitHeight: Appearance.spacing.lg
         }
     }
 }
