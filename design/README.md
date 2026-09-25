@@ -46,7 +46,7 @@ colours. They must be referenced by palette key.
 | Document | Widget | States |
 | --- | --- | --- |
 | `Gmail Widget.dc.html` | Gmail widget | inbox, reading, syncing, zero, offline, signin, settings |
-| `Canvas-2.dc.html` | Media grabber (yt-dlp) | idle, fetching, ready, downloading, done, error |
+| `Download.dc.html` | Media grabber (yt-dlp) | idle, fetching, ready, downloading, done, error |
 
 ### Gmail widget — which state belongs to which ticket
 
