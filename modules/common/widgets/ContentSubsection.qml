@@ -8,6 +8,8 @@ ColumnLayout {
 
     property string title: ""
     property string tooltip: ""
+    // Optional right-hand side of the title row; see ContentSection.
+    property Component headerTrailing: null
     default property alias contentData: sectionContent.data
 
     Layout.fillWidth: true
@@ -15,6 +17,8 @@ ColumnLayout {
     spacing: 2
 
     RowLayout {
+        Layout.fillWidth: true
+
         ContentSubsectionLabel {
             visible: root.title && root.title.length > 0
             text: root.title
@@ -47,6 +51,11 @@ ColumnLayout {
             Layout.fillWidth: true
         }
 
+        Loader {
+            active: root.headerTrailing !== null
+            visible: active
+            sourceComponent: root.headerTrailing
+        }
     }
 
     ColumnLayout {
