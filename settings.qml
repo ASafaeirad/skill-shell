@@ -51,6 +51,11 @@ ApplicationWindow {
             component: "modules/settings/DisplaysConfig.qml"
         },
         {
+            name: "Fans",
+            icon: "mode_fan",
+            component: "modules/settings/FansConfig.qml"
+        },
+        {
             name: "Services",
             icon: "settings",
             component: "modules/settings/ServicesConfig.qml"
