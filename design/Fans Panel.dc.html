@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/skill-shell-9a9edf7b-7565-4dcb-a294-aed24a156f29/tokens.css">
+<script src="_ds/skill-shell-9a9edf7b-7565-4dcb-a294-aed24a156f29/_ds_bundle.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&amp;family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&amp;display=swap">
+<style>
+  html, body { margin: 0; padding: 0; background: #0c0a0a; }
+  * { box-sizing: border-box; }
+  a { color: var(--qs-colPrimary); text-decoration: none; }
+  a:hover { color: var(--qs-colPrimaryHover); }
+  .msr { font-family: "Material Symbols Rounded"; font-weight: 400; font-style: normal; line-height: 1; display: inline-block; white-space: nowrap; -webkit-font-smoothing: antialiased; }
+  @keyframes fanSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .fan-spin { animation: fanSpin 1s linear infinite; }
+</style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 48px 20px; font-family: 'Space Grotesk', 'Google Sans Flex', system-ui, sans-serif; color: var(--qs-colOnLayer1); background: var(--qs-colLayer0Base);">
+  <div style="width: 100%; max-width: 640px; display: flex; flex-direction: column; gap: 22px;">
+
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span class="msr" style="font-size: 24px; color: var(--qs-colPrimary);">mode_fan</span>
+      <span style="font-size: var(--qs-text-title); font-weight: 500;">Fans</span>
+      <span style="flex: 1;"></span>
+      <span style="display: flex; align-items: center; gap: 6px; font-size: var(--qs-text-smaller); color: var(--qs-colSubtext);">
+        <span style="width: 6px; height: 6px; border-radius: var(--qs-rounding-full); background: var(--qs-colPrimary);"></span>
+        <span>Live</span>
+      </span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px;">
+      <sc-for list="{{ sensors }}" as="s" hint-placeholder-count="3">
+        <div style="display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-radius: var(--qs-rounding-normal); background: var(--qs-colLayer1);">
+          <div style="display: flex; align-items: center; gap: 7px; font-size: var(--qs-text-smallie); color: var(--qs-colSubtext);">
+            <span class="msr" style="font-size: 16px;">{{ s.icon }}</span>
+            <span>{{ s.name }}</span>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 4px;">
+            <span style="font-size: 30px; font-weight: 500; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1;">{{ s.value }}</span>
+            <span style="font-size: var(--qs-text-small); color: var(--qs-colSubtext);">{{ s.unit }}</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px; font-size: var(--qs-text-smaller); color: var(--qs-colSubtext); font-variant-numeric: tabular-nums;">
+            <span class="msr fan-spin" style="font-size: 14px; color: var(--qs-colPrimary); animation-duration: {{ s.spin }};">mode_fan</span>
+            <span>{{ s.sub }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <span style="font-size: var(--qs-text-smallie); font-weight: 500; color: var(--qs-colSubtext);">Profile</span>
+      <div style="display: flex; gap: 3px; padding: 4px; border-radius: var(--qs-rounding-full); background: var(--qs-colLayer1);">
+        <sc-for list="{{ profiles }}" as="p" hint-placeholder-count="4">
+          <div onClick="{{ p.onClick }}" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px; height: 38px; border-radius: var(--qs-rounding-full); cursor: pointer; font-size: var(--qs-text-small); background: {{ p.bg }}; color: {{ p.fg }}; transition: background var(--qs-duration-elementMove) var(--qs-ease-expressiveEffects);">
+            <span class="msr" style="font-size: 18px;">{{ p.icon }}</span>
+            <span>{{ p.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; padding: 0 6px; font-size: var(--qs-text-smallie); color: var(--qs-colSubtext); text-wrap: pretty;">
+        <span class="msr" style="font-size: 16px;">{{ profileHintIcon }}</span>
+        <span>{{ profileHint }}</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <span style="font-size: var(--qs-text-smallie); font-weight: 500; color: var(--qs-colSubtext);">Curve</span>
+        <span style="flex: 1;"></span>
+        <sc-if value="{{ curvesDiffer }}" hint-placeholder-val="{{ true }}">
+          <span style="display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: var(--qs-rounding-full); background: var(--qs-colTertiaryContainer); color: var(--qs-colOnTertiaryContainer); font-size: var(--qs-text-smaller);">
+            <span class="msr" style="font-size: 14px;">call_split</span>
+            <span>Fans differ · saving syncs all three</span>
+          </span>
+        </sc-if>
+      </div>
+
+      <div style="padding: 16px 18px 12px 12px; border-radius: var(--qs-rounding-normal); background: var(--qs-colLayer1);">
+        <div style="display: grid; grid-template-columns: 34px minmax(0, 1fr); grid-template-rows: 230px 22px;">
+          <div style="position: relative; font-size: var(--qs-text-smallest); color: var(--qs-colSubtext); font-variant-numeric: tabular-nums;">
+            <sc-for list="{{ yTicks }}" as="t" hint-placeholder-count="5">
+              <span style="position: absolute; right: 8px; top: {{ t.top }}; transform: translateY(-50%);">{{ t.label }}</span>
+            </sc-for>
+          </div>
+
+          <div ref="{{ plotRef }}" onPointerMove="{{ onMove }}" onPointerUp="{{ onUp }}" onPointerCancel="{{ onUp }}" style="position: relative; touch-action: none; user-select: none;">
+            <sc-for list="{{ yTicks }}" as="t" hint-placeholder-count="5">
+              <div style="position: absolute; left: 0; right: 0; top: {{ t.top }}; height: 1px; background: var(--qs-colOutlineVariant); opacity: 0.5;"></div>
+            </sc-for>
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible;">
+              <polygon points="{{ area }}" style="fill: var(--qs-colPrimary); opacity: 0.12;"></polygon>
+              <polyline points="{{ line }}" vector-effect="non-scaling-stroke" style="fill: none; stroke: var(--qs-colPrimary); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round;"></polyline>
+            </svg>
+
+            <sc-if value="{{ showNow }}" hint-placeholder-val="{{ true }}">
+              <div style="position: absolute; top: 0; bottom: 0; left: {{ now.left }}; width: 0; border-left: 1.5px dashed var(--qs-colTertiary); opacity: 0.8;"></div>
+              <div style="position: absolute; left: {{ now.left }}; top: {{ now.top }}; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: var(--qs-rounding-full); background: var(--qs-colTertiary); box-shadow: 0 0 0 4px var(--qs-colTertiaryContainer);"></div>
+              <div style="position: absolute; left: {{ now.left }}; top: 6px; transform: translateX(6px); padding: 3px 8px; border-radius: var(--qs-rounding-verysmall); background: var(--qs-colTertiaryContainer); color: var(--qs-colOnTertiaryContainer); font-size: var(--qs-text-smaller); white-space: nowrap; font-variant-numeric: tabular-nums;">{{ now.label }}</div>
+            </sc-if>
+
+            <sc-for list="{{ handles }}" as="h" hint-placeholder-count="8">
+              <div onPointerDown="{{ h.onDown }}" style="position: absolute; left: {{ h.left }}; top: {{ h.top }}; width: 28px; height: 28px; margin: -14px 0 0 -14px; display: flex; align-items: center; justify-content: center; cursor: grab; z-index: 2;">
+                <div style="width: {{ h.size }}; height: {{ h.size }}; border-radius: var(--qs-rounding-full); background: var(--qs-colPrimary); box-shadow: 0 0 0 3px var(--qs-colLayer1), 0 0 0 {{ h.halo }} var(--qs-colPrimaryActive); transition: width var(--qs-duration-elementMove) var(--qs-ease-expressiveFastSpatial), height var(--qs-duration-elementMove) var(--qs-ease-expressiveFastSpatial);"></div>
+              </div>
+            </sc-for>
+
+            <sc-if value="{{ hasActive }}" hint-placeholder-val="{{ false }}">
+              <div style="position: absolute; left: {{ active.left }}; top: {{ active.top }}; transform: translate(-50%, -38px); padding: 4px 9px; border-radius: var(--qs-rounding-verysmall); background: var(--qs-colOnLayer1); color: var(--qs-colLayer0Base); font-size: var(--qs-text-smaller); font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; z-index: 3; pointer-events: none;">{{ active.label }}</div>
+            </sc-if>
+          </div>
+
+          <div></div>
+          <div style="position: relative; font-size: var(--qs-text-smallest); color: var(--qs-colSubtext); font-variant-numeric: tabular-nums;">
+            <sc-for list="{{ xTicks }}" as="t" hint-placeholder-count="7">
+              <span style="position: absolute; left: {{ t.left }}; bottom: 0; transform: translateX(-50%);">{{ t.label }}</span>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      <span style="padding: 0 6px; font-size: var(--qs-text-smaller); color: var(--qs-colSubtext);">Drag points to adjust. Speed stays flat beyond the first and last point.</span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-top: 4px; border-top: 1px solid var(--qs-colOutlineVariant); padding-top: 16px;">
+      <span style="display: flex; align-items: center; gap: 7px; font-size: var(--qs-text-smallie); color: var(--qs-colSubtext);">
+        <span class="msr" style="font-size: 16px;">memory</span>
+        <span>{{ footerNote }}</span>
+      </span>
+      <span style="flex: 1;"></span>
+      <div onClick="{{ onRestore }}" style="display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: var(--qs-rounding-full); cursor: pointer; font-size: var(--qs-text-small); color: var(--qs-colOnLayer1);" style-hover="background: var(--qs-colLayer1Hover);">
+        <span class="msr" style="font-size: 18px;">restart_alt</span>
+        <span>Restore default</span>
+      </div>
+      <div onClick="{{ onApply }}" style="display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: var(--qs-rounding-full); font-size: var(--qs-text-small); font-weight: 500; cursor: pointer; background: {{ applyBg }}; color: {{ applyFg }};">
+        <span class="msr" style="font-size: 18px;">{{ applyIcon }}</span>
+        <span>{{ applyLabel }}</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;autoPowerManagement&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;fansDiffer&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;showLiveMarker&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const DEFAULT = [[62,7],[67,12],[72,16],[74,28],[76,32],[80,51],[85,51],[90,51]];
+const XMIN = 40, XMAX = 100;
+const xp = t => (t - XMIN) / (XMAX - XMIN) * 100;
+const yp = v => 100 - v;
+
+class Component extends DCLogic {
+  state = { profile: null, pts: DEFAULT.map(p => p.slice()), saved: DEFAULT.map(p => p.slice()), drag: -1, cpu: 64, justSaved: false, synced: false };
+  plotRef = React.createRef();
+
+  componentDidMount() {
+    this.t = setInterval(() => this.setState(s => ({ cpu: Math.max(58, Math.min(71, s.cpu + Math.round(Math.random() * 4 - 2))) })), 2000);
+  }
+  componentWillUnmount() { clearInterval(this.t); }
+
+  fanAt(t) {
+    const p = this.state.pts;
+    if (t <= p[0][0]) return p[0][1];
+    for (let i = 1; i < p.length; i++) if (t <= p[i][0]) {
+      const [a, av] = p[i - 1], [b, bv] = p[i];
+      return b === a ? bv : av + (bv - av) * (t - a) / (b - a);
+    }
+    return p[p.length - 1][1];
+  }
+
+  onMove = e => {
+    const i = this.state.drag;
+    if (i < 0 || !this.plotRef.current) return;
+    const r = this.plotRef.current.getBoundingClientRect();
+    const pts = this.state.pts.map(p => p.slice());
+    let t = Math.round(XMIN + (e.clientX - r.left) / r.width * (XMAX - XMIN));
+    let v = Math.round(100 - (e.clientY - r.top) / r.height * 100);
+    const lo = i > 0 ? pts[i - 1] : [XMIN - 1, 0], hi = i < pts.length - 1 ? pts[i + 1] : [XMAX + 1, 100];
+    pts[i] = [Math.max(lo[0] + 1, Math.min(hi[0] - 1, t)), Math.max(lo[1], Math.min(hi[1], v))];
+    this.setState({ pts, justSaved: false });
+  };
+  onUp = () => this.setState({ drag: -1 });
+
+  renderVals() {
+    const { pts, saved, drag, cpu, justSaved } = this.state;
+    const auto = this.props.autoPowerManagement ?? true;
+    const profile = this.state.profile ?? (auto ? 'auto' : 'default');
+    const differ = (this.props.fansDiffer ?? true) && !this.state.synced;
+    const dirty = JSON.stringify(pts) !== JSON.stringify(saved);
+    const cpuFan = Math.round(1800 + this.fanAt(cpu) * 40);
+    const rpmSpin = r => (60 / r * 40).toFixed(2) + 's';
+
+    const plist = [
+      ['auto', 'Auto', 'bolt'], ['quiet', 'Quiet', 'bedtime'], ['default', 'Default', 'balance'], ['max', 'Max', 'speed']
+    ].filter(p => auto || p[0] !== 'auto');
+
+    const hints = {
+      auto: ['power', 'Follows power mode — plugged in uses Default, battery uses Quiet.'],
+      quiet: ['bedtime', auto ? 'Overrides power mode until you pick Auto again.' : 'Caps fan speed; runs warmer under load.'],
+      default: ['balance', auto ? 'Overrides power mode until you pick Auto again.' : 'Balanced noise and temperature.'],
+      max: ['speed', auto ? 'Overrides power mode until you pick Auto again.' : 'Fans at full speed. Loud.']
+    };
+
+    const line = [[0, yp(pts[0][1])], ...pts.map(([t, v]) => [xp(t), yp(v)]), [100, yp(pts[pts.length - 1][1])]];
+    const nowV = this.fanAt(cpu);
+
+    return {
+      plotRef: this.plotRef, onMove: this.onMove, onUp: this.onUp,
+      sensors: [
+        { icon: 'memory', name: 'CPU', value: String(cpu), unit: '°C', sub: cpuFan + ' rpm', spin: rpmSpin(cpuFan) },
+        { icon: 'deployed_code', name: 'GPU', value: '57', unit: '°C', sub: '1900 rpm', spin: rpmSpin(1900) },
+        { icon: 'mode_fan', name: 'Chassis', value: '4700', unit: 'rpm', sub: 'Mid fan', spin: rpmSpin(4700) }
+      ],
+      profiles: plist.map(([id, label, icon]) => ({
+        label, icon,
+        bg: profile === id ? 'var(--qs-colPrimary)' : 'transparent',
+        fg: profile === id ? 'var(--qs-colOnPrimary)' : 'var(--qs-colOnLayer1)',
+        onClick: () => this.setState({ profile: id })
+      })),
+      profileHint: hints[profile][1], profileHintIcon: 'info',
+      curvesDiffer: differ,
+      yTicks: [100, 75, 50, 25, 0].map(v => ({ top: yp(v) + '%', label: v + '%' })),
+      xTicks: [40, 50, 60, 70, 80, 90, 100].map(t => ({ left: xp(t) + '%', label: t + '°' })),
+      line: line.map(p => p.join(',')).join(' '),
+      area: ['0,100', ...line.map(p => p.join(',')), '100,100'].join(' '),
+      showNow: this.props.showLiveMarker ?? true,
+      now: { left: xp(cpu) + '%', top: yp(nowV) + '%', label: `CPU ${cpu}° → ${Math.round(nowV)}%` },
+      handles: pts.map(([t, v], i) => ({
+        left: xp(t) + '%', top: yp(v) + '%',
+        size: drag === i ? '18px' : '12px', halo: drag === i ? '10px' : '0px',
+        onDown: e => { e.preventDefault(); this.plotRef.current?.setPointerCapture(e.pointerId); this.setState({ drag: i }); }
+      })),
+      hasActive: drag >= 0,
+      active: drag >= 0 ? { left: xp(pts[drag][0]) + '%', top: yp(pts[drag][1]) + '%', label: `${pts[drag][0]}° · ${pts[drag][1]}%` } : { left: '0%', top: '0%', label: '' },
+      footerNote: dirty ? 'Unsaved curve' : 'Firmware control · Balanced',
+      onRestore: () => this.setState({ pts: DEFAULT.map(p => p.slice()), justSaved: false }),
+      onApply: () => dirty && this.setState({ saved: pts.map(p => p.slice()), justSaved: true, synced: true }),
+      applyBg: dirty ? 'var(--qs-colPrimary)' : 'var(--qs-colLayer1)',
+      applyFg: dirty ? 'var(--qs-colOnPrimary)' : 'var(--qs-colSubtext)',
+      applyIcon: justSaved ? 'check' : 'save',
+      applyLabel: justSaved ? 'Applied' : 'Apply'
+    };
+  }
+}
+</script>
+</body>
+</html>
