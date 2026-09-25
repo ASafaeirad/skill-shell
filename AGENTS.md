@@ -124,7 +124,7 @@ Features are **not self-contained** — one threads through service singletons, 
 
 ## Gotchas
 
-- **Launcher prefix logic spans several files.** Prefix definitions and helpers live in `modules/common/functions/SearchPrefixes.qml`, provider behavior in `services/LauncherSearch.qml`, and presentation in `modules/widgets/overview/SearchBar.qml` and `SearchWidget.qml`. Adding a prefix means touching all relevant call sites — see the skill.
+- **Launcher prefixes are defined in one table.** Prefix definitions, icons, shapes, and provider callbacks live in `modules/common/functions/SearchPrefixes.qml`. Adding a prefix requires adding a single record to the `prefixes` table — see the skill.
 - **The bar is horizontal**: entry point in `modules/widgets/bar/BarContent.qml`.
 - The bar adapts to screen width via `useShortenedForm` (0/1/2) and fixes middle-group widths via `centerSideModuleWidth` — gate wide widgets on `useShortenedForm`.
 - `config.json` is rewritten by the shell ~50 ms after any QML-side option change; schema defaults live in `Config.qml`, the JSON only reflects current values.

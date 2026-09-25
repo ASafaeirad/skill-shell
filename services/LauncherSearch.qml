@@ -114,55 +114,10 @@ Singleton {
         if (root.query == "")
             return [];
 
-        ///////////// Special cases ///////////////
-        const queryKind = SearchPrefixes.detect(root.query);
-        if (queryKind === SearchPrefixes.PrefixKind.Clipboard) {
-            // Clipboard
-            const searchString = SearchPrefixes.strip(root.query);
-            return Cliphist.fuzzyQuery(searchString).map(entry => {
-                const type = `#${entry.match(/^\s*(\S+)/)?.[1] || ""}`;
-                return resultComp.createObject(null, {
-                    rawValue: entry,
-                    name: StringUtils.cleanCliphistEntry(entry),
-                    verb: "",
-                    type: type,
-                    execute: () => {
-                        Cliphist.copy(entry);
-                    },
-                    actions: [resultComp.createObject(null, {
-                            name: "Copy",
-                            iconName: "content_copy",
-                            iconType: LauncherSearchResult.IconType.Material,
-                            execute: () => {
-                                Cliphist.copy(entry);
-                            }
-                        }), resultComp.createObject(null, {
-                            name: "Delete",
-                            iconName: "delete",
-                            iconType: LauncherSearchResult.IconType.Material,
-                            execute: () => {
-                                Cliphist.deleteEntry(entry);
-                            }
-                        })]
-                });
-            }).filter(Boolean);
-        } else if (queryKind === SearchPrefixes.PrefixKind.Emojis) {
-            // Clipboard
-            const searchString = SearchPrefixes.strip(root.query);
-            return Emojis.fuzzyQuery(searchString).map(entry => {
-                const emoji = entry.match(/^\s*(\S+)/)?.[1] || "";
-                return resultComp.createObject(null, {
-                    rawValue: entry,
-                    name: entry.replace(/^\s*\S+\s+/, ""),
-                    iconName: emoji,
-                    iconType: LauncherSearchResult.IconType.Text,
-                    verb: "Copy",
-                    type: "Emoji",
-                    execute: () => {
-                        Quickshell.clipboardText = entry.match(/^\s*(\S+)/)?.[1];
-                    }
-                });
-            }).filter(Boolean);
+        ///////////// Prefix search ///////////////
+        const record = SearchPrefixes.getRecordForQuery(root.query);
+        if (record && record.provider) {
+            return record.provider(root.query, resultComp, root);
         }
 
         ////////////////// Init ///////////////////
