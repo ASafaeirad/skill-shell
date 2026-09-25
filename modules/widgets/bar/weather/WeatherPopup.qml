@@ -55,7 +55,7 @@ StyledPopup {
                     }
 
                     StyledText {
-                        text: Weather.data.city
+                        text: Weather.gpsActive ? Weather.data.city : (Weather.city.trim() || Weather.data.city)
                         color: Appearance.colors.colSubtext
                         font.pixelSize: Appearance.font.pixelSize.small
                     }
