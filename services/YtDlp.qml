@@ -9,13 +9,14 @@ import Quickshell.Io
 
 /**
  * yt-dlp front end for the media grabber panel: fetches a link's metadata,
- * downloads it at the chosen quality into the Downloads folder, and reports
- * progress. Lives in a singleton so a download keeps going while the panel is
- * closed.
+ * downloads it in the chosen format and quality into the Downloads folder, and
+ * reports progress. Lives in a singleton so a download keeps going while the
+ * panel is closed.
  *
  * The flow is a single state machine, `view`:
  *   idle → fetching → ready → downloading → done
- * with `error` reachable from fetching and downloading.
+ * with `error` reachable from fetching and downloading. Fetching starts on its
+ * own once a pasted or typed link settles, so there is no button to press.
  */
 Singleton {
     id: root
@@ -23,15 +24,25 @@ Singleton {
     // "idle" | "fetching" | "ready" | "downloading" | "done" | "error"
     property string view: "idle"
     property string url: ""
-    // "best" | "medium" | "audio"
-    property string quality: "best"
+    // "video" | "audio"
+    property string format: "video"
+    // Key within the current format's quality list; empty selects its first entry.
+    property string quality: ""
 
     // Metadata from the fetch step.
     property string title: ""
+    property string uploader: ""
     property string duration: ""
+    property real durationSeconds: 0
     property string thumbnail: ""
     property string extractor: ""
     property string mediaId: ""
+    // [{ key, label, height, bytes }], best first.
+    property var videoQualities: []
+    // [{ key, label, height, bytes }]
+    property var audioQualities: []
+    // The link the current metadata describes, so a settled link fetches once.
+    property string fetchedUrl: ""
 
     property real progress: 0 // 0..1 across every stream of the download
     property string speed: ""
@@ -41,6 +52,11 @@ Singleton {
     // Which step failed, so Retry repeats it: "fetch" | "download".
     property string failedStep: ""
     property string errorMessage: ""
+
+    // How long a link has to sit still before it is fetched.
+    readonly property int autoFetchDelay: 450
+    // Sites list dozens of heights; the picker only shows the best few.
+    readonly property int maxQualityCount: 5
 
     readonly property string outputDirectory: FileUtils.trimFileProtocol(Directories.downloads)
 
@@ -64,18 +80,72 @@ Singleton {
             return "X";
         return root.extractor;
     }
-    readonly property string qualityLabel: root.quality === "best" ? "Best quality · MP4"
-        : root.quality === "medium" ? "Medium quality · MP4" : "Audio only · M4A"
 
-    function fetch(): void {
-        const url = root.url.trim();
-        if (url.length === 0 || fetchProcess.running)
+    readonly property var qualities: root.format === "audio" ? root.audioQualities : root.videoQualities
+    readonly property var selectedQuality: {
+        const list = root.qualities;
+        if (!list || list.length === 0)
+            return null;
+        return list.find(entry => entry.key === root.quality) ?? list[0];
+    }
+    readonly property real selectedSize: root.selectedQuality?.bytes ?? 0
+    readonly property string sizeLabel: root.selectedSize > 0 ? `~${root.formatBytes(root.selectedSize)}` : ""
+
+    onUrlChanged: root.linkChanged()
+
+    // Reacting to a new link: drop the old metadata and queue a fetch.
+    function linkChanged(): void {
+        if (root.view === "downloading")
             return;
+        const link = root.url.trim();
+        if (link.length > 0 && link === root.fetchedUrl && root.view !== "idle")
+            return;
+        abortFetch();
+        autoFetchTimer.stop();
+        root.fetchedUrl = "";
+        root.failedStep = "";
+        root.errorMessage = "";
+        clearMetadata();
+        if (link.length === 0) {
+            root.view = "idle";
+            return;
+        }
+        // Show the spinner while the link is still being typed.
+        root.view = "fetching";
+        autoFetchTimer.restart();
+    }
+
+    function clearMetadata(): void {
         root.title = "";
+        root.uploader = "";
         root.duration = "";
+        root.durationSeconds = 0;
         root.thumbnail = "";
         root.extractor = "";
         root.mediaId = "";
+        root.videoQualities = [];
+        root.audioQualities = [];
+        root.quality = "";
+        root.progress = 0;
+        root.speed = "";
+        root.eta = "";
+        root.savedPath = "";
+    }
+
+    function fetch(): void {
+        const url = root.url.trim();
+        if (url.length === 0)
+            return;
+        if (fetchProcess.running) {
+            // Come back for it once the stale fetch is gone.
+            abortFetch();
+            root.view = "fetching";
+            autoFetchTimer.restart();
+            return;
+        }
+        autoFetchTimer.stop();
+        clearMetadata();
+        root.failedStep = "";
         root.errorMessage = "";
         root.view = "fetching";
         fetchProcess.command = ["yt-dlp", "--dump-single-json", "--no-playlist", "--no-warnings", "--", url];
@@ -99,7 +169,7 @@ Singleton {
             "--no-simulate",
             "-P", root.outputDirectory,
             "-o", "%(title).150B [%(id)s].%(ext)s",
-            ...root.formatArgs(root.quality), "--", url];
+            ...root.formatArgs(), "--", url];
         downloadProcess.running = true;
     }
 
@@ -112,8 +182,17 @@ Singleton {
 
     // Stop whatever is running without changing the view.
     function cancel(): void {
-        fetchProcess.running = false;
+        abortFetch();
+        autoFetchTimer.stop();
         downloadProcess.running = false;
+    }
+
+    // Kill an in-flight fetch without its exit counting as a failure.
+    function abortFetch(): void {
+        if (!fetchProcess.running)
+            return;
+        fetchProcess.aborted = true;
+        fetchProcess.running = false;
     }
 
     function cancelDownload(): void {
@@ -135,21 +214,20 @@ Singleton {
         root.view = "idle";
     }
 
+    // Back to an empty link, which drops the metadata with it.
+    function clearLink(): void {
+        cancel();
+        root.url = "";
+        root.fetchedUrl = "";
+        clearMetadata();
+        root.view = "idle";
+    }
+
     function resetPanel(): void {
         autoPasteProcess.acceptResult = false;
         autoPasteProcess.running = false;
-        reset();
-        root.url = "";
-        root.quality = "best";
-        root.title = "";
-        root.duration = "";
-        root.thumbnail = "";
-        root.extractor = "";
-        root.mediaId = "";
-        root.progress = 0;
-        root.speed = "";
-        root.eta = "";
-        root.savedPath = "";
+        clearLink();
+        root.format = "video";
         root.failedStep = "";
         root.errorMessage = "";
     }
@@ -175,12 +253,87 @@ Singleton {
             "show-in-folder", root.savedPath]);
     }
 
-    function formatArgs(quality: string): var {
-        if (quality === "audio")
-            return ["-f", "ba[ext=m4a]/ba", "-x", "--audio-format", "m4a"];
-        const cap = quality === "medium" ? "[height<=720]" : "";
+    function formatArgs(): var {
+        if (root.format === "audio") {
+            if (root.selectedQuality?.key === "mp3")
+                return ["-f", "ba/b", "-x", "--audio-format", "mp3", "--audio-quality", "0"];
+            return ["-f", "ba/b", "-x", "--audio-format", "best"];
+        }
+        const height = root.selectedQuality?.height ?? 0;
+        const cap = height > 0 ? `[height<=${height}]` : "";
         return ["-f", `bv*${cap}[ext=mp4]+ba[ext=m4a]/b${cap}[ext=mp4]/bv*${cap}+ba/b${cap}/b`,
             "--merge-output-format", "mp4"];
+    }
+
+    // Turn the fetched format table into the two quality pickers the panel shows.
+    function collectQualities(info: var): void {
+        const streams = Array.isArray(info.formats) ? info.formats : [];
+        const sizeOf = stream => stream.filesize ?? stream.filesize_approx ?? 0;
+        const hasVideo = stream => (stream.vcodec ?? "none") !== "none";
+        const hasAudio = stream => (stream.acodec ?? "none") !== "none";
+
+        const audioStreams = streams.filter(stream => !hasVideo(stream) && hasAudio(stream));
+        const bestAudio = audioStreams.reduce((best, stream) => !best || sizeOf(stream) > sizeOf(best) ? stream : best, null);
+        const audioBytes = bestAudio ? sizeOf(bestAudio) : 0;
+
+        // One entry per height, sized like the stream the download would pick:
+        // the mp4 variant where the site offers one, the largest otherwise.
+        const byHeight = {};
+        for (const stream of streams.filter(candidate => hasVideo(candidate) && candidate.height > 0)) {
+            const entry = byHeight[stream.height] ?? {
+                mp4: 0,
+                any: 0
+            };
+            const bytes = sizeOf(stream) + (hasAudio(stream) ? 0 : audioBytes);
+            entry.any = Math.max(entry.any, bytes);
+            if (stream.ext === "mp4")
+                entry.mp4 = Math.max(entry.mp4, bytes);
+            byHeight[stream.height] = entry;
+        }
+        const heights = Object.keys(byHeight).map(Number).sort((a, b) => b - a).slice(0, root.maxQualityCount);
+        root.videoQualities = heights.length > 0 ? heights.map(height => ({
+            key: String(height),
+            label: `${height}p`,
+            height: height,
+            bytes: byHeight[height].mp4 || byHeight[height].any
+        })) : [
+            {
+                key: "best",
+                label: "Best",
+                height: 0,
+                bytes: sizeOf(info)
+            }
+        ];
+        root.audioQualities = [
+            {
+                key: "best",
+                label: root.audioCodecLabel(bestAudio?.acodec ?? ""),
+                height: 0,
+                bytes: audioBytes
+            },
+            {
+                key: "mp3",
+                label: "MP3 320",
+                height: 0,
+                // 320 kbit/s is 40 kB of audio per second.
+                bytes: Math.round(root.durationSeconds * 40000)
+            }
+        ];
+    }
+
+    function audioCodecLabel(codec: string): string {
+        const key = codec.toLowerCase();
+        if (key.startsWith("opus"))
+            return "Opus";
+        if (key.startsWith("mp4a") || key.startsWith("aac"))
+            return "AAC";
+        if (key.startsWith("mp3"))
+            return "MP3";
+        if (key.startsWith("vorbis"))
+            return "Vorbis";
+        if (key.startsWith("flac"))
+            return "FLAC";
+        return "Original";
     }
 
     function lastError(text: string): string {
@@ -200,14 +353,44 @@ Singleton {
         return h > 0 ? `${h}:${String(m).padStart(2, "0")}:${s}` : `${m}:${s}`;
     }
 
+    function formatBytes(bytes: real): string {
+        if (!(bytes > 0))
+            return "";
+        const units = ["B", "KB", "MB", "GB"];
+        let value = bytes;
+        let unit = 0;
+        while (value >= 1024 && unit < units.length - 1) {
+            value /= 1024;
+            unit += 1;
+        }
+        return `${unit === 0 || value >= 100 ? Math.round(value) : value.toFixed(1)} ${units[unit]}`;
+    }
+
     function fail(step: string, stderr: string): void {
         root.failedStep = step;
         root.errorMessage = root.lastError(stderr);
         root.view = "error";
     }
 
+    Timer {
+        id: autoFetchTimer
+
+        interval: root.autoFetchDelay
+        onTriggered: {
+            if (fetchProcess.running) {
+                root.abortFetch();
+                autoFetchTimer.restart();
+                return;
+            }
+            root.fetch();
+        }
+    }
+
     Process {
         id: fetchProcess
+
+        // Set while a fetch is killed on purpose, so its exit isn't a failure.
+        property bool aborted: false
 
         stdout: StdioCollector {
             id: fetchOutput
@@ -217,6 +400,10 @@ Singleton {
         }
 
         onExited: (exitCode, exitStatus) => {
+            if (fetchProcess.aborted) {
+                fetchProcess.aborted = false;
+                return;
+            }
             if (root.view !== "fetching")
                 return; // cancelled
             if (exitCode !== 0)
@@ -224,10 +411,14 @@ Singleton {
             try {
                 const info = JSON.parse(fetchOutput.text);
                 root.title = info.title ?? info.fulltitle ?? info.id ?? "";
-                root.duration = root.formatDuration(info.duration);
+                root.uploader = info.uploader ?? info.channel ?? info.uploader_id ?? "";
+                root.durationSeconds = info.duration ?? 0;
+                root.duration = root.formatDuration(root.durationSeconds);
                 root.thumbnail = info.thumbnail ?? "";
                 root.extractor = info.extractor_key ?? info.extractor ?? "";
                 root.mediaId = info.id ?? "";
+                root.collectQualities(info);
+                root.fetchedUrl = root.url.trim();
                 root.view = "ready";
             } catch (e) {
                 root.fail("fetch", "");
