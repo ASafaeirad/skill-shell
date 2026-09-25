@@ -46,7 +46,8 @@ colours. They must be referenced by palette key.
 | Document | Widget | States |
 | --- | --- | --- |
 | `Gmail Widget.dc.html` | Gmail widget | inbox, reading, syncing, zero, offline, signin, settings |
-| `Download.dc.html` | Media grabber (yt-dlp) | idle, fetching, ready, downloading, done, error |
+| `Download v2.dc.html` | Media grabber (yt-dlp) — **current** | empty, fetching, ready, downloading, done, error |
+| `Download.dc.html` | Media grabber, version one — superseded | idle, fetching, ready, downloading, done, error |
 
 ### Gmail widget — which state belongs to which ticket
 
@@ -74,18 +75,44 @@ requests **modify** access and does not request send access.
 
 ### Media grabber
 
-Implemented as `modules/widgets/mediaGrabber/` on top of the `YtDlp` service. Each
-`sc-if` block maps to one value of `YtDlp.view`. The floating STATE switcher at
-the bottom of the page is only for previewing the design and is not part of the widget.
+Implement from **`Download v2.dc.html`**; `Download.dc.html` is the first version,
+kept only so the older screenshots still read. Version two replaces the separate
+per-state screens with one card: a link field that is always on top, a status chip
+at its end, and a band per thing the card currently has to say.
+
+Implemented as `modules/widgets/mediaGrabber/` on top of the `YtDlp` service. The
+`sc-if` blocks map to `YtDlp.view` like this:
+
+| Design | Widget |
+| --- | --- |
+| `empty` chip (`Ctrl V`) | `view === "idle"`; clicking the chip pastes |
+| `fetching` chip | `view === "fetching"` |
+| `isError` banner | `view === "error"` |
+| `hasMedia` | `view` is `ready`, `downloading` or `done` |
+| `isReady` / `isDownloading` / `isDone` | the matching `view` |
+| `showHints` footer | always on, one hint set per `view` |
+
+There is no Fetch button in version two: the widget fetches on its own once a
+typed or pasted link has sat still for `YtDlp.autoFetchDelay`.
+
 Where the design uses placeholder content, the widget shows real data instead:
 
 1. The thumbnail gradient and play glyph are placeholders. The widget shows the
    fetched thumbnail and falls back to the play glyph on a
-   `colSurfaceContainerHighest` tile.
-2. The error card's second line is fixed copy in the design. The widget shows
-   yt-dlp's own error and uses the design copy only when there is none. When a
-   download fails (as opposed to a fetch), the title reads "Download failed" and
-   Retry restarts the download.
+   `colSurfaceContainerHighest` tile. Its duration badge is a `m3surface` scrim,
+   not the design's `rgba(0,0,0,0.6)`.
+2. The quality chips are demo data in the design. The widget lists the heights
+   the site actually offers (best `maxQualityCount` of them) with sizes from
+   yt-dlp's format table, and for audio the source codec plus a transcoded
+   MP3 320. `sizeLabel` is the selected entry's size.
+3. The error banner's line is fixed copy in the design. The widget shows yt-dlp's
+   own error and uses the design copy only when there is none.
+4. A **failed download** has no design state. The widget keeps the media card,
+   labels the chip "Failed", and offers Retry alongside New, so there is
+   something to retry.
+5. The design drops the click handlers on the pickers while a download runs. The
+   widget does the same but keeps them at full opacity — locked or not, they are
+   what says which format and quality is being downloaded.
 
 ## Upstream
 
