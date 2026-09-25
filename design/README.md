@@ -48,6 +48,7 @@ colours. They must be referenced by palette key.
 | `Gmail Widget.dc.html` | Gmail widget | inbox, reading, syncing, zero, offline, signin, settings |
 | `Download v2.dc.html` | Media grabber (yt-dlp) — **current** | empty, fetching, ready, downloading, done, error |
 | `Download.dc.html` | Media grabber, version one — superseded | idle, fetching, ready, downloading, done, error |
+| `Fans Panel.dc.html` | Fan settings page | one screen; props flip auto power management, differing fans and the live marker |
 
 ### Gmail widget — which state belongs to which ticket
 
@@ -113,6 +114,42 @@ Where the design uses placeholder content, the widget shows real data instead:
 5. The design drops the click handlers on the pickers while a download runs. The
    widget does the same but keeps them at full opacity — locked or not, they are
    what says which format and quality is being downloaded.
+
+### Fan settings
+
+Implemented as `modules/settings/FansConfig.qml` on top of the `Fans` service. One screen
+rather than a set of states: the three booleans in `data-props` toggle the pieces that come
+and go (`autoPowerManagement` the Auto chip, `fansDiffer` the header chip, `showLiveMarker`
+the reading on the plot).
+
+Where the design uses placeholder content or a browser affordance, the page does otherwise:
+
+1. The profile row is the shell's own segmented control (`ConfigSelectionArray`), not the
+   design's pill row. Same options, local idiom.
+2. **Auto** appears only when auto power management is on, as designed. Picking it runs
+   `power mode <the user's mode>` — handing the profile back to policy means asking policy to
+   decide again — and the override it clears is also cleared by a change of power source or
+   power mode, which is when policy would have decided anyway. The hint under the row names
+   what the user's power mode actually does; the design's copy assumes `auto`.
+3. The sensor cards show real readings. The GPU card reads "Asleep" rather than a dash while
+   the dGPU is runtime-suspended, and the chassis card is the `mid` hwmon fan. The fan glyph
+   is geared down 40:1, as the design's `rpmSpin` does, and is driven from a frame callback so
+   a new reading changes its speed instead of restarting the turn.
+4. The design's `DEFAULT` curve is demo data, and its **Restore default** edits the draft.
+   Here it is a hardware action: `fan curve reset` puts back the factory curve for the profile
+   and hands fan control back to the firmware.
+5. Dragging clamps a point between its neighbours on both axes, as the design does, but
+   inclusively rather than by ±1°: the factory curves contain repeated temperatures, which the
+   design's rule would force apart on the first touch.
+6. The axis is the design's 40–100 °C, widened if a curve reaches past it.
+7. States the design has no block for: **Max** (the full-speed override) locks the editor and
+   says so, a **Revert** button appears next to Apply while the draft is dirty, and anything
+   `fan` writes to stderr appears in an error notice above the cards.
+8. The handle's 3px ring of `colLayer1` is drawn by clearing the curve from under each
+   handle instead. In the shell that token is a ~10% alpha overlay, so a ring painted in it
+   would let the line straight through.
+9. The 30px sensor value has no counterpart in `Appearance.font.pixelSize`; the page uses
+   `hugeass`, the largest there is.
 
 ## Upstream
 
