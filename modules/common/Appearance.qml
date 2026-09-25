@@ -413,8 +413,8 @@ Singleton {
         property real mediaControlsWidth: 440
         property real gmailPopoverWidth: 480
         property real mediaControlsHeight: 160
-        property real mediaGrabberWidth: 380
-        property real mediaGrabberThumbnailWidth: 128
+        property real mediaGrabberWidth: 640
+        property real mediaGrabberThumbnailWidth: 220
         property real notificationPopupWidth: 410
         property real osdWidth: 180
         property real searchWidthCollapsed: 210
