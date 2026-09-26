@@ -28,6 +28,10 @@ OverlayDialogCard {
     readonly property real sectionPadding: Appearance.spacing.lg
     readonly property real buttonHeight: Appearance.spacing.xxl + Appearance.spacing.m
     readonly property real chipHeight: Appearance.spacing.xxl - Appearance.spacing.xxs
+    readonly property real borderWidth: Appearance.spacing.xxs / 2
+    // The bands run edge to edge inside the border, so their outer corners
+    // follow the card's rounding minus the border they sit against.
+    readonly property real bandRadius: Appearance.rounding.windowRounding - root.borderWidth
 
     readonly property string mediaSubtitle: [YtDlp.uploader, YtDlp.platformLabel].filter(part => part.length > 0).join(" · ")
     readonly property string progressDetail: {
@@ -74,6 +78,16 @@ OverlayDialogCard {
                 spin: false,
                 background: Appearance.colors.colSurfaceContainerHigh,
                 foreground: Appearance.colors.colOnLayer1
+            };
+        // Text that isn't a link yet: say so instead of promising a paste
+        // shortcut that would overwrite what is being typed.
+        if (YtDlp.url.trim().length > 0)
+            return {
+                icon: "link_off",
+                label: "Not a link",
+                spin: false,
+                background: Appearance.colors.colSurfaceContainerHigh,
+                foreground: Appearance.colors.colSubtext
             };
         return {
             icon: "content_paste",
@@ -157,11 +171,11 @@ OverlayDialogCard {
     focus: true
 
     implicitWidth: Appearance.sizes.mediaGrabberWidth + 2 * Appearance.sizes.elevationMargin
-    implicitHeight: 2 * Appearance.sizes.elevationMargin + contentColumn.implicitHeight
+    implicitHeight: 2 * (Appearance.sizes.elevationMargin + root.borderWidth) + contentColumn.implicitHeight
     surfaceColor: Appearance.colors.colBackgroundSurfaceContainer
     surface.radius: Appearance.rounding.windowRounding
     surface.border.color: Appearance.colors.colLayer0Border
-    surface.border.width: Appearance.spacing.xxs / 2
+    surface.border.width: root.borderWidth
     surface.clip: true
 
     Keys.onPressed: event => {
@@ -235,8 +249,10 @@ OverlayDialogCard {
     ColumnLayout {
         id: contentColumn
 
+        // The card's surface is already inset by the elevation margin; the bands
+        // run right up to its border so no rim of the surface shows around them.
         anchors.fill: parent
-        anchors.margins: Appearance.sizes.elevationMargin
+        anchors.margins: root.borderWidth
         spacing: 0
 
         // The link field, always on top
@@ -244,6 +260,8 @@ OverlayDialogCard {
             Layout.fillWidth: true
             implicitHeight: headerRow.implicitHeight + Appearance.spacing.m * 2
             color: Appearance.colors.colSurfaceContainerLow
+            topLeftRadius: root.bandRadius
+            topRightRadius: root.bandRadius
 
             RowLayout {
                 id: headerRow
@@ -335,7 +353,9 @@ OverlayDialogCard {
 
                     MouseArea {
                         anchors.fill: parent
-                        enabled: !root.hasMedia && root.view === "idle"
+                        // Only the empty chip offers the paste; it would
+                        // otherwise overwrite whatever is in the field.
+                        enabled: root.view === "idle" && YtDlp.url.trim().length === 0
                         cursorShape: Qt.PointingHandCursor
                         onClicked: YtDlp.pasteUrl()
                     }
@@ -738,6 +758,8 @@ OverlayDialogCard {
             Layout.fillWidth: true
             implicitHeight: hintFlow.implicitHeight + Appearance.spacing.m * 2
             color: Appearance.colors.colSurfaceContainerLow
+            bottomLeftRadius: root.bandRadius
+            bottomRightRadius: root.bandRadius
 
             Flow {
                 id: hintFlow
