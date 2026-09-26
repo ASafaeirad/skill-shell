@@ -48,6 +48,10 @@ Quickshell hot-reloads the whole config on file save. Never restart the shell ju
    ⚠️ Testing a worktree copy? Pass that worktree's `settings.qml` path so `-p` picks the right
    instance — two instances of the same path make `-p` ambiguous (use `-i <instance id>` then).
 
+5. **See it.** Running from a worktree, or need a screenshot? The live shell runs the `main`
+   checkout. Use `.agents/skills/preview-widget` to render your panel in a throwaway
+   instance and `grim` it.
+
 ## Escalation ladder (in order)
 
 1. Re-save the file (touch it) to force another reload; re-check logs.

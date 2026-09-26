@@ -97,7 +97,8 @@ Quickshell **hot-reloads on file save** — no restart needed.
    Open it straight on a tab with `QS_SETTINGS_PAGE=<name|index> qs -p ...` (name is case-insensitive, prefixes work),
    or switch tabs on a running window with `qs -p ~/.config/quickshell/skill/settings.qml ipc call settings openPage fans`
    (`listPages` / `currentPage` on the same target).
-5. **Full restart — last resort only** (kills polkit agent + notifications briefly): `qs kill -c skill && qs -c skill -d`.
+5. **Working in a worktree / need to see the UI?** The live shell runs `main`, so preview your panel in a throwaway instance and screenshot it: `.agents/skills/preview-widget/preview.sh start <Type>` → `shot` → `stop` (see `.agents/skills/preview-widget`).
+6. **Full restart — last resort only** (kills polkit agent + notifications briefly): `qs kill -c skill && qs -c skill -d`.
 
 Details in `.agents/skills/verify-shell`.
 
@@ -111,6 +112,7 @@ Details in `.agents/skills/verify-shell`.
 | Add a launcher search provider/prefix   | `.agents/skills/add-launcher-provider`                                                                                                           |
 | Add a config option (+ settings UI)     | `.agents/skills/add-config-option`                                                                                                               |
 | Verify a change works                   | `.agents/skills/verify-shell`                                                                                                                    |
+| Screenshot a widget from a worktree     | `.agents/skills/preview-widget`                                                                                                                  |
 | Sync the design system to Claude Design | `scripts/design/sync.sh`, then ask Claude Code to push `scripts/design/build/bundle`                                                             |
 
 ## Removing or refactoring a feature (hints)
