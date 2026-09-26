@@ -26,6 +26,7 @@ class GmailFixtureHandler(BaseHTTPRequestHandler):
     history_expired = False
     mutations: list[tuple[str, str, dict]] = []
     read_payload: dict | None = None
+    inbox_unread_counts: dict[str, int] = {}
 
     def send_json(self, status: int, payload: dict) -> None:
         body = json.dumps(payload).encode()
@@ -106,6 +107,11 @@ class GmailFixtureHandler(BaseHTTPRequestHandler):
                 },
             })
             return
+        if self.path == "/gmail/v1/users/me/labels/INBOX":
+            self.send_json(200, {"messagesUnread": self.inbox_unread_counts.get(
+                authorization, counts[authorization]
+            )})
+            return
         self.send_json(200, {"messagesUnread": counts[authorization]})
 
     def log_message(self, _format: str, *_args: object) -> None:
@@ -121,6 +127,7 @@ class GmailHelperContractTest(unittest.TestCase):
         GmailFixtureHandler.history_expired = False
         GmailFixtureHandler.mutations = []
         GmailFixtureHandler.read_payload = None
+        GmailFixtureHandler.inbox_unread_counts = {}
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), GmailFixtureHandler)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
@@ -284,6 +291,17 @@ class GmailHelperContractTest(unittest.TestCase):
         self.assertEqual(account["email"], "person@example.com")
         self.assertEqual(account["refreshToken"], "login-refresh-token")
         self.assertEqual(len(account["id"]), 16)
+
+    def test_sync_uses_inbox_unread_count_when_other_mail_is_unread(self) -> None:
+        GmailFixtureHandler.inbox_unread_counts = {"Bearer access-personal-token": 0}
+        result = self.run_sync({
+            "clientId": "desktop-client", "clientSecret": "secret-on-stdin",
+            "accounts": [{"id": "personal", "email": "personal@example.com",
+                          "refreshToken": "personal-token"}],
+        })
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)["accounts"][0]["unread"], 0)
 
     def test_sync_normalizes_multiple_unread_counts(self) -> None:
         result = self.run_sync(

@@ -497,8 +497,8 @@ def sync(request: dict[str, Any]) -> tuple[dict[str, Any], int]:
                     client, client_id, client_secret, refresh_token
                 )
                 profile = gmail_get(client, "/users/me/profile", access_token)
-                unread_label = gmail_get(client, "/users/me/labels/UNREAD", access_token)
-                result["unread"] = int(unread_label.get("messagesUnread", 0))
+                inbox_label = gmail_get(client, "/users/me/labels/INBOX", access_token)
+                result["unread"] = int(inbox_label.get("messagesUnread", 0))
                 inbox = gmail_get(client, "/users/me/messages?labelIds=INBOX&maxResults=12", access_token)
                 listed = inbox.get("messages", [])
                 result["total"] = int(inbox.get("resultSizeEstimate", len(listed)))
