@@ -866,6 +866,7 @@ modules/common/widgets/FocusedScrollMouseArea.qml
 modules/common/widgets/FullscreenPolkitWindow.qml
 modules/common/widgets/Graph.qml
 modules/common/widgets/GroupButton.qml
+modules/common/widgets/HoverDelay.qml
 modules/common/widgets/IconAndTextToolbarButton.qml
 modules/common/widgets/IconToolbarButton.qml
 modules/common/widgets/KeyboardKey.qml
@@ -966,6 +967,7 @@ modules/widgets/gmailInbox/GmailInbox.qml
 modules/widgets/gmailInbox/GmailReadingView.qml
 modules/widgets/gmailInbox/GmailAccountsView.qml
 modules/widgets/bar/StatusIndicators.qml
+modules/widgets/bar/StyledPopup.qml
 modules/widgets/bar/weather/WeatherBar.qml
 modules/widgets/bar/weather/WeatherCard.qml
 modules/widgets/bar/weather/WeatherPopup.qml
@@ -987,6 +989,8 @@ modules/widgets/mediaGrabber/MediaGrabberContent.qml`
           "Two-column Claude and Codex usage panel with five-hour and seven-day limit rings, reset times, and sync state.",
         AiUsageWidget:
           "Two labeled Claude and Codex limit rings with manual sync on left-click and persistent automatic-refresh pause on right-click.",
+        HoverDelay:
+          "Reusable hover timer that becomes ready after 300 ms and resets when the pointer leaves.",
         ClockWidgetPopup:
           "Clock hover panel with the full date plus local and configurable world clocks, including daylight-saving-aware zone abbreviations.",
         GmailWidget:
@@ -1005,6 +1009,8 @@ modules/widgets/mediaGrabber/MediaGrabberContent.qml`
           "Repeater component rendering a section of widgets from BarRoster.",
         StatusIndicators:
           "Right-sidebar toggle button hosting audio, network, bluetooth, language, and notification indicators.",
+        StyledPopup:
+          "Bar hover panel that opens after the shared hover delay and closes when the pointer leaves its widget.",
         WeatherBar:
           "Compact current-temperature bar readout with a weather icon, manual refresh action, and detailed hover panel.",
         WeatherCard:
