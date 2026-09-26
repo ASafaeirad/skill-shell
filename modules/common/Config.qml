@@ -128,6 +128,7 @@ Singleton {
             property JsonObject background: JsonObject {
                 property string wallpaperPath: ""
                 property string thumbnailPath: ""
+                property string zoomStyle: "cover" // cover or contain
                 property bool hideWhenFullscreen: true
             }
 

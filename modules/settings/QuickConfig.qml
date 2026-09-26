@@ -24,11 +24,18 @@ ContentPage {
                 implicitWidth: 340
                 implicitHeight: 200
 
+                Rectangle {
+                    anchors.fill: parent
+                    radius: Appearance.rounding.normal
+                    color: Appearance.colors.colLayer0
+                    visible: Config.options.background.zoomStyle === "contain"
+                }
+
                 StyledImage {
                     id: wallpaperPreview
 
                     anchors.fill: parent
-                    fillMode: Image.PreserveAspectCrop
+                    fillMode: Config.options.background.zoomStyle === "contain" ? Image.PreserveAspectFit : Image.PreserveAspectCrop
                     source: Config.options.background.wallpaperPath
                     cache: false
                     layer.enabled: true
@@ -97,6 +104,21 @@ ContentPage {
 
             }
 
+        }
+
+        ContentSubsection {
+            title: "Image zoom style"
+
+            ConfigSelectionArray {
+                configKey: "background.zoomStyle"
+                options: [{
+                    "value": "cover",
+                    "displayName": "Cover"
+                }, {
+                    "value": "contain",
+                    "displayName": "Contain"
+                }]
+            }
         }
 
     }

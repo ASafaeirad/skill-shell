@@ -976,11 +976,14 @@ modules/widgets/sidebarRight/SidebarRightContent.qml
 modules/widgets/pass/Pass.qml
 modules/widgets/pass/PassContent.qml
 modules/widgets/mediaGrabber/MediaGrabber.qml
-modules/widgets/mediaGrabber/MediaGrabberContent.qml`
+modules/widgets/mediaGrabber/MediaGrabberContent.qml
+modules/widgets/background/Background.qml`
         .trim()
         .split("\n");
 
       const exactPurposes = {
+        Background:
+          "Desktop wallpaper panel that scales images to cover the screen or fit the full image, according to the wallpaper zoom setting.",
         FansConfig:
           "Fan settings page with draggable curve points that keep control of the pointer until release, so the page does not scroll during an edit.",
         IconCircularProgress:
@@ -1105,6 +1108,7 @@ modules/widgets/mediaGrabber/MediaGrabberContent.qml`
       }
       function scopeOf(path) {
         if (path.includes("/settings/")) return "Settings";
+        if (path.includes("/widgets/background/")) return "Background";
         if (path.includes("/widgets/pass/") || path.includes("/widgets/mediaGrabber/")) return "Panel widgets";
         if (path.includes("/widgetCanvas/")) return "Canvas";
         if (path.includes("/shapes/")) return "Shape lab";
