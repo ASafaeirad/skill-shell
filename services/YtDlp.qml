@@ -91,6 +91,15 @@ Singleton {
     readonly property real selectedSize: root.selectedQuality?.bytes ?? 0
     readonly property string sizeLabel: root.selectedSize > 0 ? `~${root.formatBytes(root.selectedSize)}` : ""
 
+    // A whole link and nothing else: an http(s) URL, or a bare dotted host that
+    // yt-dlp can still resolve ("youtu.be/xyz"). Half-typed text and plain words
+    // are not worth spawning yt-dlp for.
+    readonly property var linkPattern: /^(?:https?:\/\/[^\s/?#]+|[^\s/?#@]+\.[a-z]{2,})(?:[/?#]\S*)?$/i
+
+    function isLink(text: string): bool {
+        return root.linkPattern.test((text ?? "").trim());
+    }
+
     onUrlChanged: root.linkChanged()
 
     // Reacting to a new link: drop the old metadata and queue a fetch.
@@ -106,7 +115,9 @@ Singleton {
         root.failedStep = "";
         root.errorMessage = "";
         clearMetadata();
-        if (link.length === 0) {
+        // Nothing to fetch until the field actually holds a link: no spinner,
+        // no yt-dlp run for every keystroke of a half-typed or non-link entry.
+        if (link.length === 0 || !root.isLink(link)) {
             root.view = "idle";
             return;
         }
@@ -134,7 +145,7 @@ Singleton {
 
     function fetch(): void {
         const url = root.url.trim();
-        if (url.length === 0)
+        if (!root.isLink(url))
             return;
         if (fetchProcess.running) {
             // Come back for it once the stale fetch is gone.
