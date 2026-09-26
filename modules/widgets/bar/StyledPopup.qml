@@ -12,6 +12,7 @@ LazyLoader {
     property Item hoverTarget
     default property Item contentItem
     property real popupBackgroundMargin: 0
+    property real barGap: Appearance.sizes.elevationMargin
     property real shadowMargin: Appearance.sizes.elevationMargin
     property real shadowBlur: 0.9 * Appearance.sizes.elevationMargin
     property real shadowSpread: 1
@@ -57,8 +58,10 @@ LazyLoader {
                 const wantedPosition = targetPosition + (root.hoverTarget.width - popupWindow.implicitWidth) / 2;
                 return popupWindow.boundedPosition(wantedPosition, popupWindow.availableWidth, popupWindow.implicitWidth);
             }
-            top: Appearance.sizes.barHeight
-            bottom: Appearance.sizes.barHeight
+            // Keep the visible popup surface aligned with the bar edge regardless of
+            // how much transparent space this popup reserves for its shadow.
+            top: Math.max(0, Appearance.sizes.barHeight + root.barGap - root.shadowMargin)
+            bottom: Math.max(0, Appearance.sizes.barHeight + root.barGap - root.shadowMargin)
         }
         WlrLayershell.namespace: "quickshell:popup"
         WlrLayershell.layer: WlrLayer.Overlay

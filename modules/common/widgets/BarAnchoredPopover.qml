@@ -11,6 +11,8 @@ PanelWindow {
 
     property string anchorName: ""
     property real barMargin: Appearance.sizes.barHeight
+    property real barGap: Appearance.sizes.elevationMargin
+    property real anchorEdgeInset: 0
     property real sideGap: Appearance.sizes.hyprlandGapsOut
     property string layerNamespace: "quickshell:popover"
     property bool dismissOnFocusGrab: true
@@ -35,8 +37,8 @@ PanelWindow {
     }
 
     margins {
-        top: root.barMargin
-        bottom: root.barMargin
+        top: Math.max(0, root.barMargin + root.barGap - root.anchorEdgeInset)
+        bottom: Math.max(0, root.barMargin + root.barGap - root.anchorEdgeInset)
         left: {
             BarAnchors.revision;
             root.visible;

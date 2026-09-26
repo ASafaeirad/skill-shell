@@ -93,6 +93,7 @@ Panel {
             id: panelWindow
             visible: true
             anchorName: "media"
+            anchorEdgeInset: Appearance.sizes.elevationMargin
             layerNamespace: "quickshell:mediaControls"
             implicitWidth: root.widgetWidth
             implicitHeight: playerColumnLayout.implicitHeight
@@ -163,4 +164,3 @@ Panel {
         }
     }
 }
-
