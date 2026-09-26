@@ -7,6 +7,7 @@ import Quickshell.Wayland
 import qs
 import qs.services
 import qs.modules.common
+import qs.modules.common.functions
 import qs.modules.common.widgets
 
 Panel {
@@ -495,6 +496,9 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                     delegate: Rectangle {
                                         id: row
                                         required property var modelData
+                                        readonly property bool actionPending: Gmail.acting
+                                            && Gmail.actionAccountId === modelData.accountId
+                                            && Gmail.actionMessageId === modelData.id
                                         width: rows.width
                                         height: Appearance.sizes.barHeight + Appearance.spacing.xxl
                                         color: rowHover.hovered
@@ -513,6 +517,7 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
 
                                         MouseArea {
                                             anchors.fill: parent
+                                            enabled: !row.actionPending
                                             cursorShape: Qt.PointingHandCursor
                                             onClicked: root.readMessage(row.modelData)
                                         }
@@ -614,7 +619,7 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                             }
                                         }
                                         Rectangle {
-                                            visible: rowHover.hovered
+                                            visible: rowHover.hovered && !row.actionPending
                                             anchors.right: parent.right
                                             anchors.rightMargin: Appearance.spacing.s
                                             anchors.verticalCenter: parent.verticalCenter
@@ -679,6 +684,45 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                                         }
                                                     }
                                                 }
+                                            }
+                                        }
+                                        Item {
+                                            id: actionShimmer
+                                            anchors.fill: parent
+                                            z: 3
+                                            visible: row.actionPending
+                                            clip: true
+
+                                            Rectangle {
+                                                anchors.fill: parent
+                                                color: ColorUtils.applyAlpha(Appearance.colors.colSurfaceContainerHigh, 0.25)
+                                            }
+                                            Rectangle {
+                                                id: shimmerBand
+                                                width: actionShimmer.width * 0.75
+                                                height: actionShimmer.height * 2
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                rotation: 15
+                                                gradient: Gradient {
+                                                    orientation: Gradient.Horizontal
+                                                    GradientStop { position: 0.0; color: "transparent" }
+                                                    GradientStop {
+                                                        position: 0.5
+                                                        color: ColorUtils.applyAlpha(Appearance.colors.colOnLayer1, 0.16)
+                                                    }
+                                                    GradientStop { position: 1.0; color: "transparent" }
+                                                }
+                                                NumberAnimation on x {
+                                                    running: row.actionPending
+                                                    loops: Animation.Infinite
+                                                    from: -shimmerBand.width * 1.5
+                                                    to: actionShimmer.width + shimmerBand.width * 0.5
+                                                    duration: Appearance.animation.elementMoveEnter.duration * 3
+                                                    easing.type: Easing.InOutQuad
+                                                }
+                                            }
+                                            MouseArea {
+                                                anchors.fill: parent
                                             }
                                         }
                                     }
