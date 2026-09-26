@@ -462,22 +462,27 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                             }
                         }
 
-                        ColumnLayout {
+                        Item {
                             visible: !Gmail.syncing && root.filteredMessages.length === 0 && !root.degraded
                             Layout.fillWidth: true
-                            Layout.margins: Appearance.spacing.xxl
-                            spacing: Appearance.spacing.s
-                            MaterialSymbol {
-                                Layout.alignment: Qt.AlignHCenter
-                                text: "check_circle"
-                                iconSize: Appearance.font.pixelSize.hugeass
-                                color: Appearance.m3colors.m3success
-                            }
-                            StyledText {
-                                Layout.alignment: Qt.AlignHCenter
-                                text: "All inboxes clear"
-                                font.pixelSize: Appearance.font.pixelSize.small
-                                color: Appearance.colors.colOnSurface
+                            implicitHeight: clearContent.implicitHeight + Appearance.spacing.xxl * 2
+
+                            ColumnLayout {
+                                id: clearContent
+                                anchors.centerIn: parent
+                                spacing: Appearance.spacing.s
+                                MaterialSymbol {
+                                    Layout.alignment: Qt.AlignHCenter
+                                    text: "check_circle"
+                                    iconSize: Appearance.font.pixelSize.hugeass
+                                    color: Appearance.colors.colSubtext
+                                }
+                                StyledText {
+                                    Layout.alignment: Qt.AlignHCenter
+                                    text: "All inboxes clear"
+                                    font.pixelSize: Appearance.font.pixelSize.small
+                                    color: Appearance.colors.colSubtext
+                                }
                             }
                         }
 
