@@ -68,6 +68,7 @@ QtObject {
 
     property Component gmail: Component {
         Bar.BarGroup {
+            shimmer: Gmail.syncing || Gmail.acting
             Bar.GmailWidget {}
         }
     }
