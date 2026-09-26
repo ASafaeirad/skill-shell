@@ -11,6 +11,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
 import Quickshell
+import Quickshell.Io
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
@@ -71,7 +72,49 @@ ApplicationWindow {
             component: "modules/settings/AdvancedConfig.qml"
         }
     ]
-    property int currentPage: 0
+    // Open straight onto a tab, by name (case-insensitive, prefix ok) or index:
+    //   QS_SETTINGS_PAGE=fans qs -p ~/.config/quickshell/skill/settings.qml
+    property int currentPage: Math.max(0, root.pageIndexOf(Quickshell.env("QS_SETTINGS_PAGE")))
+
+    // -1 when the query is empty or matches no page
+    function pageIndexOf(query) {
+        const needle = String(query ?? "").trim().toLowerCase();
+        if (needle.length === 0)
+            return -1;
+        if (/^[0-9]+$/.test(needle)) {
+            const index = parseInt(needle);
+            return (index >= 0 && index < root.pages.length) ? index : -1;
+        }
+        const exact = root.pages.findIndex(page => page.name.toLowerCase() === needle);
+        if (exact >= 0)
+            return exact;
+        return root.pages.findIndex(page => page.name.toLowerCase().startsWith(needle));
+    }
+
+    // Switch tabs on an already open window:
+    //   qs -p ~/.config/quickshell/skill/settings.qml ipc call settings openPage fans
+    IpcHandler {
+        target: "settings"
+
+        function openPage(page: string): string {
+            const index = root.pageIndexOf(page);
+            if (index < 0)
+                return `No page matches "${page}". Available:\n${listPages()}`;
+            root.currentPage = index;
+            root.show();
+            root.raise();
+            root.requestActivate();
+            return root.pages[index].name;
+        }
+
+        function listPages(): string {
+            return root.pages.map((page, index) => `${index}: ${page.name}`).join("\n");
+        }
+
+        function currentPage(): string {
+            return root.pages[root.currentPage].name;
+        }
+    }
 
     visible: true
     onClosing: Qt.quit()
@@ -210,7 +253,7 @@ ApplicationWindow {
 
                     active: Config.ready
                     Component.onCompleted: {
-                        source = root.pages[0].component;
+                        source = root.pages[root.currentPage].component;
                     }
 
                     Connections {

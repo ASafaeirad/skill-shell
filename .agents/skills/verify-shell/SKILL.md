@@ -34,8 +34,19 @@ Quickshell hot-reloads the whole config on file save. Never restart the shell ju
 
 4. **Settings app** changes can be tested without touching the running shell:
    ```sh
-   qs -p ~/.config/quickshell/widgets/settings.qml
+   qs -p ~/.config/quickshell/skill/settings.qml                       # opens on the Quick tab
+   QS_SETTINGS_PAGE=fans qs -p ~/.config/quickshell/skill/settings.qml # opens on a specific tab
    ```
+   `QS_SETTINGS_PAGE` takes a page name (case-insensitive, prefix match) or an index.
+   A running settings window has its own IPC target, selected by path:
+   ```sh
+   SETTINGS=~/.config/quickshell/skill/settings.qml
+   qs -p $SETTINGS ipc call settings listPages      # 0: Quick, 1: General, ...
+   qs -p $SETTINGS ipc call settings openPage fans  # switch tab + raise the window
+   qs -p $SETTINGS ipc call settings currentPage    # which tab is showing
+   ```
+   ⚠️ Testing a worktree copy? Pass that worktree's `settings.qml` path so `-p` picks the right
+   instance — two instances of the same path make `-p` ambiguous (use `-i <instance id>` then).
 
 ## Escalation ladder (in order)
 
