@@ -690,6 +690,7 @@ ContentPage {
                         MouseArea {
                             anchors.fill: parent
                             enabled: plot.editable
+                            preventStealing: true
                             cursorShape: plot.editable ? (pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor) :
                                                          Qt.ArrowCursor
 

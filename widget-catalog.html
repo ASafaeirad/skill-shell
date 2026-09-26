@@ -954,6 +954,7 @@ modules/common/widgets/WindowDialogSectionHeader.qml
 modules/common/widgets/WindowDialogSeparator.qml
 modules/common/widgets/WindowDialogSlider.qml
 modules/common/widgets/WindowDialogTitle.qml
+modules/settings/FansConfig.qml
 modules/widgets/bar/AiUsagePopup.qml
 modules/widgets/bar/AiUsageWidget.qml
 modules/widgets/bar/BarRoster.qml
@@ -978,6 +979,8 @@ modules/widgets/mediaGrabber/MediaGrabberContent.qml`
         .split("\n");
 
       const exactPurposes = {
+        FansConfig:
+          "Fan settings page with draggable curve points that keep control of the pointer until release, so the page does not scroll during an edit.",
         IconCircularProgress:
           "Stroke-only circular progress variant with clockwise depletion, a theme-aware remainder track, and an optional centered Material Symbol.",
         AiUsagePopup:
@@ -1095,6 +1098,7 @@ modules/widgets/mediaGrabber/MediaGrabberContent.qml`
           .replace(/([a-z0-9])([A-Z])/g, "$1 $2");
       }
       function scopeOf(path) {
+        if (path.includes("/settings/")) return "Settings";
         if (path.includes("/widgets/pass/") || path.includes("/widgets/mediaGrabber/")) return "Panel widgets";
         if (path.includes("/widgetCanvas/")) return "Canvas";
         if (path.includes("/shapes/")) return "Shape lab";
