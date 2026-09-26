@@ -318,6 +318,55 @@ Singleton {
             return;
         }
         root.actionError = "";
+        if (root.actionOperation === "read" || root.actionOperation === "unread") {
+            const isRead = root.actionOperation === "read";
+            const updateMsg = m => {
+                if (m.id !== root.actionMessageId)
+                    return m;
+                const currentLabels = m.labelIds ?? [];
+                const newLabels = isRead
+                    ? currentLabels.filter(l => l !== "UNREAD")
+                    : (currentLabels.includes("UNREAD") ? currentLabels : [...currentLabels, "UNREAD"]);
+                return Object.assign({}, m, {
+                    read: isRead,
+                    labelIds: newLabels
+                });
+            };
+            root.syncedAccounts = root.syncedAccounts.map(account => {
+                if (account.id !== root.actionAccountId)
+                    return account;
+                const wasUnread = account.messages?.find(m => m.id === root.actionMessageId)?.read === false;
+                let unread = account.unread;
+                if (unread !== null && unread !== undefined) {
+                    if (isRead && wasUnread)
+                        unread = Math.max(0, unread - 1);
+                    else if (!isRead && !wasUnread)
+                        unread = unread + 1;
+                }
+                return Object.assign({}, account, {
+                    messages: (account.messages ?? []).map(updateMsg),
+                    unread: unread
+                });
+            });
+            if (root.inboxCache[root.actionAccountId]) {
+                const cached = root.inboxCache[root.actionAccountId];
+                const wasUnread = cached.messages?.find(m => m.id === root.actionMessageId)?.read === false;
+                let unread = cached.unread;
+                if (unread !== null && unread !== undefined) {
+                    if (isRead && wasUnread)
+                        unread = Math.max(0, unread - 1);
+                    else if (!isRead && !wasUnread)
+                        unread = unread + 1;
+                }
+                const updated = Object.assign({}, root.inboxCache);
+                updated[root.actionAccountId] = Object.assign({}, cached, {
+                    messages: (cached.messages ?? []).map(updateMsg),
+                    unread: unread
+                });
+                root.inboxCache = updated;
+                root.persistCache();
+            }
+        }
         root.messageActionCompleted(true, root.actionOperation, root.actionAccountId, root.actionMessageId);
         if (root.syncing)
             root.refreshAfterAction = true;

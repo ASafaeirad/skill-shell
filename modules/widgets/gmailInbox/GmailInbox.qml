@@ -626,7 +626,11 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                                 Repeater {
                                                     model: [
                                                         { icon: "archive", operation: "archive", title: "Archive" },
-                                                        { icon: "drafts", operation: "read", title: "Mark as read" },
+                                                        {
+                                                            icon: row.modelData.read ? "mark_email_unread" : "drafts",
+                                                            operation: row.modelData.read ? "unread" : "read",
+                                                            title: row.modelData.read ? "Mark as unread" : "Mark as read"
+                                                        },
                                                         { icon: "label", operation: "labels", title: "Add label" },
                                                         { icon: "delete", operation: "trash", title: "Move to trash" },
                                                         { icon: "open_in_new", operation: "open", title: "Open in Gmail" }
