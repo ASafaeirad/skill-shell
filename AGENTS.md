@@ -93,7 +93,10 @@ Quickshell **hot-reloads on file save** — no restart needed.
 1. **Did the reload succeed?** On failure, `ReloadPopup.qml` shows the QML error on screen. Headless check: `qs -c skill log -t 30` and look for QML errors mentioning your file. (Warnings about missing icons are normal noise.)
 2. **Is the instance alive?** `qs list --all` — note: plain `qs list` errors with "Could not find default config"; always pass `--all` or `-c skill`.
 3. **Exercise the feature headlessly:** find the target with `qs -c skill ipc show`, then e.g. `qs -c skill ipc call search toggle`, `qs -c skill ipc call osdVolume trigger`.
-4. **Settings app** can be tested standalone without touching the shell: `qs -p ~/.config/quickshell/settings.qml`.
+4. **Settings app** can be tested standalone without touching the shell: `qs -p ~/.config/quickshell/skill/settings.qml`.
+   Open it straight on a tab with `QS_SETTINGS_PAGE=<name|index> qs -p ...` (name is case-insensitive, prefixes work),
+   or switch tabs on a running window with `qs -p ~/.config/quickshell/skill/settings.qml ipc call settings openPage fans`
+   (`listPages` / `currentPage` on the same target).
 5. **Full restart — last resort only** (kills polkit agent + notifications briefly): `qs kill -c skill && qs -c skill -d`.
 
 Details in `.agents/skills/verify-shell`.
