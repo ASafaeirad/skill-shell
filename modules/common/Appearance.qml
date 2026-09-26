@@ -281,6 +281,8 @@ Singleton {
     }
 
     animation: QtObject {
+        property int hoverOpenDelay: 300
+
         property QtObject elementMove: QtObject {
             property int duration: animationCurves.expressiveDefaultSpatialDuration
             property int type: Easing.BezierSpline

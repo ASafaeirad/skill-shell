@@ -31,28 +31,11 @@ Item {
         onTriggered: activePlayer.positionChanged()
     }
 
-    Timer {
-        id: hoverTimer
-        interval: 150
-        repeat: false
-        onTriggered: {
-            if (mouseArea.containsMouse && !Config.options.bar.tooltips.clickToShow) {
-                GlobalStates.mediaControls?.open();
-            }
-        }
-    }
-
     MouseArea {
         id: mouseArea
         anchors.fill: parent
-        hoverEnabled: !Config.options.bar.tooltips.clickToShow
         acceptedButtons: Qt.MiddleButton | Qt.BackButton | Qt.ForwardButton | Qt.RightButton | Qt.LeftButton
-        onEntered: {
-            hoverTimer.restart();
-        }
-        onExited: hoverTimer.stop()
         onPressed: (event) => {
-            hoverTimer.stop();
             if (event.button === Qt.MiddleButton) {
                 activePlayer.togglePlaying();
             } else if (event.button === Qt.BackButton) {

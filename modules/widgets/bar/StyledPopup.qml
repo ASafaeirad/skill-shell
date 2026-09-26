@@ -22,8 +22,11 @@ LazyLoader {
     property real contentPadding: Appearance.spacing.s + Appearance.spacing.xxs
     property real backgroundRadius: Appearance.rounding.small
     property bool clipContent: false
+    property HoverDelay hoverDelay: HoverDelay {
+        hovered: root.hoverTarget?.containsMouse ?? false
+    }
 
-    active: hoverTarget && hoverTarget.containsMouse
+    active: hoverDelay.ready
 
     component: PanelWindow {
         id: popupWindow
