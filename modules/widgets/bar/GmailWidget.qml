@@ -23,6 +23,8 @@ MouseArea {
         name: "gmail"
     }
 
+    readonly property bool isRequesting: Gmail.syncing || Gmail.acting
+
     function accountColor(account) {
         const paletteColor = Appearance.m3colors[account.color];
         return paletteColor ?? Appearance.colors.colPrimary;
@@ -60,21 +62,7 @@ MouseArea {
                 }
             }
         }
-
-        MaterialSymbol {
-            id: syncIcon
-            visible: Gmail.syncing
-            text: "sync"
-            iconSize: Appearance.font.pixelSize.large
-            color: Appearance.colors.colOnLayer1
-
-            RotationAnimation on rotation {
-                running: Gmail.syncing
-                loops: Animation.Infinite
-                from: 0
-                to: 360
-                duration: Appearance.animation.elementMove.duration * 4
-            }
-        }
     }
 }
+
+
