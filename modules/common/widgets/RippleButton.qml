@@ -29,6 +29,10 @@ Button {
     property color colBackgroundToggledHover: Appearance?.colors.colPrimaryHover ?? "#77699C"
     property color colRipple: Appearance?.colors.colLayer1Active ?? "#D6CEE2"
     property color colRippleToggled: Appearance?.colors.colPrimaryActive ?? "#D6CEE2"
+    // An outline on the button's own bounds, for outlined (toggle) buttons.
+    // Drawing it in the contentItem instead would inset it by the padding.
+    property color colBorder: "transparent"
+    property real borderWidth: 0
 
     opacity: root.enabled ? 1 : 0.4
     property color buttonColor: ColorUtils.transparentize(root.toggled ? 
@@ -135,6 +139,8 @@ Button {
         id: buttonBackground
         radius: root.buttonEffectiveRadius
         implicitHeight: 30
+        border.width: root.borderWidth
+        border.color: root.colBorder
 
         color: root.buttonColor
         Behavior on color {
