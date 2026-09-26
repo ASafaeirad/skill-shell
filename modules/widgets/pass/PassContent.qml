@@ -541,12 +541,17 @@ OverlayDialogCard {
                             model: PassService.loadedEntry === root.detailEntry?.name ? PassService.fields :
                                                                                         []
                             delegate: Rectangle {
+                                id: fieldRow
                                 required property var modelData
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: Appearance.sizes.barHeight
                                                         + Appearance.spacing.lg
                                 radius: Appearance.rounding.small
-                                color: Appearance.colors.colLayer1
+                                color: fieldMouse.containsMouse ? Appearance.colors.colLayer1Hover : Appearance.colors.colLayer1
+
+                                Behavior on color {
+                                    animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
+                                }
 
                                 RowLayout {
                                     anchors.fill: parent
@@ -570,6 +575,15 @@ OverlayDialogCard {
                                         color: Appearance.colors.colOnLayer1
                                         elide: Text.ElideRight
                                     }
+                                }
+
+                                MouseArea {
+                                    id: fieldMouse
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: PassService.copyToClipboard(fieldRow.modelData.value,
+                                                                           `${fieldRow.modelData.key} copied`)
                                 }
                             }
                         }
