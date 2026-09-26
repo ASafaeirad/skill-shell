@@ -51,6 +51,10 @@ ColumnLayout {
                     id: accountRow
                     required property var modelData
                     property bool editing: false
+                    onEditingChanged: {
+                        if (editing)
+                            labelField.forceActiveFocus();
+                    }
                     Layout.fillWidth: true
                     Layout.leftMargin: Appearance.spacing.m
                     Layout.rightMargin: Appearance.spacing.m

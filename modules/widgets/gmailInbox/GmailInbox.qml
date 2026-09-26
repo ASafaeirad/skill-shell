@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Wayland
 import qs
 import qs.services
 import qs.modules.common
@@ -133,6 +134,7 @@ Panel {
         sourceComponent: BarAnchoredPopover {
             id: popup
             visible: true
+            WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
             anchorName: "gmail"
             layerNamespace: "quickshell:gmailInbox"
             implicitWidth: Appearance.sizes.gmailPopoverWidth
