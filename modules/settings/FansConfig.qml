@@ -346,6 +346,95 @@ ContentPage {
             return Fans.pwmToPercent(points[points.length - 1].pwm);
         }
 
+        // The points in plot coordinates. Everything that draws or measures the curve reads
+        // them from here, so the painted line, the handles and the live marker agree.
+        function curveXs() {
+            return plot.points.map(point => plot.xAt(point.temp));
+        }
+
+        function curveYs() {
+            return plot.points.map(point => plot.yAt(Fans.pwmToPercent(point.pwm)));
+        }
+
+        // Fritsch-Carlson tangents for a monotone cubic through the points. A plain
+        // Catmull-Rom bows past its own values, which on a fan curve draws a dip in speed
+        // between two rising steps and can leave the 0-100% band entirely; this cannot
+        // overshoot, so a curve that only rises only rises on screen too.
+        function curveSlopes(xs, ys) {
+            const count = xs.length;
+            if (count < 2)
+                return [0];
+
+            const secants = [];
+            for (let i = 0; i < count - 1; i++) {
+                const dx = xs[i + 1] - xs[i];
+                secants.push(dx === 0 ? 0 : (ys[i + 1] - ys[i]) / dx);
+            }
+
+            const slopes = [secants[0]];
+            for (let i = 1; i < count - 1; i++)
+                slopes.push(secants[i - 1] * secants[i] <= 0 ? 0 : (secants[i - 1] + secants[i]) / 2);
+            slopes.push(secants[count - 2]);
+
+            // Clamp each tangent into the circle of radius 3 that keeps the segment monotone.
+            for (let i = 0; i < count - 1; i++) {
+                if (secants[i] === 0) {
+                    slopes[i] = 0;
+                    slopes[i + 1] = 0;
+                    continue;
+                }
+                const a = slopes[i] / secants[i];
+                const b = slopes[i + 1] / secants[i];
+                const magnitude = Math.sqrt(a * a + b * b);
+                if (magnitude > 3) {
+                    slopes[i] = 3 * a / magnitude * secants[i];
+                    slopes[i + 1] = 3 * b / magnitude * secants[i];
+                }
+            }
+            return slopes;
+        }
+
+        // Continues the current path along the smoothed curve, point to point. The caller
+        // owns the ends: the firmware holds the first and the last speed beyond them, so both
+        // runs out to the edge of the plot stay flat.
+        function traceCurve(ctx, xs, ys) {
+            const slopes = plot.curveSlopes(xs, ys);
+            for (let i = 0; i < xs.length - 1; i++) {
+                const dx = xs[i + 1] - xs[i];
+                ctx.bezierCurveTo(xs[i] + dx / 3, ys[i] + slopes[i] * dx / 3, xs[i + 1] - dx / 3,
+                                  ys[i + 1] - slopes[i + 1] * dx / 3, xs[i + 1], ys[i + 1]);
+            }
+        }
+
+        // Where the drawn curve sits at an x, so the live marker rides the line rather than
+        // floating beside it. Its label still reports percentFor: the number the firmware
+        // acts on is the linear one, and only the drawing is smoothed.
+        function curveYAt(x) {
+            const xs = plot.curveXs();
+            const ys = plot.curveYs();
+            const count = xs.length;
+            if (count === 0)
+                return plotArea.height;
+            if (count === 1 || x <= xs[0])
+                return ys[0];
+            if (x >= xs[count - 1])
+                return ys[count - 1];
+
+            const slopes = plot.curveSlopes(xs, ys);
+            for (let i = 1; i < count; i++) {
+                if (x > xs[i])
+                    continue;
+                const dx = xs[i] - xs[i - 1];
+                if (dx === 0)
+                    return ys[i];
+                const t = (x - xs[i - 1]) / dx;
+                const t2 = t * t;
+                const t3 = t2 * t;
+                return (2 * t3 - 3 * t2 + 1) * ys[i - 1] + (t3 - 2 * t2 + t) * dx * slopes[i - 1] + (-2 * t3 + 3 * t2) * ys[i] + (t3 - t2) * dx * slopes[i];
+            }
+            return ys[count - 1];
+        }
+
         implicitHeight: plot.plotHeight + chart.labelRowHeight + Appearance.spacing.m * 2
         radius: Appearance.rounding.normal
         color: Appearance.colors.colLayer1
@@ -442,15 +531,15 @@ ContentPage {
                         if (plot.points.length === 0)
                             return;
 
-                        const xs = plot.points.map(point => plot.xAt(point.temp));
-                        const ys = plot.points.map(point => plot.yAt(Fans.pwmToPercent(point.pwm)));
+                        const xs = plot.curveXs();
+                        const ys = plot.curveYs();
                         const last = xs.length - 1;
 
                         ctx.beginPath();
                         ctx.moveTo(0, height);
                         ctx.lineTo(0, ys[0]);
-                        for (let i = 0; i <= last; i++)
-                            ctx.lineTo(xs[i], ys[i]);
+                        ctx.lineTo(xs[0], ys[0]);
+                        plot.traceCurve(ctx, xs, ys);
                         ctx.lineTo(width, ys[last]);
                         ctx.lineTo(width, height);
                         ctx.closePath();
@@ -459,8 +548,8 @@ ContentPage {
 
                         ctx.beginPath();
                         ctx.moveTo(0, ys[0]);
-                        for (let i = 0; i <= last; i++)
-                            ctx.lineTo(xs[i], ys[i]);
+                        ctx.lineTo(xs[0], ys[0]);
+                        plot.traceCurve(ctx, xs, ys);
                         ctx.lineTo(width, ys[last]);
                         ctx.lineWidth = 2.5;
                         ctx.lineJoin = "round";
@@ -497,7 +586,7 @@ ContentPage {
                     id: liveMarker
 
                     readonly property real markerX: plot.xAt(plot.liveTemp)
-                    readonly property real markerY: plot.yAt(plot.percentFor(plot.liveTemp))
+                    readonly property real markerY: plot.curveYAt(liveMarker.markerX)
 
                     anchors.fill: parent
                     visible: plot.points.length > 0 && plot.liveTemp >= plot.xMin && plot.liveTemp
