@@ -111,6 +111,8 @@ Panel {
         root.labelMessage = null;
         Gmail.clearActionError();
         Gmail.readMessage(message);
+        if (!message.read)
+            Gmail.messageAction(message, "read");
     }
 
     function openMessageInBrowser(message) {
