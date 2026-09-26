@@ -601,27 +601,27 @@ OverlayDialogCard {
                                 colBackgroundToggled: Appearance.colors.colSecondaryContainer
                                 colBackgroundToggledHover: root.locked ? colBackgroundToggled : Appearance.colors.colSecondaryContainerHover
                                 colRippleToggled: Appearance.colors.colSecondaryContainerActive
+                                // The outline belongs on the chip's own bounds:
+                                // inside the contentItem it would sit a padding
+                                // in and read smaller than a selected chip.
+                                colBorder: Appearance.colors.colOutlineVariant
+                                borderWidth: qualityOption.selected ? 0 : Appearance.spacing.xxs / 2
+                                // The label is centred in the chip itself, not
+                                // in a box inset by the Control's padding.
+                                padding: 0
                                 onClicked: {
                                     if (!root.locked)
                                         YtDlp.quality = modelData.key;
                                 }
 
-                                contentItem: Item {
-                                    Rectangle {
-                                        anchors.fill: parent
-                                        radius: Appearance.rounding.full
-                                        color: "transparent"
-                                        border.width: qualityOption.selected ? 0 : Appearance.spacing.xxs / 2
-                                        border.color: Appearance.colors.colOutlineVariant
-                                    }
-                                    StyledText {
-                                        id: qualityLabel
+                                contentItem: StyledText {
+                                    id: qualityLabel
 
-                                        anchors.centerIn: parent
-                                        text: qualityOption.modelData.label
-                                        font.pixelSize: Appearance.font.pixelSize.smaller
-                                        color: qualityOption.selected ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer1
-                                    }
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    text: qualityOption.modelData.label
+                                    font.pixelSize: Appearance.font.pixelSize.smaller
+                                    color: qualityOption.selected ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer1
                                 }
                             }
                         }
