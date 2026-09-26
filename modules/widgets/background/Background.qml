@@ -35,8 +35,11 @@ Variants {
         // Wallpaper
         property bool wallpaperIsVideo: Config.options.background.wallpaperPath.endsWith(".mp4") || Config.options.background.wallpaperPath.endsWith(".webm") || Config.options.background.wallpaperPath.endsWith(".mkv") || Config.options.background.wallpaperPath.endsWith(".avi") || Config.options.background.wallpaperPath.endsWith(".mov")
         property string wallpaperPath: wallpaperIsVideo ? Config.options.background.thumbnailPath : Config.options.background.wallpaperPath
-        readonly property real wallpaperZoom: 1.07
-        property real minSuitableScale: 1 // Some reasonable init, to be updated
+        readonly property bool containWallpaper: Config.options.background.zoomStyle === "contain"
+        readonly property real wallpaperZoom: containWallpaper ? 1 : 1.07
+        readonly property real minSuitableScale: containWallpaper
+            ? Math.min(screen.width / wallpaperWidth, screen.height / wallpaperHeight)
+            : Math.max(screen.width / wallpaperWidth, screen.height / wallpaperHeight)
         property real effectiveWallpaperScale: minSuitableScale * wallpaperZoom
         property int wallpaperWidth: modelData.width // Some reasonable init value, to be updated
         property int wallpaperHeight: modelData.height // Some reasonable init value, to be updated
@@ -66,7 +69,7 @@ Variants {
             left: true
             right: true
         }
-        color: "transparent"
+        color: containWallpaper && !wallpaperIsVideo ? Appearance.colors.colLayer0 : "transparent"
         Behavior on color {
             animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
         }
@@ -90,15 +93,8 @@ Variants {
                 onStreamFinished: {
                     const output = wallpaperSizeOutputCollector.text;
                     const [width, height] = output.split(" ").map(Number);
-                    const [screenWidth, screenHeight] = [bgRoot.screen.width, bgRoot.screen.height];
                     bgRoot.wallpaperWidth = width;
                     bgRoot.wallpaperHeight = height;
-
-                    // Perfect image; scale = 1
-                    // Small picture; scale > 1; will zoom in the picture
-                    // Big picture; scale < 1; will zoom out the picture
-                    // Choose max number so every side will fit
-                    bgRoot.minSuitableScale = Math.max(screenWidth / width, screenHeight / height);
                 }
             }
         }
@@ -118,7 +114,7 @@ Variants {
                 y: -(bgRoot.scaledWallpaperHeight - bgRoot.screen.height) / 2
 
                 source: bgRoot.wallpaperPath
-                fillMode: Image.PreserveAspectCrop
+                fillMode: bgRoot.containWallpaper ? Image.PreserveAspectFit : Image.PreserveAspectCrop
                 Behavior on x {
                     NumberAnimation {
                         duration: 600
