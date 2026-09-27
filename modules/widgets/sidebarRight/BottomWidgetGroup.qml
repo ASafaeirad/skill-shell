@@ -3,7 +3,6 @@ import qs.modules.common
 import qs.modules.common.widgets
 import qs.services
 import qs.modules.widgets.sidebarRight.calendar
-import qs.modules.widgets.sidebarRight.todo
 import qs.modules.widgets.sidebarRight.pomodoro
 import QtQuick
 import QtQuick.Layouts
@@ -14,7 +13,7 @@ Rectangle {
     color: Appearance.colors.colLayer1
     clip: true
     implicitHeight: collapsed ? collapsedBottomWidgetGroupRow.implicitHeight : 350
-    property int selectedTab: Persistent.states.sidebar.bottomGroup.tab
+    property int selectedTab: Math.max(0, Math.min(Persistent.states.sidebar.bottomGroup.tab, 1))
     property int previousIndex: -1
     property bool collapsed: Persistent.states.sidebar.bottomGroup.collapsed
     property var tabs: [
@@ -23,12 +22,6 @@ Rectangle {
             "name": "Calendar",
             "icon": "calendar_month",
             "widget": "calendar/CalendarWidget.qml"
-        },
-        {
-            "type": "todo",
-            "name": "To Do",
-            "icon": "done_outline",
-            "widget": "todo/TodoWidget.qml"
         },
         {
             "type": "timer",
@@ -111,11 +104,9 @@ Rectangle {
         }
 
         StyledText {
-            property int remainingTasks: Todo.list.filter(task => !task.done).length
             Layout.margins: 10
             Layout.leftMargin: 0
-            // text: `${DateTime.collapsedCalendarFormat}   •   ${remainingTasks} task${remainingTasks > 1 ? "s" : ""}`
-            text: "%1   •   %2 tasks".arg(DateTime.collapsedCalendarFormat).arg(remainingTasks)
+            text: DateTime.collapsedCalendarFormat
             font.pixelSize: Appearance.font.pixelSize.large
             color: Appearance.colors.colOnLayer1
         }
@@ -206,9 +197,9 @@ Rectangle {
                 Connections {
                     target: root
                     function onSelectedTabChanged() {
-                        if (root.currentTab > root.previousIndex)
+                        if (root.selectedTab > root.previousIndex)
                             tabSwitchBehavior.animation.down = true;
-                        else if (root.currentTab < root.previousIndex)
+                        else if (root.selectedTab < root.previousIndex)
                             tabSwitchBehavior.animation.down = false;
                         tabStack.source = root.tabs[root.selectedTab].widget;
                     }

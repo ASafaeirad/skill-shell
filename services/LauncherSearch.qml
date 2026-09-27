@@ -86,12 +86,6 @@ Singleton {
             }
         },
         {
-            action: "todo",
-            execute: args => {
-                Todo.addTask(args);
-            }
-        },
-        {
             action: "wallpaper",
             execute: () => {
                 Hyprland.dispatch(`hl.dsp.global("quickshell:wallpaperSelectorToggle")`)
