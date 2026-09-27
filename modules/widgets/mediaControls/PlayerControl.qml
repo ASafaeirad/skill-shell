@@ -3,6 +3,7 @@ import qs
 import qs.modules.common
 import qs.modules.common.models
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 import qs.modules.common.functions
 import Qt5Compat.GraphicalEffects
@@ -28,28 +29,6 @@ Item { // Player instance
     property real radius
 
     property string displayedArtFilePath: root.downloaded ? Qt.resolvedUrl(artFilePath) : ""
-
-    component TrackChangeButton: RippleButton {
-        implicitWidth: 24
-        implicitHeight: 24
-
-        property var iconName
-        colBackground: ColorUtils.transparentize(blendedColors.colSecondaryContainer, 1)
-        colBackgroundHover: blendedColors.colSecondaryContainerHover
-        colRipple: blendedColors.colSecondaryContainerActive
-
-        contentItem: MaterialSymbol {
-            iconSize: Appearance.font.pixelSize.huge
-            fill: 1
-            horizontalAlignment: Text.AlignHCenter
-            color: blendedColors.colOnSecondaryContainer
-            text: iconName
-
-            Behavior on color {
-                animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
-            }
-        }
-    }
 
     Timer { // Force update for revision
         running: root.player?.playbackState == MprisPlaybackState.Playing
@@ -251,9 +230,11 @@ Item { // Player instance
                             left: parent.left
                             right: parent.right
                         }
-                        TrackChangeButton {
-                            iconName: "skip_previous"
-                            downAction: () => root.player?.previous()
+                        M3.IconButton {
+                            size: "xsmall"
+                            materialIcon: "skip_previous"
+                            tooltip: "Previous track"
+                            onClicked: root.player?.previous()
                         }
                         Item {
                             id: progressBarContainer
@@ -294,9 +275,11 @@ Item { // Player instance
 
                             
                         }
-                        TrackChangeButton {
-                            iconName: "skip_next"
-                            downAction: () => root.player?.next()
+                        M3.IconButton {
+                            size: "xsmall"
+                            materialIcon: "skip_next"
+                            tooltip: "Next track"
+                            onClicked: root.player?.next()
                         }
                     }
 
