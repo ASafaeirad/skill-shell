@@ -57,7 +57,10 @@ def added_lines(base, files):
     """Map file -> set of added line numbers (None = every line)."""
     merge_base = git("merge-base", base, "HEAD").strip() or base
     out = {}
-    diff = git("diff", "-U0", merge_base, "--", *(files or ["*.qml"]))
+    # -c keeps the a/ and b/ prefixes this parses, whatever diff.mnemonicPrefix
+    # or diff.noprefix are set to in the user's git config.
+    diff = git("-c", "diff.mnemonicPrefix=false", "-c", "diff.noprefix=false",
+               "diff", "-U0", merge_base, "--", *(files or ["*.qml"]))
     current = None
     for line in diff.splitlines():
         if line.startswith("+++ "):
