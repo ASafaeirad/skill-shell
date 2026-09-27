@@ -1,6 +1,7 @@
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -100,7 +101,7 @@ AbstractQuickPanel {
                             editMode: root.editMode
                             baseCellWidth: root.baseCellWidth
                             baseCellHeight: root.baseCellHeight
-                            spacing: root.spacing
+                            cellSpacing: root.spacing
                             onOpenAudioOutputDialog: root.openAudioOutputDialog()
                             onOpenAudioInputDialog: root.openAudioInputDialog()
                             onOpenBluetoothDialog: root.openBluetoothDialog()
@@ -120,10 +121,7 @@ AbstractQuickPanel {
                 leftMargin: root.baseCellHeight / 2
                 rightMargin: root.baseCellHeight / 2
             }
-            sourceComponent: Rectangle {
-                implicitHeight: 1
-                color: Appearance.colors.colOutlineVariant
-            }
+            sourceComponent: M3.Divider {}
         }
 
         FadeLoader {
@@ -152,7 +150,7 @@ AbstractQuickPanel {
                                 editMode: root.editMode
                                 baseCellWidth: root.baseCellWidth
                                 baseCellHeight: root.baseCellHeight
-                                spacing: root.spacing
+                                cellSpacing: root.spacing
                             }
                         }
                     }

@@ -1,22 +1,26 @@
 import QtQuick
 import qs.modules.common
 import qs.modules.common.models.quickToggles
-import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 
-GroupButton {
+M3.IconButton {
     id: button
 
     property QuickToggleModel toggleModel: null
-    property string buttonIcon: toggleModel?.icon ?? ""
-    property string tooltipText: toggleModel?.tooltipText ?? ""
+    property string buttonIcon: ""
+    property bool toggled: false
+    property real baseWidth: Appearance.sizes.m3IconButtonSize
+    property real baseHeight: Appearance.sizes.m3IconButtonSize
+    property real radius: buttonRadius
 
-    baseWidth: 40
-    baseHeight: 40
-    clickedWidth: baseWidth + 20
+    implicitWidth: baseWidth
+    implicitHeight: baseHeight
     visible: toggleModel?.available ?? true
-    toggled: toggleModel?.toggled ?? false
-    buttonRadius: (altAction && toggled) ? Appearance?.rounding.normal : Math.min(baseHeight, baseWidth) / 2
-    buttonRadiusPressed: Appearance?.rounding?.small
+    variant: "filled"
+    toggleable: true
+    selected: toggleModel?.toggled ?? toggled
+    materialIcon: toggleModel?.icon ?? buttonIcon
+    tooltip: toggleModel?.tooltipText ?? ""
 
     onClicked: {
         if (toggleModel?.mainAction) {
@@ -25,22 +29,4 @@ GroupButton {
     }
     altAction: toggleModel?.altAction ?? null
 
-    contentItem: MaterialSymbol {
-        anchors.centerIn: parent
-        iconSize: 22
-        fill: button.toggled ? 1 : 0
-        color: button.toggled ? Appearance.m3colors.m3onPrimary : Appearance.colors.colOnLayer1
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        text: button.buttonIcon
-
-        Behavior on color {
-            animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
-        }
-    }
-
-    StyledToolTip {
-        extraVisibleCondition: button.tooltipText !== ""
-        text: button.tooltipText
-    }
 }
