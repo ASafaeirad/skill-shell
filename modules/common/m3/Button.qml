@@ -13,7 +13,8 @@ import qs.modules.common.widgets
  * variant: "filled" (default) | "tonal" | "outlined" | "text" | "elevated"
  * selected: toggle-button state; a selected button takes the filled colours.
  * trailingText: a smaller figure after the label, such as a size ("~42 MB").
- * tileLayout: a 56px button with a supporting line for quick settings.
+ * tileLayout: a 56px, leading-aligned quick settings button with a supporting
+ * line and the shell's layer surface for its inactive container.
  * leadingAction: an independent icon action on a tile, with leadingSelected.
  */
 RippleButton {
@@ -30,12 +31,14 @@ RippleButton {
 
     readonly property bool hasContainer: variant === "filled" || variant === "tonal" || variant === "elevated"
     readonly property color containerColor: selected ? Appearance.colors.colPrimary
+        : tileLayout ? Appearance.colors.colLayer2
         : variant === "filled" ? Appearance.colors.colPrimary
         : variant === "tonal" ? Appearance.colors.colSecondaryContainer
         : variant === "elevated" ? Appearance.colors.colSurfaceContainerLow
         : "transparent"
     readonly property color contentColor: !enabled ? ColorUtils.applyAlpha(Appearance.colors.colOnSurface, Appearance.stateLayer.disabledContent)
         : selected ? Appearance.colors.colOnPrimary
+        : tileLayout ? Appearance.colors.colOnLayer2
         : variant === "filled" ? Appearance.colors.colOnPrimary
         : variant === "tonal" ? Appearance.colors.colOnSecondaryContainer
         : Appearance.colors.colPrimary
@@ -65,7 +68,7 @@ RippleButton {
         z: -1
     }
 
-    // The row stays centred when the button is stretched wider than its content.
+    // Quick tiles fill the width so the icon and labels start at the leading edge.
     contentItem: Item {
         implicitWidth: contentRow.implicitWidth
         implicitHeight: contentRow.implicitHeight
@@ -74,7 +77,7 @@ RippleButton {
             id: contentRow
 
             anchors.centerIn: parent
-            width: Math.min(implicitWidth, parent.width)
+            width: root.tileLayout ? parent.width : Math.min(implicitWidth, parent.width)
             spacing: Appearance.spacing.s
 
             IconButton {
@@ -91,6 +94,8 @@ RippleButton {
                 fill: root.selected ? 1 : 0
                 iconSize: Appearance.font.pixelSize.larger
                 color: root.contentColor
+                Layout.preferredWidth: root.tileLayout ? Appearance.sizes.m3IconButtonSize : implicitWidth
+                horizontalAlignment: Text.AlignHCenter
             }
             ColumnLayout {
                 visible: root.text.length > 0
