@@ -786,6 +786,7 @@
             pieces, visual effects, and canvas infrastructure.
           </p>
           <p class="lede">Open the live QML explorer from this repository with <code>qs -p design-system.qml</code>.</p>
+          <p class="lede">New UI is built from the <b>Material 3</b> scope (<code>import qs.modules.common.m3 as M3</code>); the catalog is <code>modules/common/m3/README.md</code>.</p>
           <div class="stats" id="stats"></div>
         </header>
 
@@ -832,7 +833,25 @@
     </dialog>
 
     <script>
-      const paths = `modules/common/widgets/AddressBar.qml
+      const paths = `modules/common/m3/Badge.qml
+modules/common/m3/Button.qml
+modules/common/m3/Card.qml
+modules/common/m3/Checkbox.qml
+modules/common/m3/Chip.qml
+modules/common/m3/CircularProgressIndicator.qml
+modules/common/m3/Divider.qml
+modules/common/m3/Fab.qml
+modules/common/m3/IconButton.qml
+modules/common/m3/LinearProgressIndicator.qml
+modules/common/m3/ListItem.qml
+modules/common/m3/LoadingIndicator.qml
+modules/common/m3/NavigationRail.qml
+modules/common/m3/RadioButton.qml
+modules/common/m3/Slider.qml
+modules/common/m3/Switch.qml
+modules/common/m3/TextField.qml
+modules/common/m3/Tooltip.qml
+modules/common/widgets/AddressBar.qml
 modules/common/widgets/AddressBreadcrumb.qml
 modules/common/widgets/BarAnchor.qml
 modules/common/widgets/BarAnchoredPopover.qml
@@ -986,6 +1005,42 @@ modules/widgets/background/Background.qml`
         .split("\n");
 
       const exactPurposes = {
+        Button:
+          "M3 common button: filled, tonal, outlined, text and elevated variants, optional icon, selected toggle state.",
+        IconButton:
+          "M3 icon button: standard, filled, tonal and outlined variants, tooltip, optional toggle.",
+        Chip:
+          "M3 chip: assist, filter, input and suggestion variants, selected state, removable input chips.",
+        Card:
+          "M3 card: filled, elevated and outlined containers that stack their children, optionally clickable.",
+        ListItem:
+          "M3 list item: headline, supporting line, leading icon, and trailing text, icon or controls.",
+        Divider:
+          "M3 divider: a horizontal or vertical hairline with optional insets.",
+        Badge:
+          "M3 badge: a small dot or a short count on an icon.",
+        Checkbox:
+          "M3 checkbox with label, indeterminate and error states.",
+        RadioButton:
+          "M3 radio button; wraps StyledRadioButton.",
+        Switch:
+          "M3 switch; wraps StyledSwitch.",
+        Slider:
+          "M3 slider; wraps StyledSlider.",
+        TextField:
+          "M3 filled text field; wraps MaterialTextField.",
+        LinearProgressIndicator:
+          "M3 linear progress indicator, determinate, wavy or indeterminate; wraps StyledProgressBar.",
+        CircularProgressIndicator:
+          "M3 circular progress indicator; wraps CircularProgress.",
+        LoadingIndicator:
+          "M3 expressive loading indicator; wraps MaterialLoadingIndicator.",
+        Fab:
+          "M3 floating action button, optionally extended; wraps FloatingActionButton.",
+        Tooltip:
+          "M3 plain tooltip; wraps StyledToolTip.",
+        NavigationRail:
+          "M3 navigation rail built from a { name, icon } model; wraps NavigationRailTabs.",
         StatusBadge:
           "Theme-aware status label with optional icon, four tones, and an outlined variant. The live design system explorer shows each state.",
         PreviewCard:
@@ -1121,6 +1176,7 @@ modules/widgets/background/Background.qml`
           .replace(/([a-z0-9])([A-Z])/g, "$1 $2");
       }
       function scopeOf(path) {
+        if (path.includes("/common/m3/")) return "Material 3";
         if (path.includes("/settings/")) return "Settings";
         if (path.includes("/widgets/background/")) return "Background";
         if (path.includes("/widgets/pass/") || path.includes("/widgets/mediaGrabber/")) return "Panel widgets";
@@ -1135,6 +1191,9 @@ modules/widgets/background/Background.qml`
         )
           return "Time & date";
         if (/Notification|Notice/.test(name)) return "Notifications";
+        if (/^(Chip|Checkbox|Fab)$/.test(name)) return "Controls";
+        if (/^(Card|ListItem|Divider|Badge)$/.test(name)) return "Layout & navigation";
+        if (/^Tooltip$/.test(name)) return "Utilities";
         if (/Dialog|Polkit/.test(name)) return "Dialogs";
         if (
           /Button|Switch|Slider|SpinBox|ComboBox|Radio|TextField|TextArea|TextInput|Selection/.test(
@@ -1203,6 +1262,8 @@ modules/widgets/background/Background.qml`
         return `${titleWords(name)} utility component for the ${category.toLowerCase()} layer of the shell.`;
       }
       function architectureNote(scope, name) {
+        if (scope === "Material 3")
+          return "Design-system component: use it as M3." + name + " via import qs.modules.common.m3 as M3. Catalog in modules/common/m3/README.md.";
         if (scope === "Common toolkit")
           return "Reusable across panel families via import qs.modules.common.widgets.";
         if (scope === "Canvas")
