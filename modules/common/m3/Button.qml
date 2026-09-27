@@ -12,6 +12,7 @@ import qs.modules.common.widgets
  *
  * variant: "filled" (default) | "tonal" | "outlined" | "text" | "elevated"
  * selected: toggle-button state; a selected button takes the filled colours.
+ * trailingText: a smaller figure after the label, such as a size ("~42 MB").
  */
 RippleButton {
     id: root
@@ -19,6 +20,7 @@ RippleButton {
     property string variant: "filled"
     property string materialIcon: ""
     property bool selected: false
+    property string trailingText: ""
 
     readonly property bool hasContainer: variant === "filled" || variant === "tonal" || variant === "elevated"
     readonly property color containerColor: selected ? Appearance.colors.colPrimary
@@ -57,23 +59,43 @@ RippleButton {
         z: -1
     }
 
-    contentItem: RowLayout {
-        spacing: Appearance.spacing.s
+    // The row stays centred when the button is stretched wider than its content.
+    contentItem: Item {
+        implicitWidth: contentRow.implicitWidth
+        implicitHeight: contentRow.implicitHeight
 
-        MaterialSymbol {
-            visible: root.materialIcon.length > 0
-            text: root.materialIcon
-            fill: root.selected ? 1 : 0
-            iconSize: Appearance.font.pixelSize.larger
-            color: root.contentColor
-        }
-        StyledText {
-            visible: root.text.length > 0
-            text: root.text
-            color: root.contentColor
-            font.pixelSize: Appearance.font.pixelSize.small
-            Layout.fillWidth: true
-            horizontalAlignment: Text.AlignHCenter
+        RowLayout {
+            id: contentRow
+
+            anchors.centerIn: parent
+            width: Math.min(implicitWidth, parent.width)
+            spacing: Appearance.spacing.s
+
+            MaterialSymbol {
+                visible: root.materialIcon.length > 0
+                text: root.materialIcon
+                fill: root.selected ? 1 : 0
+                iconSize: Appearance.font.pixelSize.larger
+                color: root.contentColor
+            }
+            StyledText {
+                visible: root.text.length > 0
+                text: root.text
+                color: root.contentColor
+                font.pixelSize: Appearance.font.pixelSize.small
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+                elide: Text.ElideRight
+            }
+            StyledText {
+                visible: root.trailingText.length > 0
+                text: root.trailingText
+                color: root.contentColor
+                font.pixelSize: Appearance.font.pixelSize.smaller
+                font.features: ({
+                        "tnum": 1
+                    })
+            }
         }
     }
 }

@@ -452,6 +452,11 @@ ApplicationWindow {
                     M3.Button { required property string modelData; variant: modelData; text: "Retry"; materialIcon: "refresh"; enabled: false }
                 }
             }
+            PreviewCard {
+                title: "Trailing text, stretched"
+                description: "trailingText adds a smaller figure after the label; the content stays centred at any width"
+                M3.Button { width: 320; text: "Download"; materialIcon: "download"; trailingText: "~42 MB" }
+            }
         }
     }
 
@@ -493,6 +498,14 @@ ApplicationWindow {
                 Repeater {
                     model: root.variantOptions["IconButton"]
                     M3.IconButton { required property string modelData; variant: modelData; materialIcon: "favorite"; toggleable: true; selected: true }
+                }
+            }
+            PreviewCard {
+                title: "Sizes"
+                description: "small (default, 40) · xsmall (32), for dense rows"
+                Repeater {
+                    model: ["small", "xsmall"]
+                    M3.IconButton { required property string modelData; size: modelData; variant: "tonal"; materialIcon: "close"; tooltip: modelData }
                 }
             }
         }
