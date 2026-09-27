@@ -1,119 +1,113 @@
 import qs
 import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 import qs.services.network
 import QtQuick
 import QtQuick.Layouts
 
-DialogListItem {
+/**
+ * One network in the Wi-Fi dialog: an M3 list item, with the password prompt and the
+ * captive-portal action expanding underneath it.
+ */
+Item {
     id: root
-    required property WifiAccessPoint wifiNetwork
-    enabled: !(Network.wifiConnectTarget === root.wifiNetwork && !wifiNetwork?.active)
 
-    active: (wifiNetwork?.askingPassword || wifiNetwork?.active) ?? false
-    onClicked: {
-        Network.connectToWifiNetwork(wifiNetwork);
+    required property WifiAccessPoint wifiNetwork
+    // NetworkManager is bringing this network up; the row can't be clicked again yet.
+    readonly property bool connecting: Network.wifiConnectTarget === root.wifiNetwork && !(root.wifiNetwork?.active ?? false)
+    // Connected, or waiting for its password: the row is the subject, not a target.
+    readonly property bool active: (root.wifiNetwork?.askingPassword || root.wifiNetwork?.active) ?? false
+    readonly property int strength: root.wifiNetwork?.strength ?? 0
+    readonly property string signalIcon: root.strength > 80 ? "signal_wifi_4_bar" : root.strength > 60 ? "network_wifi_3_bar" : root.strength > 40 ? "network_wifi_2_bar" : root.strength > 20 ? "network_wifi_1_bar" : "signal_wifi_0_bar"
+    // Only secured or connected networks carry a trailing icon, as before.
+    readonly property string statusIcon: {
+        if (!((root.wifiNetwork?.isSecure || root.wifiNetwork?.active) ?? false))
+            return "";
+        if (root.wifiNetwork?.active)
+            return "check";
+        return root.connecting ? "settings_ethernet" : "lock";
     }
 
-    contentItem: ColumnLayout {
-        anchors {
-            fill: parent
-            topMargin: root.verticalPadding
-            bottomMargin: root.verticalPadding
-            leftMargin: root.horizontalPadding
-            rightMargin: root.horizontalPadding
-        }
+    implicitHeight: content.implicitHeight
+    height: implicitHeight
+    clip: true
+
+    Behavior on height {
+        animation: Appearance.animation.elementMove.numberAnimation.createObject(this)
+    }
+
+    ColumnLayout {
+        id: content
+
+        anchors.left: parent.left
+        anchors.right: parent.right
         spacing: 0
 
-        RowLayout {
-            // Name
-            spacing: 10
-            MaterialSymbol {
-                iconSize: Appearance.font.pixelSize.larger
-                property int strength: root.wifiNetwork?.strength ?? 0
-                text: strength > 80 ? "signal_wifi_4_bar" : strength > 60 ? "network_wifi_3_bar" : strength > 40 ? "network_wifi_2_bar" : strength > 20 ? "network_wifi_1_bar" : "signal_wifi_0_bar"
-                color: Appearance.colors.colOnSurfaceVariant
-            }
-            StyledText {
-                Layout.fillWidth: true
-                color: Appearance.colors.colOnSurfaceVariant
-                elide: Text.ElideRight
-                text: root.wifiNetwork?.ssid ?? "Unknown"
-                textFormat: Text.PlainText
-            }
-            MaterialSymbol {
-                visible: (root.wifiNetwork?.isSecure || root.wifiNetwork?.active) ?? false
-                text: root.wifiNetwork?.active ? "check" : Network.wifiConnectTarget === root.wifiNetwork ? "settings_ethernet" : "lock"
-                iconSize: Appearance.font.pixelSize.larger
-                color: Appearance.colors.colOnSurfaceVariant
-            }
+        M3.ListItem {
+            Layout.fillWidth: true
+            enabled: !root.connecting
+            interactive: !root.active
+            leadingIcon: root.signalIcon
+            text: root.wifiNetwork?.ssid ?? "Unknown"
+            trailingIcon: root.statusIcon
+            onClicked: Network.connectToWifiNetwork(root.wifiNetwork)
         }
 
-        ColumnLayout { // Password
+        ColumnLayout {
             id: passwordPrompt
-            Layout.topMargin: 8
-            visible: root.wifiNetwork?.askingPassword ?? false
 
-            MaterialTextField {
+            visible: root.wifiNetwork?.askingPassword ?? false
+            Layout.fillWidth: true
+            Layout.leftMargin: Appearance.spacing.xl
+            Layout.rightMargin: Appearance.spacing.xl
+            Layout.bottomMargin: Appearance.spacing.m
+            spacing: Appearance.spacing.s
+
+            M3.TextField {
                 id: passwordField
+
                 Layout.fillWidth: true
                 placeholderText: "Password"
-
-                // Password
                 echoMode: TextInput.Password
                 inputMethodHints: Qt.ImhSensitiveData
-
-                onAccepted: {
-                    Network.changePassword(root.wifiNetwork, passwordField.text);
-                }
+                onAccepted: Network.changePassword(root.wifiNetwork, passwordField.text)
             }
 
             RowLayout {
                 Layout.fillWidth: true
+                spacing: Appearance.spacing.s
 
                 Item {
                     Layout.fillWidth: true
                 }
 
-                DialogButton {
-                    buttonText: "Cancel"
-                    onClicked: {
-                        root.wifiNetwork.askingPassword = false;
-                    }
+                M3.Button {
+                    variant: "text"
+                    text: "Cancel"
+                    onClicked: root.wifiNetwork.askingPassword = false
                 }
 
-                DialogButton {
-                    buttonText: "Connect"
-                    onClicked: {
-                        Network.changePassword(root.wifiNetwork, passwordField.text);
-                    }
+                M3.Button {
+                    variant: "filled"
+                    text: "Connect"
+                    onClicked: Network.changePassword(root.wifiNetwork, passwordField.text)
                 }
             }
         }
 
-        ColumnLayout { // Public wifi login page
-            id: publicWifiPortal
-            Layout.topMargin: 8
+        M3.Button {
             visible: (root.wifiNetwork?.active && (root.wifiNetwork?.security ?? "").trim().length === 0) ?? false
-
-            RowLayout {
-                DialogButton {
-                    Layout.fillWidth: true
-                    buttonText: "Open network portal"
-                    colBackground: Appearance.colors.colLayer4
-                    colBackgroundHover: Appearance.colors.colLayer4Hover
-                    colRipple: Appearance.colors.colLayer4Active
-                    onClicked: {
-                        Network.openPublicWifiPortal()
-                        GlobalStates.sidebarRight?.close()
-                    }
-                }
+            Layout.fillWidth: true
+            Layout.leftMargin: Appearance.spacing.xl
+            Layout.rightMargin: Appearance.spacing.xl
+            Layout.bottomMargin: Appearance.spacing.m
+            variant: "tonal"
+            text: "Open network portal"
+            onClicked: {
+                Network.openPublicWifiPortal();
+                GlobalStates.sidebarRight?.close();
             }
-        }
-
-        Item {
-            Layout.fillHeight: true
         }
     }
 }

@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import qs
 import qs.modules.common
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
 import qs.services
 import qs.services.network
@@ -16,16 +17,20 @@ WindowDialog {
         text: "Connect to Wi-Fi"
     }
 
-    WindowDialogSeparator {
+    M3.Divider {
         visible: !Network.wifiScanning
+        Layout.leftMargin: -Appearance.spacing.xl
+        Layout.rightMargin: -Appearance.spacing.xl
+        Layout.topMargin: -Appearance.spacing.s
+        Layout.bottomMargin: -Appearance.spacing.s
     }
 
-    StyledProgressBar {
+    M3.LinearProgressIndicator {
         indeterminate: true
         visible: Network.wifiScanning
         Layout.fillWidth: true
-        Layout.topMargin: -8
-        Layout.bottomMargin: -8
+        Layout.topMargin: -Appearance.spacing.s
+        Layout.bottomMargin: -Appearance.spacing.s
         Layout.leftMargin: -Appearance.spacing.xl
         Layout.rightMargin: -Appearance.spacing.xl
     }
@@ -53,12 +58,17 @@ WindowDialog {
 
     }
 
-    WindowDialogSeparator {
+    M3.Divider {
+        Layout.leftMargin: -Appearance.spacing.xl
+        Layout.rightMargin: -Appearance.spacing.xl
+        Layout.topMargin: -Appearance.spacing.s
+        Layout.bottomMargin: -Appearance.spacing.s
     }
 
     WindowDialogButtonRow {
-        DialogButton {
-            buttonText: "Details"
+        M3.Button {
+            variant: "text"
+            text: "Details"
             onClicked: {
                 Quickshell.execDetached(["bash", "-c", `${Network.ethernet ? Apps.networkEthernet : Apps.network}`]);
                 GlobalStates.sidebarRight?.close();
@@ -69,8 +79,9 @@ WindowDialog {
             Layout.fillWidth: true
         }
 
-        DialogButton {
-            buttonText: "Done"
+        M3.Button {
+            variant: "text"
+            text: "Done"
             onClicked: root.dismiss()
         }
 
