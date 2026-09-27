@@ -400,6 +400,9 @@ Singleton {
     }
 
     sizes: QtObject {
+        property real progressBarWidth: 120
+        property real progressBarHeight: root.spacing.xxs * 2
+        property real circularProgressSize: 48
         property real baseBarHeight: 50
         property real barHeight: Config.options.bar.cornerStyle === 1 ?
             (baseBarHeight + root.sizes.hyprlandGapsOut * 2) : baseBarHeight

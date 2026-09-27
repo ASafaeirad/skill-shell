@@ -1,9 +1,3 @@
-import QtQuick
-import QtQuick.Controls
-import QtQuick.Controls.Material
-import qs.modules.common
-
-ProgressBar {
+StyledProgressBar {
     indeterminate: true
-    Material.accent: Appearance.colors.colPrimary
 }

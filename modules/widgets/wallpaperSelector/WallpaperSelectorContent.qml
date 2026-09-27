@@ -262,9 +262,10 @@ MouseArea {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
-                    StyledIndeterminateProgressBar {
-                        id: indeterminateProgressBar
-                        visible: Wallpapers.thumbnailGenerationRunning && value == 0
+                    StyledProgressBar {
+                        visible: Wallpapers.thumbnailGenerationRunning
+                        indeterminate: Wallpapers.thumbnailGenerationProgress <= 0
+                        value: Wallpapers.thumbnailGenerationProgress
                         anchors {
                             bottom: parent.top
                             left: parent.left
@@ -272,12 +273,6 @@ MouseArea {
                             leftMargin: 4
                             rightMargin: 4
                         }
-                    }
-
-                    StyledProgressBar {
-                        visible: Wallpapers.thumbnailGenerationRunning && value > 0
-                        value: Wallpapers.thumbnailGenerationProgress
-                        anchors.fill: indeterminateProgressBar
                     }
 
                     GridView {
