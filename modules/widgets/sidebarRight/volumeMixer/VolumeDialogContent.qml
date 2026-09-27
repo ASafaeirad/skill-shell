@@ -2,6 +2,7 @@ import qs
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -38,7 +39,7 @@ ColumnLayout {
         }
     }
 
-    StyledComboBox {
+    M3.ExposedDropdownMenu {
         id: deviceSelector
         Layout.fillHeight: false
         Layout.fillWidth: true
@@ -52,7 +53,6 @@ ColumnLayout {
             }
         })
         onActivated: (index) => {
-            print(index)
             const item = root.devices[index]
             if (root.isSink) {
                 Audio.setDefaultSink(item)

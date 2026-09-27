@@ -59,12 +59,13 @@ then move into this directory later without changing any callers.
 | M3 component | Use | Status | API |
 | --- | --- | --- | --- |
 | [Buttons](https://m3.material.io/components/buttons) | `M3.Button` | native | `variant`: filled · tonal · outlined · text · elevated; `text`, `materialIcon`, `trailingText`, `selected`, `content` (slot), `externalHover`; quick setting tile: `tileLayout`, `supportingText`, `leadingAction`, `leadingSelected` |
-| [Icon buttons](https://m3.material.io/components/icon-buttons) | `M3.IconButton` | native | `variant`: standard · filled · tonal · outlined; `size`: small · xsmall; `materialIcon`, `tooltip`, `toggleable`, `selected`, `iconRotation` |
+| [Icon buttons](https://m3.material.io/components/icon-buttons) | `M3.IconButton` | native | `variant`: standard · filled · tonal · outlined; `size`: small · xsmall; `materialIcon`, `iconSource`, `tooltip`, `toggleable`, `selected`, `iconRotation` |
 | [FAB](https://m3.material.io/components/floating-action-button) | `M3.Fab` | wraps `FloatingActionButton` | `iconText`, `buttonText`, `expanded` (extended FAB) |
 | [Chips](https://m3.material.io/components/chips) | `M3.Chip` | native | `variant`: assist · filter · input · suggestion; `text`, `materialIcon`, `selected`, `removable`, `removeClicked()` |
 | [Cards](https://m3.material.io/components/cards) | `M3.Card` | native | `variant`: filled · elevated · outlined; children stack in a column; `padding`, `spacing`, `interactive`, `clicked()` |
 | [Lists](https://m3.material.io/components/lists) | `M3.ListItem` | native | `text`, `supportingText`, `leadingIcon`, `trailingIcon`, `trailingText`, `interactive`, `compact`; children go to the trailing slot |
 | [Menus](https://m3.material.io/components/menus) | `M3.MenuItem` | native | `text`, `leadingIcon`, `leadingIconSource`, `trailingIcon`, `trailingText`, `selectionControl`: none · checkbox · radio + `checkState`, `density` (0 to -3), `reserveLeadingIcon`, `reserveSelectionControl` |
+| [Menus](https://m3.material.io/components/menus) | `M3.ExposedDropdownMenu` | wraps `StyledComboBox` | `model`, `currentIndex`, `activated(index)`, `buttonIcon` |
 | [Divider](https://m3.material.io/components/divider) | `M3.Divider` | native | `vertical`, `insetStart`, `insetEnd` |
 | [Badges](https://m3.material.io/components/badges) | `M3.Badge` | native | `text` (empty draws the small dot; four characters at most) |
 | [Checkbox](https://m3.material.io/components/checkbox) | `M3.Checkbox` | native | `text`, `checked`, `tristate`/`checkState`, `error` |
@@ -89,7 +90,7 @@ existing widget rather than writing a new one, and consider adding the M3 compon
 | [Button groups](https://m3.material.io/components/button-groups) (connected, segmented) | `ButtonGroup` + `GroupButton`, `SelectionGroupButton`; `ConfigSelectionArray` for settings |
 | [Toolbars](https://m3.material.io/components/toolbars) | `Toolbar`, `ToolbarButton`, `IconToolbarButton`, `ToolbarTextField`, `ToolbarPairedFab` |
 | [Dialogs](https://m3.material.io/components/dialogs) | `WindowDialog` + `WindowDialogTitle`/`Paragraph`/`ButtonRow`, `OverlayDialog` |
-| A whole [menu](https://m3.material.io/components/menus) container (`M3.MenuItem` is in the catalog) | `StyledComboBox` (exposed dropdown), `FilterableComboBox` |
+| A whole [menu](https://m3.material.io/components/menus) container (`M3.MenuItem` is in the catalog) | `FilterableComboBox` |
 | [Search](https://m3.material.io/components/search) | `ToolbarTextField` / the launcher's search field |
 | Multi-line [text field](https://m3.material.io/components/text-fields) | `MaterialTextArea`, `StyledTextArea` |
 | [Snackbar](https://m3.material.io/components/snackbar), [Sheets](https://m3.material.io/components/bottom-sheets), [Date](https://m3.material.io/components/date-pickers) / [time pickers](https://m3.material.io/components/time-pickers), [Carousel](https://m3.material.io/components/carousel) | none yet |

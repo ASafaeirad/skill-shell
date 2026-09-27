@@ -20,7 +20,7 @@ ApplicationWindow {
     // Material 3 components from qs.modules.common.m3 first, then shell widgets
     // with no M3 counterpart. Keep in sync with modules/common/m3/README.md.
     readonly property var m3Tabs: [
-        "Button", "IconButton", "Fab", "Chip", "Card", "ListItem", "MenuItem", "Divider", "Badge",
+        "Button", "IconButton", "Fab", "Chip", "Card", "ListItem", "MenuItem", "ExposedDropdownMenu", "Divider", "Badge",
         "Checkbox", "RadioButton", "Switch", "Slider", "TextField", "Tabs",
         "LinearProgressIndicator", "CircularProgressIndicator", "LoadingIndicator"
     ]
@@ -37,6 +37,7 @@ ApplicationWindow {
         "Card": "crop_landscape",
         "ListItem": "list",
         "MenuItem": "menu",
+        "ExposedDropdownMenu": "arrow_drop_down_circle",
         "Divider": "horizontal_rule",
         "Badge": "notifications_unread",
         "Checkbox": "check_box",
@@ -108,6 +109,7 @@ ApplicationWindow {
         case "Card": return cardPage;
         case "ListItem": return listItemPage;
         case "MenuItem": return menuItemPage;
+        case "ExposedDropdownMenu": return exposedDropdownPage;
         case "Divider": return dividerPage;
         case "Badge": return badgePage;
         case "Checkbox": return checkboxPage;
@@ -565,6 +567,13 @@ ApplicationWindow {
                 }
             }
             PreviewCard {
+                title: "Application icon"
+                M3.IconButton {
+                    iconSource: Quickshell.iconPath("applications-multimedia", "image-missing")
+                    tooltip: "Mute application"
+                }
+            }
+            PreviewCard {
                 title: "Rotating icon"
                 description: "iconRotation turns the icon, animated, so the button points at the state it controls. Click to flip."
                 M3.IconButton {
@@ -788,6 +797,41 @@ ApplicationWindow {
                             text: `density ${modelData}`
                         }
                     }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: exposedDropdownPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "ExposedDropdownMenu"
+                guideline: "menus"
+                detail: "Choose one value from a popup menu."
+            }
+            PreviewCard {
+                title: "Live selection"
+                M3.ExposedDropdownMenu {
+                    width: Appearance.spacing.xxl * 7
+                    model: [root.sampleText, "Second option", "Third option"]
+                    currentIndex: root.sampleOption
+                    enabled: root.sampleEnabled
+                    onActivated: root.sampleOption = index
+                }
+            }
+            PreviewCard {
+                title: "Icon and disabled"
+                M3.ExposedDropdownMenu {
+                    width: Appearance.spacing.xxl * 7
+                    model: ["First", "Second"]
+                    buttonIcon: "tune"
+                }
+                M3.ExposedDropdownMenu {
+                    width: Appearance.spacing.xxl * 7
+                    model: ["Unavailable"]
+                    enabled: false
                 }
             }
         }

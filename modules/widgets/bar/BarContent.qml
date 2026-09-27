@@ -82,11 +82,13 @@ Item { // Bar content region
         }
         spacing: 4
 
-        // A Row gives its children no height, so this draws nothing — as the
-        // separator it replaces didn't either.
         M3.Divider {
             vertical: true
             visible: Config.options?.bar.borderless
+            height: Appearance.sizes.baseBarHeight
+            anchors.verticalCenter: parent.verticalCenter
+            insetStart: Appearance.sizes.baseBarHeight / 3
+            insetEnd: Appearance.sizes.baseBarHeight / 3
         }
 
         BarSection {

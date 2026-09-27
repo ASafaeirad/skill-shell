@@ -23,6 +23,7 @@ RippleButton {
     property string variant: "standard"
     property string size: "small"
     property string materialIcon: ""
+    property string iconSource: ""
     property string tooltip: ""
     property bool toggleable: false
     property bool selected: false
@@ -63,17 +64,26 @@ RippleButton {
     colBorder: Appearance.colors.colOutlineVariant
     borderWidth: variant === "outlined" && !showSelected ? Appearance.sizes.m3OutlineWidth : 0
 
-    contentItem: MaterialSymbol {
-        text: root.materialIcon
-        fill: root.toggleable && root.selected ? 1 : 0
-        iconSize: root.size === "xsmall" ? Appearance.font.pixelSize.normal : Appearance.font.pixelSize.larger
-        color: root.contentColor
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        rotation: root.iconRotation
+    contentItem: Item {
+        MaterialSymbol {
+            anchors.centerIn: parent
+            visible: root.iconSource.length === 0
+            text: root.materialIcon
+            fill: root.toggleable && root.selected ? 1 : 0
+            iconSize: root.size === "xsmall" ? Appearance.font.pixelSize.normal : Appearance.font.pixelSize.larger
+            color: root.contentColor
+            rotation: root.iconRotation
 
-        Behavior on rotation {
-            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+            Behavior on rotation {
+                animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+            }
+        }
+        StyledImage {
+            anchors.centerIn: parent
+            width: root.buttonSize - Appearance.spacing.xs * 2
+            height: width
+            visible: root.iconSource.length > 0
+            source: root.iconSource
         }
     }
 
