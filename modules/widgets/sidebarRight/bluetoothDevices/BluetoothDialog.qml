@@ -2,6 +2,7 @@ import qs
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.modules.common.functions
 import QtQuick
 import QtQuick.Controls
@@ -20,10 +21,14 @@ WindowDialog {
     WindowDialogTitle {
         text: "Bluetooth devices"
     }
-    WindowDialogSeparator {
+    M3.Divider {
         visible: !(Bluetooth.defaultAdapter?.discovering ?? false)
+        Layout.leftMargin: -Appearance.spacing.xl
+        Layout.rightMargin: -Appearance.spacing.xl
+        Layout.topMargin: -Appearance.spacing.s
+        Layout.bottomMargin: -Appearance.spacing.s
     }
-    StyledProgressBar {
+    M3.LinearProgressIndicator {
         indeterminate: true
         visible: Bluetooth.defaultAdapter?.discovering ?? false
         Layout.fillWidth: true
@@ -56,10 +61,16 @@ WindowDialog {
             }
         }
     }
-    WindowDialogSeparator {}
+    M3.Divider {
+        Layout.leftMargin: -Appearance.spacing.xl
+        Layout.rightMargin: -Appearance.spacing.xl
+        Layout.topMargin: -Appearance.spacing.s
+        Layout.bottomMargin: -Appearance.spacing.s
+    }
     WindowDialogButtonRow {
-        DialogButton {
-            buttonText: "Details"
+        M3.Button {
+            variant: "text"
+            text: "Details"
             onClicked: {
                 Quickshell.execDetached(["bash", "-c", `${Apps.bluetooth}`]);
                 GlobalStates.sidebarRight?.close();
@@ -70,8 +81,9 @@ WindowDialog {
             Layout.fillWidth: true
         }
 
-        DialogButton {
-            buttonText: "Done"
+        M3.Button {
+            variant: "text"
+            text: "Done"
             onClicked: root.dismiss()
         }
     }
