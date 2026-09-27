@@ -459,6 +459,18 @@ ApplicationWindow {
                 }
             }
             PreviewCard {
+                title: "Toggle buttons"
+                description: "toggleable drops the unselected state to the neutral surface roles; selected takes the filled ones."
+                Repeater {
+                    model: root.variantOptions["Button"]
+                    M3.Button { required property string modelData; variant: modelData; text: modelData; toggleable: true }
+                }
+                Repeater {
+                    model: root.variantOptions["Button"]
+                    M3.Button { required property string modelData; variant: modelData; text: modelData; toggleable: true; selected: true }
+                }
+            }
+            PreviewCard {
                 title: "Trailing text, stretched"
                 description: "trailingText adds a smaller figure after the label; the content stays centred at any width"
                 M3.Button { width: 320; text: "Download"; materialIcon: "download"; trailingText: "~42 MB" }

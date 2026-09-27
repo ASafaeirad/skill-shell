@@ -12,6 +12,9 @@ import qs.modules.common.widgets
  *
  * variant: "filled" (default) | "tonal" | "outlined" | "text" | "elevated"
  * selected: toggle-button state; a selected button takes the filled colours.
+ * toggleable: the button is a toggle, so its unselected state wears the
+ *   neutral toggle colours (surface container, on-surface-variant) instead of
+ *   the variant's own, as M3 specifies. Leave it off for a plain action.
  * trailingText: a smaller figure after the label, such as a size ("~42 MB").
  * tileLayout: a 56px, leading-aligned quick settings button with a supporting
  * line and the shell's layer surface for its inactive container.
@@ -29,6 +32,7 @@ RippleButton {
     property string variant: "filled"
     property string materialIcon: ""
     property bool selected: false
+    property bool toggleable: false
     property string trailingText: ""
     property string supportingText: ""
     property bool tileLayout: false
@@ -39,14 +43,21 @@ RippleButton {
 
     readonly property bool showHover: hovered || externalHover
 
+    // An unselected toggle drops to the neutral surface roles, whatever its variant.
+    readonly property bool unselectedToggle: toggleable && !selected
+
     readonly property bool hasContainer: variant === "filled" || variant === "tonal" || variant === "elevated"
-    readonly property color containerColor: selected ? Appearance.colors.colPrimary
+    readonly property color containerColor: unselectedToggle ? (variant === "filled" || variant === "tonal" ? Appearance.colors.colSurfaceContainerHighest
+            : variant === "elevated" ? Appearance.colors.colSurfaceContainerLow
+            : "transparent")
+        : selected ? Appearance.colors.colPrimary
         : tileLayout ? Appearance.colors.colLayer2
         : variant === "filled" ? Appearance.colors.colPrimary
         : variant === "tonal" ? Appearance.colors.colSecondaryContainer
         : variant === "elevated" ? Appearance.colors.colSurfaceContainerLow
         : "transparent"
     readonly property color contentColor: !enabled ? ColorUtils.applyAlpha(Appearance.colors.colOnSurface, Appearance.stateLayer.disabledContent)
+        : unselectedToggle ? Appearance.colors.colOnSurfaceVariant
         : selected ? Appearance.colors.colOnPrimary
         : tileLayout ? Appearance.colors.colOnLayer2
         : variant === "filled" ? Appearance.colors.colOnPrimary
@@ -127,6 +138,7 @@ RippleButton {
                     text: root.text
                     color: root.contentColor
                     font.pixelSize: root.tileLayout ? Appearance.font.pixelSize.smallie : Appearance.font.pixelSize.small
+                    font.weight: root.font.weight // so a caller can emphasise the label
                     Layout.fillWidth: true
                     horizontalAlignment: root.tileLayout ? Text.AlignLeft : Text.AlignHCenter
                     elide: Text.ElideRight
