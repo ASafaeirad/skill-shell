@@ -120,6 +120,23 @@ Singleton {
     }
 
     /**
+     * Material 3 state layer: the content colour at `opacity` over a container.
+     * A transparent container yields a translucent overlay rather than a mix
+     * toward black, so text and standard variants work on any layer.
+     *
+     * @param {string} container - The container colour.
+     * @param {string} content - The colour of the content drawn on the container.
+     * @param {number} opacity - One of the Appearance.stateLayer opacities.
+     * @returns {Qt.rgba} The container with the state layer applied.
+     */
+    function stateLayer(container, content, opacity) {
+        var c = Qt.color(container);
+        if (c.a === 0)
+            return applyAlpha(content, opacity);
+        return mix(content, c, opacity);
+    }
+
+    /**
      * Returns true if the color is considered "dark" (hslLightness < 0.5).
      *
      * @param {string} color - The color to check (any Qt.color-compatible string).
