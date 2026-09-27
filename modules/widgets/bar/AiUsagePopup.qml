@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.modules.common
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
 import qs.services
 
@@ -96,50 +97,37 @@ StyledPopup {
         }
     }
 
-    component ProviderCard: Rectangle {
+    component ProviderCard: M3.Card {
         id: providerCard
 
         required property string providerName
         required property var provider
-        readonly property real contentPadding: Appearance.spacing.lg
 
-        implicitWidth: Math.max(cardContent.implicitWidth + contentPadding * 2,
-                                Appearance.font.pixelSize.normal * 13)
-        implicitHeight: cardContent.implicitHeight + contentPadding * 2
-        color: Appearance.colors.colLayer3
-        radius: Appearance.rounding.normal
+        // Both cards keep a legible width when a window reads "--".
+        Layout.minimumWidth: Appearance.font.pixelSize.normal * 13
+        spacing: Appearance.spacing.m
 
-        ColumnLayout {
-            id: cardContent
-
-            anchors {
-                fill: parent
-                margins: providerCard.contentPadding
+        StyledText {
+            text: providerCard.providerName
+            color: Appearance.colors.colOnSurface
+            font {
+                pixelSize: Appearance.font.pixelSize.normal
+                weight: Font.Medium
             }
-            spacing: Appearance.spacing.m
+        }
 
-            StyledText {
-                text: providerCard.providerName
-                color: Appearance.colors.colOnLayer3
-                font {
-                    pixelSize: Appearance.font.pixelSize.normal
-                    weight: Font.Medium
-                }
-            }
+        UsageWindowRow {
+            provider: providerCard.provider
+            windowData: providerCard.provider?.fiveHour
+            windowLabel: "5h"
+            icon: "hourglass_empty"
+        }
 
-            UsageWindowRow {
-                provider: providerCard.provider
-                windowData: providerCard.provider?.fiveHour
-                windowLabel: "5h"
-                icon: "hourglass_empty"
-            }
-
-            UsageWindowRow {
-                provider: providerCard.provider
-                windowData: providerCard.provider?.sevenDay
-                windowLabel: "7d"
-                icon: "calendar_month"
-            }
+        UsageWindowRow {
+            provider: providerCard.provider
+            windowData: providerCard.provider?.sevenDay
+            windowLabel: "7d"
+            icon: "calendar_month"
         }
     }
 
@@ -172,7 +160,7 @@ StyledPopup {
 
             StyledText {
                 text: usageRow.remaining === null ? "--" : `${usageRow.remaining}%`
-                color: Appearance.colors.colOnLayer3
+                color: Appearance.colors.colOnSurface
                 font {
                     pixelSize: Appearance.font.pixelSize.normal
                     weight: Font.Medium

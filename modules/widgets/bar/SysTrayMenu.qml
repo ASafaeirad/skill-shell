@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import qs.services
 import qs.modules.common
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
 import QtQuick
 import QtQuick.Controls
@@ -210,10 +211,7 @@ PopupWindow {
             }
         }
 
-        Rectangle {
-            Layout.fillWidth: true
-            implicitHeight: 1
-            color: Appearance.colors.colSubtext
+        M3.Divider {
             Layout.topMargin: 4
             Layout.bottomMargin: 4
         }
