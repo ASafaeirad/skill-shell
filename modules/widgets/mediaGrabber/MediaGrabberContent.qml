@@ -700,6 +700,7 @@ OverlayDialogCard {
 
                     StyledProgressBar {
                         Layout.fillWidth: true
+                        valueBarHeight: Appearance.spacing.xxs * 2
                         wavy: true
                         animateWave: root.view === "downloading"
                         value: YtDlp.progress
