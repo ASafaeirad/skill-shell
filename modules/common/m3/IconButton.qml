@@ -10,6 +10,7 @@ import qs.modules.common.widgets
  *   M3.IconButton { materialIcon: "close"; tooltip: "Close"; onClicked: ... }
  *
  * variant: "standard" (default) | "filled" | "tonal" | "outlined"
+ * size: "small" (default, 40) | "xsmall" (32), for dense rows
  * toggleable: acts as a toggle; `selected` then picks the selected colours
  *   and fills the icon. Leave it off for plain actions. `selected` is
  *   controlled: bind it to your state and flip that state in onClicked.
@@ -18,6 +19,7 @@ RippleButton {
     id: root
 
     property string variant: "standard"
+    property string size: "small"
     property string materialIcon: ""
     property string tooltip: ""
     property bool toggleable: false
@@ -37,8 +39,10 @@ RippleButton {
         : variant === "standard" && toggleable && selected ? Appearance.colors.colPrimary
         : Appearance.colors.colOnSurfaceVariant
 
-    implicitWidth: Appearance.sizes.m3IconButtonSize
-    implicitHeight: Appearance.sizes.m3IconButtonSize
+    readonly property real buttonSize: size === "xsmall" ? Appearance.sizes.m3IconButtonSizeXSmall : Appearance.sizes.m3IconButtonSize
+
+    implicitWidth: buttonSize
+    implicitHeight: buttonSize
     padding: 0
     buttonRadius: Appearance.rounding.full
     buttonRadiusPressed: Appearance.rounding.small
@@ -59,7 +63,7 @@ RippleButton {
     contentItem: MaterialSymbol {
         text: root.materialIcon
         fill: root.toggleable && root.selected ? 1 : 0
-        iconSize: Appearance.font.pixelSize.larger
+        iconSize: root.size === "xsmall" ? Appearance.font.pixelSize.normal : Appearance.font.pixelSize.larger
         color: root.contentColor
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
