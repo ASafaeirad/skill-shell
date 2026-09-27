@@ -16,6 +16,12 @@ import qs.modules.common.widgets
  * tileLayout: a 56px, leading-aligned quick settings button with a supporting
  * line and the shell's layer surface for its inactive container.
  * leadingAction: an independent icon action on a tile, with leadingSelected.
+ * content: the button's content slot, for the rare button whose label is not
+ *   text (the bar's status pill is a row of indicator icons). It replaces the
+ *   icon/label row and keeps the container, padding and state layers. Colour
+ *   what you put in it with the button's own `contentColor`.
+ * externalHover: draw the hover state layer while a larger region around the
+ *   button is hovered, for a button that is the affordance of a whole area.
  */
 RippleButton {
     id: root
@@ -28,6 +34,10 @@ RippleButton {
     property bool tileLayout: false
     property var leadingAction: null
     property bool leadingSelected: false
+    property Component content: null
+    property bool externalHover: false
+
+    readonly property bool showHover: hovered || externalHover
 
     readonly property bool hasContainer: variant === "filled" || variant === "tonal" || variant === "elevated"
     readonly property color containerColor: selected ? Appearance.colors.colPrimary
@@ -58,7 +68,7 @@ RippleButton {
     colRipple: ColorUtils.applyAlpha(contentColor, Appearance.stateLayer.pressed * 2)
     colRippleToggled: colRipple
     buttonColor: !enabled ? (hasContainer ? ColorUtils.applyAlpha(Appearance.colors.colOnSurface, Appearance.stateLayer.disabledContainer) : "transparent")
-        : hovered ? colBackgroundHover : colBackground
+        : showHover ? colBackgroundHover : colBackground
     colBorder: enabled ? Appearance.colors.colOutlineVariant : ColorUtils.applyAlpha(Appearance.colors.colOnSurface, Appearance.stateLayer.disabledContainer)
     borderWidth: variant === "outlined" && !selected ? Appearance.sizes.m3OutlineWidth : 0
 
@@ -68,14 +78,23 @@ RippleButton {
         z: -1
     }
 
-    // Quick tiles fill the width so the icon and labels start at the leading edge.
+    // The content stays centred when the button is stretched wider than it;
+    // quick tiles fill the width so the icon and labels start at the leading edge.
     contentItem: Item {
-        implicitWidth: contentRow.implicitWidth
-        implicitHeight: contentRow.implicitHeight
+        implicitWidth: root.content ? customContent.implicitWidth : contentRow.implicitWidth
+        implicitHeight: root.content ? customContent.implicitHeight : contentRow.implicitHeight
+
+        Loader {
+            id: customContent
+
+            anchors.centerIn: parent
+            sourceComponent: root.content
+        }
 
         RowLayout {
             id: contentRow
 
+            visible: !root.content
             anchors.centerIn: parent
             width: root.tileLayout ? parent.width : Math.min(implicitWidth, parent.width)
             spacing: root.tileLayout ? Appearance.sizes.m3QuickTileIconGap : Appearance.spacing.s

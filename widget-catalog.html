@@ -845,6 +845,7 @@ modules/common/m3/IconButton.qml
 modules/common/m3/LinearProgressIndicator.qml
 modules/common/m3/ListItem.qml
 modules/common/m3/LoadingIndicator.qml
+modules/common/m3/MenuItem.qml
 modules/common/m3/NavigationRail.qml
 modules/common/m3/RadioButton.qml
 modules/common/m3/Slider.qml
@@ -1011,7 +1012,7 @@ modules/widgets/background/Background.qml`
 
       const exactPurposes = {
         Button:
-          "M3 common button: filled, tonal, outlined, text and elevated variants, optional icon and trailing text, selected toggle state, and quick setting tile layout with a separate icon action.",
+          "M3 common button: filled, tonal, outlined, text and elevated variants, optional icon and trailing text, selected toggle state, a content slot, external hover, and quick setting tile layout with a separate icon action.",
         IconButton:
           "M3 icon button: standard, filled, tonal and outlined variants, small and extra-small sizes, tooltip, optional toggle, rotatable icon.",
         Chip:
@@ -1020,6 +1021,8 @@ modules/widgets/background/Background.qml`
           "M3 card: filled, elevated and outlined containers that stack their children, optionally clickable.",
         ListItem:
           "M3 list item: headline, supporting line, leading icon, and trailing text, icon or controls. Compact rows fit narrow panels.",
+        MenuItem:
+          "M3 menu item: one menu row with a leading icon or image, checkbox or radio selection state, trailing icon or shortcut text, and a density scale down to 36 px.",
         Divider:
           "M3 divider: a horizontal or vertical hairline with optional insets.",
         Badge:
@@ -1207,7 +1210,7 @@ modules/widgets/background/Background.qml`
           return "Time & date";
         if (/Notification|Notice/.test(name)) return "Notifications";
         if (/^(Chip|Checkbox|Fab)$/.test(name)) return "Controls";
-        if (/^(Card|ListItem|Divider|Badge)$/.test(name)) return "Layout & navigation";
+        if (/^(Card|ListItem|MenuItem|Divider|Badge)$/.test(name)) return "Layout & navigation";
         if (/^Tooltip$/.test(name)) return "Utilities";
         if (/Dialog|Polkit/.test(name)) return "Dialogs";
         if (
