@@ -439,6 +439,7 @@ Singleton {
         property real m3SelectionControlSize: 18 // checkbox box
         property real m3StateLayerSize: 40 // touch target around selection controls
         property real m3ListItemOneLineHeight: 56
+        property real m3ListItemCompactHeight: 48
         property real m3ListItemTwoLineHeight: 72
         property real m3BadgeSmallSize: 6
         property real m3BadgeLargeSize: 16

@@ -638,6 +638,8 @@ ApplicationWindow {
                     spacing: 0
                     M3.ListItem { Layout.fillWidth: true; text: "One line"; leadingIcon: "inbox"; trailingIcon: "chevron_right" }
                     M3.Divider {}
+                    M3.ListItem { Layout.fillWidth: true; text: "Compact one line"; leadingIcon: "check"; compact: true; M3.Switch { checked: true } }
+                    M3.Divider {}
                     M3.ListItem {
                         Layout.fillWidth: true
                         text: "Wi-Fi"

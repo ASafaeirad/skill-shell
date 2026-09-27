@@ -18,6 +18,7 @@ import qs.modules.common.widgets
  *
  * text is the headline. trailingText is the short trailing label (a count, a time).
  * interactive: false turns it into a static row with no state layer or cursor.
+ * compact: uses tighter spacing for narrow panels with a one-line headline.
  */
 RippleButton {
     id: root
@@ -27,6 +28,7 @@ RippleButton {
     property string trailingIcon: ""
     property string trailingText: ""
     property bool interactive: true
+    property bool compact: false
     default property alias trailingData: trailingSlot.data
 
     readonly property color headlineColor: enabled ? Appearance.colors.colOnSurface
@@ -34,9 +36,10 @@ RippleButton {
     readonly property color supportingColor: enabled ? Appearance.colors.colOnSurfaceVariant
         : ColorUtils.applyAlpha(Appearance.colors.colOnSurface, Appearance.stateLayer.disabledContent)
 
-    implicitHeight: supportingText.length > 0 ? Appearance.sizes.m3ListItemTwoLineHeight : Appearance.sizes.m3ListItemOneLineHeight
-    leftPadding: Appearance.spacing.lg
-    rightPadding: Appearance.spacing.xl
+    implicitHeight: supportingText.length > 0 ? Appearance.sizes.m3ListItemTwoLineHeight
+        : compact ? Appearance.sizes.m3ListItemCompactHeight : Appearance.sizes.m3ListItemOneLineHeight
+    leftPadding: compact ? Appearance.spacing.s : Appearance.spacing.lg
+    rightPadding: compact ? Appearance.spacing.s : Appearance.spacing.xl
     buttonRadius: Appearance.rounding.small
     opacity: 1
 
@@ -48,12 +51,12 @@ RippleButton {
     buttonColor: hovered ? colBackgroundHover : colBackground
 
     contentItem: RowLayout {
-        spacing: Appearance.spacing.lg
+        spacing: root.compact ? Appearance.spacing.s : Appearance.spacing.lg
 
         MaterialSymbol {
             visible: root.leadingIcon.length > 0
             text: root.leadingIcon
-            iconSize: Appearance.font.pixelSize.hugeass
+            iconSize: root.compact ? Appearance.font.pixelSize.larger : Appearance.font.pixelSize.hugeass
             color: root.supportingColor
         }
 
