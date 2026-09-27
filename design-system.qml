@@ -8,6 +8,7 @@ import QtQuick.Window
 import Quickshell
 import Quickshell.Io
 import qs.modules.common
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
 import qs.services
 import "modules/widgets/designSystem"
@@ -16,43 +17,73 @@ ApplicationWindow {
     id: root
 
     property int currentTab: 0
-    property var tabs: [
-        "RippleButton", "StyledSwitch", "MaterialTextField", "StyledProgressBar",
-        "StatusBadge", "StyledSlider", "StyledText", "MaterialSymbol",
-        "StyledRadioButton", "StyledSpinBox", "StyledComboBox", "StyledTextArea",
-        "CircularProgress", "StyledIndeterminateProgressBar", "NoticeBox"
+    // Material 3 components from qs.modules.common.m3 first, then shell widgets
+    // with no M3 counterpart. Keep in sync with modules/common/m3/README.md.
+    readonly property var m3Tabs: [
+        "Button", "IconButton", "Fab", "Chip", "Card", "ListItem", "Divider", "Badge",
+        "Checkbox", "RadioButton", "Switch", "Slider", "TextField",
+        "LinearProgressIndicator", "CircularProgressIndicator", "LoadingIndicator"
     ]
+    readonly property var shellTabs: [
+        "StatusBadge", "NoticeBox", "StyledText", "MaterialSymbol",
+        "StyledSpinBox", "StyledComboBox", "StyledTextArea"
+    ]
+    readonly property var tabs: m3Tabs.concat(shellTabs)
     readonly property var tabIcons: ({
-        "RippleButton": "touch_app",
-        "StyledSwitch": "toggle_on",
-        "MaterialTextField": "text_fields",
-        "StyledProgressBar": "linear_scale",
+        "Button": "smart_button",
+        "IconButton": "touch_app",
+        "Fab": "add_circle",
+        "Chip": "sell",
+        "Card": "crop_landscape",
+        "ListItem": "list",
+        "Divider": "horizontal_rule",
+        "Badge": "notifications_unread",
+        "Checkbox": "check_box",
+        "RadioButton": "radio_button_checked",
+        "Switch": "toggle_on",
+        "Slider": "tune",
+        "TextField": "text_fields",
+        "LinearProgressIndicator": "linear_scale",
+        "CircularProgressIndicator": "progress_activity",
+        "LoadingIndicator": "hourglass_empty",
         "StatusBadge": "label",
-        "StyledSlider": "tune",
+        "NoticeBox": "info",
         "StyledText": "title",
         "MaterialSymbol": "interests",
-        "StyledRadioButton": "radio_button_checked",
         "StyledSpinBox": "pin",
         "StyledComboBox": "arrow_drop_down_circle",
-        "StyledTextArea": "notes",
-        "CircularProgress": "progress_activity",
-        "StyledIndeterminateProgressBar": "hourglass_empty",
-        "NoticeBox": "info"
+        "StyledTextArea": "notes"
+    })
+    readonly property var variantOptions: ({
+        "Button": ["filled", "tonal", "outlined", "text", "elevated"],
+        "IconButton": ["standard", "filled", "tonal", "outlined"],
+        "Chip": ["assist", "filter", "input", "suggestion"],
+        "Card": ["filled", "elevated", "outlined"],
+        "StatusBadge": ["neutral", "primary", "success", "error"]
     })
     readonly property string currentComponent: tabs[currentTab]
+    readonly property bool currentIsM3: m3Tabs.includes(currentComponent)
+    readonly property var currentVariants: variantOptions[currentComponent] ?? []
     property string sampleText: "Sample label"
     property string sampleIcon: "star"
     property bool sampleEnabled: true
     property bool sampleChecked: true
     property bool sampleOutlined: false
     property real sampleValue: 0.6
-    property string sampleTone: "primary"
+    property string sampleVariant: ""
     property int sampleSize: Appearance.font.pixelSize.larger
     property int sampleOption: 0
     property bool sampleReadOnly: false
     property bool sampleWavy: false
 
-    onCurrentTabChanged: Qt.callLater(() => root.ensureSelectedTabVisible())
+    onCurrentTabChanged: {
+        sampleVariant = currentVariants[0] ?? "";
+        Qt.callLater(() => root.ensureSelectedTabVisible());
+    }
+
+    function shows(names) {
+        return names.includes(currentComponent);
+    }
 
     function ensureSelectedTabVisible() {
         const tab = tabRail.tabAt(currentTab);
@@ -68,23 +99,31 @@ ApplicationWindow {
 
     function componentForTab(name) {
         switch (name) {
-        case "RippleButton": return buttonsPage;
-        case "StyledSwitch": return switchesPage;
-        case "MaterialTextField": return fieldsPage;
-        case "StyledProgressBar": return progressPage;
+        case "Button": return buttonPage;
+        case "IconButton": return iconButtonPage;
+        case "Fab": return fabPage;
+        case "Chip": return chipPage;
+        case "Card": return cardPage;
+        case "ListItem": return listItemPage;
+        case "Divider": return dividerPage;
+        case "Badge": return badgePage;
+        case "Checkbox": return checkboxPage;
+        case "RadioButton": return radioPage;
+        case "Switch": return switchPage;
+        case "Slider": return sliderPage;
+        case "TextField": return textFieldPage;
+        case "LinearProgressIndicator": return linearProgressPage;
+        case "CircularProgressIndicator": return circularPage;
+        case "LoadingIndicator": return loadingPage;
         case "StatusBadge": return badgesPage;
-        case "StyledSlider": return sliderPage;
+        case "NoticeBox": return noticePage;
         case "StyledText": return textPage;
         case "MaterialSymbol": return symbolPage;
-        case "StyledRadioButton": return radioPage;
         case "StyledSpinBox": return spinPage;
         case "StyledComboBox": return comboPage;
         case "StyledTextArea": return textAreaPage;
-        case "CircularProgress": return circularPage;
-        case "StyledIndeterminateProgressBar": return indeterminatePage;
-        case "NoticeBox": return noticePage;
         }
-        return buttonsPage;
+        return buttonPage;
     }
 
     visible: true
@@ -96,7 +135,10 @@ ApplicationWindow {
     color: Appearance.m3colors.m3background
     onClosing: Qt.quit()
 
-    Component.onCompleted: MaterialThemeLoader.reapplyTheme()
+    Component.onCompleted: {
+        MaterialThemeLoader.reapplyTheme();
+        sampleVariant = currentVariants[0] ?? "";
+    }
 
     IpcHandler {
         target: "designSystem"
@@ -115,6 +157,10 @@ ApplicationWindow {
         function currentTab(): string {
             return root.tabs[root.currentTab];
         }
+
+        function listTabs(): string {
+            return root.tabs.join("\n");
+        }
     }
 
     component SectionLabel: StyledText {
@@ -125,13 +171,21 @@ ApplicationWindow {
     component PageHeading: ColumnLayout {
         property string heading: ""
         property string detail: ""
+        // Material 3 guideline slug, e.g. "buttons" for m3.material.io/components/buttons
+        property string guideline: ""
         spacing: Appearance.spacing.xs
 
         StyledText {
-            text: parent.heading
+            text: root.currentIsM3 ? "M3." + parent.heading : parent.heading
             color: Appearance.m3colors.m3onSurface
             font.family: Appearance.font.family.title
             font.pixelSize: Appearance.font.pixelSize.title
+        }
+        StyledText {
+            text: root.currentIsM3 ? "import qs.modules.common.m3 as M3" : "import qs.modules.common.widgets · shell widget, no M3 counterpart"
+            color: Appearance.m3colors.m3primary
+            font.family: Appearance.font.family.monospace
+            font.pixelSize: Appearance.font.pixelSize.smaller
         }
         StyledText {
             text: parent.detail
@@ -139,6 +193,18 @@ ApplicationWindow {
             font.pixelSize: Appearance.font.pixelSize.small
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
+        }
+        StyledText {
+            visible: parent.guideline.length > 0
+            text: "m3.material.io/components/" + parent.guideline
+            color: Appearance.m3colors.m3primary
+            font.pixelSize: Appearance.font.pixelSize.smallie
+            font.underline: true
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: Qt.openUrlExternally("https://" + parent.text)
+            }
         }
     }
 
@@ -164,7 +230,7 @@ ApplicationWindow {
             }
             Item { Layout.fillWidth: true }
             StyledText {
-                text: root.tabs.length + " live QML components"
+                text: root.m3Tabs.length + " Material 3 components · " + root.shellTabs.length + " shell widgets"
                 color: Appearance.m3colors.m3onSurfaceVariant
             }
         }
@@ -182,7 +248,7 @@ ApplicationWindow {
                 contentWidth: availableWidth
                 ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
-                NavigationRailTabs {
+                M3.NavigationRail {
                     id: tabRail
                     width: tabScroll.availableWidth
                     expanded: true
@@ -240,24 +306,36 @@ ApplicationWindow {
                         }
 
                         SectionLabel {
-                            visible: !["StyledSlider", "CircularProgress", "StyledProgressBar",
-                                "StyledIndeterminateProgressBar", "StyledSpinBox", "MaterialSymbol"].includes(root.currentComponent)
-                            text: "Label"
+                            visible: root.currentVariants.length > 0
+                            text: root.currentComponent === "StatusBadge" ? "Tone" : "Variant"
                         }
-                        MaterialTextField {
-                            visible: !["StyledSlider", "CircularProgress", "StyledProgressBar",
-                                "StyledIndeterminateProgressBar", "StyledSpinBox", "MaterialSymbol"].includes(root.currentComponent)
+                        StyledComboBox {
+                            visible: root.currentVariants.length > 0
+                            Layout.fillWidth: true
+                            model: root.currentVariants
+                            currentIndex: Math.max(0, root.currentVariants.indexOf(root.sampleVariant))
+                            onActivated: index => root.sampleVariant = root.currentVariants[index]
+                        }
+
+                        SectionLabel {
+                            visible: !root.shows(["Slider", "CircularProgressIndicator", "LinearProgressIndicator",
+                                "LoadingIndicator", "StyledSpinBox", "MaterialSymbol", "Divider"])
+                            text: root.currentComponent === "Badge" ? "Count (empty for a dot)" : "Label"
+                        }
+                        M3.TextField {
+                            visible: !root.shows(["Slider", "CircularProgressIndicator", "LinearProgressIndicator",
+                                "LoadingIndicator", "StyledSpinBox", "MaterialSymbol", "Divider"])
                             Layout.fillWidth: true
                             text: root.sampleText
                             onTextEdited: root.sampleText = text
                         }
 
                         SectionLabel {
-                            visible: ["RippleButton", "StatusBadge", "MaterialSymbol", "NoticeBox"].includes(root.currentComponent)
+                            visible: root.shows(["Button", "IconButton", "Fab", "Chip", "ListItem", "StatusBadge", "MaterialSymbol", "NoticeBox"])
                             text: "Icon name"
                         }
-                        MaterialTextField {
-                            visible: ["RippleButton", "StatusBadge", "MaterialSymbol", "NoticeBox"].includes(root.currentComponent)
+                        M3.TextField {
+                            visible: root.shows(["Button", "IconButton", "Fab", "Chip", "ListItem", "StatusBadge", "MaterialSymbol", "NoticeBox"])
                             Layout.fillWidth: true
                             text: root.sampleIcon
                             onTextEdited: root.sampleIcon = text
@@ -266,59 +344,47 @@ ApplicationWindow {
                         RowLayout {
                             Layout.fillWidth: true
                             StyledText { text: "Enabled"; Layout.fillWidth: true }
-                            StyledSwitch {
+                            M3.Switch {
                                 checked: root.sampleEnabled
                                 onToggled: root.sampleEnabled = checked
                             }
                         }
                         RowLayout {
-                            visible: root.currentComponent === "StyledSwitch" || root.currentComponent === "StyledRadioButton"
+                            visible: root.shows(["Button", "IconButton", "Chip", "Checkbox", "RadioButton", "Switch"])
                             Layout.fillWidth: true
-                            StyledText { text: "Checked"; Layout.fillWidth: true }
-                            StyledSwitch {
+                            StyledText { text: "Selected"; Layout.fillWidth: true }
+                            M3.Switch {
                                 checked: root.sampleChecked
                                 onToggled: root.sampleChecked = checked
                             }
                         }
                         RowLayout {
-                            visible: root.currentComponent === "RippleButton" || root.currentComponent === "StatusBadge"
+                            visible: root.shows(["StatusBadge", "Fab"])
                             Layout.fillWidth: true
-                            StyledText { text: "Outlined"; Layout.fillWidth: true }
-                            StyledSwitch {
+                            StyledText { text: root.currentComponent === "Fab" ? "Expanded" : "Outlined"; Layout.fillWidth: true }
+                            M3.Switch {
                                 checked: root.sampleOutlined
                                 onToggled: root.sampleOutlined = checked
                             }
                         }
 
                         SectionLabel {
-                            visible: ["StyledProgressBar", "StyledSlider", "StyledSpinBox", "CircularProgress"].includes(root.currentComponent)
+                            visible: root.shows(["LinearProgressIndicator", "Slider", "StyledSpinBox", "CircularProgressIndicator"])
                             text: "Value · " + Math.round(root.sampleValue * 100) + "%"
                         }
-                        StyledSlider {
-                            visible: ["StyledProgressBar", "StyledSlider", "StyledSpinBox", "CircularProgress"].includes(root.currentComponent)
+                        M3.Slider {
+                            visible: root.shows(["LinearProgressIndicator", "Slider", "StyledSpinBox", "CircularProgressIndicator"])
                             Layout.fillWidth: true
                             value: root.sampleValue
                             onMoved: root.sampleValue = value
                         }
 
                         SectionLabel {
-                            visible: root.currentComponent === "StatusBadge"
-                            text: "Tone"
-                        }
-                        ComboBox {
-                            visible: root.currentComponent === "StatusBadge"
-                            Layout.fillWidth: true
-                            model: ["neutral", "primary", "success", "error"]
-                            currentIndex: model.indexOf(root.sampleTone)
-                            onActivated: root.sampleTone = currentText
-                        }
-
-                        SectionLabel {
-                            visible: root.currentComponent === "StyledText" || root.currentComponent === "MaterialSymbol"
+                            visible: root.shows(["StyledText", "MaterialSymbol"])
                             text: "Size · " + root.sampleSize
                         }
-                        StyledSlider {
-                            visible: root.currentComponent === "StyledText" || root.currentComponent === "MaterialSymbol"
+                        M3.Slider {
+                            visible: root.shows(["StyledText", "MaterialSymbol"])
                             Layout.fillWidth: true
                             from: Appearance.font.pixelSize.smallest
                             to: Appearance.font.pixelSize.title * 2
@@ -327,19 +393,19 @@ ApplicationWindow {
                         }
 
                         RowLayout {
-                            visible: root.currentComponent === "MaterialTextField" || root.currentComponent === "StyledTextArea"
+                            visible: root.shows(["TextField", "StyledTextArea"])
                             Layout.fillWidth: true
                             StyledText { text: "Read only"; Layout.fillWidth: true }
-                            StyledSwitch {
+                            M3.Switch {
                                 checked: root.sampleReadOnly
                                 onToggled: root.sampleReadOnly = checked
                             }
                         }
                         RowLayout {
-                            visible: root.currentComponent === "StyledProgressBar" || root.currentComponent === "StyledSlider"
+                            visible: root.shows(["LinearProgressIndicator", "Slider"])
                             Layout.fillWidth: true
                             StyledText { text: "Wavy"; Layout.fillWidth: true }
-                            StyledSwitch {
+                            M3.Switch {
                                 checked: root.sampleWavy
                                 onToggled: root.sampleWavy = checked
                             }
@@ -353,68 +419,358 @@ ApplicationWindow {
     }
 
     Component {
-        id: buttonsPage
+        id: buttonPage
         ColumnLayout {
             spacing: Appearance.spacing.lg
             PageHeading {
-                heading: "RippleButton"
-                detail: "RippleButton variants use the shell's wallpaper derived palette. Hover and press to inspect their states."
+                heading: "Button"
+                guideline: "buttons"
+                detail: "Common buttons for actions, by emphasis: filled for the one primary action, tonal and elevated for secondary ones, outlined and text for the rest. selected turns any of them into a toggle button."
             }
             PreviewCard {
-                title: "Default and filled"
-                description: "The label, icon, and enabled state follow the properties panel."
-                RippleButton {
-                    buttonText: root.sampleText
+                title: "Live button"
+                M3.Button {
+                    variant: root.sampleVariant
+                    text: root.sampleText
+                    materialIcon: root.sampleIcon
                     enabled: root.sampleEnabled
-                    buttonRadius: Appearance.rounding.small
-                }
-                RippleButton {
-                    id: filledButton
-                    buttonText: root.sampleText
-                    enabled: root.sampleEnabled
-                    toggled: true
-                    buttonRadius: Appearance.rounding.full
-                    contentItem: StyledText {
-                        text: filledButton.buttonText
-                        color: Appearance.colors.colOnPrimary
-                    }
+                    selected: root.sampleChecked
                 }
             }
             PreviewCard {
-                title: "Icon and outline"
-                RippleButton {
-                    enabled: root.sampleEnabled
-                    buttonRadius: Appearance.rounding.full
-                    colBorder: Appearance.m3colors.m3outline
-                    borderWidth: root.sampleOutlined ? 1 : 0
-                    contentItem: MaterialSymbol {
-                        text: root.sampleIcon
-                        iconSize: Appearance.font.pixelSize.larger
-                    }
+                title: "Variants"
+                description: "filled · tonal · outlined · text · elevated"
+                Repeater {
+                    model: root.variantOptions["Button"]
+                    M3.Button { required property string modelData; variant: modelData; text: modelData }
                 }
-                RippleButton {
-                    buttonText: root.sampleText
-                    enabled: false
-                    buttonRadius: Appearance.rounding.full
+            }
+            PreviewCard {
+                title: "With icon, and disabled"
+                Repeater {
+                    model: root.variantOptions["Button"]
+                    M3.Button { required property string modelData; variant: modelData; text: "Retry"; materialIcon: "refresh"; enabled: false }
                 }
             }
         }
     }
 
     Component {
-        id: switchesPage
+        id: iconButtonPage
         ColumnLayout {
             spacing: Appearance.spacing.lg
             PageHeading {
-                heading: "StyledSwitch"
-                detail: "StyledSwitch shows off, on, and disabled variants. Toggle the live switch directly."
+                heading: "IconButton"
+                guideline: "icon-buttons"
+                detail: "Compact actions carried by an icon. Give it a tooltip. With toggleable set, selected picks the selected colours and fills the icon; flip your own state in onClicked."
+            }
+            PreviewCard {
+                title: "Live toggle"
+                M3.IconButton {
+                    variant: root.sampleVariant
+                    materialIcon: root.sampleIcon
+                    tooltip: root.sampleText
+                    toggleable: true
+                    selected: root.sampleChecked
+                    enabled: root.sampleEnabled
+                    onClicked: root.sampleChecked = !root.sampleChecked
+                }
+            }
+            PreviewCard {
+                title: "Variants"
+                description: "standard · filled · tonal · outlined, as plain actions"
+                Repeater {
+                    model: root.variantOptions["IconButton"]
+                    M3.IconButton { required property string modelData; variant: modelData; materialIcon: "settings"; tooltip: modelData }
+                }
+            }
+            PreviewCard {
+                title: "Toggle: unselected and selected"
+                Repeater {
+                    model: root.variantOptions["IconButton"]
+                    M3.IconButton { required property string modelData; variant: modelData; materialIcon: "favorite"; toggleable: true }
+                }
+                Repeater {
+                    model: root.variantOptions["IconButton"]
+                    M3.IconButton { required property string modelData; variant: modelData; materialIcon: "favorite"; toggleable: true; selected: true }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: fabPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "Fab"
+                guideline: "floating-action-button"
+                detail: "The single most important action on a surface. expanded shows buttonText next to the icon (extended FAB)."
+            }
+            PreviewCard {
+                title: "Live FAB"
+                M3.Fab {
+                    iconText: root.sampleIcon
+                    buttonText: root.sampleText
+                    expanded: root.sampleOutlined
+                    enabled: root.sampleEnabled
+                }
+            }
+        }
+    }
+
+    Component {
+        id: chipPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "Chip"
+                guideline: "chips"
+                detail: "Assist chips start an action, filter chips narrow content, input chips hold an entered value and can be removed, suggestion chips offer a reply or query."
+            }
+            PreviewCard {
+                title: "Live chip"
+                M3.Chip {
+                    variant: root.sampleVariant
+                    text: root.sampleText
+                    materialIcon: root.sampleVariant === "filter" ? "" : root.sampleIcon
+                    selected: root.sampleChecked
+                    enabled: root.sampleEnabled
+                    onClicked: root.sampleChecked = !root.sampleChecked
+                }
+            }
+            PreviewCard {
+                title: "Variants"
+                M3.Chip { variant: "assist"; text: "Add to calendar"; materialIcon: "event" }
+                M3.Chip { variant: "filter"; text: "Unread" }
+                M3.Chip { variant: "filter"; text: "Starred"; selected: true }
+                M3.Chip { variant: "input"; text: "alex@example.com"; materialIcon: "person" }
+                M3.Chip { variant: "suggestion"; text: "Sounds good" }
+                M3.Chip { variant: "assist"; text: "Disabled"; materialIcon: "block"; enabled: false }
+            }
+        }
+    }
+
+    Component {
+        id: cardPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "Card"
+                guideline: "cards"
+                detail: "A container for content and actions about one subject. Children stack in a column. interactive adds the hover state layer and a clicked signal."
+            }
+            PreviewCard {
+                title: "Live card"
+                M3.Card {
+                    width: Appearance.spacing.xxl * 10
+                    variant: root.sampleVariant
+                    interactive: root.sampleEnabled
+                    StyledText {
+                        text: root.sampleText
+                        font.pixelSize: Appearance.font.pixelSize.larger
+                        color: Appearance.colors.colOnSurface
+                    }
+                    StyledText {
+                        Layout.fillWidth: true
+                        text: "Supporting text for the card body."
+                        color: Appearance.colors.colOnSurfaceVariant
+                        wrapMode: Text.WordWrap
+                    }
+                    RowLayout {
+                        Layout.alignment: Qt.AlignRight
+                        M3.Button { variant: "text"; text: "Dismiss" }
+                        M3.Button { variant: "filled"; text: "Open" }
+                    }
+                }
+            }
+            PreviewCard {
+                title: "Variants"
+                Repeater {
+                    model: root.variantOptions["Card"]
+                    M3.Card {
+                        required property string modelData
+                        variant: modelData
+                        StyledText { text: modelData; color: Appearance.colors.colOnSurface }
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: listItemPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "ListItem"
+                guideline: "lists"
+                detail: "One row of a list: headline, optional supporting line, leading icon, and trailing text, icon or controls (children go to the trailing slot)."
+            }
+            PreviewCard {
+                title: "Live item"
+                M3.ListItem {
+                    width: Appearance.spacing.xxl * 12
+                    text: root.sampleText
+                    supportingText: "Supporting text"
+                    leadingIcon: root.sampleIcon
+                    trailingText: "12:30"
+                    enabled: root.sampleEnabled
+                }
+            }
+            PreviewCard {
+                title: "Lines and trailing parts"
+                ColumnLayout {
+                    width: Appearance.spacing.xxl * 12
+                    spacing: 0
+                    M3.ListItem { Layout.fillWidth: true; text: "One line"; leadingIcon: "inbox"; trailingIcon: "chevron_right" }
+                    M3.Divider {}
+                    M3.ListItem {
+                        Layout.fillWidth: true
+                        text: "Wi-Fi"
+                        supportingText: "Home network"
+                        leadingIcon: "wifi"
+                        M3.Switch { checked: true }
+                    }
+                    M3.Divider {}
+                    M3.ListItem { Layout.fillWidth: true; text: "Static row"; supportingText: "interactive: false"; interactive: false }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: dividerPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "Divider"
+                guideline: "divider"
+                detail: "A thin line that groups content. Fills its layout's width by default; vertical for rows; insetStart and insetEnd to indent."
+            }
+            PreviewCard {
+                title: "Full width and inset"
+                ColumnLayout {
+                    width: Appearance.spacing.xxl * 12
+                    spacing: Appearance.spacing.m
+                    StyledText { text: "Above" }
+                    M3.Divider {}
+                    StyledText { text: "Between" }
+                    M3.Divider { insetStart: Appearance.spacing.xxl }
+                    StyledText { text: "Below" }
+                }
+            }
+            PreviewCard {
+                title: "Vertical"
+                RowLayout {
+                    height: Appearance.spacing.xxl
+                    spacing: Appearance.spacing.m
+                    StyledText { text: "Left" }
+                    M3.Divider { vertical: true }
+                    StyledText { text: "Right" }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: badgePage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "Badge"
+                guideline: "badges"
+                detail: "A dot or short count on an icon. For a labelled status pill use StatusBadge."
+            }
+            PreviewCard {
+                title: "Live badge"
+                MaterialSymbol {
+                    text: "mail"
+                    iconSize: Appearance.font.pixelSize.title * 1.5
+                    // A badge holds at most four characters, as "999+" does.
+                    M3.Badge { text: root.sampleText.slice(0, 4); x: parent.width - width / 2; y: -height / 3 }
+                }
+            }
+            PreviewCard {
+                title: "Small and large"
+                M3.Badge {}
+                M3.Badge { text: "3" }
+                M3.Badge { text: "999+" }
+            }
+        }
+    }
+
+    Component {
+        id: checkboxPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "Checkbox"
+                guideline: "checkbox"
+                detail: "Select one or more items from a set. tristate adds the indeterminate state; error draws it in the error colour."
+            }
+            PreviewCard {
+                title: "Live checkbox"
+                M3.Checkbox {
+                    text: root.sampleText
+                    checked: root.sampleChecked
+                    enabled: root.sampleEnabled
+                    onToggled: root.sampleChecked = checked
+                }
+            }
+            PreviewCard {
+                title: "States"
+                M3.Checkbox { text: "Unchecked" }
+                M3.Checkbox { text: "Checked"; checked: true }
+                M3.Checkbox { text: "Indeterminate"; tristate: true; checkState: Qt.PartiallyChecked }
+                M3.Checkbox { text: "Error"; checked: true; error: true }
+                M3.Checkbox { text: "Disabled"; checked: true; enabled: false }
+            }
+        }
+    }
+
+    Component {
+        id: radioPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "RadioButton"
+                guideline: "radio-button"
+                detail: "Pick one option from a set. The label is description."
+            }
+            PreviewCard {
+                title: "Live choice"
+                M3.RadioButton {
+                    description: root.sampleText
+                    checked: root.sampleChecked
+                    enabled: root.sampleEnabled
+                    onToggled: root.sampleChecked = checked
+                }
+            }
+            PreviewCard {
+                title: "Fixed states"
+                M3.RadioButton { description: "Unchecked"; checked: false }
+                M3.RadioButton { description: "Checked"; checked: true }
+                M3.RadioButton { description: "Disabled"; checked: true; enabled: false }
+            }
+        }
+    }
+
+    Component {
+        id: switchPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "Switch"
+                guideline: "switch"
+                detail: "Turn one setting on or off. For a labelled settings row use ConfigSwitch, which wraps it."
             }
             PreviewCard {
                 title: "Interactive"
                 Row {
                     spacing: Appearance.spacing.m
                     StyledText { text: root.sampleText }
-                    StyledSwitch {
+                    M3.Switch {
                         enabled: root.sampleEnabled
                         checked: root.sampleChecked
                         onToggled: root.sampleChecked = checked
@@ -423,30 +779,68 @@ ApplicationWindow {
             }
             PreviewCard {
                 title: "Fixed states"
-                StyledSwitch { checked: false }
-                StyledSwitch { checked: true }
-                StyledSwitch { checked: true; enabled: false }
+                M3.Switch { checked: false }
+                M3.Switch { checked: true }
+                M3.Switch { checked: true; enabled: false }
             }
         }
     }
 
     Component {
-        id: fieldsPage
+        id: sliderPage
         ColumnLayout {
             spacing: Appearance.spacing.lg
             PageHeading {
-                heading: "MaterialTextField"
-                detail: "MaterialTextField variants use the active theme and remain editable."
+                heading: "Slider"
+                guideline: "sliders"
+                detail: "Pick a value from a range. configuration takes StyledSlider.Configuration (XS, S, M, L, XL, Wavy), which needs qs.modules.common.widgets imported."
+            }
+            PreviewCard {
+                title: "Live slider"
+                M3.Slider {
+                    width: Appearance.spacing.xxl * 8
+                    value: root.sampleValue
+                    enabled: root.sampleEnabled
+                    configuration: root.sampleWavy ? StyledSlider.Configuration.Wavy : StyledSlider.Configuration.S
+                    onMoved: root.sampleValue = value
+                }
+            }
+            PreviewCard {
+                title: "Track variants"
+                M3.Slider {
+                    width: Appearance.spacing.xxl * 8
+                    value: root.sampleValue
+                    configuration: StyledSlider.Configuration.M
+                    onMoved: root.sampleValue = value
+                }
+                M3.Slider {
+                    width: Appearance.spacing.xxl * 8
+                    value: root.sampleValue
+                    configuration: StyledSlider.Configuration.L
+                    enabled: false
+                }
+            }
+        }
+    }
+
+    Component {
+        id: textFieldPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "TextField"
+                guideline: "text-fields"
+                detail: "Single-line text entry. For multi-line text use StyledTextArea."
             }
             PreviewCard {
                 title: "Empty and filled"
-                MaterialTextField {
+                M3.TextField {
                     width: Appearance.spacing.xxl * 7
                     placeholderText: root.sampleText
                     enabled: root.sampleEnabled
                     readOnly: root.sampleReadOnly
                 }
-                MaterialTextField {
+                M3.TextField {
                     width: Appearance.spacing.xxl * 7
                     text: root.sampleText
                     enabled: root.sampleEnabled
@@ -455,44 +849,80 @@ ApplicationWindow {
             }
             PreviewCard {
                 title: "Read only and disabled"
-                MaterialTextField {
-                    width: Appearance.spacing.xxl * 7
-                    text: root.sampleText
-                    readOnly: true
+                M3.TextField { width: Appearance.spacing.xxl * 7; text: root.sampleText; readOnly: true }
+                M3.TextField { width: Appearance.spacing.xxl * 7; text: root.sampleText; enabled: false }
+            }
+        }
+    }
+
+    Component {
+        id: linearProgressPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "LinearProgressIndicator"
+                guideline: "progress-indicators"
+                detail: "Progress along a line. value from 0 to 1, wavy for the expressive track, indeterminate when there is no measurable progress."
+            }
+            PreviewCard {
+                title: "Determinate"
+                M3.LinearProgressIndicator {
+                    value: root.sampleValue
+                    enabled: root.sampleEnabled
+                    wavy: root.sampleWavy
                 }
-                MaterialTextField {
-                    width: Appearance.spacing.xxl * 7
-                    text: root.sampleText
-                    enabled: false
+                M3.LinearProgressIndicator { value: root.sampleValue; wavy: true }
+                M3.LinearProgressIndicator { value: root.sampleValue; enabled: false }
+            }
+            PreviewCard {
+                title: "Indeterminate"
+                M3.LinearProgressIndicator {
+                    width: Appearance.spacing.xxl * 8
+                    indeterminate: true
+                    enabled: root.sampleEnabled
                 }
             }
         }
     }
 
     Component {
-        id: progressPage
+        id: circularPage
         ColumnLayout {
             spacing: Appearance.spacing.lg
             PageHeading {
-                heading: "StyledProgressBar"
-                detail: "Determinate, wavy, and disabled progress variants. Adjust the live value in the properties panel."
+                heading: "CircularProgressIndicator"
+                guideline: "progress-indicators"
+                detail: "Progress around a ring, or a filled pie with fill."
             }
             PreviewCard {
-                title: "Progress bars"
-                StyledProgressBar {
+                title: "Live ring"
+                M3.CircularProgressIndicator {
                     value: root.sampleValue
-                    enabled: root.sampleEnabled
-                    wavy: root.sampleWavy
-                }
-                StyledProgressBar {
-                    value: root.sampleValue
-                    wavy: true
-                    enabled: root.sampleEnabled
+                    opacity: root.sampleEnabled ? 1 : 0.4
                 }
             }
             PreviewCard {
-                title: "Disabled"
-                StyledProgressBar { value: root.sampleValue; enabled: false }
+                title: "Variants"
+                M3.CircularProgressIndicator { value: 0.25 }
+                M3.CircularProgressIndicator { value: 0.75; drainClockwise: true }
+                M3.CircularProgressIndicator { value: 0.5; fill: true }
+                M3.CircularProgressIndicator { indeterminate: true }
+            }
+        }
+    }
+
+    Component {
+        id: loadingPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "LoadingIndicator"
+                guideline: "loading-indicator"
+                detail: "The expressive morphing-shape indicator for short waits where progress is unknown."
+            }
+            PreviewCard {
+                title: "Loading"
+                M3.LoadingIndicator { loading: root.sampleEnabled }
             }
         }
     }
@@ -510,7 +940,7 @@ ApplicationWindow {
                 StatusBadge {
                     text: root.sampleText
                     icon: root.sampleIcon
-                    tone: root.sampleTone
+                    tone: root.sampleVariant
                     outlined: root.sampleOutlined
                     opacity: root.sampleEnabled ? 1 : 0.4
                 }
@@ -527,36 +957,29 @@ ApplicationWindow {
     }
 
     Component {
-        id: sliderPage
+        id: noticePage
         ColumnLayout {
             spacing: Appearance.spacing.lg
             PageHeading {
-                heading: "StyledSlider"
-                detail: "The shell's slider supports compact, wide, and wavy tracks. Drag the live example to change its value."
+                heading: "NoticeBox"
+                detail: "A message container with an optional Material Symbol and action."
             }
             PreviewCard {
-                title: "Live slider"
-                StyledSlider {
-                    width: Appearance.spacing.xxl * 8
-                    value: root.sampleValue
-                    enabled: root.sampleEnabled
-                    configuration: root.sampleWavy ? StyledSlider.Configuration.Wavy : StyledSlider.Configuration.S
-                    onMoved: root.sampleValue = value
+                title: "Live notice"
+                NoticeBox {
+                    width: Appearance.spacing.xxl * 12
+                    text: root.sampleText
+                    materialIcon: root.sampleIcon
+                    opacity: root.sampleEnabled ? 1 : 0.4
                 }
             }
             PreviewCard {
-                title: "Track variants"
-                StyledSlider {
-                    width: Appearance.spacing.xxl * 8
-                    value: root.sampleValue
-                    configuration: StyledSlider.Configuration.M
-                    onMoved: root.sampleValue = value
-                }
-                StyledSlider {
-                    width: Appearance.spacing.xxl * 8
-                    value: root.sampleValue
-                    configuration: StyledSlider.Configuration.L
-                    enabled: false
+                title: "With action"
+                NoticeBox {
+                    width: Appearance.spacing.xxl * 12
+                    text: "A setting is available."
+                    materialIcon: "info"
+                    RippleButton { buttonText: "Review" }
                 }
             }
         }
@@ -612,32 +1035,6 @@ ApplicationWindow {
                 MaterialSymbol { text: "star"; fill: 0; iconSize: Appearance.font.pixelSize.larger }
                 MaterialSymbol { text: "star"; fill: 1; iconSize: Appearance.font.pixelSize.larger }
                 MaterialSymbol { text: "settings"; iconSize: Appearance.font.pixelSize.title }
-            }
-        }
-    }
-
-    Component {
-        id: radioPage
-        ColumnLayout {
-            spacing: Appearance.spacing.lg
-            PageHeading {
-                heading: "StyledRadioButton"
-                detail: "Checked, unchecked, and disabled states use the current accent color."
-            }
-            PreviewCard {
-                title: "Live choice"
-                StyledRadioButton {
-                    description: root.sampleText
-                    checked: root.sampleChecked
-                    enabled: root.sampleEnabled
-                    onToggled: root.sampleChecked = checked
-                }
-            }
-            PreviewCard {
-                title: "Fixed states"
-                StyledRadioButton { description: "Unchecked"; checked: false }
-                StyledRadioButton { description: "Checked"; checked: true }
-                StyledRadioButton { description: "Disabled"; checked: true; enabled: false }
             }
         }
     }
@@ -731,85 +1128,6 @@ ApplicationWindow {
                 title: "Read only and disabled"
                 StyledTextArea { text: root.sampleText; readOnly: true }
                 StyledTextArea { text: root.sampleText; enabled: false }
-            }
-        }
-    }
-
-    Component {
-        id: circularPage
-        ColumnLayout {
-            spacing: Appearance.spacing.lg
-            PageHeading {
-                heading: "CircularProgress"
-                detail: "Ring and filled variants use the active theme colors."
-            }
-            PreviewCard {
-                title: "Live ring"
-                CircularProgress {
-                    value: root.sampleValue
-                    implicitSize: Appearance.spacing.xxl * 2
-                    opacity: root.sampleEnabled ? 1 : 0.4
-                }
-            }
-            PreviewCard {
-                title: "Variants"
-                CircularProgress { value: 0.25; implicitSize: Appearance.spacing.xxl * 2 }
-                CircularProgress { value: 0.75; implicitSize: Appearance.spacing.xxl * 2; drainClockwise: true }
-                CircularProgress { value: 0.5; implicitSize: Appearance.spacing.xxl * 2; fill: true }
-            }
-        }
-    }
-
-    Component {
-        id: indeterminatePage
-        ColumnLayout {
-            spacing: Appearance.spacing.lg
-            PageHeading {
-                heading: "StyledIndeterminateProgressBar"
-                detail: "Use this when a task has no measurable completion value."
-            }
-            PreviewCard {
-                title: "Active"
-                StyledIndeterminateProgressBar {
-                    width: Appearance.spacing.xxl * 8
-                    enabled: root.sampleEnabled
-                }
-            }
-            PreviewCard {
-                title: "Disabled"
-                StyledIndeterminateProgressBar {
-                    width: Appearance.spacing.xxl * 8
-                    enabled: false
-                }
-            }
-        }
-    }
-
-    Component {
-        id: noticePage
-        ColumnLayout {
-            spacing: Appearance.spacing.lg
-            PageHeading {
-                heading: "NoticeBox"
-                detail: "A message container with an optional Material Symbol and action."
-            }
-            PreviewCard {
-                title: "Live notice"
-                NoticeBox {
-                    width: Appearance.spacing.xxl * 12
-                    text: root.sampleText
-                    materialIcon: root.sampleIcon
-                    opacity: root.sampleEnabled ? 1 : 0.4
-                }
-            }
-            PreviewCard {
-                title: "With action"
-                NoticeBox {
-                    width: Appearance.spacing.xxl * 12
-                    text: "A setting is available."
-                    materialIcon: "info"
-                    RippleButton { buttonText: "Review" }
-                }
             }
         }
     }
