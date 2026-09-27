@@ -158,6 +158,12 @@ Panel {
                 border.width: Appearance.spacing.xxs / 2
                 radius: Appearance.rounding.normal
                 clip: true
+                focus: true
+
+                Keys.onPressed: event => {
+                    if (event.matches(StandardKey.Undo) && Gmail.undoLatestRemoval())
+                        event.accepted = true;
+                }
 
                 Behavior on implicitHeight {
                     NumberAnimation {
@@ -195,6 +201,9 @@ Panel {
                                     root.labelAnchor = readingView.mapToItem(surface, anchor.x, anchor.y);
                                     root.labelMessage = root.selectedMessage;
                                 }
+                            } else if (operation === "archive" || operation === "trash") {
+                                Gmail.removeWithUndo(root.selectedMessage, operation);
+                                root.selectedMessage = null;
                             } else {
                                 Gmail.messageAction(root.selectedMessage, operation);
                             }
@@ -504,10 +513,52 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                         readonly property bool actionPending: Gmail.acting
                                             && Gmail.actionAccountId === modelData.accountId
                                             && Gmail.actionMessageId === modelData.id
+                                        // Archive/trash undo window: the row becomes its own undo
+                                        // bar, a line drains along the bottom, then the row folds.
+                                        readonly property var removal: Gmail.pendingRemoval(modelData)
+                                        property bool folded: false
+                                        property real undoProgress: 0
                                         width: rows.width
-                                        height: Appearance.sizes.barHeight + Appearance.spacing.xxl
+                                        height: folded ? 0 : Appearance.sizes.barHeight + Appearance.spacing.xxl
+                                        opacity: folded ? 0 : 1
+                                        clip: true
                                         color: rowHover.hovered
                                                ? Appearance.colors.colSurfaceContainerHigh : "transparent"
+
+                                        // Rows are rebuilt whenever the inbox changes, so derive the
+                                        // countdown from the removal's start time, not from creation.
+                                        function syncRemoval() {
+                                            drainAnimation.stop();
+                                            if (!row.removal) {
+                                                row.folded = false;
+                                                row.undoProgress = 0;
+                                                return;
+                                            }
+                                            const remaining = row.removal.startedAt + Gmail.undoWindowMs - Date.now();
+                                            row.folded = remaining <= 0;
+                                            if (row.folded)
+                                                return;
+                                            row.undoProgress = remaining / Gmail.undoWindowMs;
+                                            drainAnimation.duration = remaining;
+                                            drainAnimation.start();
+                                        }
+                                        onRemovalChanged: syncRemoval()
+                                        Component.onCompleted: syncRemoval()
+
+                                        NumberAnimation {
+                                            id: drainAnimation
+                                            target: row
+                                            property: "undoProgress"
+                                            to: 0
+                                            onFinished: row.folded = row.removal !== null
+                                        }
+
+                                        Behavior on height {
+                                            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+                                        }
+                                        Behavior on opacity {
+                                            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+                                        }
 
                                         HoverHandler {
                                             id: rowHover
@@ -624,7 +675,7 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                             }
                                         }
                                         Rectangle {
-                                            visible: rowHover.hovered && !row.actionPending
+                                            visible: rowHover.hovered && !row.actionPending && !row.removal
                                             anchors.right: parent.right
                                             anchors.rightMargin: Appearance.spacing.s
                                             anchors.verticalCenter: parent.verticalCenter
@@ -672,7 +723,9 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                                             cursorShape: Qt.PointingHandCursor
                                                             onClicked: mouse => {
                                                                 const operation = actionButton.modelData.operation;
-                                                                if (operation === "open")
+                                                                if (operation === "archive" || operation === "trash")
+                                                                    Gmail.removeWithUndo(row.modelData, operation);
+                                                                else if (operation === "open")
                                                                     root.openMessageInBrowser(row.modelData);
                                                                 else if (operation === "labels") {
                                                                     if (Gmail.fetchLabels(row.modelData.accountId)) {
@@ -728,6 +781,94 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                             }
                                             MouseArea {
                                                 anchors.fill: parent
+                                            }
+                                        }
+                                        Rectangle {
+                                            id: undoBar
+                                            anchors.fill: parent
+                                            z: 4
+                                            visible: row.removal !== null
+                                            color: Appearance.colors.colSecondaryContainer
+                                            readonly property bool trashing: row.removal?.operation === "trash"
+
+                                            // Swallow clicks and hover so the row underneath stays inert.
+                                            MouseArea {
+                                                anchors.fill: parent
+                                                hoverEnabled: true
+                                            }
+
+                                            RowLayout {
+                                                anchors.fill: parent
+                                                anchors.leftMargin: Appearance.spacing.lg
+                                                anchors.rightMargin: Appearance.spacing.s
+                                                spacing: Appearance.spacing.m
+                                                MaterialSymbol {
+                                                    Layout.alignment: Qt.AlignVCenter
+                                                    text: undoBar.trashing ? "delete" : "archive"
+                                                    iconSize: Appearance.font.pixelSize.larger
+                                                    color: Appearance.m3colors.m3onSecondaryContainer
+                                                }
+                                                ColumnLayout {
+                                                    Layout.fillWidth: true
+                                                    spacing: Appearance.spacing.xxs
+                                                    StyledText {
+                                                        Layout.fillWidth: true
+                                                        text: undoBar.trashing ? "Moved to trash" : "Archived"
+                                                        font.pixelSize: Appearance.font.pixelSize.smallie
+                                                        color: Appearance.m3colors.m3onSecondaryContainer
+                                                        elide: Text.ElideRight
+                                                    }
+                                                    StyledText {
+                                                        Layout.fillWidth: true
+                                                        text: `${row.modelData.sender} · ${row.modelData.subject}`
+                                                        font.pixelSize: Appearance.font.pixelSize.smallest
+                                                        color: Appearance.m3colors.m3onSecondaryContainer
+                                                        elide: Text.ElideRight
+                                                    }
+                                                }
+                                                Rectangle {
+                                                    Layout.alignment: Qt.AlignVCenter
+                                                    implicitWidth: undoContent.implicitWidth + Appearance.spacing.s
+                                                                   + Appearance.spacing.lg
+                                                    implicitHeight: Appearance.spacing.xxl
+                                                    radius: Appearance.rounding.full
+                                                    color: undoHover.containsMouse
+                                                           ? Appearance.colors.colSecondaryContainerHover : "transparent"
+                                                    RowLayout {
+                                                        id: undoContent
+                                                        anchors.verticalCenter: parent.verticalCenter
+                                                        x: Appearance.spacing.s
+                                                        spacing: Appearance.spacing.xs
+                                                        MaterialSymbol {
+                                                            text: "undo"
+                                                            iconSize: Appearance.font.pixelSize.normal
+                                                            color: Appearance.colors.colPrimary
+                                                        }
+                                                        StyledText {
+                                                            text: "Undo"
+                                                            font.pixelSize: Appearance.font.pixelSize.smaller
+                                                            color: Appearance.colors.colPrimary
+                                                        }
+                                                    }
+                                                    MouseArea {
+                                                        id: undoHover
+                                                        anchors.fill: parent
+                                                        hoverEnabled: true
+                                                        cursorShape: Qt.PointingHandCursor
+                                                        onClicked: Gmail.undoRemoval(row.modelData)
+                                                    }
+                                                    StyledToolTip {
+                                                        extraVisibleCondition: undoHover.containsMouse
+                                                        text: "Undo (Ctrl+Z)"
+                                                    }
+                                                }
+                                            }
+                                            Rectangle {
+                                                anchors.left: parent.left
+                                                anchors.bottom: parent.bottom
+                                                width: parent.width * row.undoProgress
+                                                height: Appearance.spacing.xxs
+                                                color: Appearance.colors.colPrimary
                                             }
                                         }
                                     }

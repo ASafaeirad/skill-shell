@@ -48,6 +48,16 @@ Singleton {
     property string actionMessageId: ""
     property string actionOperation: ""
     signal messageActionCompleted(bool success, string operation, string accountId, string messageId)
+    // Archive and trash wait out an undo window before reaching Gmail. Each entry
+    // is { key, message, operation, startedAt }; the row shows an undo bar for
+    // undoWindowMs, folds away for undoFoldMs, then the action is committed.
+    readonly property int undoWindowMs: 3000
+    readonly property int undoFoldMs: Appearance.animation.elementMoveFast.duration
+    property var pendingRemovals: []
+    // Committed removals waiting for a free action slot.
+    property var removalQueue: []
+    // Message keys hidden from the inbox while their removal is queued or in flight.
+    property var hiddenMessageKeys: []
     property bool refreshAfterAction: false
     readonly property string savedClientId: keyring?.clientId ?? ""
     readonly property bool hasSavedClientSecret: (keyring?.clientSecret?.length ?? 0) > 0
@@ -110,7 +120,8 @@ Singleton {
                 accountColor: account.color
             })));
         }
-        return combined.sort((a, b) => b.timestamp - a.timestamp);
+        return combined.filter(message => !root.hiddenMessageKeys.includes(root.messageKey(message)))
+            .sort((a, b) => b.timestamp - a.timestamp);
     }
     readonly property int totalMessages: root.accounts.reduce((sum, account) => sum + (account.total ?? 0), 0)
 
@@ -198,6 +209,104 @@ Singleton {
             labelId: labelId ?? ""
         });
         return true;
+    }
+
+    function messageKey(message) {
+        return `${message.accountId}/${message.id}`;
+    }
+
+    function pendingRemoval(message) {
+        const key = root.messageKey(message);
+        return root.pendingRemovals.find(entry => entry.key === key) ?? null;
+    }
+
+    function removeWithUndo(message, operation) {
+        if (!root.credentialsAvailable || root.pendingRemoval(message))
+            return;
+        root.actionError = "";
+        root.pendingRemovals = root.pendingRemovals.concat({
+            key: root.messageKey(message),
+            message: message,
+            operation: operation,
+            startedAt: Date.now()
+        });
+        root.scheduleRemovalCommit();
+    }
+
+    function undoRemoval(message) {
+        const key = root.messageKey(message);
+        root.pendingRemovals = root.pendingRemovals.filter(entry => entry.key !== key);
+        root.scheduleRemovalCommit();
+    }
+
+    // Undoes the newest removal whose undo bar is still showing.
+    function undoLatestRemoval() {
+        const now = Date.now();
+        const undoable = root.pendingRemovals.filter(entry => now - entry.startedAt < root.undoWindowMs);
+        if (undoable.length === 0)
+            return false;
+        root.undoRemoval(undoable.reduce((latest, entry) => entry.startedAt > latest.startedAt ? entry : latest)
+                         .message);
+        return true;
+    }
+
+    function scheduleRemovalCommit() {
+        if (root.pendingRemovals.length === 0) {
+            removalTimer.stop();
+            return;
+        }
+        const due = Math.min(...root.pendingRemovals.map(entry => entry.startedAt))
+                  + root.undoWindowMs + root.undoFoldMs;
+        removalTimer.interval = Math.max(1, due - Date.now());
+        removalTimer.restart();
+    }
+
+    function commitDueRemovals() {
+        const now = Date.now();
+        const isDue = entry => now - entry.startedAt >= root.undoWindowMs + root.undoFoldMs;
+        const due = root.pendingRemovals.filter(isDue);
+        root.pendingRemovals = root.pendingRemovals.filter(entry => !isDue(entry));
+        root.hiddenMessageKeys = root.hiddenMessageKeys.concat(due.map(entry => entry.key));
+        root.removalQueue = root.removalQueue.concat(due);
+        root.scheduleRemovalCommit();
+        root.drainRemovalQueue();
+    }
+
+    function drainRemovalQueue() {
+        if (root.acting || root.removalQueue.length === 0)
+            return;
+        const entry = root.removalQueue[0];
+        root.removalQueue = root.removalQueue.slice(1);
+        if (!root.messageAction(entry.message, entry.operation)) {
+            root.hiddenMessageKeys = root.hiddenMessageKeys.filter(key => key !== entry.key);
+            root.actionError = "Could not update this message";
+            Qt.callLater(() => root.drainRemovalQueue());
+        }
+    }
+
+    // Drops a removed message from the live and cached inbox so it stays gone
+    // until the next sync confirms it.
+    function forgetMessage(accountId, messageId) {
+        const prune = inbox => {
+            const removed = inbox.messages?.find(m => m.id === messageId);
+            if (!removed)
+                return inbox;
+            const unread = inbox.unread;
+            return Object.assign({}, inbox, {
+                messages: inbox.messages.filter(m => m.id !== messageId),
+                unread: removed.read === false && unread !== null && unread !== undefined
+                    ? Math.max(0, unread - 1) : unread,
+                total: Math.max(0, (inbox.total ?? 0) - 1)
+            });
+        };
+        root.syncedAccounts = root.syncedAccounts.map(account => account.id === accountId ? prune(account)
+                                                                                          : account);
+        if (root.inboxCache[accountId]) {
+            const updated = Object.assign({}, root.inboxCache);
+            updated[accountId] = prune(root.inboxCache[accountId]);
+            root.inboxCache = updated;
+            root.persistCache();
+        }
     }
 
     function readMessage(message) {
@@ -309,6 +418,14 @@ Singleton {
     }
 
     function finishAction(exitCode) {
+        const key = `${root.actionAccountId}/${root.actionMessageId}`;
+        const removal = root.actionOperation === "archive" || root.actionOperation === "trash";
+        Qt.callLater(() => root.drainRemovalQueue());
+        if (removal) {
+            if (exitCode === 0)
+                root.forgetMessage(root.actionAccountId, root.actionMessageId);
+            root.hiddenMessageKeys = root.hiddenMessageKeys.filter(hidden => hidden !== key);
+        }
         if (exitCode !== 0) {
             root.actionError = exitCode === root.exitExpired
                 ? "Sign in again to allow mail actions"
@@ -757,6 +874,12 @@ Singleton {
         id: deferredSync
         interval: Appearance.animation.elementMoveFast.duration
         onTriggered: root.sync()
+    }
+
+    Timer {
+        id: removalTimer
+        repeat: false
+        onTriggered: root.commitDueRemovals()
     }
 
     Timer {
