@@ -2,6 +2,7 @@ import qs
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.modules.common.functions
 import QtQuick
 import QtQuick.Controls
@@ -25,7 +26,7 @@ WindowDialog {
         text: "Night Light"
     }
 
-    WindowDialogSeparator {
+    M3.Divider {
         Layout.topMargin: -22
         Layout.leftMargin: 0
         Layout.rightMargin: 0
@@ -36,13 +37,13 @@ WindowDialog {
         Layout.topMargin: -16
         Layout.fillWidth: true
 
-        ConfigSwitch {
+        M3.ListItem {
+            compact: true
             anchors {
                 left: parent.left
                 right: parent.right
             }
-            iconSize: Appearance.font.pixelSize.larger
-            buttonIcon: "check"
+            leadingIcon: "check"
             text: Hyprsunset.temperatureActive
                 ? (Config.options.light.night.automatic
                     ? `${"Enabled now"} · ${"Automatic"}`
@@ -50,40 +51,56 @@ WindowDialog {
                 : (Config.options.light.night.automatic
                     ? `${"Disabled now"} · ${"Automatic"}`
                     : "Disabled")
-            checked: Hyprsunset.temperatureActive
-            onCheckedChanged: {
-                Hyprsunset.toggleTemperature(checked)
+            onClicked: Hyprsunset.toggleTemperature(!Hyprsunset.temperatureActive)
+
+            M3.Switch {
+                checked: Hyprsunset.temperatureActive
+                onToggled: Hyprsunset.toggleTemperature(checked)
             }
         }
 
-        ConfigSwitch {
+        M3.ListItem {
+            compact: true
             anchors {
                 left: parent.left
                 right: parent.right
             }
-            iconSize: Appearance.font.pixelSize.larger
-            buttonIcon: "night_sight_auto"
+            leadingIcon: "night_sight_auto"
             text: "Automatic"
-            checked: Config.options.light.night.automatic
-            onCheckedChanged: {
-                Config.options.light.night.automatic = checked;
+            onClicked: Config.options.light.night.automatic = !Config.options.light.night.automatic
+
+            M3.Switch {
+                checked: Config.options.light.night.automatic
+                onToggled: Config.options.light.night.automatic = checked
             }
         }
 
-        WindowDialogSlider {
+        Column {
             anchors {
                 left: parent.left
                 right: parent.right
-                leftMargin: 4
-                rightMargin: 4
             }
-            text: "Intensity"
-            from: 6500
-            to: 1200
-            stopIndicatorValues: [5000, to]
-            value: Config.options.light.night.colorTemperature
-            onMoved: Config.options.light.night.colorTemperature = value
-            tooltipContent: `${Math.round(value)}K`
+            spacing: -2
+
+            ContentSubsectionLabel {
+                text: "Intensity"
+                anchors.left: parent.left
+                anchors.right: parent.right
+            }
+
+            M3.Slider {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 4
+                anchors.rightMargin: 4
+                configuration: StyledSlider.Configuration.S
+                from: 6500
+                to: 1200
+                stopIndicatorValues: [5000, to]
+                value: Config.options.light.night.colorTemperature
+                onMoved: Config.options.light.night.colorTemperature = value
+                tooltipContent: `${Math.round(value)}K`
+            }
         }
     }
 
@@ -91,7 +108,7 @@ WindowDialog {
         text: "Brightness"
     }
 
-    WindowDialogSeparator {
+    M3.Divider {
         Layout.topMargin: -22
         Layout.leftMargin: 0
         Layout.rightMargin: 0
@@ -102,13 +119,14 @@ WindowDialog {
         Layout.topMargin: -16
         Layout.fillWidth: true
 
-        WindowDialogSlider {
+        M3.Slider {
             anchors {
                 left: parent.left
                 right: parent.right
                 leftMargin: 4
                 rightMargin: 4
             }
+            configuration: StyledSlider.Configuration.S
             value: root.brightnessMonitor.brightness
             onMoved: root.brightnessMonitor.setBrightness(value)
         }
@@ -118,7 +136,7 @@ WindowDialog {
         text: "Gamma"
     }
 
-    WindowDialogSeparator {
+    M3.Divider {
         Layout.topMargin: -22
         Layout.leftMargin: 0
         Layout.rightMargin: 0
@@ -130,13 +148,14 @@ WindowDialog {
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        WindowDialogSlider {
+        M3.Slider {
             anchors {
                 left: parent.left
                 right: parent.right
                 leftMargin: 4
                 rightMargin: 4
             }
+            configuration: StyledSlider.Configuration.S
             from: Hyprsunset.gammaLowerLimit / 100
             value: Hyprsunset.gamma / 100
             onMoved: Hyprsunset.setGamma(value * 100)
@@ -151,8 +170,9 @@ WindowDialog {
             Layout.fillWidth: true
         }
 
-        DialogButton {
-            buttonText: "Done"
+        M3.Button {
+            variant: "text"
+            text: "Done"
             onClicked: root.dismiss()
         }
     }
