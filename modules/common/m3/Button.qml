@@ -44,8 +44,8 @@ RippleButton {
         : Appearance.colors.colPrimary
 
     implicitHeight: tileLayout ? Appearance.sizes.m3QuickTileHeight : Appearance.sizes.m3ButtonHeight
-    leftPadding: tileLayout ? Appearance.spacing.s : (materialIcon.length > 0 ? Appearance.spacing.lg : Appearance.spacing.xl)
-    rightPadding: tileLayout ? Appearance.spacing.s : Appearance.spacing.xl
+    leftPadding: tileLayout ? Appearance.spacing.xs : (materialIcon.length > 0 ? Appearance.spacing.lg : Appearance.spacing.xl)
+    rightPadding: tileLayout ? Appearance.spacing.xs : Appearance.spacing.xl
     buttonRadius: tileLayout ? Appearance.rounding.large : Appearance.rounding.full
     buttonRadiusPressed: Appearance.rounding.small
     opacity: 1
@@ -78,13 +78,16 @@ RippleButton {
 
             anchors.centerIn: parent
             width: root.tileLayout ? parent.width : Math.min(implicitWidth, parent.width)
-            spacing: Appearance.spacing.s
+            spacing: root.tileLayout ? Appearance.sizes.m3QuickTileIconGap : Appearance.spacing.s
 
             IconButton {
                 visible: root.tileLayout && root.leadingAction !== null && root.materialIcon.length > 0
                 variant: "filled"
                 toggleable: true
                 selected: root.leadingSelected
+                buttonRadius: root.leadingSelected ? Appearance.rounding.normal : Appearance.rounding.full
+                Layout.preferredWidth: Appearance.sizes.m3QuickTileIconSize
+                Layout.preferredHeight: Appearance.sizes.m3QuickTileIconSize
                 materialIcon: root.materialIcon
                 onClicked: if (root.leadingAction) root.leadingAction()
             }
@@ -94,7 +97,7 @@ RippleButton {
                 fill: root.selected ? 1 : 0
                 iconSize: Appearance.font.pixelSize.larger
                 color: root.contentColor
-                Layout.preferredWidth: root.tileLayout ? Appearance.sizes.m3IconButtonSize : implicitWidth
+                Layout.preferredWidth: root.tileLayout ? Appearance.sizes.m3QuickTileIconSize : implicitWidth
                 horizontalAlignment: Text.AlignHCenter
             }
             ColumnLayout {
