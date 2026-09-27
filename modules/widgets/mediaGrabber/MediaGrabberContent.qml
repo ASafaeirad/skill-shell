@@ -6,6 +6,7 @@ import QtQuick.Layouts
 import qs.services
 import qs.modules.common
 import qs.modules.common.functions
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
 
 /**
@@ -26,7 +27,6 @@ OverlayDialogCard {
     // Format and quality are settled once the download starts.
     readonly property bool locked: root.view === "downloading" || root.view === "done"
     readonly property real sectionPadding: Appearance.spacing.lg
-    readonly property real buttonHeight: Appearance.spacing.xxl + Appearance.spacing.m
     readonly property real chipHeight: Appearance.spacing.xxl - Appearance.spacing.xxs
     readonly property real borderWidth: Appearance.spacing.xxs / 2
     // The bands run edge to edge inside the border, so their outer corners
@@ -186,66 +186,6 @@ OverlayDialogCard {
         animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
     }
 
-    // A hairline between the card's bands.
-    component Divider: Rectangle {
-        Layout.fillWidth: true
-        implicitHeight: Appearance.spacing.xxs / 2
-        color: Appearance.colors.colOutlineVariant
-    }
-
-    // A rounded, full-width or content-width action: icon plus label.
-    component PillButton: RippleButton {
-        id: pill
-
-        property string symbol: ""
-        property string label: ""
-        property string suffix: ""
-        property color foreground: Appearance.colors.colOnLayer2
-
-        buttonRadius: Appearance.rounding.full
-        colBackground: Appearance.colors.colSurfaceContainerHigh
-        colBackgroundHover: Appearance.colors.colSurfaceContainerHighestHover
-        implicitHeight: root.buttonHeight
-        implicitWidth: pillContent.implicitWidth + Appearance.spacing.lg * 2
-
-        contentItem: Item {
-            RowLayout {
-                id: pillContent
-
-                anchors.centerIn: parent
-                spacing: Appearance.spacing.s
-
-                MaterialSymbol {
-                    text: pill.symbol
-                    iconSize: Appearance.font.pixelSize.large
-                    color: pill.foreground
-                }
-                StyledText {
-                    text: pill.label
-                    font.pixelSize: Appearance.font.pixelSize.smallie
-                    color: pill.foreground
-                }
-                StyledText {
-                    visible: pill.suffix.length > 0
-                    text: pill.suffix
-                    font.pixelSize: Appearance.font.pixelSize.smaller
-                    font.features: ({
-                            "tnum": 1
-                        })
-                    color: pill.foreground
-                    opacity: 0.75
-                }
-            }
-        }
-    }
-
-    component PrimaryPillButton: PillButton {
-        colBackground: Appearance.colors.colPrimary
-        colBackgroundHover: Appearance.colors.colPrimaryHover
-        colRipple: Appearance.colors.colPrimaryActive
-        foreground: Appearance.colors.colOnPrimary
-    }
-
     ColumnLayout {
         id: contentColumn
 
@@ -364,7 +304,7 @@ OverlayDialogCard {
         }
 
         // What went wrong, in yt-dlp's own words where it has any
-        Divider {
+        M3.Divider {
             visible: root.view === "error"
         }
         Rectangle {
@@ -399,7 +339,7 @@ OverlayDialogCard {
         }
 
         // The fetched media and its pickers
-        Divider {
+        M3.Divider {
             visible: mediaSection.visible
         }
         ColumnLayout {
@@ -635,21 +575,22 @@ OverlayDialogCard {
                 Layout.leftMargin: root.sectionPadding
                 Layout.rightMargin: root.sectionPadding
                 Layout.bottomMargin: root.sectionPadding
-                implicitHeight: root.buttonHeight
+                implicitHeight: Appearance.sizes.m3ButtonHeight
 
-                PrimaryPillButton {
+                M3.Button {
                     anchors.fill: parent
                     visible: root.view === "ready"
-                    symbol: "download"
-                    label: "Download"
-                    suffix: YtDlp.sizeLabel
+                    variant: "filled"
+                    materialIcon: "download"
+                    text: "Download"
+                    trailingText: YtDlp.sizeLabel
                     onClicked: YtDlp.download()
                 }
 
                 ColumnLayout {
                     anchors.fill: parent
                     visible: root.view === "downloading"
-                    spacing: Appearance.spacing.s
+                    spacing: Appearance.spacing.xxs
 
                     Item {
                         Layout.fillHeight: true
@@ -678,29 +619,16 @@ OverlayDialogCard {
                             color: Appearance.colors.colSubtext
                             elide: Text.ElideRight
                         }
-                        RippleButton {
-                            implicitWidth: Appearance.spacing.xl
-                            implicitHeight: Appearance.spacing.xl
-                            buttonRadius: Appearance.rounding.full
-                            colBackgroundHover: Appearance.colors.colLayer1Hover
+                        M3.IconButton {
+                            size: "xsmall"
+                            materialIcon: "close"
+                            tooltip: "Cancel"
                             onClicked: YtDlp.cancelDownload()
-
-                            StyledToolTip {
-                                text: "Cancel"
-                            }
-
-                            contentItem: MaterialSymbol {
-                                horizontalAlignment: Text.AlignHCenter
-                                text: "close"
-                                iconSize: Appearance.font.pixelSize.small
-                                color: Appearance.colors.colOnLayer1
-                            }
                         }
                     }
 
-                    StyledProgressBar {
+                    M3.LinearProgressIndicator {
                         Layout.fillWidth: true
-                        valueBarHeight: Appearance.spacing.xxs * 2
                         wavy: true
                         animateWave: root.view === "downloading"
                         value: YtDlp.progress
@@ -716,19 +644,21 @@ OverlayDialogCard {
                     visible: root.view === "done"
                     spacing: Appearance.spacing.s
 
-                    PrimaryPillButton {
+                    M3.Button {
                         Layout.fillWidth: true
                         visible: YtDlp.savedPath.length > 0
-                        symbol: "folder_open"
-                        label: "Show in folder"
+                        variant: "filled"
+                        materialIcon: "folder_open"
+                        text: "Show in folder"
                         onClicked: {
                             YtDlp.showInFolder();
                             root.closeRequested();
                         }
                     }
-                    PillButton {
-                        symbol: "add_link"
-                        label: "New"
+                    M3.Button {
+                        variant: "tonal"
+                        materialIcon: "add_link"
+                        text: "New"
                         onClicked: YtDlp.clearLink()
                     }
                 }
@@ -738,15 +668,17 @@ OverlayDialogCard {
                     visible: root.downloadFailed
                     spacing: Appearance.spacing.s
 
-                    PrimaryPillButton {
+                    M3.Button {
                         Layout.fillWidth: true
-                        symbol: "refresh"
-                        label: "Retry"
+                        variant: "filled"
+                        materialIcon: "refresh"
+                        text: "Retry"
                         onClicked: YtDlp.retry()
                     }
-                    PillButton {
-                        symbol: "add_link"
-                        label: "New"
+                    M3.Button {
+                        variant: "tonal"
+                        materialIcon: "add_link"
+                        text: "New"
                         onClicked: YtDlp.clearLink()
                     }
                 }
@@ -754,7 +686,7 @@ OverlayDialogCard {
         }
 
         // Keyboard hints for the current view
-        Divider {}
+        M3.Divider {}
         Rectangle {
             Layout.fillWidth: true
             implicitHeight: hintFlow.implicitHeight + Appearance.spacing.m * 2
