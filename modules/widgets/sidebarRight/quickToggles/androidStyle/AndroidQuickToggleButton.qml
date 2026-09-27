@@ -1,184 +1,97 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.services
 import qs.modules.common
 import qs.modules.common.models.quickToggles
-import qs.modules.common.functions
-import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 
-GroupButton {
+Item {
     id: root
-    
-    // Info to be passed to by repeater
+
     property int buttonIndex: 0
     property var buttonData: null
-    property bool expandedSize: (cellSize > 1)
+    property bool expandedSize: cellSize > 1
     property real baseCellWidth: 0
     property real baseCellHeight: 0
     property real cellSpacing: 0
     property int cellSize: buttonData?.size ?? 1
-
-    // Signals
-    signal openMenu()
-
-    // Declared in specific toggles
     property QuickToggleModel toggleModel
     property string name: toggleModel?.name ?? ""
-    property string statusText: (toggleModel?.hasStatusText) ? (toggleModel?.statusText || (toggled ? "On" : "Off")) : ""
+    property string statusText: toggleModel?.hasStatusText
+        ? (toggleModel?.statusText || (selected ? "On" : "Off")) : ""
     property string tooltipText: toggleModel?.tooltipText ?? ""
     property string buttonIcon: toggleModel?.icon ?? "close"
     property bool available: toggleModel?.available ?? true
-    toggled: toggleModel?.toggled ?? false
+    property bool selected: toggleModel?.toggled ?? false
     property var mainAction: toggleModel?.mainAction ?? null
-    altAction: toggleModel?.hasMenu ? (() => root.openMenu()) : (toggleModel?.altAction ?? null)
-
-    // Edit mode state
+    property var altAction: toggleModel?.hasMenu ? (() => root.openMenu()) : (toggleModel?.altAction ?? null)
     property bool editMode: false
+    property real baseWidth: baseCellWidth * cellSize + cellSpacing * (cellSize - 1)
+    property real baseHeight: baseCellHeight
+    property real radius: expandedSize ? Appearance.rounding.large : Appearance.rounding.full
 
-    // Sizing shenanigans
-    baseWidth: root.baseCellWidth * cellSize + cellSpacing * (cellSize - 1)
-    baseHeight: root.baseCellHeight
-    enableImplicitWidthAnimation: !editMode && root.mouseArea.containsMouse
-    enableImplicitHeightAnimation: !editMode && root.mouseArea.containsMouse
+    signal openMenu()
+
+    implicitWidth: baseWidth
+    implicitHeight: baseHeight
+    Layout.preferredWidth: baseWidth
+    Layout.preferredHeight: baseHeight
+
+    opacity: 0
+    Component.onCompleted: opacity = 1
+    Behavior on opacity {
+        animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+    }
     Behavior on baseWidth {
         animation: Appearance.animation.elementMove.numberAnimation.createObject(this)
     }
     Behavior on baseHeight {
         animation: Appearance.animation.elementMove.numberAnimation.createObject(this)
     }
-    opacity: 0
-    Component.onCompleted: {
-        opacity = 1
-    }
-    Behavior on opacity {
-        animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-    }
 
-    enabled: available || editMode
-    padding: 6
-    horizontalPadding: padding
-    verticalPadding: padding
-
-    colBackground: Appearance.colors.colLayer2
-    colBackgroundToggled: (altAction && expandedSize) ? Appearance.colors.colLayer2 : Appearance.colors.colPrimary
-    colBackgroundToggledHover: (altAction && expandedSize) ? Appearance.colors.colLayer2Hover : Appearance.colors.colPrimaryHover
-    colBackgroundToggledActive: (altAction && expandedSize) ? Appearance.colors.colLayer2Active : Appearance.colors.colPrimaryActive
-    buttonRadius: toggled ? Appearance.rounding.large : height / 2
-    buttonRadiusPressed: Appearance.rounding.normal
-    property color colText: (toggled && !(altAction && expandedSize) && enabled) ? Appearance.colors.colOnPrimary : ColorUtils.transparentize(Appearance.colors.colOnLayer2, enabled ? 0 : 0.7)
-    property color colIcon: expandedSize ? ((root.toggled) ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer3) : colText
-
-    onClicked: {
-        if (root.expandedSize && root.altAction) root.altAction();
-        else root.mainAction();
+    Loader {
+        id: controlLoader
+        anchors.fill: parent
+        sourceComponent: root.expandedSize ? wideButton : compactButton
     }
 
-    contentItem: RowLayout {
-        id: contentItem
-        spacing: 4
-        anchors {
-            centerIn: root.expandedSize ? undefined : parent
-            fill: root.expandedSize ? parent : undefined
-            leftMargin: root.horizontalPadding
-            rightMargin: root.horizontalPadding
+    Component {
+        id: compactButton
+        M3.IconButton {
+            width: root.width
+            height: root.height
+            variant: "filled"
+            toggleable: true
+            selected: root.selected
+            materialIcon: root.buttonIcon
+            enabled: root.available && !root.editMode
+            altAction: root.altAction
+            onClicked: if (root.mainAction) root.mainAction()
         }
+    }
 
-        // Icon
-        MouseArea {
-            id: iconMouseArea
-            hoverEnabled: true
-            acceptedButtons: (root.expandedSize && root.altAction) ? Qt.LeftButton : Qt.NoButton
-            Layout.alignment: Qt.AlignHCenter
-            Layout.fillHeight: true
-            Layout.topMargin: root.verticalPadding
-            Layout.bottomMargin: root.verticalPadding
-            implicitHeight: iconBackground.implicitHeight
-            implicitWidth: iconBackground.implicitWidth
-            cursorShape: Qt.PointingHandCursor
-
-            onClicked: root.mainAction()
-
-            Rectangle {
-                id: iconBackground
-                anchors.fill: parent
-                implicitWidth: height
-                radius: root.radius - root.verticalPadding
-                color: {
-                    const baseColor = root.toggled ? Appearance.colors.colPrimary : Appearance.colors.colLayer3
-                    const transparentizeAmount = (root.altAction && root.expandedSize) ? 0 : 1
-                    return ColorUtils.transparentize(baseColor, transparentizeAmount)
-                }
-
-                Behavior on radius {
-                    animation: Appearance.animation.elementMove.numberAnimation.createObject(this)
-                }
-                Behavior on color {
-                    animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
-                }
-
-                MaterialSymbol {
-                    anchors.centerIn: parent
-                    fill: root.toggled ? 1 : 0
-                    iconSize: root.expandedSize ? 22 : 24
-                    color: root.colIcon
-                    text: root.buttonIcon
-                }
-
-                // State layer
-                Loader {
-                    anchors.fill: parent
-                    active: (root.expandedSize && root.altAction)
-                    sourceComponent: Rectangle {
-                        radius: iconBackground.radius
-                        color: ColorUtils.transparentize(root.colIcon, iconMouseArea.containsPress ? 0.88 : iconMouseArea.containsMouse ? 0.95 : 1)
-                        Behavior on color {
-                            animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
-                        }
-                    }
-                }
-            }
-        }
-
-        // Text column for expanded size
-        Loader {
-            Layout.alignment: Qt.AlignVCenter
-            Layout.fillWidth: true
-            visible: root.expandedSize
-            active: visible
-            sourceComponent: Column {
-                spacing: -2
-
-                StyledText {
-                    anchors {
-                        left: parent.left
-                        right: parent.right
-                    }
-                    font.pixelSize: Appearance.font.pixelSize.smallie
-                    font.weight: 600
-                    color: root.colText
-                    elide: Text.ElideRight
-                    text: root.name
-                }
-
-                StyledText {
-                    visible: root.statusText
-                    anchors {
-                        left: parent.left
-                        right: parent.right
-                    }
-                    font {
-                        pixelSize: Appearance.font.pixelSize.smaller
-                        weight: 100
-                    }
-                    color: root.colText
-                    elide: Text.ElideRight
-                    text: root.statusText
-                }
+    Component {
+        id: wideButton
+        M3.Button {
+            width: root.width
+            height: root.height
+            tileLayout: true
+            variant: "tonal"
+            selected: root.selected && !root.altAction
+            materialIcon: root.buttonIcon
+            text: root.name
+            supportingText: root.statusText
+            leadingAction: root.altAction ? root.mainAction : null
+            leadingSelected: root.selected
+            enabled: root.available && !root.editMode
+            altAction: root.altAction
+            onClicked: {
+                if (root.altAction) root.altAction()
+                else if (root.mainAction) root.mainAction()
             }
         }
     }
 
-    MouseArea { // Blocking MouseArea for edit interactions
+    MouseArea {
         id: editModeInteraction
         visible: root.editMode
         anchors.fill: parent
@@ -190,11 +103,10 @@ GroupButton {
             const index = root.buttonIndex;
             const toggleList = Config.options.sidebar.quickToggles.android.toggles;
             const buttonType = root.buttonData.type;
-            if (!toggleList.find(toggle => toggle.type === buttonType)) {
+            if (!toggleList.find(toggle => toggle.type === buttonType))
                 toggleList.push({ type: buttonType, size: 1 });
-            } else {
+            else
                 toggleList.splice(index, 1);
-            }
         }
 
         function toggleSize() {
@@ -202,7 +114,7 @@ GroupButton {
             const toggleList = Config.options.sidebar.quickToggles.android.toggles;
             const buttonType = root.buttonData.type;
             if (!toggleList.find(toggle => toggle.type === buttonType)) return;
-            toggleList[index].size = 3 - toggleList[index].size; // Alternate between 1 and 2
+            toggleList[index].size = 3 - toggleList[index].size;
         }
 
         function movePositionBy(offset) {
@@ -218,30 +130,21 @@ GroupButton {
         }
 
         onReleased: (event) => {
-            if (event.button === Qt.LeftButton)
-                toggleEnabled();
+            if (event.button === Qt.LeftButton) toggleEnabled();
         }
         onPressed: (event) => {
             if (event.button === Qt.RightButton) toggleSize();
         }
-        onPressAndHold: (event) => { // Also toggle size
-            toggleSize();
-        }
+        onPressAndHold: toggleSize()
         onWheel: (event) => {
-            const index = root.buttonIndex;
-            const toggleList = Config.options.sidebar.quickToggles.android.toggles;
-            const buttonType = root.buttonData.type;
-            if (event.angleDelta.y < 0) { // Move to right
-                movePositionBy(1);
-            } else if (event.angleDelta.y > 0) { // Move to left
-                movePositionBy(-1);
-            }
+            if (event.angleDelta.y < 0) movePositionBy(1);
+            else if (event.angleDelta.y > 0) movePositionBy(-1);
             event.accepted = true;
         }
     }
 
-    StyledToolTip {
-        extraVisibleCondition: root.tooltipText !== ""
+    M3.Tooltip {
+        extraVisibleCondition: root.tooltipText !== "" && (controlLoader.item?.hovered ?? false)
         text: root.tooltipText
     }
 }

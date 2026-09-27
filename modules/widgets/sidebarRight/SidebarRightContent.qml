@@ -231,11 +231,9 @@ Item {
                 visible: Config.options.sidebar.quickToggles.style === "android"
                 buttonIcon: "edit"
                 onClicked: root.editMode = !root.editMode
-                StyledToolTip {
-                    text: "Edit quick toggles" + (root.editMode
+                tooltip: "Edit quick toggles" + (root.editMode
                                                   ? "\nLMB to enable/disable\nRMB to toggle size\nScroll to swap position" :
                                                     "")
-                }
             }
             QuickToggleButton {
                 toggled: false
@@ -244,9 +242,7 @@ Item {
                     Quickshell.execDetached(["hyprctl", "reload"]);
                     Quickshell.reload(true);
                 }
-                StyledToolTip {
-                    text: "Reload Hyprland & Quickshell"
-                }
+                tooltip: "Reload Hyprland & Quickshell"
             }
             QuickToggleButton {
                 toggled: false
@@ -255,9 +251,7 @@ Item {
                     GlobalStates.sidebarRight?.close();
                     Quickshell.execDetached(["qs", "-p", root.settingsQmlPath]);
                 }
-                StyledToolTip {
-                    text: "Settings"
-                }
+                tooltip: "Settings"
             }
             QuickToggleButton {
                 toggled: false
@@ -265,9 +259,7 @@ Item {
                 onClicked: {
                     GlobalStates.session?.open();
                 }
-                StyledToolTip {
-                    text: "Session"
-                }
+                tooltip: "Session"
             }
         }
     }

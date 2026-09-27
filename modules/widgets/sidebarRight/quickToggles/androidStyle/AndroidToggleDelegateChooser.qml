@@ -17,7 +17,6 @@ AndroidQuickToggleButton {
     buttonIndex: root.startingIndex >= 0 ? (root.startingIndex + index) : -1
     buttonData: modelData
     expandedSize: (modelData?.size ?? 1) > 1
-    cellSpacing: root.spacing
     cellSize: modelData?.size ?? 1
 
     toggleModel: modelLoader.item
