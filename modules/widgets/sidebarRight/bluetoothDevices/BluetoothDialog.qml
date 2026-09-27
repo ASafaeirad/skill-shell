@@ -23,7 +23,8 @@ WindowDialog {
     WindowDialogSeparator {
         visible: !(Bluetooth.defaultAdapter?.discovering ?? false)
     }
-    StyledIndeterminateProgressBar {
+    StyledProgressBar {
+        indeterminate: true
         visible: Bluetooth.defaultAdapter?.discovering ?? false
         Layout.fillWidth: true
         Layout.topMargin: -8

@@ -20,7 +20,8 @@ WindowDialog {
         visible: !Network.wifiScanning
     }
 
-    StyledIndeterminateProgressBar {
+    StyledProgressBar {
+        indeterminate: true
         visible: Network.wifiScanning
         Layout.fillWidth: true
         Layout.topMargin: -8

@@ -411,28 +411,12 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                             }
                         }
 
-                        Rectangle {
+                        StyledProgressBar {
                             visible: Gmail.syncing && Gmail.messages.length === 0
                             Layout.fillWidth: true
-                            implicitHeight: Appearance.spacing.xxs
-                            color: Appearance.colors.colOutlineVariant
-                            Rectangle {
-                                width: parent.width / 2
-                                height: parent.height
-                                color: Appearance.colors.colPrimary
-                                SequentialAnimation on x {
-                                    running: Gmail.syncing && Gmail.messages.length === 0
-                                    loops: Animation.Infinite
-                                    NumberAnimation {
-                                        to: Appearance.sizes.gmailPopoverWidth / 2
-                                        duration: Appearance.animation.elementMove.duration
-                                    }
-                                    NumberAnimation {
-                                        to: 0
-                                        duration: Appearance.animation.elementMove.duration
-                                    }
-                                }
-                            }
+                            indeterminate: true
+                            highlightColor: Appearance.colors.colPrimary
+                            trackColor: Appearance.colors.colOutlineVariant
                         }
 
                         ColumnLayout {
