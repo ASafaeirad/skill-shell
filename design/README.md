@@ -41,6 +41,14 @@ The same applies to the design's account dot colours (`#8d76ad`, `#a97363`,
 `#af535d`): those are entries in the wallpaper-derived terminal palette, not brand
 colours. They must be referenced by palette key.
 
+## Designs → components
+
+Build each element of a design from the Material 3 component library
+(`modules/common/m3/`, catalog in its `README.md`), and name the M3 component each
+design element is. A design pill with an icon and a label is `M3.Button`, a row of
+toggleable pills is `M3.Chip { variant: "filter" }`, and a hairline is `M3.Divider`.
+When a design needs something the catalog doesn't have, add it to the catalog first.
+
 ## Contents
 
 | Document | Widget | States |

@@ -12,6 +12,7 @@ The shell uses the **widgets** panel family, loaded lazily in `shell.qml`.
 .
 ├── shell.qml                 # ShellRoot: startup and lazy panel loading
 ├── settings.qml              # Separate settings app: qs -p settings.qml
+├── design-system.qml         # Live design-system explorer: qs -p design-system.qml
 ├── GlobalStates.qml          # Singleton: open/closed state of every panel
 ├── ReloadPopup.qml           # Shows QML error popup when hot reload fails
 ├── services/                 # ~45 pragma Singleton backends, one per concern:
@@ -20,8 +21,10 @@ The shell uses the **widgets** panel family, loaded lazily in `shell.qml`.
 │                             #   Notifications, MprisController, HyprlandData, ...
 ├── modules/
 │   ├── common/               # Shared: Appearance.qml (theme tokens), Config.qml
-│   │   ├── widgets/          #   StyledText, RippleButton, MaterialSymbol,
-│   │   │                     #   ConfigSwitch/Slider/SpinBox/SelectionArray, ...
+│   │   ├── m3/               #   ★ Design system: Material 3 components (M3.Button,
+│   │   │                     #   M3.Chip, M3.Card, ...). Catalog: m3/README.md
+│   │   ├── widgets/          #   Foundations (StyledText, MaterialSymbol, RippleButton)
+│   │   │                     #   and shell widgets; some are wrapped by m3/
 │   │   ├── functions/        #   Fuzzy.qml (fuzzysort), StringUtils, ColorUtils
 │   │   └── models/           #   LauncherSearchResult.qml etc.
 │   ├── widgets/              # Panels: bar/, dock/,
@@ -33,7 +36,37 @@ The shell uses the **widgets** panel family, loaded lazily in `shell.qml`.
 └── design/                   # Vendored design documents — read before building any UI
 ```
 
-Import scheme: `import qs.services`, `import qs.modules.common`, `import qs.modules.common.widgets`, etc. Services are `pragma Singleton` — reference them directly (`Audio.sink`, `Network.materialSymbol`).
+Import scheme: `import qs.services`, `import qs.modules.common`, `import qs.modules.common.widgets`, `import qs.modules.common.m3 as M3` (always with `as M3`), etc. Services are `pragma Singleton` — reference them directly (`Audio.sink`, `Network.materialSymbol`).
+
+## Design system (Material 3) — use it for all UI
+
+The shell's UI is built from **Material 3 components** in `modules/common/m3/`,
+named as on <https://m3.material.io/components>:
+
+```qml
+import qs.modules.common.m3 as M3
+
+M3.Button { variant: "tonal"; text: "Retry"; materialIcon: "refresh"; onClicked: ... }
+M3.IconButton { materialIcon: "close"; tooltip: "Close" }
+M3.Chip { variant: "filter"; text: "Unread"; selected: root.unreadOnly; onClicked: ... }
+M3.Card { variant: "outlined"; StyledText { text: "..." } }
+M3.Divider {}
+```
+
+- **Don't reinvent components in panels.** No restyled `RippleButton`, no
+  `Rectangle` + `MouseArea` buttons, no inline `component Divider: Rectangle`. Find
+  the M3 component in the catalog (`modules/common/m3/README.md`) and pick the
+  variant by emphasis.
+- **Missing component or variant?** Add it to `modules/common/m3/` (with an
+  explorer page and catalog row), then use it. Don't add a one-off in the panel.
+- **Follow the `design-system` skill** (`.agents/skills/design-system`) for building,
+  adding and migrating, and run its lint before finishing:
+  `.agents/skills/design-system/lint.py`.
+- See every component live: `qs -p design-system.qml` (IPC target `designSystem`:
+  `openTab <Name>`, `listTabs`).
+- Existing panels still use legacy widgets (`DialogButton`, `StyledSwitch`, …).
+  They are being migrated one panel at a time; the backlog is in the catalog README.
+  Code you touch should use `M3.*`.
 
 ## Widget Catalog
 
@@ -60,7 +93,8 @@ Colors come from **matugen** (Material You from the wallpaper) → `~/.local/sta
   - `Appearance.font.pixelSize.*` / `Appearance.font.family.*`
   - `Appearance.rounding.*`, `Appearance.spacing.*`, `Appearance.sizes.*`
   - `Appearance.animation.*` (e.g. `Appearance.animation.elementMoveFast.colorAnimation.createObject(this)`)
-- Prefer existing widgets from `modules/common/widgets/`: `StyledText`, `StyledRectangularShadow`, `RippleButton`, `MaterialSymbol` (Material Symbols icon font), `Revealer`, ...
+  - `Appearance.sizes.m3*` for M3 component geometry, and `Appearance.stateLayer.*` with `ColorUtils.stateLayer(container, content, opacity)` for hover/pressed colours
+- Controls come from the design system (`M3.*`, see above). Text, icons and elevation use the foundations in `modules/common/widgets/`: `StyledText`, `MaterialSymbol` (Material Symbols icon font), `StyledRectangularShadow`, `Revealer`, ...
 - Write user-visible strings directly in English; this configuration intentionally has no i18n layer.
 
 ## Config options
@@ -108,6 +142,8 @@ Details in `.agents/skills/verify-shell`.
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Add launcher action (`/foo`)            | **Zero code**: drop an executable script in `~/.config/skill-shell/actions/` — auto-appears under the `/` prefix, remaining query passed as args |
 | Change a setting                        | Edit `~/.config/skill-shell/config.json` directly (hot-applies)                                                                                  |
+| Build UI / add or migrate a component   | `.agents/skills/design-system` (catalog: `modules/common/m3/README.md`)                                                                          |
+| Lint a change against the design system | `.agents/skills/design-system/lint.py`                                                                                                           |
 | Add a bar widget                        | `.agents/skills/add-bar-widget`                                                                                                                  |
 | Add a launcher search provider/prefix   | `.agents/skills/add-launcher-provider`                                                                                                           |
 | Add a config option (+ settings UI)     | `.agents/skills/add-config-option`                                                                                                               |
@@ -135,6 +171,8 @@ Features are **not self-contained** — one threads through service singletons, 
 - `config.json` is rewritten by the shell ~50 ms after any QML-side option change; schema defaults live in `Config.qml`, the JSON only reflects current values.
 - Single monitor setup; Hyprland master layout, gaps 5, rounding 8. Keyboard layouts `us,ir`.
 - This directory is a git repository. Check the working tree before editing and preserve unrelated changes.
+- **Inside `modules/common/m3/`, `Button`/`Switch`/`Slider`/`TextField`/`RadioButton` resolve to the M3 files, not `QtQuick.Controls`** (same-directory types win). Everywhere else, the `as M3` qualifier keeps them apart.
+- **`modules/common/widgets/shapes` is a gitlink that can be empty in a fresh worktree**, which breaks `MaterialShape`/`M3.LoadingIndicator` there. For previews, copy it from the main checkout; don't commit it.
 
 <!-- graft:start -->
 ## Graft — repo context graph
