@@ -20,7 +20,7 @@ ApplicationWindow {
     // Material 3 components from qs.modules.common.m3 first, then shell widgets
     // with no M3 counterpart. Keep in sync with modules/common/m3/README.md.
     readonly property var m3Tabs: [
-        "Button", "IconButton", "Fab", "Chip", "Card", "ListItem", "Divider", "Badge",
+        "Button", "IconButton", "Fab", "Chip", "Card", "ListItem", "MenuItem", "Divider", "Badge",
         "Checkbox", "RadioButton", "Switch", "Slider", "TextField",
         "LinearProgressIndicator", "CircularProgressIndicator", "LoadingIndicator"
     ]
@@ -36,6 +36,7 @@ ApplicationWindow {
         "Chip": "sell",
         "Card": "crop_landscape",
         "ListItem": "list",
+        "MenuItem": "menu",
         "Divider": "horizontal_rule",
         "Badge": "notifications_unread",
         "Checkbox": "check_box",
@@ -105,6 +106,7 @@ ApplicationWindow {
         case "Chip": return chipPage;
         case "Card": return cardPage;
         case "ListItem": return listItemPage;
+        case "MenuItem": return menuItemPage;
         case "Divider": return dividerPage;
         case "Badge": return badgePage;
         case "Checkbox": return checkboxPage;
@@ -472,6 +474,43 @@ ApplicationWindow {
                     property bool sampleTileSelected: true
                 }
             }
+            PreviewCard {
+                title: "Content slot, and external hover"
+                description: "content replaces the icon/label row for a button whose label is not text. externalHover lights the state layer from a larger hover region around it — hover the dashed area."
+                Rectangle {
+                    implicitWidth: statusPill.implicitWidth + Appearance.spacing.xxl * 2
+                    implicitHeight: statusPill.implicitHeight + Appearance.spacing.lg * 2
+                    radius: Appearance.rounding.small
+                    color: Appearance.m3colors.m3surfaceContainerHigh
+
+                    MouseArea {
+                        id: pillRegion
+                        anchors.fill: parent
+                        hoverEnabled: true
+                    }
+
+                    M3.Button {
+                        id: statusPill
+                        anchors.centerIn: parent
+                        variant: "text"
+                        selected: root.sampleChecked
+                        externalHover: pillRegion.containsMouse
+                        onClicked: root.sampleChecked = !root.sampleChecked
+                        content: RowLayout {
+                            spacing: Appearance.spacing.m
+                            Repeater {
+                                model: ["volume_off", "keyboard", "battery_5_bar", "wifi"]
+                                MaterialSymbol {
+                                    required property string modelData
+                                    text: modelData
+                                    iconSize: Appearance.font.pixelSize.larger
+                                    color: statusPill.contentColor
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -521,6 +560,18 @@ ApplicationWindow {
                 Repeater {
                     model: ["small", "xsmall"]
                     M3.IconButton { required property string modelData; size: modelData; variant: "tonal"; materialIcon: "close"; tooltip: modelData }
+                }
+            }
+            PreviewCard {
+                title: "Rotating icon"
+                description: "iconRotation turns the icon, animated, so the button points at the state it controls. Click to flip."
+                M3.IconButton {
+                    materialIcon: "expand_more"
+                    tooltip: root.sampleChecked ? "Collapse" : "Expand"
+                    toggleable: true
+                    selected: root.sampleChecked
+                    iconRotation: root.sampleChecked ? 180 : 0
+                    onClicked: root.sampleChecked = !root.sampleChecked
                 }
             }
         }
@@ -664,6 +715,77 @@ ApplicationWindow {
                     }
                     M3.Divider {}
                     M3.ListItem { Layout.fillWidth: true; text: "Static row"; supportingText: "interactive: false"; interactive: false }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: menuItemPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "MenuItem"
+                guideline: "menus"
+                detail: "One row of a menu: a label with an optional leading icon or image, a selection state, and a trailing icon for a submenu. Groups are separated by a Divider, never by a menu item."
+            }
+            PreviewCard {
+                title: "Live item"
+                M3.MenuItem {
+                    width: Appearance.spacing.xxl * 9
+                    text: root.sampleText
+                    leadingIcon: root.sampleIcon
+                    trailingIcon: "chevron_right"
+                    enabled: root.sampleEnabled
+                }
+            }
+            PreviewCard {
+                title: "A menu"
+                description: "reserveLeadingIcon keeps the icon column on the items that have none, so the labels line up"
+                Rectangle {
+                    implicitWidth: Appearance.spacing.xxl * 9
+                    implicitHeight: menuColumn.implicitHeight + Appearance.spacing.xs * 2
+                    radius: Appearance.rounding.small
+                    color: Appearance.m3colors.m3surfaceContainerHigh
+
+                    ColumnLayout {
+                        id: menuColumn
+                        anchors.fill: parent
+                        anchors.margins: Appearance.spacing.xs
+                        spacing: 0
+
+                        M3.MenuItem { Layout.fillWidth: true; leadingIcon: "content_copy"; text: "Copy" }
+                        M3.MenuItem { Layout.fillWidth: true; leadingIcon: "content_paste"; text: "Paste"; enabled: false }
+                        M3.Divider { Layout.topMargin: Appearance.spacing.xs; Layout.bottomMargin: Appearance.spacing.xs }
+                        M3.MenuItem { Layout.fillWidth: true; reserveLeadingIcon: true; text: "Preferences"; trailingIcon: "chevron_right" }
+                        M3.MenuItem { Layout.fillWidth: true; reserveLeadingIcon: true; text: "Quit"; trailingText: "Ctrl+Q" }
+                    }
+                }
+            }
+            PreviewCard {
+                title: "Selection and density"
+                description: "selectionControl: checkbox · radio, with reserveSelectionControl on the rest of the menu. density runs from 0 (48) to -3 (36)."
+                ColumnLayout {
+                    width: Appearance.spacing.xxl * 9
+                    spacing: 0
+                    M3.MenuItem { Layout.fillWidth: true; text: "Show hidden"; selectionControl: "checkbox"; checkState: Qt.Checked }
+                    M3.MenuItem { Layout.fillWidth: true; text: "Show mixed"; selectionControl: "checkbox"; checkState: Qt.PartiallyChecked }
+                    M3.MenuItem { Layout.fillWidth: true; text: "Sort by name"; selectionControl: "radio"; checkState: Qt.Checked }
+                    M3.MenuItem { Layout.fillWidth: true; text: "Sort by date"; selectionControl: "radio" }
+                }
+                ColumnLayout {
+                    width: Appearance.spacing.xxl * 6
+                    spacing: 0
+                    Repeater {
+                        model: [0, -1, -2, -3]
+                        M3.MenuItem {
+                            required property int modelData
+                            Layout.fillWidth: true
+                            density: modelData
+                            leadingIcon: "density_medium"
+                            text: `density ${modelData}`
+                        }
+                    }
                 }
             }
         }
