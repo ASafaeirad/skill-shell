@@ -1,9 +1,13 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 
-RippleButton {
+/**
+ * One cell of the month grid: a toggle button whose selected state is today.
+ * Days outside the viewed month are drawn as disabled.
+ */
+M3.Button {
     id: button
 
     property string day
@@ -14,20 +18,14 @@ RippleButton {
     Layout.fillHeight: false
     implicitWidth: 38
     implicitHeight: 38
-    toggled: (isToday == 1)
+    leftPadding: 0
+    rightPadding: 0
     buttonRadius: Appearance.rounding.small
 
-    contentItem: StyledText {
-        anchors.fill: parent
-        text: day
-        horizontalAlignment: Text.AlignHCenter
-        font.weight: bold ? Font.DemiBold : Font.Normal
-        color: (isToday == 1) ? Appearance.m3colors.m3onPrimary : (isToday == 0) ? Appearance.colors.colOnLayer1 : Appearance.colors.colOutlineVariant
-
-        Behavior on color {
-            animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
-        }
-
-    }
-
+    variant: "text"
+    toggleable: true
+    selected: isToday === 1
+    enabled: isToday !== -1
+    text: day
+    font.weight: bold ? Font.DemiBold : Font.Normal
 }

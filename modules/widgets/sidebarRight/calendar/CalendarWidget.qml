@@ -1,9 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "calendar_layout.js" as CalendarLayout
-import qs.modules.common
-import qs.modules.common.widgets
-import qs.services
+import qs.modules.common.m3 as M3
 
 Item {
     property int monthShift: 0
@@ -45,12 +43,17 @@ Item {
             Layout.fillWidth: true
             spacing: 5
 
-            CalendarHeaderButton {
+            M3.Button {
                 clip: true
-                buttonText: `${monthShift != 0 ? "• " : ""}${viewingDate.toLocaleDateString(Qt.locale(), "MMMM yyyy")}`
-                tooltipText: (monthShift === 0) ? "" : "Jump to current month"
+                variant: "text"
+                text: `${monthShift != 0 ? "• " : ""}${viewingDate.toLocaleDateString(Qt.locale(), "MMMM yyyy")}`
                 downAction: () => {
                     monthShift = 0;
+                }
+
+                M3.Tooltip {
+                    text: "Jump to current month"
+                    extraVisibleCondition: monthShift !== 0
                 }
             }
 
@@ -59,34 +62,18 @@ Item {
                 Layout.fillHeight: false
             }
 
-            CalendarHeaderButton {
-                forceCircle: true
+            M3.IconButton {
+                materialIcon: "chevron_left"
                 downAction: () => {
                     monthShift--;
                 }
-
-                contentItem: MaterialSymbol {
-                    text: "chevron_left"
-                    iconSize: Appearance.font.pixelSize.larger
-                    horizontalAlignment: Text.AlignHCenter
-                    color: Appearance.colors.colOnLayer1
-                }
-
             }
 
-            CalendarHeaderButton {
-                forceCircle: true
+            M3.IconButton {
+                materialIcon: "chevron_right"
                 downAction: () => {
                     monthShift++;
                 }
-
-                contentItem: MaterialSymbol {
-                    text: "chevron_right"
-                    iconSize: Appearance.font.pixelSize.larger
-                    horizontalAlignment: Text.AlignHCenter
-                    color: Appearance.colors.colOnLayer1
-                }
-
             }
 
         }

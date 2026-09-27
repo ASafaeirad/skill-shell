@@ -40,7 +40,9 @@ ensure_shapes() {
     local dir="$ROOT/modules/common/widgets/shapes"
     [[ -n "$(ls -A "$dir" 2>/dev/null)" ]] && return
     local main
-    main=$(git -C "$ROOT" worktree list --porcelain | awk '/^worktree /{print $2; exit}')
+    # No early awk exit: closing the pipe would SIGPIPE git and, under
+    # pipefail, abort the script.
+    main=$(git -C "$ROOT" worktree list --porcelain | awk '/^worktree / && !seen++ {print $2}')
     [[ -n "$(ls -A "$main/modules/common/widgets/shapes" 2>/dev/null)" ]] ||
         die "shapes/ is empty here and in $main; cannot resolve qs.modules.common.widgets.shapes"
     mkdir -p "$dir"
