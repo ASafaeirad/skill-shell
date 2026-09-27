@@ -80,7 +80,7 @@ RippleButton {
         }
         StyledImage {
             anchors.centerIn: parent
-            width: Appearance.font.pixelSize.larger
+            width: root.buttonSize - Appearance.spacing.xs * 2
             height: width
             visible: root.iconSource.length > 0
             source: root.iconSource
