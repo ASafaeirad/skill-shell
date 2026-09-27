@@ -6,6 +6,7 @@ import Quickshell.Services.UPower
 import qs
 import qs.services
 import qs.modules.common
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
 import qs.modules.common.functions
 
@@ -22,14 +23,6 @@ Item { // Bar content region
                                                        useShortenedForm == 1)
                                                    ? Appearance.sizes.barCenterSideModuleWidthShortened :
                                                      Appearance.sizes.barCenterSideModuleWidth
-
-    component VerticalBarSeparator: Rectangle {
-        Layout.topMargin: Appearance.sizes.baseBarHeight / 3
-        Layout.bottomMargin: Appearance.sizes.baseBarHeight / 3
-        Layout.fillHeight: true
-        implicitWidth: 1
-        color: Appearance.colors.colOutlineVariant
-    }
 
     // Background shadow
     Loader {
@@ -89,7 +82,10 @@ Item { // Bar content region
         }
         spacing: 4
 
-        VerticalBarSeparator {
+        // A Row gives its children no height, so this draws nothing — as the
+        // separator it replaces didn't either.
+        M3.Divider {
+            vertical: true
             visible: Config.options?.bar.borderless
         }
 

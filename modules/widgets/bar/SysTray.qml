@@ -5,6 +5,7 @@ import Quickshell.Hyprland
 import Quickshell.Services.SystemTray
 import qs.services
 import qs.modules.common
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
 
 Item {
@@ -71,33 +72,19 @@ Item {
         rowSpacing: 0
         columnSpacing: 8
 
-        RippleButton {
+        M3.IconButton {
             id: trayOverflowButton
             visible: root.showOverflowMenu && root.unpinnedItems.length > 0
-            toggled: root.trayOverflowOpen
+            // What StyledPopup's hover delay watches.
             property bool containsMouse: hovered
 
             downAction: () => root.trayOverflowOpen = !root.trayOverflowOpen
 
-            Layout.fillHeight: true
-            background.implicitWidth: 24
-            background.implicitHeight: 24
-            background.anchors.centerIn: this
-            colBackgroundToggled: Appearance.colors.colSecondaryContainer
-            colBackgroundToggledHover: Appearance.colors.colSecondaryContainerHover
-            colRippleToggled: Appearance.colors.colSecondaryContainerActive
-
-            contentItem: MaterialSymbol {
-                anchors.centerIn: parent
-                iconSize: Appearance.font.pixelSize.larger
-                text: "expand_more"
-                horizontalAlignment: Text.AlignHCenter
-                color: root.trayOverflowOpen ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer2
-                rotation: (root.trayOverflowOpen ? 180 : 0) + (180 * root.invertSide)
-                Behavior on rotation {
-                    animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-                }
-            }
+            Layout.alignment: Qt.AlignVCenter
+            materialIcon: "expand_more"
+            toggleable: true
+            selected: root.trayOverflowOpen
+            iconRotation: (root.trayOverflowOpen ? 180 : 0) + (180 * root.invertSide)
 
             StyledPopup {
                 id: overflowPopup
