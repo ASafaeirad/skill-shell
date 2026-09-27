@@ -258,6 +258,7 @@ Singleton {
             property int larger: 19
             property int huge: 22
             property int hugeass: 23
+            property int timer: 40
             property int title: huge
         }
     }
@@ -404,6 +405,10 @@ Singleton {
         property real progressBarWidth: 120
         property real progressBarHeight: root.spacing.xxs * 2
         property real circularProgressSize: 48
+        property real pomodoroProgressSize: 200
+        property real pomodoroProgressLineWidth: 8
+        property real pomodoroCycleSize: 36
+        property real pomodoroButtonWidth: 90
         property real baseBarHeight: 50
         property real barHeight: Config.options.bar.cornerStyle === 1 ?
             (baseBarHeight + root.sizes.hyprlandGapsOut * 2) : baseBarHeight

@@ -4,6 +4,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import qs.modules.common
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
 import qs.services
 
@@ -36,7 +37,7 @@ Item {
 
             StyledText {
                 // Layout.preferredWidth: elapsedIndicator.width * 0.6 // Prevent shakiness
-                font.pixelSize: 40
+                font.pixelSize: Appearance.font.pixelSize.timer
                 color: Appearance.m3colors.m3onSurface
                 text: {
                     let totalSeconds = Math.floor(TimerService.stopwatchTime) / 100;
@@ -48,7 +49,7 @@ Item {
 
             StyledText {
                 Layout.fillWidth: true
-                font.pixelSize: 40
+                font.pixelSize: Appearance.font.pixelSize.timer
                 color: Appearance.colors.colSubtext
                 text: {
                     return `:<sub>${(Math.floor(TimerService.stopwatchTime) % 100).toString().padStart(2, '0')}</sub>`;
@@ -102,30 +103,18 @@ Item {
                 })
             }
 
-            delegate: Rectangle {
+            delegate: M3.Card {
                 id: lapItem
 
                 required property int index
                 required property var modelData
-                property var horizontalPadding: 10
-                property var verticalPadding: 6
-
                 width: lapsList.width
-                implicitHeight: lapRow.implicitHeight + verticalPadding * 2
-                implicitWidth: lapRow.implicitWidth + horizontalPadding * 2
-                color: Appearance.colors.colLayer2
-                radius: Appearance.rounding.small
+                padding: Appearance.spacing.xs
+                spacing: 0
 
                 RowLayout {
                     id: lapRow
-
-                    anchors {
-                        fill: parent
-                        leftMargin: lapItem.horizontalPadding
-                        rightMargin: lapItem.horizontalPadding
-                        topMargin: lapItem.verticalPadding
-                        bottomMargin: lapItem.verticalPadding
-                    }
+                    Layout.fillWidth: true
 
                     StyledText {
                         font.pixelSize: Appearance.font.pixelSize.small
@@ -173,7 +162,7 @@ Item {
         RowLayout {
             id: controlButtons
 
-            spacing: 4
+            spacing: Appearance.spacing.xxs * 2
 
             anchors {
                 horizontalCenter: parent.horizontalCenter
@@ -181,29 +170,23 @@ Item {
                 bottomMargin: 6
             }
 
-            RippleButton {
-                Layout.preferredHeight: 35
-                Layout.preferredWidth: 90
-                font.pixelSize: Appearance.font.pixelSize.larger
+            M3.Button {
+                Layout.preferredWidth: Appearance.sizes.pomodoroButtonWidth
+                leftPadding: Appearance.spacing.m
+                rightPadding: Appearance.spacing.m
+                variant: TimerService.stopwatchRunning ? "tonal" : "filled"
+                text: TimerService.stopwatchRunning ? "Pause" : TimerService.stopwatchTime === 0 ? "Start" : "Resume"
                 onClicked: {
                     TimerService.toggleStopwatch();
                 }
-                colBackground: TimerService.stopwatchRunning ? Appearance.colors.colSecondaryContainer : Appearance.colors.colPrimary
-                colBackgroundHover: TimerService.stopwatchRunning ? Appearance.colors.colSecondaryContainerHover : Appearance.colors.colPrimaryHover
-                colRipple: TimerService.stopwatchRunning ? Appearance.colors.colSecondaryContainerActive : Appearance.colors.colPrimaryActive
-
-                contentItem: StyledText {
-                    horizontalAlignment: Text.AlignHCenter
-                    color: TimerService.stopwatchRunning ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnPrimary
-                    text: TimerService.stopwatchRunning ? "Pause" : TimerService.stopwatchTime === 0 ? "Start" : "Resume"
-                }
-
             }
 
-            RippleButton {
-                implicitHeight: 35
-                implicitWidth: 90
-                font.pixelSize: Appearance.font.pixelSize.larger
+            M3.Button {
+                Layout.preferredWidth: Appearance.sizes.pomodoroButtonWidth
+                leftPadding: Appearance.spacing.m
+                rightPadding: Appearance.spacing.m
+                variant: TimerService.stopwatchRunning ? "tonal" : "outlined"
+                text: TimerService.stopwatchRunning ? "Lap" : "Reset"
                 onClicked: {
                     if (TimerService.stopwatchRunning)
                         TimerService.stopwatchRecordLap();
@@ -211,16 +194,6 @@ Item {
                         TimerService.stopwatchReset();
                 }
                 enabled: TimerService.stopwatchTime > 0 || Persistent.states.timer.stopwatch.laps.length > 0
-                colBackground: TimerService.stopwatchRunning ? Appearance.colors.colLayer2 : Appearance.colors.colErrorContainer
-                colBackgroundHover: TimerService.stopwatchRunning ? Appearance.colors.colLayer2Hover : Appearance.colors.colErrorContainerHover
-                colRipple: TimerService.stopwatchRunning ? Appearance.colors.colLayer2Active : Appearance.colors.colErrorContainerActive
-
-                contentItem: StyledText {
-                    horizontalAlignment: Text.AlignHCenter
-                    text: TimerService.stopwatchRunning ? "Lap" : "Reset"
-                    color: TimerService.stopwatchRunning ? Appearance.colors.colOnLayer2 : Appearance.colors.colOnErrorContainer
-                }
-
             }
 
         }

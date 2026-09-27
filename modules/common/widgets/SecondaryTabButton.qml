@@ -8,7 +8,7 @@ import QtQuick.Layouts
 
 TabButton {
     id: root
-    property string buttonText
+    property string buttonText: text
     property string buttonIcon
     property int rippleDuration: 1200
     property int tabContentWidth: buttonBackground.width - buttonBackground.radius*2

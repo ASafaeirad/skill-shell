@@ -4,6 +4,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import qs.modules.common
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
 import qs.services
 
@@ -20,13 +21,13 @@ Item {
         spacing: 0
 
         // The Pomodoro timer circle
-        CircularProgress {
+        M3.CircularProgressIndicator {
             Layout.alignment: Qt.AlignHCenter
-            lineWidth: 8
+            lineWidth: Appearance.sizes.pomodoroProgressLineWidth
             value: {
                 return TimerService.pomodoroSecondsLeft / TimerService.pomodoroLapDuration;
             }
-            implicitSize: 200
+            implicitSize: Appearance.sizes.pomodoroProgressSize
             enableAnimation: true
 
             ColumnLayout {
@@ -40,7 +41,7 @@ Item {
                         let seconds = Math.floor(TimerService.pomodoroSecondsLeft % 60).toString().padStart(2, '0');
                         return `${minutes}:${seconds}`;
                     }
-                    font.pixelSize: 40
+                    font.pixelSize: Appearance.font.pixelSize.timer
                     color: Appearance.m3colors.m3onSurface
                 }
 
@@ -56,7 +57,7 @@ Item {
             Rectangle {
                 radius: Appearance.rounding.full
                 color: Appearance.colors.colLayer2
-                implicitWidth: 36
+                implicitWidth: Appearance.sizes.pomodoroCycleSize
                 implicitHeight: implicitWidth
 
                 anchors {
@@ -79,42 +80,25 @@ Item {
         // The Start/Stop and Reset buttons
         RowLayout {
             Layout.alignment: Qt.AlignHCenter
-            spacing: 10
+            spacing: Appearance.spacing.m
 
-            RippleButton {
-                implicitHeight: 35
-                implicitWidth: 90
-                font.pixelSize: Appearance.font.pixelSize.larger
+            M3.Button {
+                Layout.preferredWidth: Appearance.sizes.pomodoroButtonWidth
+                leftPadding: Appearance.spacing.m
+                rightPadding: Appearance.spacing.m
+                variant: TimerService.pomodoroRunning ? "tonal" : "filled"
+                text: TimerService.pomodoroRunning ? "Pause" : (TimerService.pomodoroSecondsLeft === TimerService.focusTime) ? "Start" : "Resume"
                 onClicked: TimerService.togglePomodoro()
-                colBackground: TimerService.pomodoroRunning ? Appearance.colors.colSecondaryContainer : Appearance.colors.colPrimary
-                colBackgroundHover: TimerService.pomodoroRunning ? Appearance.colors.colSecondaryContainer : Appearance.colors.colPrimary
-
-                contentItem: StyledText {
-                    anchors.centerIn: parent
-                    horizontalAlignment: Text.AlignHCenter
-                    text: TimerService.pomodoroRunning ? "Pause" : (TimerService.pomodoroSecondsLeft === TimerService.focusTime) ? "Start" : "Resume"
-                    color: TimerService.pomodoroRunning ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnPrimary
-                }
-
             }
 
-            RippleButton {
-                implicitHeight: 35
-                implicitWidth: 90
+            M3.Button {
+                Layout.preferredWidth: Appearance.sizes.pomodoroButtonWidth
+                leftPadding: Appearance.spacing.m
+                rightPadding: Appearance.spacing.m
+                variant: "outlined"
+                text: "Reset"
                 onClicked: TimerService.resetPomodoro()
                 enabled: (TimerService.pomodoroSecondsLeft < TimerService.pomodoroLapDuration) || TimerService.pomodoroCycle > 0 || TimerService.pomodoroBreak
-                font.pixelSize: Appearance.font.pixelSize.larger
-                colBackground: Appearance.colors.colErrorContainer
-                colBackgroundHover: Appearance.colors.colErrorContainerHover
-                colRipple: Appearance.colors.colErrorContainerActive
-
-                contentItem: StyledText {
-                    anchors.centerIn: parent
-                    horizontalAlignment: Text.AlignHCenter
-                    text: "Reset"
-                    color: Appearance.colors.colOnErrorContainer
-                }
-
             }
 
         }

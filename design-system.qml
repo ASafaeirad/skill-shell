@@ -21,7 +21,7 @@ ApplicationWindow {
     // with no M3 counterpart. Keep in sync with modules/common/m3/README.md.
     readonly property var m3Tabs: [
         "Button", "IconButton", "Fab", "Chip", "Card", "ListItem", "MenuItem", "ExposedDropdownMenu", "Divider", "Badge",
-        "Checkbox", "RadioButton", "Switch", "Slider", "TextField",
+        "Checkbox", "RadioButton", "Switch", "Slider", "TextField", "Tabs",
         "LinearProgressIndicator", "CircularProgressIndicator", "LoadingIndicator"
     ]
     readonly property var shellTabs: [
@@ -45,6 +45,7 @@ ApplicationWindow {
         "Switch": "toggle_on",
         "Slider": "tune",
         "TextField": "text_fields",
+        "Tabs": "tab",
         "LinearProgressIndicator": "linear_scale",
         "CircularProgressIndicator": "progress_activity",
         "LoadingIndicator": "hourglass_empty",
@@ -116,6 +117,7 @@ ApplicationWindow {
         case "Switch": return switchPage;
         case "Slider": return sliderPage;
         case "TextField": return textFieldPage;
+        case "Tabs": return tabsPage;
         case "LinearProgressIndicator": return linearProgressPage;
         case "CircularProgressIndicator": return circularPage;
         case "LoadingIndicator": return loadingPage;
@@ -1047,6 +1049,34 @@ ApplicationWindow {
                 title: "Read only and disabled"
                 M3.TextField { width: Appearance.spacing.xxl * 7; text: root.sampleText; readOnly: true }
                 M3.TextField { width: Appearance.spacing.xxl * 7; text: root.sampleText; enabled: false }
+            }
+        }
+    }
+
+    Component {
+        id: tabsPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "Tabs"
+                guideline: "tabs"
+                detail: "Secondary tabs switch between related views. The active tab has an animated underline."
+            }
+            PreviewCard {
+                title: "Live tabs"
+                M3.Tabs {
+                    width: Appearance.spacing.xxl * 12
+                    M3.Tab { text: root.sampleText; materialIcon: root.sampleIcon; enabled: root.sampleEnabled }
+                    M3.Tab { text: "Stopwatch"; materialIcon: "timer" }
+                }
+            }
+            PreviewCard {
+                title: "Text and icon tabs"
+                M3.Tabs {
+                    width: Appearance.spacing.xxl * 12
+                    M3.Tab { text: "Focus" }
+                    M3.Tab { text: "Break"; materialIcon: "coffee" }
+                }
             }
         }
     }

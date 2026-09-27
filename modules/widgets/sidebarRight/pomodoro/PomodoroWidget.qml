@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import qs.modules.common
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
 import qs.services
 
@@ -50,7 +51,7 @@ Item {
         anchors.fill: parent
         spacing: 0
 
-        SecondaryTabBar {
+        M3.Tabs {
             id: tabBar
 
             currentIndex: swipeView.currentIndex
@@ -58,9 +59,9 @@ Item {
             Repeater {
                 model: root.tabButtonList
 
-                delegate: SecondaryTabButton {
-                    buttonText: modelData.name
-                    buttonIcon: modelData.icon
+                delegate: M3.Tab {
+                    text: modelData.name
+                    materialIcon: modelData.icon
                 }
 
             }
