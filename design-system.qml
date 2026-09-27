@@ -22,6 +22,23 @@ ApplicationWindow {
         "StyledRadioButton", "StyledSpinBox", "StyledComboBox", "StyledTextArea",
         "CircularProgress", "StyledIndeterminateProgressBar", "NoticeBox"
     ]
+    readonly property var tabIcons: ({
+        "RippleButton": "touch_app",
+        "StyledSwitch": "toggle_on",
+        "MaterialTextField": "text_fields",
+        "StyledProgressBar": "linear_scale",
+        "StatusBadge": "label",
+        "StyledSlider": "tune",
+        "StyledText": "title",
+        "MaterialSymbol": "interests",
+        "StyledRadioButton": "radio_button_checked",
+        "StyledSpinBox": "pin",
+        "StyledComboBox": "arrow_drop_down_circle",
+        "StyledTextArea": "notes",
+        "CircularProgress": "progress_activity",
+        "StyledIndeterminateProgressBar": "hourglass_empty",
+        "NoticeBox": "info"
+    })
     readonly property string currentComponent: tabs[currentTab]
     property string sampleText: "Sample label"
     property string sampleIcon: "star"
@@ -38,14 +55,15 @@ ApplicationWindow {
     onCurrentTabChanged: Qt.callLater(() => root.ensureSelectedTabVisible())
 
     function ensureSelectedTabVisible() {
-        const tab = tabsRepeater.itemAt(currentTab);
+        const tab = tabRail.tabAt(currentTab);
         const view = tabScroll.contentItem;
         if (!tab || !view)
             return;
-        if (tab.x < view.contentX)
-            view.contentX = tab.x;
-        else if (tab.x + tab.width > view.contentX + tabScroll.availableWidth)
-            view.contentX = tab.x + tab.width - tabScroll.availableWidth;
+        const y = tab.mapToItem(view.contentItem, 0, 0).y;
+        if (y < view.contentY)
+            view.contentY = y;
+        else if (y + tab.height > view.contentY + tabScroll.availableHeight)
+            view.contentY = y + tab.height - tabScroll.availableHeight;
     }
 
     function componentForTab(name) {
@@ -151,40 +169,28 @@ ApplicationWindow {
             }
         }
 
-        ScrollView {
-            id: tabScroll
-            Layout.fillWidth: true
-            implicitHeight: tabRow.implicitHeight + Appearance.spacing.s
-            contentWidth: tabRow.implicitWidth
-            ScrollBar.vertical.policy: ScrollBar.AlwaysOff
-
-            RowLayout {
-                id: tabRow
-                spacing: Appearance.spacing.xs
-                Repeater {
-                    id: tabsRepeater
-                    model: root.tabs
-                    RippleButton {
-                        id: tabButton
-                        required property int index
-                        required property string modelData
-                        buttonText: modelData
-                        toggled: root.currentTab === index
-                        buttonRadius: Appearance.rounding.full
-                        contentItem: StyledText {
-                            text: tabButton.buttonText
-                            color: tabButton.toggled ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer0
-                        }
-                        onClicked: root.currentTab = index
-                    }
-                }
-            }
-        }
-
         RowLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
             spacing: Appearance.spacing.lg
+
+            ScrollView {
+                id: tabScroll
+                Layout.preferredWidth: tabRail.implicitWidth
+                Layout.fillHeight: true
+                clip: true
+                contentWidth: availableWidth
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
+                NavigationRailTabs {
+                    id: tabRail
+                    width: tabScroll.availableWidth
+                    expanded: true
+                    model: root.tabs.map(name => ({ name: name, icon: root.tabIcons[name] }))
+                    currentIndex: root.currentTab
+                    onTabSelected: index => root.currentTab = index
+                }
+            }
 
             Rectangle {
                 Layout.fillWidth: true

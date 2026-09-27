@@ -199,46 +199,13 @@ ApplicationWindow {
             Layout.fillWidth: true
             Layout.fillHeight: true
             spacing: contentPadding
-            Item {
-                id: navRailWrapper
-                Layout.fillHeight: true
+            NavigationRailTabs {
+                Layout.alignment: Qt.AlignTop
                 Layout.leftMargin: 5
                 Layout.rightMargin: 5
-                implicitWidth: navigationTabs.implicitWidth
-                NavigationRail { // Window content with navigation rail and content pane
-                    id: navRail
-                    anchors {
-                        left: parent.left
-                        top: parent.top
-                        bottom: parent.bottom
-                    }
-                    spacing: 10
-                    expanded: false
-
-                    NavigationRailTabArray {
-                        id: navigationTabs
-                        currentIndex: root.currentPage
-                        expanded: navRail.expanded
-                        Repeater {
-                            model: root.pages
-                            NavigationRailButton {
-                                required property var index
-                                required property var modelData
-                                toggled: root.currentPage === index
-                                onPressed: root.currentPage = index
-                                expanded: navRail.expanded
-                                buttonIcon: modelData.icon
-                                buttonIconRotation: modelData.iconRotation || 0
-                                buttonText: modelData.name
-                                showToggledHighlight: false
-                            }
-                        }
-                    }
-
-                    Item {
-                        Layout.fillHeight: true
-                    }
-                }
+                model: root.pages
+                currentIndex: root.currentPage
+                onTabSelected: index => root.currentPage = index
             }
             Rectangle { // Content container
                 Layout.fillWidth: true
