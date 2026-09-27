@@ -77,6 +77,7 @@ then move into this directory later without changing any callers.
 | [Loading indicator](https://m3.material.io/components/loading-indicator) | `M3.LoadingIndicator` | wraps `MaterialLoadingIndicator` | `loading` |
 | [Tooltips](https://m3.material.io/components/tooltips) | `M3.Tooltip` | wraps `StyledToolTip` | `text`, `extraVisibleCondition`; `M3.IconButton` has a `tooltip` property already |
 | [Navigation rail](https://m3.material.io/components/navigation-rail) | `M3.NavigationRail` | wraps `NavigationRailTabs` | `model: [{ name, icon }]`, `currentIndex`, `expanded`, `tabSelected(index)` |
+| [Tabs](https://m3.material.io/components/tabs) | `M3.Tabs` + `M3.Tab` | wraps `SecondaryTabBar` + `SecondaryTabButton` | `currentIndex`, `incrementCurrentIndex()`, `decrementCurrentIndex()`; tab `text`, `materialIcon` |
 
 ### M3 components not in the catalog yet
 
@@ -87,7 +88,6 @@ existing widget rather than writing a new one, and consider adding the M3 compon
 | --- | --- |
 | [Button groups](https://m3.material.io/components/button-groups) (connected, segmented) | `ButtonGroup` + `GroupButton`, `SelectionGroupButton`; `ConfigSelectionArray` for settings |
 | [Toolbars](https://m3.material.io/components/toolbars) | `Toolbar`, `ToolbarButton`, `IconToolbarButton`, `ToolbarTextField`, `ToolbarPairedFab` |
-| [Tabs](https://m3.material.io/components/tabs) | `SecondaryTabBar` + `SecondaryTabButton`, `ToolbarTabBar` |
 | [Dialogs](https://m3.material.io/components/dialogs) | `WindowDialog` + `WindowDialogTitle`/`Paragraph`/`ButtonRow`, `OverlayDialog` |
 | A whole [menu](https://m3.material.io/components/menus) container (`M3.MenuItem` is in the catalog) | `StyledComboBox` (exposed dropdown), `FilterableComboBox` |
 | [Search](https://m3.material.io/components/search) | `ToolbarTextField` / the launcher's search field |
