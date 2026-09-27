@@ -14,6 +14,7 @@ Singleton {
     property QtObject font
     property QtObject sizes
     property QtObject spacing
+    property QtObject stateLayer
     property string syntaxHighlightingTheme
 
     // Transparency. The quadratic functions were derived from analysis of hand-picked transparency values.
@@ -430,6 +431,29 @@ Singleton {
         property real wallpaperSelectorHeight: 690
         property real wallpaperSelectorItemMargins: 8
         property real wallpaperSelectorItemPadding: 6
+        // Material 3 component geometry, used by qs.modules.common.m3
+        property real m3ButtonHeight: 40
+        property real m3IconButtonSize: 40
+        property real m3ChipHeight: 32
+        property real m3SelectionControlSize: 18 // checkbox box
+        property real m3StateLayerSize: 40 // touch target around selection controls
+        property real m3ListItemOneLineHeight: 56
+        property real m3ListItemTwoLineHeight: 72
+        property real m3BadgeSmallSize: 6
+        property real m3BadgeLargeSize: 16
+        property real m3DividerThickness: 1
+        property real m3OutlineWidth: 1
+    }
+
+    // Material 3 state layer opacities: the content colour drawn over a container
+    // https://m3.material.io/foundations/interaction/states/state-layers
+    stateLayer: QtObject {
+        property real hover: 0.08
+        property real focus: 0.10
+        property real pressed: 0.10
+        property real dragged: 0.16
+        property real disabledContent: 0.38
+        property real disabledContainer: 0.12
     }
 
     syntaxHighlightingTheme: root.m3colors.darkmode ? "Monokai" : "ayu Light"
