@@ -13,6 +13,8 @@ import qs.modules.common.widgets
  * variant: "filled" (default) | "tonal" | "outlined" | "text" | "elevated"
  * selected: toggle-button state; a selected button takes the filled colours.
  * trailingText: a smaller figure after the label, such as a size ("~42 MB").
+ * tileLayout: a 56px button with a supporting line for quick settings.
+ * leadingAction: an independent icon action on a tile, with leadingSelected.
  */
 RippleButton {
     id: root
@@ -21,6 +23,10 @@ RippleButton {
     property string materialIcon: ""
     property bool selected: false
     property string trailingText: ""
+    property string supportingText: ""
+    property bool tileLayout: false
+    property var leadingAction: null
+    property bool leadingSelected: false
 
     readonly property bool hasContainer: variant === "filled" || variant === "tonal" || variant === "elevated"
     readonly property color containerColor: selected ? Appearance.colors.colPrimary
@@ -34,10 +40,10 @@ RippleButton {
         : variant === "tonal" ? Appearance.colors.colOnSecondaryContainer
         : Appearance.colors.colPrimary
 
-    implicitHeight: Appearance.sizes.m3ButtonHeight
-    leftPadding: materialIcon.length > 0 ? Appearance.spacing.lg : Appearance.spacing.xl
-    rightPadding: Appearance.spacing.xl
-    buttonRadius: Appearance.rounding.full
+    implicitHeight: tileLayout ? Appearance.sizes.m3QuickTileHeight : Appearance.sizes.m3ButtonHeight
+    leftPadding: tileLayout ? Appearance.spacing.s : (materialIcon.length > 0 ? Appearance.spacing.lg : Appearance.spacing.xl)
+    rightPadding: tileLayout ? Appearance.spacing.s : Appearance.spacing.xl
+    buttonRadius: tileLayout ? Appearance.rounding.large : Appearance.rounding.full
     buttonRadiusPressed: Appearance.rounding.small
     opacity: 1
 
@@ -71,21 +77,41 @@ RippleButton {
             width: Math.min(implicitWidth, parent.width)
             spacing: Appearance.spacing.s
 
+            IconButton {
+                visible: root.tileLayout && root.leadingAction !== null && root.materialIcon.length > 0
+                variant: "filled"
+                toggleable: true
+                selected: root.leadingSelected
+                materialIcon: root.materialIcon
+                onClicked: if (root.leadingAction) root.leadingAction()
+            }
             MaterialSymbol {
-                visible: root.materialIcon.length > 0
+                visible: (!root.tileLayout || root.leadingAction === null) && root.materialIcon.length > 0
                 text: root.materialIcon
                 fill: root.selected ? 1 : 0
                 iconSize: Appearance.font.pixelSize.larger
                 color: root.contentColor
             }
-            StyledText {
+            ColumnLayout {
                 visible: root.text.length > 0
-                text: root.text
-                color: root.contentColor
-                font.pixelSize: Appearance.font.pixelSize.small
                 Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-                elide: Text.ElideRight
+                spacing: 0
+                StyledText {
+                    text: root.text
+                    color: root.contentColor
+                    font.pixelSize: root.tileLayout ? Appearance.font.pixelSize.smallie : Appearance.font.pixelSize.small
+                    Layout.fillWidth: true
+                    horizontalAlignment: root.tileLayout ? Text.AlignLeft : Text.AlignHCenter
+                    elide: Text.ElideRight
+                }
+                StyledText {
+                    visible: root.supportingText.length > 0
+                    text: root.supportingText
+                    color: root.contentColor
+                    font.pixelSize: Appearance.font.pixelSize.smaller
+                    Layout.fillWidth: true
+                    elide: Text.ElideRight
+                }
             }
             StyledText {
                 visible: root.trailingText.length > 0

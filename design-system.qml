@@ -457,6 +457,21 @@ ApplicationWindow {
                 description: "trailingText adds a smaller figure after the label; the content stays centred at any width"
                 M3.Button { width: 320; text: "Download"; materialIcon: "download"; trailingText: "~42 MB" }
             }
+            PreviewCard {
+                title: "Quick setting tile"
+                description: "The icon can toggle a setting while the rest of the tile opens its menu."
+                M3.Button {
+                    width: 220
+                    tileLayout: true
+                    variant: "tonal"
+                    text: "Bluetooth"
+                    supportingText: "Connected"
+                    materialIcon: "bluetooth"
+                    leadingAction: () => sampleTileSelected = !sampleTileSelected
+                    leadingSelected: sampleTileSelected
+                    property bool sampleTileSelected: true
+                }
+            }
         }
     }
 
