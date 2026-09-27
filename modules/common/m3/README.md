@@ -48,6 +48,7 @@ qs -p design-system.qml ipc call designSystem openTab Chip
 | `text` | The label (headline for `ListItem`) |
 | `materialIcon` | A Material Symbols name (`"refresh"`). `icon` is taken by `AbstractButton` |
 | `selected` | M3's selected state (toggle buttons, filter chips). **Controlled**: bind it to your state and change that state in `onClicked` |
+| `toggleable` | The control is a toggle, so its unselected state wears the neutral surface roles rather than the variant's own |
 | `enabled: false` | M3 disabled colours (38% content, 12% container). Don't fade with `opacity` |
 
 ## Catalog
@@ -58,7 +59,7 @@ then move into this directory later without changing any callers.
 
 | M3 component | Use | Status | API |
 | --- | --- | --- | --- |
-| [Buttons](https://m3.material.io/components/buttons) | `M3.Button` | native | `variant`: filled · tonal · outlined · text · elevated; `text`, `materialIcon`, `trailingText`, `selected`, `content` (slot), `externalHover`; quick setting tile: `tileLayout`, `supportingText`, `leadingAction`, `leadingSelected` |
+| [Buttons](https://m3.material.io/components/buttons) | `M3.Button` | native | `variant`: filled · tonal · outlined · text · elevated; `text`, `materialIcon`, `trailingText`, `toggleable`, `selected`, `content` (slot), `externalHover`; quick setting tile: `tileLayout`, `supportingText`, `leadingAction`, `leadingSelected` |
 | [Icon buttons](https://m3.material.io/components/icon-buttons) | `M3.IconButton` | native | `variant`: standard · filled · tonal · outlined; `size`: small · xsmall; `materialIcon`, `iconSource`, `tooltip`, `toggleable`, `selected`, `iconRotation` |
 | [FAB](https://m3.material.io/components/floating-action-button) | `M3.Fab` | wraps `FloatingActionButton` | `iconText`, `buttonText`, `expanded` (extended FAB) |
 | [Chips](https://m3.material.io/components/chips) | `M3.Chip` | native | `variant`: assist · filter · input · suggestion; `text`, `materialIcon`, `selected`, `removable`, `removeClicked()` |
@@ -93,7 +94,8 @@ existing widget rather than writing a new one, and consider adding the M3 compon
 | A whole [menu](https://m3.material.io/components/menus) container (`M3.MenuItem` is in the catalog) | `FilterableComboBox` |
 | [Search](https://m3.material.io/components/search) | `ToolbarTextField` / the launcher's search field |
 | Multi-line [text field](https://m3.material.io/components/text-fields) | `MaterialTextArea`, `StyledTextArea` |
-| [Snackbar](https://m3.material.io/components/snackbar), [Sheets](https://m3.material.io/components/bottom-sheets), [Date](https://m3.material.io/components/date-pickers) / [time pickers](https://m3.material.io/components/time-pickers), [Carousel](https://m3.material.io/components/carousel) | none yet |
+| [Date pickers](https://m3.material.io/components/date-pickers) | the sidebar's `CalendarWidget` grid, built from `M3.Button` toggles |
+| [Snackbar](https://m3.material.io/components/snackbar), [Sheets](https://m3.material.io/components/bottom-sheets), [Time pickers](https://m3.material.io/components/time-pickers), [Carousel](https://m3.material.io/components/carousel) | none yet |
 
 ### Shell foundations (not M3 components, keep using them)
 
@@ -122,15 +124,15 @@ Migrate one panel at a time and leave its behaviour alone.
 
 | Pattern | Count | Replacement |
 | --- | --- | --- |
-| `StyledToolTip` | 53 | `M3.Tooltip`, or `M3.IconButton { tooltip }` |
-| `DialogButton` | 18 | `M3.Button { variant: "text" }` |
-| Styled `RippleButton` in panels | 17 in 15 files | `M3.Button` / `M3.IconButton` / `M3.Chip` / `M3.ListItem` / `M3.MenuItem` |
-| Inline `component X: Rectangle/RippleButton` | 13 | `Divider`/`Separator`/`VerticalBarSeparator` → `M3.Divider`; `PillButton` → `M3.Button`; `ProviderCard`, `StatCard` → `M3.Card`; `TitlebarButton`, `WidgetButton`, `TrackChangeButton` → `M3.IconButton` |
+| `StyledToolTip` | 43 | `M3.Tooltip`, or `M3.IconButton { tooltip }` |
 | `RippleButtonWithIcon` | 12 | `M3.Button { materialIcon }` |
-| `MaterialTextField` | 9 | `M3.TextField` |
-| `WindowDialogSeparator` | 8 | `M3.Divider` |
-| `StyledProgressBar` | 6 | `M3.LinearProgressIndicator` |
+| Inline `component X: Rectangle/RippleButton` | 8 | `Separator` → `M3.Divider`; `TitlebarButton`, `WidgetButton` → `M3.IconButton`; `BigRecorderButton` → `M3.Button` |
+| `MaterialTextField` | 8 | `M3.TextField` |
+| `DialogButton` | 6 | `M3.Button { variant: "text" }` |
 | Hex colour literals | 4 | `regionSelector`, `screenTranslator` overlays: an `Appearance` token (`colScrim`, …) |
+| 1 px `Rectangle` dividers | 4 | `M3.Divider` |
+| `StyledProgressBar` | 3 | `M3.LinearProgressIndicator` |
+| Other wrapped widgets (`StyledSwitch`, `MaterialLoadingIndicator`) | 3 | the `M3.*` name for each |
 
-Largest areas: `sidebarRight` and `settings` (≈39 findings each), then `overlay` and
-`gmailInbox` (10 each).
+`bar` and `sidebarRight` are done. The largest area left is `settings` (39 findings),
+then `overlay` and `gmailInbox` (10 each).
