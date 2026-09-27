@@ -14,6 +14,8 @@ import qs.modules.common.widgets
  * toggleable: acts as a toggle; `selected` then picks the selected colours
  *   and fills the icon. Leave it off for plain actions. `selected` is
  *   controlled: bind it to your state and flip that state in onClicked.
+ * iconRotation: turns the icon, animated — for a chevron that flips when the
+ *   thing it opens is open.
  */
 RippleButton {
     id: root
@@ -24,6 +26,7 @@ RippleButton {
     property string tooltip: ""
     property bool toggleable: false
     property bool selected: false
+    property real iconRotation: 0
 
     // A non-toggle filled or tonal button wears its selected colours.
     readonly property bool showSelected: toggleable ? selected : (variant === "filled" || variant === "tonal")
@@ -67,6 +70,11 @@ RippleButton {
         color: root.contentColor
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
+        rotation: root.iconRotation
+
+        Behavior on rotation {
+            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+        }
     }
 
     StyledToolTip {
