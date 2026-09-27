@@ -3,48 +3,36 @@ import QtQuick.Layouts
 import qs
 import qs.services
 import qs.modules.common
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
-import qs.modules.common.functions
 import qs.modules.widgets.bar as Bar
 
-RippleButton {
+M3.Button {
     id: rightSidebarButton
 
     property bool parentHovered: false
+    // The button's own content colour, animated the way the container is.
+    property color colText: rightSidebarButton.contentColor
 
     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
     Layout.rightMargin: Appearance.rounding.screenRounding
     Layout.fillWidth: false
     Layout.fillHeight: false
 
-    implicitWidth: indicatorsRowLayout.implicitWidth + 10 * 2
-    implicitHeight: indicatorsRowLayout.implicitHeight + 5 * 2
-
-    buttonRadius: Appearance.rounding.full
-    colBackground: (rightSidebarButton.containsMouse || rightSidebarButton.parentHovered)
-                   ? Appearance.colors.colLayer1Hover
-                   : ColorUtils.transparentize(Appearance.colors.colLayer1Hover, 1)
-    colBackgroundHover: Appearance.colors.colLayer1Hover
-    colRipple: Appearance.colors.colLayer1Active
-    colBackgroundToggled: Appearance.colors.colSecondaryContainer
-    colBackgroundToggledHover: Appearance.colors.colSecondaryContainerHover
-    colRippleToggled: Appearance.colors.colSecondaryContainerActive
-    toggled: GlobalStates.sidebarRight?.opened ?? false
-
-    property color colText: toggled ? Appearance.m3colors.m3onSecondaryContainer :
-                                      Appearance.colors.colOnLayer0
+    variant: "text"
+    selected: GlobalStates.sidebarRight?.opened ?? false
+    externalHover: rightSidebarButton.parentHovered
 
     Behavior on colText {
-        animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(root)
+        animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
     }
 
     onPressed: {
         GlobalStates.sidebarRight?.toggle();
     }
 
-    RowLayout {
+    content: RowLayout {
         id: indicatorsRowLayout
-        anchors.centerIn: parent
         property real realSpacing: 15
         spacing: 0
 

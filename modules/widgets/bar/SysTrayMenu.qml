@@ -147,68 +147,24 @@ PopupWindow {
             Layout.fillWidth: true
             visible: submenu.isSubMenu
             active: visible
-            sourceComponent: RippleButton {
-                id: backButton
-                buttonRadius: popupBackground.radius - popupBackground.padding
-                horizontalPadding: 12
-                implicitWidth: contentItem.implicitWidth + horizontalPadding * 2
-                implicitHeight: 36
+            sourceComponent: M3.MenuItem {
+                density: -3
+                leadingIcon: "chevron_left"
+                text: "Back"
 
                 downAction: () => stackView.pop()
-
-                contentItem: RowLayout {
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                        left: parent.left
-                        right: parent.right
-                        leftMargin: backButton.horizontalPadding
-                        rightMargin: backButton.horizontalPadding
-                    }
-                    spacing: 8
-                    MaterialSymbol {
-                        iconSize: 20
-                        text: "chevron_left"
-                    }
-                    StyledText {
-                        Layout.fillWidth: true
-                        text: "Back"
-                    }
-                }
             }
         }
-        RippleButton {
+        M3.MenuItem {
             id: pinEntry
-            buttonRadius: popupBackground.radius - popupBackground.padding
-            horizontalPadding: 12
-            implicitWidth: contentItem.implicitWidth + horizontalPadding * 2
-            implicitHeight: 36
-            Layout.topMargin: 0
-            Layout.bottomMargin: 0
             Layout.fillWidth: true
+
+            density: -3
+            leadingIcon: "push_pin"
+            text: TrayService.isPinned(root.trayItemId) ? "Unpin" : "Pin"
 
             visible: root.trayItemId !== undefined && root.trayItemId.length > 0 && stackView.depth === 1
             releaseAction: () => TrayService.togglePin(root.trayItemId);
-
-            contentItem: RowLayout {
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: parent.left
-                    right: parent.right
-                    leftMargin: pinEntry.horizontalPadding
-                    rightMargin: pinEntry.horizontalPadding
-                }
-                spacing: 8
-
-                MaterialSymbol {
-                    iconSize: 18
-                    text: "push_pin"
-                }
-
-                StyledText {
-                    Layout.fillWidth: true
-                    text: TrayService.isPinned(root.trayItemId) ? "Unpin" : "Pin"
-                }
-            }
         }
 
         M3.Divider {
@@ -238,8 +194,6 @@ PopupWindow {
                 forceIconColumn: menuEntriesRepeater.iconColumnNeeded
                 forceSpecialInteractionColumn: menuEntriesRepeater.specialInteractionColumnNeeded
                 menuEntry: modelData
-
-                buttonRadius: popupBackground.radius - popupBackground.padding
 
                 onDismiss: root.close()
                 onOpenSubmenu: handle => {
