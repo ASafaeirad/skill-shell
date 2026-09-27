@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 import qs.modules.widgets.sidebarRight.calendar
 import qs.modules.widgets.sidebarRight.pomodoro
@@ -88,18 +89,12 @@ Rectangle {
 
         spacing: 15
 
-        CalendarHeaderButton {
+        M3.IconButton {
             Layout.margins: 10
             Layout.rightMargin: 0
-            forceCircle: true
+            materialIcon: "keyboard_arrow_up"
             downAction: () => {
                 root.setCollapsed(false);
-            }
-            contentItem: MaterialSymbol {
-                text: "keyboard_arrow_up"
-                iconSize: Appearance.font.pixelSize.larger
-                horizontalAlignment: Text.AlignHCenter
-                color: Appearance.colors.colOnLayer1
             }
         }
 
@@ -163,18 +158,12 @@ Rectangle {
                 }
             }
             // Collapse button
-            CalendarHeaderButton {
+            M3.IconButton {
                 anchors.left: parent.left
                 anchors.top: parent.top
-                forceCircle: true
+                materialIcon: "keyboard_arrow_down"
                 downAction: () => {
                     root.setCollapsed(true);
-                }
-                contentItem: MaterialSymbol {
-                    text: "keyboard_arrow_down"
-                    iconSize: Appearance.font.pixelSize.larger
-                    horizontalAlignment: Text.AlignHCenter
-                    color: Appearance.colors.colOnLayer1
                 }
             }
         }
