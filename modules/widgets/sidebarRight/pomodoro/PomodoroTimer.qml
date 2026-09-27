@@ -23,7 +23,7 @@ Item {
         // The Pomodoro timer circle
         M3.CircularProgressIndicator {
             Layout.alignment: Qt.AlignHCenter
-            lineWidth: Appearance.sizes.progressBarHeight
+            lineWidth: Appearance.sizes.pomodoroProgressLineWidth
             value: {
                 return TimerService.pomodoroSecondsLeft / TimerService.pomodoroLapDuration;
             }

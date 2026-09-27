@@ -406,6 +406,7 @@ Singleton {
         property real progressBarHeight: root.spacing.xxs * 2
         property real circularProgressSize: 48
         property real pomodoroProgressSize: 200
+        property real pomodoroProgressLineWidth: 8
         property real pomodoroCycleSize: 36
         property real pomodoroButtonWidth: 90
         property real baseBarHeight: 50
