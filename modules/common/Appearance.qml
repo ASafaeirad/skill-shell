@@ -433,6 +433,7 @@ Singleton {
         property real wallpaperSelectorItemPadding: 6
         // Material 3 component geometry, used by qs.modules.common.m3
         property real m3ButtonHeight: 40
+        property real m3QuickTileHeight: 56
         property real m3IconButtonSize: 40
         property real m3IconButtonSizeXSmall: 32
         property real m3ChipHeight: 32
