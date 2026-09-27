@@ -785,6 +785,7 @@
             A browsable field guide to the shell’s reusable controls, window
             pieces, visual effects, and canvas infrastructure.
           </p>
+          <p class="lede">Open the live QML explorer from this repository with <code>qs -p design-system.qml</code>.</p>
           <div class="stats" id="stats"></div>
         </header>
 
@@ -927,6 +928,7 @@ modules/common/widgets/StyledRectangularShadow.qml
 modules/common/widgets/StyledScrollBar.qml
 modules/common/widgets/StyledSlider.qml
 modules/common/widgets/StyledSpinBox.qml
+modules/common/widgets/StatusBadge.qml
 modules/common/widgets/StyledSwitch.qml
 modules/common/widgets/StyledTextArea.qml
 modules/common/widgets/StyledTextInput.qml
@@ -967,6 +969,7 @@ modules/widgets/gmailInbox/GmailInbox.qml
 modules/widgets/gmailInbox/GmailReadingView.qml
 modules/widgets/gmailInbox/GmailAccountsView.qml
 modules/widgets/bar/StatusIndicators.qml
+modules/widgets/designSystem/PreviewCard.qml
 modules/widgets/bar/StyledPopup.qml
 modules/widgets/bar/weather/WeatherBar.qml
 modules/widgets/bar/weather/WeatherCard.qml
@@ -982,6 +985,10 @@ modules/widgets/background/Background.qml`
         .split("\n");
 
       const exactPurposes = {
+        StatusBadge:
+          "Theme-aware status label with optional icon, four tones, and an outlined variant. The live design system explorer shows each state.",
+        PreviewCard:
+          "Reusable card that groups live QML component variants in the design system explorer.",
         CircularProgress:
           "Theme-aware circular progress for known values or an animated indeterminate state, with optional center content and a custom track color.",
         StyledProgressBar:
