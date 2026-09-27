@@ -3,6 +3,7 @@ import qs
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -17,7 +18,7 @@ WindowDialog {
         text: root.isSink ? "Audio output" : "Audio input"
     }
 
-    WindowDialogSeparator {
+    M3.Divider {
         Layout.topMargin: -22
         Layout.leftMargin: 0
         Layout.rightMargin: 0
@@ -28,8 +29,9 @@ WindowDialog {
     }
 
     WindowDialogButtonRow {
-        DialogButton {
-            buttonText: "Details"
+        M3.Button {
+            variant: "text"
+            text: "Details"
             onClicked: {
                 Quickshell.execDetached(["bash", "-c", `${Apps.volumeMixer}`]);
                 GlobalStates.sidebarRight?.close();
@@ -40,8 +42,9 @@ WindowDialog {
             Layout.fillWidth: true
         }
 
-        DialogButton {
-            buttonText: "Done"
+        M3.Button {
+            variant: "text"
+            text: "Done"
             onClicked: root.dismiss()
         }
     }
