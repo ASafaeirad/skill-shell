@@ -982,6 +982,12 @@ modules/widgets/background/Background.qml`
         .split("\n");
 
       const exactPurposes = {
+        CircularProgress:
+          "Theme-aware circular progress for known values or an animated indeterminate state, with optional center content and a custom track color.",
+        StyledProgressBar:
+          "Material 3 linear progress with determinate and indeterminate modes, a separated remainder track and stop marker, and an optional wavy active indicator with independent stroke width, wave height, and speed.",
+        StyledIndeterminateProgressBar:
+          "Compatibility wrapper for StyledProgressBar in indeterminate mode.",
         Background:
           "Desktop wallpaper panel that scales images to cover the screen or fit the full image, according to the wallpaper zoom setting.",
         FansConfig:
@@ -1031,7 +1037,7 @@ modules/widgets/background/Background.qml`
         MediaGrabber:
           "yt-dlp media grabber overlay with IPC toggle, open, close and grab(url) plus a global shortcut; opening the idle widget fills its link field from a clipboard HTTP(S) URL, which then fetches on its own, closing resets the form, and active downloads finish in the YtDlp service after it closes.",
         MediaGrabberContent:
-          "Media grabber card with an always-present link field that auto-fetches once the link settles and only once the field holds a link, a status chip for paste, not-a-link, fetching, platform, saved and unsupported, an inline error banner, thumbnail and title summary, video or audio format toggle with the site\u2019s real qualities and size estimates, a download action with the estimated size, wavy download progress with transferred bytes, speed and cancel, a saved state with show-in-folder and new, a retry action for failed downloads, and a per-view keyboard hint footer.",
+          "Media grabber card with an always-present link field that auto-fetches once the link settles and only once the field holds a link, a status chip for paste, not-a-link, fetching, platform, saved and unsupported, an inline error banner, thumbnail and title summary, video or audio format toggle with the site\u2019s real qualities and size estimates, a download action with the estimated size, a thick wavy progress line on a thin track with transferred bytes, speed and cancel, a saved state with show-in-folder and new, a retry action for failed downloads, and a per-view keyboard hint footer.",
         OverlayDialog:
           "Lifecycle host for the script-driven overlay dialogs: owns the GlobalStates flag, the window that lives only while the dialog is open, the enter/exit animation handshake and the fifo result writer.",
         OverlayDialogCard:
