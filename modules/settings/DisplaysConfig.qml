@@ -43,9 +43,10 @@ ContentPage {
             Layout.fillWidth: true
             spacing: 8
 
-            RippleButtonWithIcon {
+            M3.Button {
+                variant: "tonal"
                 materialIcon: "refresh"
-                mainText: "Refresh"
+                text: "Refresh"
                 onClicked: Monitors.refresh()
             }
 
@@ -236,7 +237,7 @@ ContentPage {
                         color: Appearance.colors.colSubtext
                     }
 
-                    StyledSwitch {
+                    M3.Switch {
                         checked: card.selEnabled
                         onToggled: card.selEnabled = checked
                     }
@@ -408,10 +409,10 @@ ContentPage {
             Layout.fillWidth: true
         }
 
-        RippleButtonWithIcon {
-            primary: true
+        M3.Button {
+            variant: "filled"
             materialIcon: "save"
-            mainText: "Save all changes"
+            text: "Save all changes"
             onClicked: root.saveAll()
         }
     }

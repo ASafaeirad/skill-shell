@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 
 ContentPage {
@@ -22,7 +23,7 @@ ContentPage {
             text: "Qt apps"
             configKey: "appearance.wallpaperTheming.enableQtApps"
 
-            StyledToolTip {
+            M3.Tooltip {
                 text: "Shell & utilities theming must also be enabled"
             }
 
@@ -33,7 +34,7 @@ ContentPage {
             text: "Terminal"
             configKey: "appearance.wallpaperTheming.enableTerminal"
 
-            StyledToolTip {
+            M3.Tooltip {
                 text: "Shell & utilities theming must also be enabled"
             }
 
@@ -44,13 +45,13 @@ ContentPage {
             text: "Set GTK theme on switch"
             configKey: "appearance.wallpaperTheming.gtkTheme.enable"
 
-            StyledToolTip {
+            M3.Tooltip {
                 text: "Applies the theme names below via gsettings whenever the wallpaper or light/dark mode changes. Turn off to keep your own gtk-theme."
             }
 
         }
 
-        MaterialTextArea {
+        M3.TextArea {
             Layout.fillWidth: true
             placeholderText: "GTK theme for light mode (e.g. adw-gtk3)"
             text: Config.options.appearance.wallpaperTheming.gtkTheme.light
@@ -60,7 +61,7 @@ ContentPage {
             }
         }
 
-        MaterialTextArea {
+        M3.TextArea {
             Layout.fillWidth: true
             placeholderText: "GTK theme for dark mode (e.g. adw-gtk3-dark)"
             text: Config.options.appearance.wallpaperTheming.gtkTheme.dark
@@ -78,7 +79,7 @@ ContentPage {
                 text: "Force dark mode in terminal"
                 configKey: "appearance.wallpaperTheming.terminalGenerationProps.forceDarkMode"
 
-                StyledToolTip {
+                M3.Tooltip {
                     text: "Ignored if terminal theming is not enabled"
                 }
 

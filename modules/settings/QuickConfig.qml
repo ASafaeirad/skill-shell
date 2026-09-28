@@ -59,9 +59,14 @@ ContentPage {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignTop
 
-                RippleButtonWithIcon {
+                M3.Button {
+                    variant: "tonal"
                     Layout.fillWidth: true
                     materialIcon: "wallpaper"
+                    text: "Choose file"
+                    M3.Tooltip {
+                        text: "Pick wallpaper image on your system"
+                    }
                     onClicked: {
                         Quickshell.execDetached([
                             "qs",
@@ -72,23 +77,6 @@ ContentPage {
                             "wallpaperSelector",
                             "toggle"
                         ]);
-                    }
-
-                    M3.Tooltip {
-                        text: "Pick wallpaper image on your system"
-                    }
-
-                    mainContentComponent: Component {
-                        RowLayout {
-                            spacing: 10
-
-                            StyledText {
-                                font.pixelSize: Appearance.font.pixelSize.small
-                                text: "Choose file"
-                                color: Appearance.colors.colOnSecondaryContainer
-                            }
-                        }
-
                     }
 
                 }
