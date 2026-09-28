@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import qs.modules.common
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
 import qs.services
 
@@ -43,7 +44,7 @@ Item {
         descriptionHorizontalAlignment: Text.AlignHCenter
     }
 
-    ButtonGroup {
+    M3.ButtonGroup {
         id: statusRow
 
         anchors {
@@ -52,24 +53,28 @@ Item {
             bottom: parent.bottom
         }
 
-        NotificationStatusButton {
+        M3.Button {
             Layout.fillWidth: false
-            buttonIcon: "notifications_paused"
-            toggled: Notifications.silent
+            variant: "tonal"
+            toggleable: true
+            materialIcon: "notifications_paused"
+            selected: Notifications.silent
             onClicked: () => {
                 Notifications.silent = !Notifications.silent;
             }
         }
 
-        NotificationStatusButton {
+        M3.Button {
             enabled: false
             Layout.fillWidth: true
-            buttonText: "%1 notifications".arg(Notifications.list.length)
+            variant: "tonal"
+            text: "%1 notifications".arg(Notifications.list.length)
         }
 
-        NotificationStatusButton {
+        M3.Button {
             Layout.fillWidth: false
-            buttonIcon: "delete_sweep"
+            variant: "tonal"
+            materialIcon: "delete_sweep"
             onClicked: () => {
                 Notifications.discardAllNotifications();
             }

@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 
 ContentPage {
@@ -16,7 +17,7 @@ ContentPage {
             text: 'Use Hyprlock (instead of Quickshell)'
             configKey: "lock.useHyprlock"
 
-            StyledToolTip {
+            M3.Tooltip {
                 text: "If you want to somehow use fingerprint unlock..."
             }
 
@@ -36,7 +37,7 @@ ContentPage {
                 text: 'Require password to power off/restart'
                 configKey: "lock.security.requirePasswordToPower"
 
-                StyledToolTip {
+                M3.Tooltip {
                     text: "Remember that on most devices one can always hold the power button to force shutdown\nThis only makes it a tiny bit harder for accidents to happen"
                 }
 
@@ -47,7 +48,7 @@ ContentPage {
                 text: 'Also unlock keyring'
                 configKey: "lock.security.unlockKeyring"
 
-                StyledToolTip {
+                M3.Tooltip {
                     text: "This is usually safe and needed for your browser and AI sidebar anyway\nMostly useful for those who use lock on startup instead of a display manager that does it (GDM, SDDM, etc.)"
                 }
 
@@ -112,7 +113,7 @@ ContentPage {
             text: "Force specific monitor"
             configKey: "notifications.forceMonitor.enable"
 
-            StyledToolTip {
+            M3.Tooltip {
                 text: "If you have multiple monitors and want notifications to only show on one of them, enable this and enter the monitor name below (e.g., eDP-1)"
             }
 
@@ -194,7 +195,7 @@ ContentPage {
                     text: 'Content'
                     configKey: "regionSelector.targetRegions.content"
 
-                    StyledToolTip {
+                    M3.Tooltip {
                         text: "Could be images or parts of the screen that have some containment.\nMight not always be accurate.\nThis is done with an image processing algorithm run locally and no AI is used."
                     }
 
@@ -260,7 +261,8 @@ ContentPage {
         ConfigRow {
             uniform: true
 
-            ConfigSelectionArray {
+            M3.ButtonGroup {
+                    variant: "segmented"
                 configKey: "overview.orderRightLeft"
                 options: [{
                     "displayName": "Left to right",
@@ -273,7 +275,8 @@ ContentPage {
                 }]
             }
 
-            ConfigSelectionArray {
+            M3.ButtonGroup {
+                    variant: "segmented"
                 configKey: "overview.orderBottomUp"
                 options: [{
                     "displayName": "Top-down",

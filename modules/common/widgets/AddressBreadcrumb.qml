@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 
 ListView {
@@ -25,21 +26,21 @@ ListView {
     spacing: 2
     model: breadcrumbDirectory.split("/")
 
-    delegate: SelectionGroupButton {
+    delegate: M3.Button {
         id: folderButton
+        variant: "outlined"
+        toggleable: true
 
         required property var modelData
         required property int index
 
-        buttonText: index === 0 ? "/" : modelData
-        toggled: {
+        text: index === 0 ? "/" : modelData
+        selected: {
             if (directory.trim() === "/")
                 return index === 0;
 
             return index === directory.split("/").length - 1;
         }
-        leftmost: index === 0
-        rightmost: index === breadcrumbDirectory.split("/").length - 1
         onClicked: {
             root.navigateToDirectory(breadcrumbDirectory.split("/").slice(0, index + 1).join("/"));
         }

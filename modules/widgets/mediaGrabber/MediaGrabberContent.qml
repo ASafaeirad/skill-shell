@@ -448,73 +448,20 @@ OverlayDialogCard {
                     }
 
                     // Video or audio
-                    Rectangle {
+                    M3.ButtonGroup {
+                        variant: "segmented"
                         Layout.fillWidth: true
-                        implicitHeight: formatRow.implicitHeight + Appearance.spacing.xxs * 2
-                        radius: Appearance.rounding.normal
-                        color: Appearance.colors.colLayer1
-
-                        RowLayout {
-                            id: formatRow
-
-                            anchors.fill: parent
-                            anchors.margins: Appearance.spacing.xxs
-                            spacing: Appearance.spacing.xxs
-
-                            Repeater {
-                                model: [
-                                    {
-                                        key: "video",
-                                        label: "Video",
-                                        symbol: "movie"
-                                    },
-                                    {
-                                        key: "audio",
-                                        label: "Audio",
-                                        symbol: "music_note"
-                                    }
-                                ]
-                                delegate: RippleButton {
-                                    id: formatOption
-
-                                    required property var modelData
-                                    readonly property bool selected: YtDlp.format === modelData.key
-
-                                    Layout.fillWidth: true
-                                    implicitHeight: root.chipHeight
-                                    buttonRadius: Appearance.rounding.small
-                                    toggled: formatOption.selected
-                                    // A settled picker stops reacting but stays
-                                    // legible: it says what is being downloaded.
-                                    pointingHandCursor: !root.locked
-                                    rippleEnabled: !root.locked
-                                    colBackgroundHover: root.locked ? colBackground : Appearance.colors.colLayer1Hover
-                                    colBackgroundToggledHover: root.locked ? colBackgroundToggled : Appearance.colors.colPrimaryHover
-                                    onClicked: {
-                                        if (!root.locked)
-                                            YtDlp.format = modelData.key;
-                                    }
-
-                                    contentItem: Item {
-                                        RowLayout {
-                                            anchors.centerIn: parent
-                                            spacing: Appearance.spacing.xs
-
-                                            MaterialSymbol {
-                                                text: formatOption.modelData.symbol
-                                                iconSize: Appearance.font.pixelSize.small
-                                                color: formatOption.selected ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer1
-                                            }
-                                            StyledText {
-                                                text: formatOption.modelData.label
-                                                font.pixelSize: Appearance.font.pixelSize.smaller
-                                                color: formatOption.selected ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer1
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        equalWidth: true
+                        surface: true
+                        compact: true
+                        padding: Appearance.spacing.xxs
+                        currentValue: YtDlp.format
+                        readOnly: root.locked
+                        options: [
+                            { "value": "video", "displayName": "Video", "icon": "movie" },
+                            { "value": "audio", "displayName": "Audio", "icon": "music_note" }
+                        ]
+                        onSelected: value => YtDlp.format = value
                     }
 
                     // The qualities the site actually offers for that format
@@ -524,45 +471,14 @@ OverlayDialogCard {
 
                         Repeater {
                             model: YtDlp.qualities
-                            delegate: RippleButton {
-                                id: qualityOption
-
+                            delegate: M3.Chip {
                                 required property var modelData
-                                readonly property bool selected: YtDlp.selectedQuality?.key === modelData.key
-
-                                implicitHeight: root.chipHeight
-                                implicitWidth: qualityLabel.implicitWidth + Appearance.spacing.m * 2
-                                buttonRadius: Appearance.rounding.full
-                                toggled: qualityOption.selected
-                                pointingHandCursor: !root.locked
-                                rippleEnabled: !root.locked
-                                colBackground: "transparent"
-                                colBackgroundHover: root.locked ? "transparent" : Appearance.colors.colLayer1Hover
-                                colBackgroundToggled: Appearance.colors.colSecondaryContainer
-                                colBackgroundToggledHover: root.locked ? colBackgroundToggled : Appearance.colors.colSecondaryContainerHover
-                                colRippleToggled: Appearance.colors.colSecondaryContainerActive
-                                // The outline belongs on the chip's own bounds:
-                                // inside the contentItem it would sit a padding
-                                // in and read smaller than a selected chip.
-                                colBorder: Appearance.colors.colOutlineVariant
-                                borderWidth: qualityOption.selected ? 0 : Appearance.spacing.xxs / 2
-                                // The label is centred in the chip itself, not
-                                // in a box inset by the Control's padding.
-                                padding: 0
-                                onClicked: {
-                                    if (!root.locked)
-                                        YtDlp.quality = modelData.key;
-                                }
-
-                                contentItem: StyledText {
-                                    id: qualityLabel
-
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                    text: qualityOption.modelData.label
-                                    font.pixelSize: Appearance.font.pixelSize.smaller
-                                    color: qualityOption.selected ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer1
-                                }
+                                variant: "filter"
+                                text: modelData.label
+                                selected: YtDlp.selectedQuality?.key === modelData.key
+                                readOnly: root.locked
+                                compact: true
+                                onClicked: if (!root.locked) YtDlp.quality = modelData.key
                             }
                         }
                     }

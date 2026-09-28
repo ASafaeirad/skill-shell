@@ -6,6 +6,7 @@ import qs.services
 import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 
 ContentPage {
     id: root
@@ -58,7 +59,7 @@ ContentPage {
                 buttonIcon: "pause"
                 text: "Automatic suspend"
                 configKey: "battery.automaticSuspend"
-                StyledToolTip {
+                M3.Tooltip {
                     text: "Automatically suspends the system when battery is low"
                 }
             }
@@ -92,12 +93,13 @@ ContentPage {
             buttonIcon: "settings_power"
             text: "Manage power profile"
             configKey: "battery.autoPowerProfile"
-            StyledToolTip {
+            M3.Tooltip {
                 text: "Lets the shell set the power profile and refresh rate. Off means nothing is applied automatically and the mode below is ignored."
             }
         }
 
-        ConfigSelectionArray {
+        M3.ButtonGroup {
+                    variant: "segmented"
             enabled: Config.options.battery.autoPowerProfile
             configKey: "battery.powerMode"
             options: [
@@ -146,7 +148,7 @@ ContentPage {
             buttonIcon: "pace"
             text: "Second precision"
             configKey: "time.secondPrecision"
-            StyledToolTip {
+            M3.Tooltip {
                 text: "Enable if you want clocks to show seconds accurately"
             }
         }
@@ -155,7 +157,8 @@ ContentPage {
             title: "Format"
             tooltip: ""
 
-            ConfigSelectionArray {
+            M3.ButtonGroup {
+                    variant: "segmented"
                 currentValue: Config.options.time.format
                 onSelected: newValue => {
                     if (newValue === "hh:mm") {

@@ -1,6 +1,7 @@
 import qs
 import qs.services
 import qs.modules.common
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
 import QtQuick
 import QtQuick.Controls
@@ -216,14 +217,13 @@ Item {
     component SystemButtonRow: Item {
         implicitHeight: systemButtonsRow.implicitHeight
 
-        ButtonGroup {
+        M3.ButtonGroup {
             id: systemButtonsRow
             anchors {
                 top: parent.top
                 bottom: parent.bottom
                 right: parent.right
             }
-            color: Appearance.colors.colLayer1
             padding: 4
 
             QuickToggleButton {
