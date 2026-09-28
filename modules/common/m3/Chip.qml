@@ -13,6 +13,7 @@ import qs.modules.common.widgets
  * variant: "assist" (default) | "filter" | "input" | "suggestion"
  * selected: filter and input chips; a selected filter chip shows a check mark.
  *   Controlled: bind it and flip your state in onClicked.
+ * readOnly: swallow pointer input while retaining the selected colors.
  * removable: input chips get a trailing close icon that emits removeClicked().
  */
 RippleButton {
@@ -78,10 +79,17 @@ RippleButton {
             MouseArea {
                 anchors.fill: parent
                 anchors.margins: -Appearance.spacing.xs
-                enabled: root.enabled
+                enabled: root.enabled && !root.readOnly
                 cursorShape: Qt.PointingHandCursor
                 onClicked: root.removeClicked()
             }
         }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        enabled: root.readOnly
+        acceptedButtons: Qt.AllButtons
+        cursorShape: Qt.ArrowCursor
     }
 }
