@@ -226,36 +226,41 @@ Item {
             }
             padding: 4
 
-            QuickToggleButton {
-                toggled: root.editMode
+            M3.IconButton {
+                variant: "filled"
+                toggleable: true
+                selected: root.editMode
                 visible: Config.options.sidebar.quickToggles.style === "android"
-                buttonIcon: "edit"
+                materialIcon: "edit"
                 onClicked: root.editMode = !root.editMode
                 tooltip: "Edit quick toggles" + (root.editMode
                                                   ? "\nLMB to enable/disable\nRMB to toggle size\nScroll to swap position" :
                                                     "")
             }
-            QuickToggleButton {
-                toggled: false
-                buttonIcon: "restart_alt"
+            M3.IconButton {
+                variant: "filled"
+                toggleable: true
+                materialIcon: "restart_alt"
                 onClicked: {
                     Quickshell.execDetached(["hyprctl", "reload"]);
                     Quickshell.reload(true);
                 }
                 tooltip: "Reload Hyprland & Quickshell"
             }
-            QuickToggleButton {
-                toggled: false
-                buttonIcon: "settings"
+            M3.IconButton {
+                variant: "filled"
+                toggleable: true
+                materialIcon: "settings"
                 onClicked: {
                     GlobalStates.sidebarRight?.close();
                     Quickshell.execDetached(["qs", "-p", root.settingsQmlPath]);
                 }
                 tooltip: "Settings"
             }
-            QuickToggleButton {
-                toggled: false
-                buttonIcon: "power_settings_new"
+            M3.IconButton {
+                variant: "filled"
+                toggleable: true
+                materialIcon: "power_settings_new"
                 onClicked: {
                     GlobalStates.session?.open();
                 }
