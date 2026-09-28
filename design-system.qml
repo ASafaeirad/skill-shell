@@ -480,6 +480,13 @@ ApplicationWindow {
                     onClicked: exampleOverlay.open()
                 }
             }
+            PreviewCard {
+                title: "Error supporting text"
+                M3.DialogParagraph {
+                    error: true
+                    text: "Incorrect passphrase"
+                }
+            }
             M3.DialogOverlay {
                 id: exampleOverlay
                 layerNamespace: "quickshell:designSystemDialog"
