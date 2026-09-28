@@ -454,6 +454,8 @@ Singleton {
         property real m3BadgeSmallSize: 6
         property real m3BadgeLargeSize: 16
         property real m3DividerThickness: 1
+        property real m3SnackbarSingleLineHeight: 48
+        property real m3SnackbarTwoLineHeight: 68
         property real m3OutlineWidth: 1
     }
 

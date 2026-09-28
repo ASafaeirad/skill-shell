@@ -78,6 +78,7 @@ then move into this directory later without changing any callers.
 | [Progress indicators](https://m3.material.io/components/progress-indicators) | `M3.CircularProgressIndicator` | wraps `CircularProgress` | `value`, `indeterminate`, `fill`, `implicitSize` |
 | [Loading indicator](https://m3.material.io/components/loading-indicator) | `M3.LoadingIndicator` | wraps `MaterialLoadingIndicator` | `loading` |
 | [Tooltips](https://m3.material.io/components/tooltips) | `M3.Tooltip` | wraps `StyledToolTip` | `text`, `extraVisibleCondition`; `M3.IconButton` has a `tooltip` property already |
+| [Snackbar](https://m3.material.io/components/snackbar) | `M3.Snackbar` | native | `variant`: single-line · two-line; `text`, `supportingText`, `leadingIcon`, `actionText`, `actionTooltip`, `progress`, `actionClicked()` |
 | [Navigation rail](https://m3.material.io/components/navigation-rail) | `M3.NavigationRail` | wraps `NavigationRailTabs` | `model: [{ name, icon }]`, `currentIndex`, `expanded`, `tabSelected(index)` |
 | [Tabs](https://m3.material.io/components/tabs) | `M3.Tabs` + `M3.Tab` | wraps `SecondaryTabBar` + `SecondaryTabButton` | `currentIndex`, `incrementCurrentIndex()`, `decrementCurrentIndex()`; tab `text`, `materialIcon` |
 
@@ -95,7 +96,7 @@ existing widget rather than writing a new one, and consider adding the M3 compon
 | [Search](https://m3.material.io/components/search) | `ToolbarTextField` / the launcher's search field |
 | Multi-line [text field](https://m3.material.io/components/text-fields) | `MaterialTextArea`, `StyledTextArea` |
 | [Date pickers](https://m3.material.io/components/date-pickers) | the sidebar's `CalendarWidget` grid, built from `M3.Button` toggles |
-| [Snackbar](https://m3.material.io/components/snackbar), [Sheets](https://m3.material.io/components/bottom-sheets), [Time pickers](https://m3.material.io/components/time-pickers), [Carousel](https://m3.material.io/components/carousel) | none yet |
+| [Sheets](https://m3.material.io/components/bottom-sheets), [Time pickers](https://m3.material.io/components/time-pickers), [Carousel](https://m3.material.io/components/carousel) | none yet |
 
 ### Shell foundations (not M3 components, keep using them)
 

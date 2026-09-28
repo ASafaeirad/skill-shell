@@ -21,7 +21,7 @@ ApplicationWindow {
     // with no M3 counterpart. Keep in sync with modules/common/m3/README.md.
     readonly property var m3Tabs: [
         "Button", "IconButton", "Fab", "Chip", "Card", "ListItem", "MenuItem", "ExposedDropdownMenu", "Divider", "Badge",
-        "Checkbox", "RadioButton", "Switch", "Slider", "TextField", "Tabs",
+        "Checkbox", "RadioButton", "Switch", "Slider", "TextField", "Tabs", "Snackbar",
         "LinearProgressIndicator", "CircularProgressIndicator", "LoadingIndicator"
     ]
     readonly property var shellTabs: [
@@ -46,6 +46,7 @@ ApplicationWindow {
         "Slider": "tune",
         "TextField": "text_fields",
         "Tabs": "tab",
+        "Snackbar": "info",
         "LinearProgressIndicator": "linear_scale",
         "CircularProgressIndicator": "progress_activity",
         "LoadingIndicator": "hourglass_empty",
@@ -62,6 +63,7 @@ ApplicationWindow {
         "IconButton": ["standard", "filled", "tonal", "outlined"],
         "Chip": ["assist", "filter", "input", "suggestion"],
         "Card": ["filled", "elevated", "outlined"],
+        "Snackbar": ["single-line", "two-line"],
         "StatusBadge": ["neutral", "primary", "success", "error"]
     })
     readonly property string currentComponent: tabs[currentTab]
@@ -118,6 +120,7 @@ ApplicationWindow {
         case "Slider": return sliderPage;
         case "TextField": return textFieldPage;
         case "Tabs": return tabsPage;
+        case "Snackbar": return snackbarPage;
         case "LinearProgressIndicator": return linearProgressPage;
         case "CircularProgressIndicator": return circularPage;
         case "LoadingIndicator": return loadingPage;
@@ -696,6 +699,50 @@ ApplicationWindow {
                         variant: modelData
                         StyledText { text: modelData; color: Appearance.colors.colOnSurface }
                     }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: snackbarPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "Snackbar"
+                guideline: "snackbar"
+                detail: "Brief feedback with an optional action. A second line and countdown can describe an undo window."
+            }
+            PreviewCard {
+                title: "Live snackbar"
+                M3.Snackbar {
+                    width: Appearance.spacing.xxl * 12
+                    variant: root.sampleVariant
+                    text: root.sampleText
+                    supportingText: "Message details"
+                    leadingIcon: root.sampleIcon
+                    actionText: "Undo"
+                    actionTooltip: "Undo action"
+                    progress: root.sampleVariant === "two-line" ? root.sampleValue : -1
+                    enabled: root.sampleEnabled
+                    onActionClicked: root.sampleText = "Undone"
+                }
+            }
+            PreviewCard {
+                title: "Variants"
+                M3.Snackbar {
+                    width: Appearance.spacing.xxl * 10
+                    text: "Changes saved"
+                    actionText: "Undo"
+                }
+                M3.Snackbar {
+                    width: Appearance.spacing.xxl * 12
+                    variant: "two-line"
+                    text: "Moved to trash"
+                    supportingText: "Alex · Meeting notes"
+                    leadingIcon: "delete"
+                    actionText: "Undo"
+                    progress: root.sampleValue
                 }
             }
         }
