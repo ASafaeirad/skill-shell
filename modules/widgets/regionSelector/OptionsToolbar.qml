@@ -15,7 +15,7 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 
 // Options toolbar
-Toolbar {
+M3.Toolbar {
     id: root
 
     // Use a synchronizer on this
