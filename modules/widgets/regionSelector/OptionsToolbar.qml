@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 import qs
 import qs.modules.common
+import qs.modules.common.m3 as M3
 import qs.modules.common.functions
 import qs.modules.common.widgets
 import qs.services
@@ -25,13 +26,12 @@ Toolbar {
     signal dismiss()
     signal captureModeSelected(int index)
 
-    ToolbarTabBar {
+    M3.Tabs {
         id: captureModeTabBar
-        tabButtonList: [
-            {"icon": "photo_camera", "name": "Shot"},
-            {"icon": "videocam", "name": "Record"},
-            {"icon": "mic", "name": "Record + audio"}
-        ]
+        variant: "compact"
+        M3.Tab { variant: "compact"; materialIcon: "photo_camera"; text: "Shot" }
+        M3.Tab { variant: "compact"; materialIcon: "videocam"; text: "Record" }
+        M3.Tab { variant: "compact"; materialIcon: "mic"; text: "Record + audio" }
         currentIndex: switch (root.action) {
         case RegionSelection.SnipAction.Record:
             return 1;
