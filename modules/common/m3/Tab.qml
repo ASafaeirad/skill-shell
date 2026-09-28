@@ -35,22 +35,25 @@ TabButton {
         Behavior on color { animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this) }
     }
 
-    contentItem: RowLayout {
-        id: contentRow
-        spacing: Appearance.spacing.xs
+    contentItem: Item {
+        RowLayout {
+            id: contentRow
+            anchors.centerIn: parent
+            spacing: Appearance.spacing.xs
 
-        MaterialSymbol {
-            visible: root.materialIcon.length > 0
-            text: root.materialIcon
-            iconSize: Appearance.font.pixelSize.huge
-            fill: root.checked ? 1 : 0
-            color: root.labelColor
-        }
-        StyledText {
-            text: root.text
-            font.pixelSize: Appearance.font.pixelSize.small
-            color: root.labelColor
-            verticalAlignment: Text.AlignVCenter
+            MaterialSymbol {
+                visible: root.materialIcon.length > 0
+                text: root.materialIcon
+                iconSize: Appearance.font.pixelSize.huge
+                fill: root.checked ? 1 : 0
+                color: root.labelColor
+            }
+            StyledText {
+                text: root.text
+                font.pixelSize: Appearance.font.pixelSize.small
+                color: root.labelColor
+                verticalAlignment: Text.AlignVCenter
+            }
         }
     }
 }
