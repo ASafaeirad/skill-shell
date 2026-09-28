@@ -9,6 +9,7 @@ import qs.services
 import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 
 Panel {
     id: root
@@ -411,7 +412,7 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                             }
                         }
 
-                        StyledProgressBar {
+                        M3.LinearProgressIndicator {
                             visible: Gmail.syncing && Gmail.messages.length === 0
                             Layout.fillWidth: true
                             indeterminate: true
@@ -720,7 +721,7 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                                                     Gmail.messageAction(row.modelData, operation);
                                                             }
                                                         }
-                                                        StyledToolTip {
+                                                        M3.Tooltip {
                                                             extraVisibleCondition: actionHover.containsMouse
                                                             text: actionButton.modelData.title
                                                         }
@@ -767,93 +768,18 @@ ${Qt.formatTime(Gmail.lastSync, "hh:mm")}.` : "No cached inbox to show yet."
                                                 anchors.fill: parent
                                             }
                                         }
-                                        Rectangle {
-                                            id: undoBar
+                                        M3.Snackbar {
                                             anchors.fill: parent
                                             z: 4
                                             visible: row.removal !== null
-                                            color: Appearance.colors.colSecondaryContainer
-                                            readonly property bool trashing: row.removal?.operation === "trash"
-
-                                            // Swallow clicks and hover so the row underneath stays inert.
-                                            MouseArea {
-                                                anchors.fill: parent
-                                                hoverEnabled: true
-                                            }
-
-                                            RowLayout {
-                                                anchors.fill: parent
-                                                anchors.leftMargin: Appearance.spacing.lg
-                                                anchors.rightMargin: Appearance.spacing.s
-                                                spacing: Appearance.spacing.m
-                                                MaterialSymbol {
-                                                    Layout.alignment: Qt.AlignVCenter
-                                                    text: undoBar.trashing ? "delete" : "archive"
-                                                    iconSize: Appearance.font.pixelSize.larger
-                                                    color: Appearance.m3colors.m3onSecondaryContainer
-                                                }
-                                                ColumnLayout {
-                                                    Layout.fillWidth: true
-                                                    spacing: Appearance.spacing.xxs
-                                                    StyledText {
-                                                        Layout.fillWidth: true
-                                                        text: undoBar.trashing ? "Moved to trash" : "Archived"
-                                                        font.pixelSize: Appearance.font.pixelSize.smallie
-                                                        color: Appearance.m3colors.m3onSecondaryContainer
-                                                        elide: Text.ElideRight
-                                                    }
-                                                    StyledText {
-                                                        Layout.fillWidth: true
-                                                        text: `${row.modelData.sender} · ${row.modelData.subject}`
-                                                        font.pixelSize: Appearance.font.pixelSize.smallest
-                                                        color: Appearance.m3colors.m3onSecondaryContainer
-                                                        elide: Text.ElideRight
-                                                    }
-                                                }
-                                                Rectangle {
-                                                    Layout.alignment: Qt.AlignVCenter
-                                                    implicitWidth: undoContent.implicitWidth + Appearance.spacing.s
-                                                                   + Appearance.spacing.lg
-                                                    implicitHeight: Appearance.spacing.xxl
-                                                    radius: Appearance.rounding.full
-                                                    color: undoHover.containsMouse
-                                                           ? Appearance.colors.colSecondaryContainerHover : "transparent"
-                                                    RowLayout {
-                                                        id: undoContent
-                                                        anchors.verticalCenter: parent.verticalCenter
-                                                        x: Appearance.spacing.s
-                                                        spacing: Appearance.spacing.xs
-                                                        MaterialSymbol {
-                                                            text: "undo"
-                                                            iconSize: Appearance.font.pixelSize.normal
-                                                            color: Appearance.colors.colPrimary
-                                                        }
-                                                        StyledText {
-                                                            text: "Undo"
-                                                            font.pixelSize: Appearance.font.pixelSize.smaller
-                                                            color: Appearance.colors.colPrimary
-                                                        }
-                                                    }
-                                                    MouseArea {
-                                                        id: undoHover
-                                                        anchors.fill: parent
-                                                        hoverEnabled: true
-                                                        cursorShape: Qt.PointingHandCursor
-                                                        onClicked: Gmail.undoRemoval(row.modelData)
-                                                    }
-                                                    StyledToolTip {
-                                                        extraVisibleCondition: undoHover.containsMouse
-                                                        text: "Undo (Ctrl+Z)"
-                                                    }
-                                                }
-                                            }
-                                            Rectangle {
-                                                anchors.left: parent.left
-                                                anchors.bottom: parent.bottom
-                                                width: parent.width * row.undoProgress
-                                                height: Appearance.spacing.xxs
-                                                color: Appearance.colors.colPrimary
-                                            }
+                                            variant: "two-line"
+                                            leadingIcon: row.removal?.operation === "trash" ? "delete" : "archive"
+                                            text: row.removal?.operation === "trash" ? "Moved to trash" : "Archived"
+                                            supportingText: `${row.modelData.sender} · ${row.modelData.subject}`
+                                            actionText: "Undo"
+                                            actionTooltip: "Undo (Ctrl+Z)"
+                                            progress: row.undoProgress
+                                            onActionClicked: Gmail.undoRemoval(row.modelData)
                                         }
                                     }
                                 }
