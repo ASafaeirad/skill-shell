@@ -2,6 +2,7 @@ import qs
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.modules.common.functions
 import QtQuick
 import QtQuick.Controls
@@ -345,10 +346,9 @@ MouseArea {
                             bottomMargin: 8
                         }
                         spacing: 6
-                        Toolbar {
+                        M3.Toolbar {
 
-                            IconToolbarButton {
-                                implicitWidth: height
+                            M3.IconButton {
                                 onClicked: {
                                     Wallpapers.openFallbackPicker(root.useDarkMode);
                                     root.dismissRequested();
@@ -358,39 +358,29 @@ MouseArea {
                                     root.dismissRequested();
                                     Config.options.wallpaperSelector.useSystemFileDialog = true;
                                 }
-                                text: "open_in_new"
-                                StyledToolTip {
-                                    text: "Use the system file picker instead\nRight-click to make this the default behavior"
-                                }
+                                materialIcon: "open_in_new"
+                                tooltip: "Use the system file picker instead\nRight-click to make this the default behavior"
                             }
 
-                            IconToolbarButton {
-                                implicitWidth: height
+                            M3.IconButton {
                                 onClicked: {
                                     Wallpapers.randomFromCurrentFolder();
                                 }
-                                text: "ifl"
-                                StyledToolTip {
-                                    text: "Pick random from this folder"
-                                }
+                                materialIcon: "ifl"
+                                tooltip: "Pick random from this folder"
                             }
 
-                            IconToolbarButton {
-                                implicitWidth: height
+                            M3.IconButton {
                                 onClicked: root.useDarkMode = !root.useDarkMode
-                                text: root.useDarkMode ? "dark_mode" : "light_mode"
-                                StyledToolTip {
-                                    text: "Click to toggle light/dark mode\n(applied when wallpaper is chosen)"
-                                }
+                                materialIcon: root.useDarkMode ? "dark_mode" : "light_mode"
+                                tooltip: "Click to toggle light/dark mode\n(applied when wallpaper is chosen)"
                             }
 
-                            ToolbarTextField {
+                            M3.SearchBar {
                                 id: filterField
-                                placeholderText: focus ? "Search wallpapers" : "Hit \"/\" to search"
-
-                                // Style
+                                compact: true
                                 clip: true
-                                font.pixelSize: Appearance.font.pixelSize.small
+                                placeholderText: focus ? "Search wallpapers" : "Hit \"/\" to search"
 
                                 // Search
                                 onTextChanged: {
@@ -419,12 +409,14 @@ MouseArea {
                             }
                         }
 
-                        ToolbarPairedFab {
+                        M3.Fab {
+                            anchors.verticalCenter: parent.verticalCenter
+                            variant: "tertiary"
+                            size: "toolbar"
+                            elevated: true
                             iconText: "close"
+                            tooltip: "Cancel wallpaper selection"
                             onClicked: root.dismissRequested();
-                            StyledToolTip {
-                                text: "Cancel wallpaper selection"
-                            }
                         }
                     }
                 }
