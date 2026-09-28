@@ -84,7 +84,7 @@ then move into this directory later without changing any callers.
 | [Tooltips](https://m3.material.io/components/tooltips) | `M3.Tooltip` | wraps `StyledToolTip` | `text`, `extraVisibleCondition`; `M3.IconButton` has a `tooltip` property already |
 | [Snackbar](https://m3.material.io/components/snackbar) | `M3.Snackbar` | native | `variant`: single-line · two-line; `text`, `supportingText`, `leadingIcon`, `actionText`, `actionTooltip`, `progress`, `actionClicked()` |
 | [Navigation rail](https://m3.material.io/components/navigation-rail) | `M3.NavigationRail` | wraps `NavigationRailTabs` | `model: [{ name, icon }]`, `currentIndex`, `expanded`, `tabSelected(index)` |
-| [Tabs](https://m3.material.io/components/tabs) | `M3.Tabs` + `M3.Tab` | wraps `SecondaryTabBar` + `SecondaryTabButton` | `currentIndex`, `incrementCurrentIndex()`, `decrementCurrentIndex()`; tab `text`, `materialIcon` |
+| [Tabs](https://m3.material.io/components/tabs) | `M3.Tabs` + `M3.Tab` | native | `variant`: secondary · compact (toolbar pill); `currentIndex`, `incrementCurrentIndex()`, `decrementCurrentIndex()`; tab `text`, `materialIcon`, `variant` |
 
 ### M3 components not in the catalog yet
 
