@@ -362,7 +362,7 @@ ApplicationWindow {
                             }
                         }
                         RowLayout {
-                            visible: root.shows(["Button", "IconButton", "Chip", "Checkbox", "RadioButton", "Switch"])
+                            visible: root.shows(["Button", "IconButton", "Chip", "Checkbox", "RadioButton", "Switch", "ListItem"])
                             Layout.fillWidth: true
                             StyledText { text: "Selected"; Layout.fillWidth: true }
                             M3.Switch {
@@ -818,6 +818,7 @@ ApplicationWindow {
                     supportingText: "Supporting text"
                     leadingIcon: root.sampleIcon
                     trailingText: "12:30"
+                    selected: root.sampleChecked
                     enabled: root.sampleEnabled
                 }
             }
@@ -839,6 +840,49 @@ ApplicationWindow {
                     }
                     M3.Divider {}
                     M3.ListItem { Layout.fillWidth: true; text: "Static row"; supportingText: "interactive: false"; interactive: false }
+                }
+            }
+            PreviewCard {
+                title: "Leading elements, overline, selected and density"
+                ColumnLayout {
+                    width: Appearance.spacing.xxl * 12
+                    spacing: 0
+                    M3.ListItem {
+                        Layout.fillWidth: true
+                        text: "Files"
+                        leadingIconSource: Quickshell.iconPath("system-file-manager", "image-missing")
+                        trailingText: "Open"
+                        selected: true
+                        density: -2
+                        M3.IconButton { materialIcon: "open_in_new"; tooltip: "New window" }
+                    }
+                    M3.ListItem {
+                        Layout.fillWidth: true
+                        overline: "Action"
+                        text: "/wallpaper"
+                        leadingIcon: "settings_suggest"
+                        density: -2
+                    }
+                    M3.ListItem {
+                        Layout.fillWidth: true
+                        text: "fire <u>flame</u>"
+                        textFormat: Text.StyledText
+                        leadingText: "🔥"
+                        density: -2
+                    }
+                    M3.ListItem {
+                        Layout.fillWidth: true
+                        text: "git status --short"
+                        monospace: true
+                        leadingIcon: "content_paste"
+                        density: -2
+                        headlineLeadingData: MaterialSymbol {
+                            text: "check_circle"
+                            fill: 1
+                            iconSize: Appearance.font.pixelSize.normal
+                            color: Appearance.colors.colPrimary
+                        }
+                    }
                 }
             }
         }
