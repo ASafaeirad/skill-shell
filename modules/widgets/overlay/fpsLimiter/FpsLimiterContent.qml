@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Io
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.modules.widgets.overlay
 import qs.services
 
@@ -63,7 +64,7 @@ OverlayBackground {
         anchors.centerIn: parent
         spacing: 4
 
-        ToolbarTextField {
+        M3.ToolbarTextField {
             id: fpsField
 
             Layout.fillWidth: true
@@ -76,10 +77,11 @@ OverlayBackground {
             }
         }
 
-        IconToolbarButton {
+        M3.IconButton {
             id: applyButton
 
-            text: {
+            tooltip: "Apply"
+            materialIcon: {
                 switch (root.currentState) {
                 case FpsLimiterContent.State.Error:
                     return "close";
