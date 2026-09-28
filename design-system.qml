@@ -21,7 +21,7 @@ ApplicationWindow {
     // with no M3 counterpart. Keep in sync with modules/common/m3/README.md.
     readonly property var m3Tabs: [
         "Button", "ButtonGroup", "IconButton", "Fab", "Chip", "Card", "ListItem", "Menu", "MenuItem", "ExposedDropdownMenu", "FilterableExposedDropdownMenu", "Divider", "Badge",
-        "Checkbox", "RadioButton", "Switch", "Slider", "TextField", "TextArea", "SearchBar", "Tabs", "Toolbar", "Snackbar",
+        "Checkbox", "RadioButton", "Switch", "Slider", "TextField", "TextArea", "SearchBar", "Tabs", "Toolbar", "Snackbar", "Dialog",
         "LinearProgressIndicator", "CircularProgressIndicator", "LoadingIndicator"
     ]
     readonly property var shellTabs: [
@@ -53,6 +53,7 @@ ApplicationWindow {
         "Tabs": "tab",
         "Toolbar": "toolbar",
         "Snackbar": "info",
+        "Dialog": "dialogs",
         "LinearProgressIndicator": "linear_scale",
         "CircularProgressIndicator": "progress_activity",
         "LoadingIndicator": "hourglass_empty",
@@ -74,6 +75,7 @@ ApplicationWindow {
         "Tabs": ["secondary", "compact"],
         "Toolbar": ["floating", "docked"],
         "Snackbar": ["single-line", "two-line"],
+        "Dialog": ["basic", "overlay"],
         "StatusBadge": ["neutral", "primary", "success", "error"]
     })
     readonly property string currentComponent: tabs[currentTab]
@@ -137,6 +139,7 @@ ApplicationWindow {
         case "Tabs": return tabsPage;
         case "Toolbar": return toolbarPage;
         case "Snackbar": return snackbarPage;
+        case "Dialog": return dialogPage;
         case "LinearProgressIndicator": return linearProgressPage;
         case "CircularProgressIndicator": return circularPage;
         case "LoadingIndicator": return loadingPage;
@@ -440,6 +443,55 @@ ApplicationWindow {
                         }
 
                         Item { Layout.fillHeight: true }
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: dialogPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "Dialog"
+                guideline: "dialogs"
+                detail: "Basic dialogs interrupt a task for a decision. Overlay dialogs use a separate focused window."
+            }
+            PreviewCard {
+                title: "Live basic dialog"
+                M3.Dialog {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: Appearance.sizes.m3DialogPreviewHeight
+                    show: true
+                    M3.DialogTitle { text: root.sampleText }
+                    M3.DialogParagraph { text: "Choose an action to continue." }
+                    M3.DialogButtonRow {
+                        Item { Layout.fillWidth: true }
+                        M3.Button { variant: "text"; text: "Cancel"; enabled: root.sampleEnabled }
+                        M3.Button { variant: "text"; text: "OK"; enabled: root.sampleEnabled }
+                    }
+                }
+            }
+            PreviewCard {
+                title: "Focused overlay dialog"
+                M3.Button {
+                    variant: "tonal"
+                    text: "Open overlay"
+                    onClicked: exampleOverlay.open()
+                }
+            }
+            M3.DialogOverlay {
+                id: exampleOverlay
+                layerNamespace: "quickshell:designSystemDialog"
+                onDismissed: close()
+                M3.DialogCard {
+                    implicitWidth: Appearance.sizes.m3DialogOverlayWidth
+                    implicitHeight: Appearance.sizes.m3DialogOverlayHeight
+                    Component.onCompleted: animateIn()
+                    M3.DialogTitle {
+                        anchors.centerIn: parent
+                        text: "Overlay dialog"
                     }
                 }
             }
