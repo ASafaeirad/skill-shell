@@ -637,6 +637,12 @@ ApplicationWindow {
                 }
             }
             PreviewCard {
+                title: "Tonal selected state"
+                description: "selectedVariant: \"tonal\" keeps a standard toggle bare until selected, then gives it the secondary container, as in a toolbar"
+                M3.IconButton { materialIcon: "dark_mode"; tooltip: "Unselected"; toggleable: true; selectedVariant: "tonal" }
+                M3.IconButton { materialIcon: "power_settings_new"; tooltip: "Selected"; toggleable: true; selectedVariant: "tonal"; selected: true }
+            }
+            PreviewCard {
                 title: "Sizes"
                 description: "small (default, 40) · xsmall (32), for dense rows"
                 Repeater {
