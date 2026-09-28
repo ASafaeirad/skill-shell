@@ -14,6 +14,10 @@ import qs.modules.common.widgets
  * selected: filter and input chips; a selected filter chip shows a check mark.
  *   Controlled: bind it and flip your state in onClicked.
  * removable: input chips get a trailing close icon that emits removeClicked().
+ * dotColor: a colour dot as the leading mark, for a chip whose subject is named
+ *   by a colour rather than an icon (a mail account, a calendar). It replaces the
+ *   leading icon and stays put while selected — the colour is what identifies it.
+ *   With no text, the chip is the dot alone.
  */
 RippleButton {
     id: root
@@ -25,11 +29,15 @@ RippleButton {
     // Keeps the selected choice readable when an in-progress action locks it.
     property bool readOnly: false
     property bool compact: false
+    property color dotColor: "transparent"
 
     signal removeClicked()
 
+    readonly property bool hasDot: dotColor.a > 0
     readonly property bool showSelected: selected && (variant === "filter" || variant === "input")
-    readonly property string leadingIcon: variant === "filter" && showSelected ? "check" : materialIcon
+    readonly property string leadingIcon: hasDot ? ""
+        : variant === "filter" && showSelected ? "check"
+        : materialIcon
     readonly property color containerColor: showSelected ? Appearance.colors.colSecondaryContainer : "transparent"
     readonly property color labelColor: !enabled ? ColorUtils.applyAlpha(Appearance.colors.colOnSurface, Appearance.stateLayer.disabledContent)
         : showSelected ? Appearance.colors.colOnSecondaryContainer
@@ -39,7 +47,7 @@ RippleButton {
         : Appearance.colors.colPrimary
 
     implicitHeight: compact ? Appearance.sizes.m3ChipHeightCompact : Appearance.sizes.m3ChipHeight
-    leftPadding: leadingIcon.length > 0 ? Appearance.spacing.s : Appearance.spacing.m
+    leftPadding: leadingIcon.length > 0 || hasDot ? Appearance.spacing.s : Appearance.spacing.m
     rightPadding: removable ? Appearance.spacing.s : Appearance.spacing.m
     buttonRadius: Appearance.rounding.verysmall
     opacity: 1
@@ -57,6 +65,13 @@ RippleButton {
     contentItem: RowLayout {
         spacing: Appearance.spacing.s
 
+        Rectangle {
+            visible: root.hasDot
+            implicitWidth: Appearance.spacing.m
+            implicitHeight: Appearance.spacing.m
+            radius: Appearance.rounding.full
+            color: root.dotColor
+        }
         MaterialSymbol {
             visible: root.leadingIcon.length > 0
             text: root.leadingIcon
@@ -64,9 +79,11 @@ RippleButton {
             color: root.iconColor
         }
         StyledText {
+            visible: root.text.length > 0
             text: root.text
             color: root.labelColor
             font.pixelSize: Appearance.font.pixelSize.smallie
+            elide: Text.ElideRight
             Layout.fillWidth: true
         }
         MaterialSymbol {
