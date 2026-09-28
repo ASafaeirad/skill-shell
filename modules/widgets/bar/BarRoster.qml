@@ -62,6 +62,7 @@ QtObject {
 
     property Component aiUsage: Component {
         Bar.BarGroup {
+            shimmer: AiUsage.syncing
             Bar.AiUsageWidget {}
         }
     }
