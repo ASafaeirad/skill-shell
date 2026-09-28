@@ -3,6 +3,7 @@ import qs.modules.common
 import qs.modules.common.utils
 import qs.modules.common.functions
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 import QtQuick
 import QtQuick.Controls
@@ -60,17 +61,15 @@ PanelWindow {
 
     // Styles
     property string screenshotDir: Directories.screenshotTemp
-    property color overlayColor: ColorUtils.transparentize("#000000", 0.4)
+    property color overlayColor: ColorUtils.transparentize(Appearance.m3colors.m3scrim, 0.4)
     property color brightText: Appearance.m3colors.darkmode ? Appearance.colors.colOnLayer0 : Appearance.colors.colLayer0
     property color brightSecondary: Appearance.m3colors.darkmode ? Appearance.colors.colSecondary : Appearance.colors.colOnSecondary
     property color brightTertiary: Appearance.m3colors.darkmode ? Appearance.colors.colTertiary : Qt.lighter(Appearance.colors.colPrimary)
     property color selectionBorderColor: ColorUtils.mix(brightText, brightSecondary, 0.5)
-    property color selectionFillColor: "#33ffffff"
     property color windowBorderColor: brightSecondary
     property color windowFillColor: ColorUtils.transparentize(windowBorderColor, 0.85)
     property color imageBorderColor: brightTertiary
     property color imageFillColor: ColorUtils.transparentize(imageBorderColor, 0.85)
-    property color onBorderColor: "#ff000000"
     readonly property real targetRegionOpacity: 0.3 // was targetRegions.opacity
     readonly property real contentRegionOpacity: 0.8 // was targetRegions.contentRegionOpacity
 
@@ -532,13 +531,14 @@ PanelWindow {
                 onCaptureModeSelected: index => root.setCaptureMode(index);
                 onDismiss: root.dismissAndRestoreCursor();
             }
-            ToolbarPairedFab {
+            M3.Fab {
                 anchors.verticalCenter: parent.verticalCenter
+                variant: "tertiary"
+                size: "toolbar"
+                elevated: true
                 iconText: "close"
+                tooltip: "Close"
                 onClicked: root.dismissAndRestoreCursor();
-                StyledToolTip {
-                    text: "Close"
-                }
             }
         }
 
