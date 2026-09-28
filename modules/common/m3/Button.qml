@@ -26,6 +26,9 @@ import qs.modules.common.widgets
  *   what you put in it with the button's own `contentColor`.
  * externalHover: draw the hover state layer while a larger region around the
  *   button is hovered, for a button that is the affordance of a whole area.
+ * error: a destructive or error-recovery action. M3's error roles stand in for
+ *   the accent ones, so a filled button is the error container and a text or
+ *   outlined one reads red. Same meaning as Checkbox's error.
  */
 RippleButton {
     id: root
@@ -42,6 +45,13 @@ RippleButton {
     property bool leadingSelected: false
     property Component content: null
     property bool externalHover: false
+    property bool error: false
+
+    // A destructive action swaps M3's accent roles for the error ones.
+    readonly property color accentColor: error ? Appearance.colors.colError : Appearance.colors.colPrimary
+    readonly property color onAccentColor: error ? Appearance.colors.colOnError : Appearance.colors.colOnPrimary
+    readonly property color accentContainerColor: error ? Appearance.colors.colErrorContainer : Appearance.colors.colSecondaryContainer
+    readonly property color onAccentContainerColor: error ? Appearance.colors.colOnErrorContainer : Appearance.colors.colOnSecondaryContainer
 
     readonly property bool showHover: hovered || externalHover
 
@@ -52,19 +62,19 @@ RippleButton {
     readonly property color containerColor: unselectedToggle ? (variant === "filled" || variant === "tonal" ? Appearance.colors.colSurfaceContainerHighest
             : variant === "elevated" ? Appearance.colors.colSurfaceContainerLow
             : "transparent")
-        : selected ? (selectedVariant === "tonal" ? Appearance.colors.colSecondaryContainer : Appearance.colors.colPrimary)
+        : selected ? (selectedVariant === "tonal" ? accentContainerColor : accentColor)
         : tileLayout ? Appearance.colors.colLayer2
-        : variant === "filled" ? Appearance.colors.colPrimary
-        : variant === "tonal" ? Appearance.colors.colSecondaryContainer
+        : variant === "filled" ? accentColor
+        : variant === "tonal" ? accentContainerColor
         : variant === "elevated" ? Appearance.colors.colSurfaceContainerLow
         : "transparent"
     readonly property color contentColor: !enabled ? ColorUtils.applyAlpha(Appearance.colors.colOnSurface, Appearance.stateLayer.disabledContent)
         : unselectedToggle ? Appearance.colors.colOnSurfaceVariant
-        : selected ? (selectedVariant === "tonal" ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnPrimary)
+        : selected ? (selectedVariant === "tonal" ? onAccentContainerColor : onAccentColor)
         : tileLayout ? Appearance.colors.colOnLayer2
-        : variant === "filled" ? Appearance.colors.colOnPrimary
-        : variant === "tonal" ? Appearance.colors.colOnSecondaryContainer
-        : Appearance.colors.colPrimary
+        : variant === "filled" ? onAccentColor
+        : variant === "tonal" ? onAccentContainerColor
+        : accentColor
 
     implicitHeight: tileLayout ? Appearance.sizes.m3QuickTileHeight : Appearance.sizes.m3ButtonHeight
     leftPadding: tileLayout ? Appearance.spacing.xs : (materialIcon.length > 0 ? Appearance.spacing.lg : Appearance.spacing.xl)

@@ -19,6 +19,9 @@ import qs.modules.common.widgets
  *   standard icon buttons in a toolbar do.
  * iconRotation: turns the icon, animated — for a chevron that flips when the
  *   thing it opens is open.
+ * error: a destructive action (delete, move to trash). M3's error roles stand in
+ *   for the accent ones, so the icon reads red wherever the variant would be
+ *   primary. Same meaning as Checkbox's error.
  */
 RippleButton {
     id: root
@@ -32,22 +35,30 @@ RippleButton {
     property bool toggleable: false
     property bool selected: false
     property real iconRotation: 0
+    property bool error: false
+
+    // A destructive action swaps M3's accent roles for the error ones.
+    readonly property color accentColor: error ? Appearance.colors.colError : Appearance.colors.colPrimary
+    readonly property color onAccentColor: error ? Appearance.colors.colOnError : Appearance.colors.colOnPrimary
+    readonly property color accentContainerColor: error ? Appearance.colors.colErrorContainer : Appearance.colors.colSecondaryContainer
+    readonly property color onAccentContainerColor: error ? Appearance.colors.colOnErrorContainer : Appearance.colors.colOnSecondaryContainer
+    readonly property color neutralContentColor: error ? Appearance.colors.colError : Appearance.colors.colOnSurfaceVariant
 
     // The variant whose colours are drawn: selectedVariant takes over while selected.
     readonly property string colorVariant: toggleable && selected && selectedVariant.length > 0 ? selectedVariant : variant
     // A non-toggle filled or tonal button wears its selected colours.
     readonly property bool showSelected: toggleable ? selected : (colorVariant === "filled" || colorVariant === "tonal")
     readonly property bool hasContainer: colorVariant !== "standard" && !(colorVariant === "outlined" && !showSelected)
-    readonly property color containerColor: colorVariant === "filled" ? (showSelected ? Appearance.colors.colPrimary : Appearance.colors.colSurfaceContainerHighest)
-        : colorVariant === "tonal" ? (showSelected ? Appearance.colors.colSecondaryContainer : Appearance.colors.colSurfaceContainerHighest)
+    readonly property color containerColor: colorVariant === "filled" ? (showSelected ? accentColor : Appearance.colors.colSurfaceContainerHighest)
+        : colorVariant === "tonal" ? (showSelected ? accentContainerColor : Appearance.colors.colSurfaceContainerHighest)
         : colorVariant === "outlined" && showSelected ? Appearance.m3colors.m3inverseSurface
         : "transparent"
     readonly property color contentColor: !enabled ? ColorUtils.applyAlpha(Appearance.colors.colOnSurface, Appearance.stateLayer.disabledContent)
-        : colorVariant === "filled" ? (showSelected ? Appearance.colors.colOnPrimary : Appearance.colors.colPrimary)
-        : colorVariant === "tonal" ? (showSelected ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnSurfaceVariant)
+        : colorVariant === "filled" ? (showSelected ? onAccentColor : accentColor)
+        : colorVariant === "tonal" ? (showSelected ? onAccentContainerColor : neutralContentColor)
         : colorVariant === "outlined" && showSelected ? Appearance.m3colors.m3inverseOnSurface
-        : colorVariant === "standard" && toggleable && selected ? Appearance.colors.colPrimary
-        : Appearance.colors.colOnSurfaceVariant
+        : colorVariant === "standard" && toggleable && selected ? accentColor
+        : neutralContentColor
 
     readonly property real buttonSize: size === "xsmall" ? Appearance.sizes.m3IconButtonSizeXSmall : Appearance.sizes.m3IconButtonSize
 
