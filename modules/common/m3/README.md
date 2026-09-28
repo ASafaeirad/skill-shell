@@ -75,6 +75,7 @@ then move into this directory later without changing any callers.
 | [Switch](https://m3.material.io/components/switch) | `M3.Switch` | wraps `StyledSwitch` | `checked`, `toggled()` |
 | [Sliders](https://m3.material.io/components/sliders) | `M3.Slider` | wraps `StyledSlider` | `value`, `from`, `to`, `configuration: StyledSlider.Configuration.S` (the enum lives on `StyledSlider`) |
 | [Text fields](https://m3.material.io/components/text-fields) | `M3.TextField` | wraps `MaterialTextField` | `text`, `placeholderText`, `readOnly` |
+| [Search](https://m3.material.io/components/search) | `M3.SearchBar` | native | the search bar's input: `text`, `placeholderText`, `compact` (40px); leading icon and trailing `M3.IconButton`s go beside it |
 | [Progress indicators](https://m3.material.io/components/progress-indicators) | `M3.LinearProgressIndicator` | wraps `StyledProgressBar` | `value`, `wavy`, `indeterminate` |
 | [Progress indicators](https://m3.material.io/components/progress-indicators) | `M3.CircularProgressIndicator` | wraps `CircularProgress` | `value`, `indeterminate`, `fill`, `implicitSize` |
 | [Loading indicator](https://m3.material.io/components/loading-indicator) | `M3.LoadingIndicator` | wraps `MaterialLoadingIndicator` | `loading` |
@@ -93,7 +94,7 @@ existing widget rather than writing a new one, and consider adding the M3 compon
 | [Toolbars](https://m3.material.io/components/toolbars) | `Toolbar`, `ToolbarButton`, `IconToolbarButton`, `ToolbarTextField`, `ToolbarPairedFab` |
 | [Dialogs](https://m3.material.io/components/dialogs) | `WindowDialog` + `WindowDialogTitle`/`Paragraph`/`ButtonRow`, `OverlayDialog` |
 | A whole [menu](https://m3.material.io/components/menus) container (`M3.MenuItem` is in the catalog) | `FilterableComboBox` |
-| [Search](https://m3.material.io/components/search) | `ToolbarTextField` / the launcher's search field |
+| [Search](https://m3.material.io/components/search) view (the expanded results surface; `M3.SearchBar` is in the catalog) | the launcher's `SearchWidget` |
 | Multi-line [text field](https://m3.material.io/components/text-fields) | `MaterialTextArea`, `StyledTextArea` |
 | [Date pickers](https://m3.material.io/components/date-pickers) | the sidebar's `CalendarWidget` grid, built from `M3.Button` toggles |
 | [Sheets](https://m3.material.io/components/bottom-sheets), [Time pickers](https://m3.material.io/components/time-pickers), [Carousel](https://m3.material.io/components/carousel) | none yet |

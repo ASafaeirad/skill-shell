@@ -21,7 +21,7 @@ ApplicationWindow {
     // with no M3 counterpart. Keep in sync with modules/common/m3/README.md.
     readonly property var m3Tabs: [
         "Button", "ButtonGroup", "IconButton", "Fab", "Chip", "Card", "ListItem", "MenuItem", "ExposedDropdownMenu", "Divider", "Badge",
-        "Checkbox", "RadioButton", "Switch", "Slider", "TextField", "Tabs", "Snackbar",
+        "Checkbox", "RadioButton", "Switch", "Slider", "TextField", "SearchBar", "Tabs", "Snackbar",
         "LinearProgressIndicator", "CircularProgressIndicator", "LoadingIndicator"
     ]
     readonly property var shellTabs: [
@@ -46,6 +46,7 @@ ApplicationWindow {
         "Switch": "toggle_on",
         "Slider": "tune",
         "TextField": "text_fields",
+        "SearchBar": "search",
         "Tabs": "tab",
         "Snackbar": "info",
         "LinearProgressIndicator": "linear_scale",
@@ -122,6 +123,7 @@ ApplicationWindow {
         case "Switch": return switchPage;
         case "Slider": return sliderPage;
         case "TextField": return textFieldPage;
+        case "SearchBar": return searchBarPage;
         case "Tabs": return tabsPage;
         case "Snackbar": return snackbarPage;
         case "LinearProgressIndicator": return linearProgressPage;
@@ -371,9 +373,12 @@ ApplicationWindow {
                             }
                         }
                         RowLayout {
-                            visible: root.shows(["StatusBadge", "Fab"])
+                            visible: root.shows(["StatusBadge", "Fab", "SearchBar"])
                             Layout.fillWidth: true
-                            StyledText { text: root.currentComponent === "Fab" ? "Expanded" : "Outlined"; Layout.fillWidth: true }
+                            StyledText {
+                                text: root.currentComponent === "Fab" ? "Expanded" : root.currentComponent === "SearchBar" ? "Compact" : "Outlined"
+                                Layout.fillWidth: true
+                            }
                             M3.Switch {
                                 checked: root.sampleOutlined
                                 onToggled: root.sampleOutlined = checked
@@ -1206,6 +1211,41 @@ ApplicationWindow {
                 title: "Read only and disabled"
                 M3.TextField { width: Appearance.spacing.xxl * 7; text: root.sampleText; readOnly: true }
                 M3.TextField { width: Appearance.spacing.xxl * 7; text: root.sampleText; enabled: false }
+            }
+        }
+    }
+
+    Component {
+        id: searchBarPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "SearchBar"
+                guideline: "search"
+                detail: "The pill-shaped query field that opens a search. Put a leading icon and trailing actions beside it."
+            }
+            PreviewCard {
+                title: "Live search bar"
+                RowLayout {
+                    spacing: Appearance.spacing.xs
+                    MaterialSymbol {
+                        text: "search"
+                        iconSize: Appearance.font.pixelSize.huge
+                        color: Appearance.colors.colOnSurface
+                    }
+                    M3.SearchBar {
+                        implicitWidth: Appearance.spacing.xxl * 9
+                        compact: root.sampleOutlined
+                        placeholderText: root.sampleText
+                        enabled: root.sampleEnabled
+                    }
+                    M3.IconButton { materialIcon: "image_search"; tooltip: "Google Lens" }
+                }
+            }
+            PreviewCard {
+                title: "Default and compact"
+                M3.SearchBar { implicitWidth: Appearance.spacing.xxl * 9; placeholderText: "Search apps and actions" }
+                M3.SearchBar { implicitWidth: Appearance.spacing.xxl * 9; compact: true; text: "firefox" }
             }
         }
     }
