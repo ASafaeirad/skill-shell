@@ -66,6 +66,7 @@ ApplicationWindow {
         "Button": ["filled", "tonal", "outlined", "text", "elevated"],
         "ButtonGroup": ["connected", "segmented"],
         "IconButton": ["standard", "filled", "tonal", "outlined"],
+        "Fab": ["primary", "secondary", "tertiary"],
         "Chip": ["assist", "filter", "input", "suggestion"],
         "Card": ["filled", "elevated", "outlined"],
         "Tabs": ["secondary", "compact"],
@@ -369,9 +370,9 @@ ApplicationWindow {
                             }
                         }
                         RowLayout {
-                            visible: root.shows(["Button", "IconButton", "Chip", "Checkbox", "RadioButton", "Switch", "ListItem"])
+                            visible: root.shows(["Button", "IconButton", "Chip", "Checkbox", "RadioButton", "Switch", "ListItem", "Fab"])
                             Layout.fillWidth: true
-                            StyledText { text: "Selected"; Layout.fillWidth: true }
+                            StyledText { text: root.shows(["Fab"]) ? "Elevated" : "Selected"; Layout.fillWidth: true }
                             M3.Switch {
                                 checked: root.sampleChecked
                                 onToggled: root.sampleChecked = checked
@@ -679,16 +680,33 @@ ApplicationWindow {
             PageHeading {
                 heading: "Fab"
                 guideline: "floating-action-button"
-                detail: "The single most important action on a surface. expanded shows buttonText next to the icon (extended FAB)."
+                detail: "The single most important action on a surface. variant picks the container role, expanded shows buttonText next to the icon (extended FAB), elevated draws its shadow."
             }
             PreviewCard {
                 title: "Live FAB"
                 M3.Fab {
+                    variant: root.sampleVariant
                     iconText: root.sampleIcon
                     buttonText: root.sampleText
+                    tooltip: root.sampleText
                     expanded: root.sampleOutlined
+                    elevated: root.sampleChecked
                     enabled: root.sampleEnabled
                 }
+            }
+            PreviewCard {
+                title: "Variants"
+                description: "primary · secondary · tertiary container roles"
+                Repeater {
+                    model: root.variantOptions["Fab"]
+                    M3.Fab { required property string modelData; variant: modelData; iconText: "edit"; tooltip: modelData; elevated: true }
+                }
+            }
+            PreviewCard {
+                title: "Sizes"
+                description: "regular (56) · toolbar (48), the tertiary FAB paired with a floating M3.Toolbar"
+                M3.Fab { iconText: "add"; tooltip: "regular" }
+                M3.Fab { size: "toolbar"; variant: "tertiary"; iconText: "close"; tooltip: "toolbar"; elevated: true }
             }
         }
     }
