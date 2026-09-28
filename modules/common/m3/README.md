@@ -85,6 +85,7 @@ then move into this directory later without changing any callers.
 | [Snackbar](https://m3.material.io/components/snackbar) | `M3.Snackbar` | native | `variant`: single-line · two-line; `text`, `supportingText`, `leadingIcon`, `actionText`, `actionTooltip`, `progress`, `actionClicked()` |
 | [Navigation rail](https://m3.material.io/components/navigation-rail) | `M3.NavigationRail` | wraps `NavigationRailTabs` | `model: [{ name, icon }]`, `currentIndex`, `expanded`, `tabSelected(index)` |
 | [Tabs](https://m3.material.io/components/tabs) | `M3.Tabs` + `M3.Tab` | native | `variant`: secondary · compact (toolbar pill); `currentIndex`, `incrementCurrentIndex()`, `decrementCurrentIndex()`; tab `text`, `materialIcon`, `variant` |
+| [Toolbars](https://m3.material.io/components/toolbars) | `M3.Toolbar` + `M3.ToolbarTextField` | native | `variant`: floating · docked; `elevated`, `padding`, `spacing`; children form the row: `M3.IconButton` (toggles with `selectedVariant: "tonal"`), `M3.ToolbarTextField` (`placeholderText`, `drawsOwnText`); pair a `M3.Fab { size: "toolbar"; variant: "tertiary" }` beside it |
 
 ### M3 components not in the catalog yet
 
@@ -93,7 +94,6 @@ existing widget rather than writing a new one, and consider adding the M3 compon
 
 | M3 component | Existing widget |
 | --- | --- |
-| [Toolbars](https://m3.material.io/components/toolbars) | `Toolbar`, `ToolbarButton`, `IconToolbarButton`, `ToolbarTextField`, `ToolbarPairedFab` |
 | [Dialogs](https://m3.material.io/components/dialogs) | `WindowDialog` + `WindowDialogTitle`/`Paragraph`/`ButtonRow`, `OverlayDialog` |
 | [Search](https://m3.material.io/components/search) view (the expanded results surface; `M3.SearchBar` is in the catalog) | the launcher's `SearchWidget` |
 | Multi-line [text field](https://m3.material.io/components/text-fields) | `MaterialTextArea`, `StyledTextArea` |

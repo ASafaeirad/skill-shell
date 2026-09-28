@@ -11,6 +11,7 @@ import qs.modules.common.widgets
  *
  * It is the input only. A leading icon or trailing actions (M3.IconButton) sit
  * beside it in the caller's row, as the launcher does.
+ * Builds on M3.ToolbarTextField.
  * compact: 40 px tall instead of 56, for a bar inside a toolbar or popup.
  */
 ToolbarTextField {
@@ -25,9 +26,5 @@ ToolbarTextField {
     topPadding: 0
     bottomPadding: 0
     verticalAlignment: TextInput.AlignVCenter
-
-    colBackground: Appearance.colors.colSurfaceContainerHigh
-    color: Appearance.colors.colOnSurface
-    placeholderTextColor: Appearance.colors.colOnSurfaceVariant
     font.pixelSize: compact ? Appearance.font.pixelSize.small : Appearance.font.pixelSize.normal
 }
