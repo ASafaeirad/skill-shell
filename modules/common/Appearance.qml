@@ -467,6 +467,9 @@ Singleton {
         property real m3OutlineWidth: 1
         property real m3FabSize: 56
         property real m3ToolbarFabSize: 48 // FAB paired with a floating toolbar
+        property real m3ToolbarFloatingHeight: 56
+        property real m3ToolbarDockedHeight: 64
+        property real m3ToolbarTextFieldWidth: 200
     }
 
     // Material 3 state layer opacities: the content colour drawn over a container

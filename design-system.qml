@@ -21,7 +21,7 @@ ApplicationWindow {
     // with no M3 counterpart. Keep in sync with modules/common/m3/README.md.
     readonly property var m3Tabs: [
         "Button", "ButtonGroup", "IconButton", "Fab", "Chip", "Card", "ListItem", "Menu", "MenuItem", "ExposedDropdownMenu", "FilterableExposedDropdownMenu", "Divider", "Badge",
-        "Checkbox", "RadioButton", "Switch", "Slider", "TextField", "SearchBar", "Tabs", "Snackbar",
+        "Checkbox", "RadioButton", "Switch", "Slider", "TextField", "SearchBar", "Tabs", "Toolbar", "Snackbar",
         "LinearProgressIndicator", "CircularProgressIndicator", "LoadingIndicator"
     ]
     readonly property var shellTabs: [
@@ -50,6 +50,7 @@ ApplicationWindow {
         "TextField": "text_fields",
         "SearchBar": "search",
         "Tabs": "tab",
+        "Toolbar": "toolbar",
         "Snackbar": "info",
         "LinearProgressIndicator": "linear_scale",
         "CircularProgressIndicator": "progress_activity",
@@ -70,6 +71,7 @@ ApplicationWindow {
         "Chip": ["assist", "filter", "input", "suggestion"],
         "Card": ["filled", "elevated", "outlined"],
         "Tabs": ["secondary", "compact"],
+        "Toolbar": ["floating", "docked"],
         "Snackbar": ["single-line", "two-line"],
         "StatusBadge": ["neutral", "primary", "success", "error"]
     })
@@ -131,6 +133,7 @@ ApplicationWindow {
         case "TextField": return textFieldPage;
         case "SearchBar": return searchBarPage;
         case "Tabs": return tabsPage;
+        case "Toolbar": return toolbarPage;
         case "Snackbar": return snackbarPage;
         case "LinearProgressIndicator": return linearProgressPage;
         case "CircularProgressIndicator": return circularPage;
@@ -370,9 +373,9 @@ ApplicationWindow {
                             }
                         }
                         RowLayout {
-                            visible: root.shows(["Button", "IconButton", "Chip", "Checkbox", "RadioButton", "Switch", "ListItem", "Fab"])
+                            visible: root.shows(["Button", "IconButton", "Chip", "Checkbox", "RadioButton", "Switch", "ListItem", "Fab", "Toolbar"])
                             Layout.fillWidth: true
-                            StyledText { text: root.shows(["Fab"]) ? "Elevated" : "Selected"; Layout.fillWidth: true }
+                            StyledText { text: root.shows(["Fab", "Toolbar"]) ? "Elevated" : "Selected"; Layout.fillWidth: true }
                             M3.Switch {
                                 checked: root.sampleChecked
                                 onToggled: root.sampleChecked = checked
@@ -1360,6 +1363,58 @@ ApplicationWindow {
                     M3.Tab { variant: "compact"; text: "Shot"; materialIcon: "photo_camera" }
                     M3.Tab { variant: "compact"; text: "Record"; materialIcon: "videocam" }
                     M3.Tab { variant: "compact"; text: "Record + audio"; materialIcon: "mic" }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: toolbarPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "Toolbar"
+                guideline: "toolbars"
+                detail: "A row of actions for the current page. The floating toolbar is an elevated pill over content, paired with a tertiary FAB beside it; the docked toolbar spans the width flat. Toggles use M3.IconButton with selectedVariant: \"tonal\", inputs use M3.ToolbarTextField."
+            }
+            PreviewCard {
+                title: "Live toolbar"
+                M3.Toolbar {
+                    variant: root.sampleVariant
+                    elevated: root.sampleChecked
+                    width: variant === "docked" ? Appearance.spacing.xxl * 16 : implicitWidth
+                    M3.IconButton { materialIcon: root.sampleIcon; tooltip: root.sampleText; enabled: root.sampleEnabled }
+                    M3.IconButton { materialIcon: "shuffle"; tooltip: "Random" }
+                    M3.IconButton {
+                        materialIcon: "dark_mode"
+                        tooltip: "Dark mode"
+                        toggleable: true
+                        selectedVariant: "tonal"
+                        selected: root.sampleOutlined
+                        onClicked: root.sampleOutlined = !root.sampleOutlined
+                    }
+                    M3.ToolbarTextField { placeholderText: "Search wallpapers"; enabled: root.sampleEnabled }
+                }
+            }
+            PreviewCard {
+                title: "Floating toolbar with a paired FAB"
+                M3.Toolbar {
+                    M3.IconButton { materialIcon: "key"; tooltip: "Key input"; toggleable: true; selectedVariant: "tonal"; selected: true }
+                    M3.ToolbarTextField { placeholderText: "Paste key here" }
+                    M3.IconButton { materialIcon: "check"; tooltip: "Confirm" }
+                }
+                M3.Fab { size: "toolbar"; variant: "tertiary"; elevated: true; iconText: "close"; tooltip: "Close" }
+            }
+            PreviewCard {
+                title: "Docked toolbar"
+                M3.Toolbar {
+                    variant: "docked"
+                    implicitWidth: Appearance.spacing.xxl * 16
+                    M3.IconButton { materialIcon: "arrow_back"; tooltip: "Back" }
+                    Item { Layout.fillWidth: true }
+                    M3.IconButton { materialIcon: "edit"; tooltip: "Edit" }
+                    M3.IconButton { materialIcon: "delete"; tooltip: "Delete" }
+                    M3.Button { variant: "filled"; text: "Save" }
                 }
             }
         }
