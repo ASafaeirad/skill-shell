@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import qs.services
 import qs.modules.common
 import qs.modules.common.functions
@@ -560,6 +561,13 @@ M3.DialogCard {
                         Layout.fillWidth: true
                         visible: YtDlp.savedPath.length > 0
                         variant: "filled"
+                        materialIcon: "content_copy"
+                        text: "Copy path"
+                        onClicked: Quickshell.clipboardText = YtDlp.savedPath
+                    }
+                    M3.Button {
+                        visible: YtDlp.savedPath.length > 0
+                        variant: "tonal"
                         materialIcon: "folder_open"
                         text: "Show in folder"
                         onClicked: {
