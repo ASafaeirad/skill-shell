@@ -8,12 +8,12 @@ import qs.modules.common.widgets
 import qs.services
 import qs.services.network
 
-WindowDialog {
+M3.Dialog {
     id: root
 
     backgroundHeight: 600
 
-    WindowDialogTitle {
+    M3.DialogTitle {
         text: "Connect to Wi-Fi"
     }
 
@@ -65,7 +65,7 @@ WindowDialog {
         Layout.bottomMargin: -Appearance.spacing.s
     }
 
-    WindowDialogButtonRow {
+    M3.DialogButtonRow {
         M3.Button {
             variant: "text"
             text: "Details"

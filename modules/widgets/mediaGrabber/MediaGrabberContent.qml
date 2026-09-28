@@ -14,7 +14,7 @@ import qs.modules.common.widgets
 * media and its format/quality pickers below it, and the action for whatever
 * YtDlp.view currently is.
 */
-OverlayDialogCard {
+M3.DialogCard {
     id: root
 
     signal closeRequested

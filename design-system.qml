@@ -75,7 +75,6 @@ ApplicationWindow {
         "Tabs": ["secondary", "compact"],
         "Toolbar": ["floating", "docked"],
         "Snackbar": ["single-line", "two-line"],
-        "Dialog": ["basic", "overlay"],
         "StatusBadge": ["neutral", "primary", "success", "error"]
     })
     readonly property string currentComponent: tabs[currentTab]
@@ -461,9 +460,9 @@ ApplicationWindow {
             PreviewCard {
                 title: "Live basic dialog"
                 M3.Dialog {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: Appearance.sizes.m3DialogPreviewHeight
-                    show: true
+                    width: parent.width
+                    height: Appearance.sizes.m3DialogPreviewHeight
+                    Component.onCompleted: show = true
                     M3.DialogTitle { text: root.sampleText }
                     M3.DialogParagraph { text: "Choose an action to continue." }
                     M3.DialogButtonRow {

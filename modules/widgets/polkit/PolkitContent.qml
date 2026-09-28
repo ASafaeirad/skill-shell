@@ -42,7 +42,7 @@ Item {
         }
     }
 
-    WindowDialog {
+    M3.Dialog {
         anchors.centerIn: parent
         backgroundWidth: 450
         show: false
@@ -57,14 +57,14 @@ Item {
             color: Appearance.colors.colSecondary
         }
 
-        WindowDialogTitle {
+        M3.DialogTitle {
             id: titleText
             Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
             text: "Authentication"
         }
 
-        WindowDialogParagraph {
+        M3.DialogParagraph {
             Layout.fillWidth: true
             horizontalAlignment: Text.AlignLeft
             text: PolkitService.cleanMessage
@@ -86,7 +86,7 @@ Item {
             }
         }
 
-        WindowDialogButtonRow {
+        M3.DialogButtonRow {
             Layout.bottomMargin: 10 // I honestly don't know why this is necessary
             Item {
                 Layout.fillWidth: true

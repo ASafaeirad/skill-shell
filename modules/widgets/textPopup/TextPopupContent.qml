@@ -4,12 +4,13 @@ import Quickshell
 import qs
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 
 /**
- * The popup dialog itself: an OverlayDialogCard (surface + transition shared
+ * The popup dialog itself: an M3.DialogCard (surface + transition shared
  * with the selector and pinentry) with read-only, scrollable body text.
  */
-OverlayDialogCard {
+M3.DialogCard {
     id: root
 
     property string title: ""
@@ -48,7 +49,7 @@ OverlayDialogCard {
         anchors.margins: root.padding
         spacing: 16
 
-        WindowDialogTitle {
+        M3.DialogTitle {
             Layout.fillWidth: true
             visible: root.title.length > 0
             text: root.title
@@ -63,7 +64,7 @@ OverlayDialogCard {
             contentHeight: bodyText.implicitHeight
             clip: true
 
-            WindowDialogParagraph {
+            M3.DialogParagraph {
                 id: bodyText
 
                 width: bodyFlickable.width
@@ -71,18 +72,20 @@ OverlayDialogCard {
             }
         }
 
-        WindowDialogButtonRow {
+        M3.DialogButtonRow {
             Item {
                 Layout.fillWidth: true
             }
 
-            DialogButton {
-                buttonText: "Copy"
+            M3.Button {
+                variant: "text"
+                text: "Copy"
                 onClicked: root.copyBody()
             }
 
-            DialogButton {
-                buttonText: "Close"
+            M3.Button {
+                variant: "text"
+                text: "Close"
                 onClicked: root.dismissed()
             }
         }

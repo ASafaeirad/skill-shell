@@ -84,7 +84,7 @@ Panel {
         }
     }
 
-    OverlayDialog {
+    M3.DialogOverlay {
         id: dialog
 
         layerNamespace: "quickshell:pinentry"
@@ -95,7 +95,7 @@ Panel {
         allScreens: true
         onDismissed: root.cancel()
 
-        OverlayDialogCard {
+        M3.DialogCard {
             id: dialogCard
 
             focus: true
@@ -138,20 +138,20 @@ Panel {
                     color: Appearance.colors.colSecondary
                 }
 
-                WindowDialogTitle {
+                M3.DialogTitle {
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignHCenter
                     text: "Passphrase required"
                 }
 
-                WindowDialogParagraph {
+                M3.DialogParagraph {
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignLeft
                     visible: root.description.length > 0
                     text: root.description
                 }
 
-                WindowDialogParagraph {
+                M3.DialogParagraph {
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignLeft
                     visible: root.errorText.length > 0
@@ -176,7 +176,7 @@ Panel {
                     }
                 }
 
-                WindowDialogButtonRow {
+                M3.DialogButtonRow {
                     Layout.bottomMargin: 10
 
                     Item {

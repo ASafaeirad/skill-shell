@@ -1,4 +1,5 @@
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
@@ -55,7 +56,7 @@ Panel {
         }
     }
 
-    OverlayDialog {
+    M3.DialogOverlay {
         id: dialog
 
         layerNamespace: "quickshell:textPopup"

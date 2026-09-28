@@ -9,12 +9,12 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.Pipewire
 
-WindowDialog {
+M3.Dialog {
     id: root
     property bool isSink: true
     backgroundHeight: 600
 
-    WindowDialogTitle {
+    M3.DialogTitle {
         text: root.isSink ? "Audio output" : "Audio input"
     }
 
@@ -28,7 +28,7 @@ WindowDialog {
         isSink: root.isSink
     }
 
-    WindowDialogButtonRow {
+    M3.DialogButtonRow {
         M3.Button {
             variant: "text"
             text: "Details"

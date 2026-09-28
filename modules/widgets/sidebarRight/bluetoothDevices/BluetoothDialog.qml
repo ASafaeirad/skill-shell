@@ -14,11 +14,11 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
-WindowDialog {
+M3.Dialog {
     id: root
     backgroundHeight: 600
 
-    WindowDialogTitle {
+    M3.DialogTitle {
         text: "Bluetooth devices"
     }
     M3.Divider {
@@ -67,7 +67,7 @@ WindowDialog {
         Layout.topMargin: -Appearance.spacing.s
         Layout.bottomMargin: -Appearance.spacing.s
     }
-    WindowDialogButtonRow {
+    M3.DialogButtonRow {
         M3.Button {
             variant: "text"
             text: "Details"

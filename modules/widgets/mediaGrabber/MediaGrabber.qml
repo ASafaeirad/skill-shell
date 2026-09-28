@@ -3,6 +3,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import qs.services
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 
 /**
  * Media grabber: paste a YouTube, Instagram or X link and download it with
@@ -64,7 +65,7 @@ Panel {
         }
     }
 
-    OverlayDialog {
+    M3.DialogOverlay {
         id: dialog
 
         layerNamespace: "quickshell:mediaGrabber"
