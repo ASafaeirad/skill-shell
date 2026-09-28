@@ -5,6 +5,7 @@ import Quickshell.Widgets
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 
 Item {
     id: root
@@ -69,7 +70,7 @@ Item {
             text: PolkitService.cleanMessage
         }
 
-        MaterialTextField {
+        M3.TextField {
             id: inputField
             Layout.fillWidth: true
             focus: true
@@ -90,13 +91,15 @@ Item {
             Item {
                 Layout.fillWidth: true
             }
-            DialogButton {
-                buttonText: "Cancel"
+            M3.Button {
+                variant: "text"
+                text: "Cancel"
                 onClicked: PolkitService.cancel();
             }
-            DialogButton {
+            M3.Button {
+                variant: "text"
                 enabled: PolkitService.interactionAvailable
-                buttonText: "OK"
+                text: "OK"
                 onClicked: root.submit();
             }
         }

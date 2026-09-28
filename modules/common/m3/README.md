@@ -129,8 +129,8 @@ Migrate one panel at a time and leave its behaviour alone.
 | `StyledToolTip` | 43 | `M3.Tooltip`, or `M3.IconButton { tooltip }` |
 | `RippleButtonWithIcon` | 12 | `M3.Button { materialIcon }` |
 | Inline `component X: Rectangle/RippleButton` | 8 | `Separator` → `M3.Divider`; `TitlebarButton`, `WidgetButton` → `M3.IconButton`; `BigRecorderButton` → `M3.Button` |
-| `MaterialTextField` | 8 | `M3.TextField` |
-| `DialogButton` | 6 | `M3.Button { variant: "text" }` |
+| `MaterialTextField` | 6 | `M3.TextField` |
+| `DialogButton` | 2 | `M3.Button { variant: "text" }` |
 | Hex colour literals | 4 | `regionSelector`, `screenTranslator` overlays: an `Appearance` token (`colScrim`, …) |
 | 1 px `Rectangle` dividers | 4 | `M3.Divider` |
 | `StyledProgressBar` | 3 | `M3.LinearProgressIndicator` |
