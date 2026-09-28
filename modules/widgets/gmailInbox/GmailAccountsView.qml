@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 
 ColumnLayout {
     id: root
@@ -16,15 +17,11 @@ ColumnLayout {
         Layout.margins: Appearance.spacing.m
         spacing: Appearance.spacing.s
 
-        MaterialSymbol {
-            text: "arrow_back"
-            iconSize: Appearance.font.pixelSize.large
-            color: Appearance.colors.colOnLayer2
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                onClicked: root.backRequested()
-            }
+        M3.IconButton {
+            size: "xsmall"
+            materialIcon: "arrow_back"
+            tooltip: "Back to inbox"
+            onClicked: root.backRequested()
         }
         StyledText {
             Layout.fillWidth: true
@@ -89,15 +86,11 @@ ColumnLayout {
                                 elide: Text.ElideRight
                             }
                         }
-                        MaterialSymbol {
-                            text: accountRow.editing ? "close" : "edit"
-                            iconSize: Appearance.font.pixelSize.large
-                            color: Appearance.colors.colSubtext
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: accountRow.editing = !accountRow.editing
-                            }
+                        M3.IconButton {
+                            size: "xsmall"
+                            materialIcon: accountRow.editing ? "close" : "edit"
+                            tooltip: accountRow.editing ? "Stop editing" : "Edit account"
+                            onClicked: accountRow.editing = !accountRow.editing
                         }
                     }
 
@@ -107,7 +100,7 @@ ColumnLayout {
                         Layout.bottomMargin: Appearance.spacing.m
                         spacing: Appearance.spacing.s
 
-                        MaterialTextField {
+                        M3.TextField {
                             id: labelField
                             Layout.fillWidth: true
                             placeholderText: "Account label"
@@ -121,41 +114,30 @@ ColumnLayout {
                             spacing: Appearance.spacing.s
                             Repeater {
                                 model: Gmail.accountColorKeys
-                                delegate: Rectangle {
+                                delegate: M3.Chip {
                                     id: colorChoice
                                     required property string modelData
-                                    implicitWidth: Appearance.spacing.xxl
-                                    implicitHeight: implicitWidth
-                                    radius: Appearance.rounding.full
-                                    color: accountRow.modelData.color === modelData
-                                        ? Appearance.colors.colSurfaceContainerHighest
-                                        : "transparent"
-                                    Rectangle {
-                                        anchors.centerIn: parent
-                                        width: Appearance.spacing.m
-                                        height: width
-                                        radius: Appearance.rounding.full
-                                        color: Appearance.m3colors[colorChoice.modelData]
-                                    }
-                                    MouseArea {
-                                        anchors.fill: parent
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: Gmail.setAccountColor(accountRow.modelData.id, colorChoice.modelData)
-                                    }
+                                    variant: "filter"
+                                    dotColor: Appearance.m3colors[colorChoice.modelData]
+                                    selected: accountRow.modelData.color === colorChoice.modelData
+                                    onClicked: Gmail.setAccountColor(accountRow.modelData.id, colorChoice.modelData)
                                 }
                             }
                         }
                         RowLayout {
                             Layout.fillWidth: true
                             Item { Layout.fillWidth: true }
-                            RippleButtonWithIcon {
+                            M3.Button {
+                                variant: "text"
+                                error: true
                                 materialIcon: "delete"
-                                mainText: "Remove"
+                                text: "Remove"
                                 onClicked: Gmail.removeAccount(accountRow.modelData.id)
                             }
-                            RippleButtonWithIcon {
+                            M3.Button {
+                                variant: "tonal"
                                 materialIcon: "check"
-                                mainText: "Save label"
+                                text: "Save label"
                                 onClicked: {
                                     Gmail.setAccountLabel(accountRow.modelData.id, labelField.text);
                                     accountRow.editing = false;
@@ -179,13 +161,13 @@ ColumnLayout {
             color: Appearance.colors.colSubtext
             wrapMode: Text.Wrap
         }
-        MaterialTextField {
+        M3.TextField {
             id: clientIdField
             Layout.fillWidth: true
             placeholderText: "OAuth client ID"
             text: Gmail.savedClientId
         }
-        MaterialTextField {
+        M3.TextField {
             id: clientSecretField
             Layout.fillWidth: true
             placeholderText: Gmail.hasSavedClientSecret ? "Client secret stored in keyring" : "OAuth client secret"
@@ -205,11 +187,7 @@ ColumnLayout {
         wrapMode: Text.Wrap
     }
 
-    Rectangle {
-        Layout.fillWidth: true
-        implicitHeight: Appearance.spacing.xxs / 2
-        color: Appearance.colors.colLayer0Border
-    }
+    M3.Divider {}
     RowLayout {
         Layout.fillWidth: true
         Layout.margins: Appearance.spacing.m
@@ -219,9 +197,10 @@ ColumnLayout {
             font.pixelSize: Appearance.font.pixelSize.smaller
             color: Appearance.colors.colSubtext
         }
-        RippleButtonWithIcon {
+        M3.Button {
+            variant: "tonal"
             materialIcon: "add"
-            mainText: Gmail.signingIn ? "Waiting for Google" : "Add account"
+            text: Gmail.signingIn ? "Waiting for Google" : "Add account"
             enabled: !Gmail.signingIn
             onClicked: Gmail.signIn(Gmail.credentialsAvailable ? Gmail.savedClientId : clientIdField.text,
                                     Gmail.credentialsAvailable ? "" : clientSecretField.text)

@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 
 ColumnLayout {
     id: root
@@ -32,15 +33,11 @@ ColumnLayout {
         Layout.margins: Appearance.spacing.m
         spacing: Appearance.spacing.s
 
-        MaterialSymbol {
-            text: "arrow_back"
-            iconSize: Appearance.font.pixelSize.large
-            color: Appearance.colors.colOnLayer2
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                onClicked: root.backRequested()
-            }
+        M3.IconButton {
+            size: "xsmall"
+            materialIcon: "arrow_back"
+            tooltip: "Back to inbox"
+            onClicked: root.backRequested()
         }
         StyledText {
             Layout.fillWidth: true
@@ -56,47 +53,27 @@ ColumnLayout {
                 { icon: "delete", operation: "trash", title: "Move to trash" },
                 { icon: "open_in_new", operation: "open", title: "Open in Gmail" }
             ]
-            delegate: Rectangle {
+            delegate: M3.IconButton {
                 id: headerAction
                 required property var modelData
-                implicitWidth: Appearance.spacing.xxl
-                implicitHeight: implicitWidth
-                radius: Appearance.rounding.full
-                color: actionMouse.containsMouse ? Appearance.colors.colLayer3Hover : "transparent"
-                MaterialSymbol {
-                    anchors.centerIn: parent
-                    text: headerAction.modelData.icon
-                    iconSize: Appearance.font.pixelSize.large
-                    color: headerAction.modelData.operation === "trash"
-                           ? Appearance.colors.colError : Appearance.colors.colOnLayer2
-                }
-                MouseArea {
-                    id: actionMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    enabled: headerAction.modelData.operation === "open" || !Gmail.acting
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: mouse => {
-                        if (headerAction.modelData.operation === "open")
-                            root.browserRequested();
-                        else
-                            root.actionRequested(headerAction.modelData.operation,
-                                                 actionMouse.mapToItem(root, mouse.x, mouse.y));
-                    }
-                }
-                StyledToolTip {
-                    extraVisibleCondition: actionMouse.containsMouse
-                    text: headerAction.modelData.title
+                size: "xsmall"
+                materialIcon: headerAction.modelData.icon
+                tooltip: headerAction.modelData.title
+                error: headerAction.modelData.operation === "trash"
+                enabled: headerAction.modelData.operation === "open" || !Gmail.acting
+                onClicked: {
+                    if (headerAction.modelData.operation === "open")
+                        root.browserRequested();
+                    else
+                        root.actionRequested(headerAction.modelData.operation,
+                                             headerAction.mapToItem(root, headerAction.width / 2,
+                                                                    headerAction.height));
                 }
             }
         }
     }
 
-    Rectangle {
-        Layout.fillWidth: true
-        implicitHeight: Appearance.spacing.xxs / 2
-        color: Appearance.colors.colLayer0Border
-    }
+    M3.Divider {}
 
     Flickable {
         id: scroll
@@ -195,17 +172,13 @@ ColumnLayout {
 
             Repeater {
                 model: root.detail?.attachments ?? []
-                delegate: Rectangle {
+                delegate: M3.Card {
                     id: attachmentChip
                     required property var modelData
                     Layout.fillWidth: true
-                    implicitHeight: attachmentRow.implicitHeight + Appearance.spacing.m * 2
-                    radius: Appearance.rounding.small
-                    color: Appearance.colors.colSurfaceContainerHigh
+                    padding: Appearance.spacing.m
                     RowLayout {
-                        id: attachmentRow
-                        anchors.fill: parent
-                        anchors.margins: Appearance.spacing.m
+                        Layout.fillWidth: true
                         spacing: Appearance.spacing.s
                         MaterialSymbol {
                             text: "description"
@@ -237,59 +210,19 @@ ColumnLayout {
                 Layout.fillWidth: true
                 spacing: Appearance.spacing.s
 
-                Rectangle {
-                    implicitWidth: replyRow.implicitWidth + Appearance.spacing.m * 2
-                    implicitHeight: Appearance.spacing.xxl + Appearance.spacing.s
-                    radius: Appearance.rounding.full
-                    color: Appearance.colors.colPrimary
-                    RowLayout {
-                        id: replyRow
-                        anchors.centerIn: parent
-                        spacing: Appearance.spacing.xs
-                        MaterialSymbol {
-                            text: "reply"
-                            iconSize: Appearance.font.pixelSize.normal
-                            color: Appearance.colors.colOnPrimary
-                        }
-                        StyledText {
-                            text: "Reply in Gmail"
-                            font.pixelSize: Appearance.font.pixelSize.smaller
-                            color: Appearance.colors.colOnPrimary
-                        }
-                    }
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.browserRequested()
-                    }
+                M3.Button {
+                    variant: "filled"
+                    materialIcon: "reply"
+                    text: "Reply in Gmail"
+                    onClicked: root.browserRequested()
                 }
 
-                Rectangle {
-                    implicitWidth: readActionRow.implicitWidth + Appearance.spacing.m * 2
-                    implicitHeight: Appearance.spacing.xxl + Appearance.spacing.s
-                    radius: Appearance.rounding.full
-                    color: Appearance.colors.colSurfaceContainerHigh
-                    RowLayout {
-                        id: readActionRow
-                        anchors.centerIn: parent
-                        spacing: Appearance.spacing.xs
-                        MaterialSymbol {
-                            text: root.message.read ? "mark_email_unread" : "drafts"
-                            iconSize: Appearance.font.pixelSize.normal
-                            color: Appearance.colors.colOnLayer2
-                        }
-                        StyledText {
-                            text: root.message.read ? "Mark unread" : "Mark read"
-                            font.pixelSize: Appearance.font.pixelSize.smaller
-                            color: Appearance.colors.colOnLayer2
-                        }
-                    }
-                    MouseArea {
-                        anchors.fill: parent
-                        enabled: !Gmail.acting
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.actionRequested(root.message.read ? "unread" : "read", Qt.point(0, 0))
-                    }
+                M3.Button {
+                    variant: "tonal"
+                    materialIcon: root.message.read ? "mark_email_unread" : "drafts"
+                    text: root.message.read ? "Mark unread" : "Mark read"
+                    enabled: !Gmail.acting
+                    onClicked: root.actionRequested(root.message.read ? "unread" : "read", Qt.point(0, 0))
                 }
             }
         }
