@@ -487,6 +487,19 @@ ApplicationWindow {
                     text: "Incorrect passphrase"
                 }
             }
+            PreviewCard {
+                title: "Outlined surface"
+                M3.DialogCard {
+                    width: parent.width
+                    height: Appearance.sizes.m3DialogOverlayHeight
+                    outlinedSurface: true
+                    Component.onCompleted: animateIn()
+                    M3.DialogParagraph {
+                        anchors.centerIn: parent
+                        text: "Longer dialog content"
+                    }
+                }
+            }
             M3.DialogOverlay {
                 id: exampleOverlay
                 layerNamespace: "quickshell:designSystemDialog"
