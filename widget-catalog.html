@@ -1014,6 +1014,9 @@ modules/widgets/sidebarRight/wifiNetworks/WifiDialog.qml
 modules/widgets/sidebarRight/wifiNetworks/WifiNetworkItem.qml
 modules/widgets/pass/Pass.qml
 modules/widgets/pass/PassContent.qml
+modules/widgets/pinentry/Pinentry.qml
+modules/widgets/polkit/Polkit.qml
+modules/widgets/polkit/PolkitContent.qml
 modules/widgets/mediaGrabber/MediaGrabber.qml
 modules/widgets/mediaGrabber/MediaGrabberContent.qml
 modules/widgets/mediaControls/MediaControls.qml
@@ -1023,6 +1026,12 @@ modules/widgets/background/Background.qml`
         .split("\n");
 
       const exactPurposes = {
+        Pinentry:
+          "Modal passphrase prompt with a password field and cancel or confirm actions, returned to the caller through a FIFO.",
+        Polkit:
+          "Fullscreen policy authentication window that hosts the shared authentication content.",
+        PolkitContent:
+          "Authentication prompt with a password field and cancel or confirm actions, backed by the polkit agent.",
         Button:
           "M3 common button: filled, tonal, outlined, text and elevated variants, optional icon and trailing text, toggle state with neutral unselected colours, a content slot, external hover, and quick setting tile layout with a separate icon action.",
         ButtonGroup:
@@ -1235,7 +1244,7 @@ modules/widgets/background/Background.qml`
         if (path.includes("/common/m3/")) return "Material 3";
         if (path.includes("/settings/")) return "Settings";
         if (path.includes("/widgets/background/")) return "Background";
-        if (path.includes("/widgets/pass/") || path.includes("/widgets/mediaGrabber/")) return "Panel widgets";
+        if (path.includes("/widgets/pass/") || path.includes("/widgets/pinentry/") || path.includes("/widgets/polkit/") || path.includes("/widgets/mediaGrabber/")) return "Panel widgets";
         if (path.includes("/widgetCanvas/")) return "Canvas";
         if (path.includes("/shapes/")) return "Shape lab";
         return "Common toolkit";

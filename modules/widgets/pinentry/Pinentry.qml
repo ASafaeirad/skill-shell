@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -158,7 +159,7 @@ Panel {
                     text: root.errorText
                 }
 
-                MaterialTextField {
+                M3.TextField {
                     id: inputField
 
                     Layout.fillWidth: true
@@ -182,13 +183,15 @@ Panel {
                         Layout.fillWidth: true
                     }
 
-                    DialogButton {
-                        buttonText: "Cancel"
+                    M3.Button {
+                        variant: "text"
+                        text: "Cancel"
                         onClicked: root.cancel()
                     }
 
-                    DialogButton {
-                        buttonText: "OK"
+                    M3.Button {
+                        variant: "text"
+                        text: "OK"
                         onClicked: root.submit(inputField.text)
                     }
                 }
