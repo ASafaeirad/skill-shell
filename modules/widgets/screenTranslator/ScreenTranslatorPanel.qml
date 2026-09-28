@@ -8,6 +8,7 @@ import Quickshell.Wayland
 import qs.modules.common
 import qs.modules.common.utils
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 
 PanelWindow {
@@ -146,7 +147,7 @@ PanelWindow {
 
         spacing: 6
 
-        Toolbar {
+        M3.Toolbar {
             id: toolbar
             focus: root.visible
             Keys.onPressed: event => { // Esc to close
@@ -156,29 +157,27 @@ PanelWindow {
             }
             spacing: 0
 
-            IconToolbarButton {
-                id: sleepButton
+            M3.IconButton {
+                id: keyButton
+                toggleable: true
+                selectedVariant: "tonal"
                 onClicked: {
-                    toggled = !toggled
-                    if (toggled) keyInput.forceActiveFocus()
+                    selected = !selected
+                    if (selected) keyInput.forceActiveFocus()
                 }
-                text: "key"
-
-                StyledToolTip {
-                    z: 9999
-                    text: "Key input"
-                }
+                materialIcon: "key"
+                tooltip: "Key input"
             }
 
             Revealer {
-                reveal: sleepButton.toggled
+                reveal: keyButton.selected
                 Layout.fillHeight: true
 
                 RowLayout {
                     anchors.left: parent.left
                     spacing: 6
                     Item {} // extra padding
-                    ToolbarTextField {
+                    M3.ToolbarTextField {
                         id: keyInput
                         implicitWidth: 400
                         placeholderText: "Paste service account key JSON here"
@@ -191,7 +190,7 @@ PanelWindow {
                                 invalidJsonAnimation.restart();
                             } else {
                                 text = "";
-                                sleepButton.toggled = false;
+                                keyButton.selected = false;
                             }
                         }
 
@@ -200,27 +199,27 @@ PanelWindow {
                             target: keyInput
                         }
                     }
-                    IconToolbarButton {
+                    M3.IconButton {
                         id: submitButton
                         onClicked: keyInput.submit()
-                        text: "check"
-                        toggled: keyInput.text.length > 0
-
-                        StyledToolTip {
-                            z: 9999
-                            text: "Confirm"
-                        }
+                        materialIcon: "check"
+                        tooltip: "Confirm"
+                        toggleable: true
+                        selectedVariant: "tonal"
+                        selected: keyInput.text.length > 0
                     }
                 }
             }
         }
 
-        ToolbarPairedFab {
+        M3.Fab {
+            anchors.verticalCenter: parent.verticalCenter
+            variant: "tertiary"
+            size: "toolbar"
+            elevated: true
             iconText: "close"
+            tooltip: "Close"
             onClicked: root.dismiss()
-            StyledToolTip {
-                text: "Close"
-            }
         }
     }
 }
