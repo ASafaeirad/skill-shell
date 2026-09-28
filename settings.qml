@@ -15,6 +15,7 @@ import Quickshell.Io
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 
 ApplicationWindow {
     id: root
@@ -180,17 +181,10 @@ ApplicationWindow {
                 id: windowControlsRow
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
-                RippleButton {
-                    buttonRadius: Appearance.rounding.full
-                    implicitWidth: 35
-                    implicitHeight: 35
+                M3.IconButton {
+                    materialIcon: "close"
+                    tooltip: "Close"
                     onClicked: root.close()
-                    contentItem: MaterialSymbol {
-                        anchors.centerIn: parent
-                        horizontalAlignment: Text.AlignHCenter
-                        text: "close"
-                        iconSize: 20
-                    }
                 }
             }
         }
@@ -199,7 +193,7 @@ ApplicationWindow {
             Layout.fillWidth: true
             Layout.fillHeight: true
             spacing: contentPadding
-            NavigationRailTabs {
+            M3.NavigationRail {
                 Layout.alignment: Qt.AlignTop
                 Layout.leftMargin: 5
                 Layout.rightMargin: 5
