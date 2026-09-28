@@ -817,6 +817,21 @@ ApplicationWindow {
                 M3.Chip { variant: "assist"; text: "Disabled"; materialIcon: "block"; enabled: false }
                 M3.Chip { variant: "filter"; text: "Locked download"; selected: true; readOnly: true }
             }
+            PreviewCard {
+                title: "Colour dot"
+                description: "dotColor names the chip's subject by colour instead of an icon, and stays put while selected. With no text, the chip is the dot alone."
+                M3.Chip { variant: "filter"; dotColor: Appearance.m3colors.term6; text: "Personal" }
+                M3.Chip { variant: "filter"; dotColor: Appearance.m3colors.term2; text: "Work"; selected: true }
+                Repeater {
+                    model: ["term6", "term2", "term3", "term4"]
+                    M3.Chip {
+                        required property string modelData
+                        variant: "filter"
+                        dotColor: Appearance.m3colors[modelData]
+                        selected: modelData === "term3"
+                    }
+                }
+            }
         }
     }
 
