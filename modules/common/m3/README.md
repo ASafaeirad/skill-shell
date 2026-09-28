@@ -60,9 +60,10 @@ then move into this directory later without changing any callers.
 | M3 component | Use | Status | API |
 | --- | --- | --- | --- |
 | [Buttons](https://m3.material.io/components/buttons) | `M3.Button` | native | `variant`: filled · tonal · outlined · text · elevated; `text`, `materialIcon`, `trailingText`, `toggleable`, `selected`, `selectedVariant`: filled · tonal, `content` (slot), `externalHover`; quick setting tile: `tileLayout`, `supportingText`, `leadingAction`, `leadingSelected` |
+| [Button groups](https://m3.material.io/components/button-groups) | `M3.ButtonGroup` | native | `variant`: connected · segmented; connected children use `M3.Button` or `M3.IconButton`; segmented `options`, `currentValue`, `selected(value)`, optional `configKey`, `readOnly`, `equalWidth`, `surface`, `compact` |
 | [Icon buttons](https://m3.material.io/components/icon-buttons) | `M3.IconButton` | native | `variant`: standard · filled · tonal · outlined; `size`: small · xsmall; `materialIcon`, `iconSource`, `tooltip`, `toggleable`, `selected`, `iconRotation` |
 | [FAB](https://m3.material.io/components/floating-action-button) | `M3.Fab` | wraps `FloatingActionButton` | `iconText`, `buttonText`, `expanded` (extended FAB) |
-| [Chips](https://m3.material.io/components/chips) | `M3.Chip` | native | `variant`: assist · filter · input · suggestion; `text`, `materialIcon`, `selected`, `removable`, `removeClicked()` |
+| [Chips](https://m3.material.io/components/chips) | `M3.Chip` | native | `variant`: assist · filter · input · suggestion; `text`, `materialIcon`, `selected`, `readOnly` for a locked but legible choice, `compact` (28px), `removable`, `removeClicked()` |
 | [Cards](https://m3.material.io/components/cards) | `M3.Card` | native | `variant`: filled · elevated · outlined; children stack in a column; `padding`, `spacing`, `interactive`, `clicked()` |
 | [Lists](https://m3.material.io/components/lists) | `M3.ListItem` | native | `text`, `supportingText`, `leadingIcon`, `trailingIcon`, `trailingText`, `interactive`, `compact`; children go to the trailing slot |
 | [Menus](https://m3.material.io/components/menus) | `M3.MenuItem` | native | `text`, `leadingIcon`, `leadingIconSource`, `trailingIcon`, `trailingText`, `selectionControl`: none · checkbox · radio + `checkState`, `density` (0 to -3), `reserveLeadingIcon`, `reserveSelectionControl` |
@@ -89,7 +90,6 @@ existing widget rather than writing a new one, and consider adding the M3 compon
 
 | M3 component | Existing widget |
 | --- | --- |
-| [Button groups](https://m3.material.io/components/button-groups) (connected, segmented) | `ButtonGroup` + `GroupButton`, `SelectionGroupButton`; `ConfigSelectionArray` for settings |
 | [Toolbars](https://m3.material.io/components/toolbars) | `Toolbar`, `ToolbarButton`, `IconToolbarButton`, `ToolbarTextField`, `ToolbarPairedFab` |
 | [Dialogs](https://m3.material.io/components/dialogs) | `WindowDialog` + `WindowDialogTitle`/`Paragraph`/`ButtonRow`, `OverlayDialog` |
 | A whole [menu](https://m3.material.io/components/menus) container (`M3.MenuItem` is in the catalog) | `FilterableComboBox` |

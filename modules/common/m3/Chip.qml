@@ -22,6 +22,9 @@ RippleButton {
     property string materialIcon: ""
     property bool selected: false
     property bool removable: variant === "input"
+    // Keeps the selected choice readable when an in-progress action locks it.
+    property bool readOnly: false
+    property bool compact: false
 
     signal removeClicked()
 
@@ -35,14 +38,16 @@ RippleButton {
         : showSelected ? Appearance.colors.colOnSecondaryContainer
         : Appearance.colors.colPrimary
 
-    implicitHeight: Appearance.sizes.m3ChipHeight
+    implicitHeight: compact ? Appearance.sizes.m3ChipHeightCompact : Appearance.sizes.m3ChipHeight
     leftPadding: leadingIcon.length > 0 ? Appearance.spacing.s : Appearance.spacing.m
     rightPadding: removable ? Appearance.spacing.s : Appearance.spacing.m
     buttonRadius: Appearance.rounding.verysmall
     opacity: 1
 
     colBackground: containerColor
-    colBackgroundHover: ColorUtils.stateLayer(containerColor, labelColor, Appearance.stateLayer.hover)
+    colBackgroundHover: readOnly ? containerColor : ColorUtils.stateLayer(containerColor, labelColor, Appearance.stateLayer.hover)
+    pointingHandCursor: !readOnly
+    rippleEnabled: !readOnly
     colRipple: ColorUtils.applyAlpha(labelColor, Appearance.stateLayer.pressed * 2)
     buttonColor: !enabled ? (showSelected ? ColorUtils.applyAlpha(Appearance.colors.colOnSurface, Appearance.stateLayer.disabledContainer) : "transparent")
         : hovered ? colBackgroundHover : colBackground

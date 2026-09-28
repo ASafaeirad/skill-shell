@@ -20,7 +20,7 @@ ApplicationWindow {
     // Material 3 components from qs.modules.common.m3 first, then shell widgets
     // with no M3 counterpart. Keep in sync with modules/common/m3/README.md.
     readonly property var m3Tabs: [
-        "Button", "IconButton", "Fab", "Chip", "Card", "ListItem", "MenuItem", "ExposedDropdownMenu", "Divider", "Badge",
+        "Button", "ButtonGroup", "IconButton", "Fab", "Chip", "Card", "ListItem", "MenuItem", "ExposedDropdownMenu", "Divider", "Badge",
         "Checkbox", "RadioButton", "Switch", "Slider", "TextField", "Tabs", "Snackbar",
         "LinearProgressIndicator", "CircularProgressIndicator", "LoadingIndicator"
     ]
@@ -31,6 +31,7 @@ ApplicationWindow {
     readonly property var tabs: m3Tabs.concat(shellTabs)
     readonly property var tabIcons: ({
         "Button": "smart_button",
+        "ButtonGroup": "view_week",
         "IconButton": "touch_app",
         "Fab": "add_circle",
         "Chip": "sell",
@@ -60,6 +61,7 @@ ApplicationWindow {
     })
     readonly property var variantOptions: ({
         "Button": ["filled", "tonal", "outlined", "text", "elevated"],
+        "ButtonGroup": ["connected", "segmented"],
         "IconButton": ["standard", "filled", "tonal", "outlined"],
         "Chip": ["assist", "filter", "input", "suggestion"],
         "Card": ["filled", "elevated", "outlined"],
@@ -105,6 +107,7 @@ ApplicationWindow {
     function componentForTab(name) {
         switch (name) {
         case "Button": return buttonPage;
+        case "ButtonGroup": return buttonGroupPage;
         case "IconButton": return iconButtonPage;
         case "Fab": return fabPage;
         case "Chip": return chipPage;
@@ -428,6 +431,55 @@ ApplicationWindow {
     }
 
     Component {
+        id: buttonGroupPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "Button group"
+                guideline: "button-groups"
+                detail: "Connected groups collect related actions. Segmented groups choose one value from a set."
+            }
+            PreviewCard {
+                title: "Live group"
+                M3.ButtonGroup {
+                    variant: root.sampleVariant === "segmented" ? "segmented" : "connected"
+                    options: [
+                        { displayName: "Video", icon: "movie", value: "video" },
+                        { displayName: "Audio", icon: "music_note", value: "audio" }
+                    ]
+                    currentValue: root.sampleOption === 0 ? "video" : "audio"
+                    onSelected: value => root.sampleOption = value === "video" ? 0 : 1
+                    enabled: root.sampleEnabled
+                    M3.Button { text: "Back"; materialIcon: "arrow_back"; variant: "tonal" }
+                    M3.Button { text: "Forward"; materialIcon: "arrow_forward"; variant: "tonal" }
+                }
+            }
+            PreviewCard {
+                title: "Connected actions"
+                M3.ButtonGroup {
+                    padding: Appearance.spacing.xs
+                    M3.IconButton { materialIcon: "undo"; tooltip: "Undo" }
+                    M3.IconButton { materialIcon: "redo"; tooltip: "Redo" }
+                }
+            }
+            PreviewCard {
+                title: "Segmented choices and locked state"
+                M3.ButtonGroup {
+                    variant: "segmented"
+                    options: [{ displayName: "Day", value: 0 }, { displayName: "Week", value: 1 }, { displayName: "Month", value: 2 }]
+                    currentValue: 1
+                }
+                M3.ButtonGroup {
+                    variant: "segmented"
+                    readOnly: true
+                    options: [{ displayName: "Video", value: 0 }, { displayName: "Audio", value: 1 }]
+                    currentValue: 0
+                }
+            }
+        }
+    }
+
+    Component {
         id: buttonPage
         ColumnLayout {
             spacing: Appearance.spacing.lg
@@ -653,6 +705,7 @@ ApplicationWindow {
                 M3.Chip { variant: "input"; text: "alex@example.com"; materialIcon: "person" }
                 M3.Chip { variant: "suggestion"; text: "Sounds good" }
                 M3.Chip { variant: "assist"; text: "Disabled"; materialIcon: "block"; enabled: false }
+                M3.Chip { variant: "filter"; text: "Locked download"; selected: true; readOnly: true }
             }
         }
     }
