@@ -9,7 +9,7 @@ import qs.modules.common.functions
 import qs.modules.common.widgets
 import qs.modules.common.m3 as M3
 
-OverlayDialogCard {
+M3.DialogCard {
     id: root
 
     signal closeRequested

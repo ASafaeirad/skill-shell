@@ -6,9 +6,10 @@ import qs
 import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 
-OverlayDialogCard {
+M3.DialogCard {
     id: root
 
     property var items: []
@@ -98,7 +99,7 @@ OverlayDialogCard {
         anchors.margins: 12
         spacing: 8
 
-        MaterialTextField {
+        M3.TextField {
             id: searchField
 
             Layout.fillWidth: true

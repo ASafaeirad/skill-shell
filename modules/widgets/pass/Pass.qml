@@ -5,6 +5,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import qs.services
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 
 Panel {
     id: root
@@ -32,7 +33,7 @@ Panel {
             root.open();
     }
 
-    OverlayDialog {
+    M3.DialogOverlay {
         id: dialog
 
         layerNamespace: "quickshell:pass"

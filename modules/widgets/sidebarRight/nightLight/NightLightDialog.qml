@@ -12,17 +12,17 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
-WindowDialog {
+M3.Dialog {
     id: root
     property var screen: root.QsWindow.window?.screen
     property var brightnessMonitor: Brightness.getMonitorForScreen(screen)
     backgroundHeight: 700
 
-    WindowDialogTitle {
+    M3.DialogTitle {
         text: "Eye protection"
     }
 
-    WindowDialogSectionHeader {
+    M3.DialogSectionHeader {
         text: "Night Light"
     }
 
@@ -104,7 +104,7 @@ WindowDialog {
         }
     }
 
-    WindowDialogSectionHeader {
+    M3.DialogSectionHeader {
         text: "Brightness"
     }
 
@@ -132,7 +132,7 @@ WindowDialog {
         }
     }
 
-    WindowDialogSectionHeader {
+    M3.DialogSectionHeader {
         text: "Gamma"
     }
 
@@ -163,7 +163,7 @@ WindowDialog {
         }
     }
 
-    WindowDialogButtonRow {
+    M3.DialogButtonRow {
         Layout.fillWidth: true
 
         Item {

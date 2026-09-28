@@ -2,6 +2,7 @@ import qs
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.modules.common.functions
 import QtQuick
 import Quickshell
@@ -70,7 +71,7 @@ Panel {
             root.open();
     }
 
-    OverlayDialog {
+    M3.DialogOverlay {
         id: dialog
 
         layerNamespace: "quickshell:selector"
