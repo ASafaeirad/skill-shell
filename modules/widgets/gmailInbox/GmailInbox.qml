@@ -257,11 +257,14 @@ Panel {
 
                             Repeater {
                                 model: Gmail.accounts
-                                delegate: M3.Chip {
+                                delegate: M3.IconButton {
                                     id: accountDot
                                     required property var modelData
-                                    variant: "filter"
+                                    size: "xsmall"
+                                    toggleable: true
+                                    selectedVariant: "tonal"
                                     dotColor: root.accountColor(accountDot.modelData.color)
+                                    tooltip: accountDot.modelData.label || accountDot.modelData.email
                                     selected: root.accountFilter === accountDot.modelData.id
                                     onClicked: root.accountFilter = accountDot.modelData.id
                                 }

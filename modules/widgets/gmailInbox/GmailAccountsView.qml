@@ -114,10 +114,12 @@ ColumnLayout {
                             spacing: Appearance.spacing.s
                             Repeater {
                                 model: Gmail.accountColorKeys
-                                delegate: M3.Chip {
+                                delegate: M3.IconButton {
                                     id: colorChoice
                                     required property string modelData
-                                    variant: "filter"
+                                    size: "xsmall"
+                                    toggleable: true
+                                    selectedVariant: "tonal"
                                     dotColor: Appearance.m3colors[colorChoice.modelData]
                                     selected: accountRow.modelData.color === colorChoice.modelData
                                     onClicked: Gmail.setAccountColor(accountRow.modelData.id, colorChoice.modelData)
