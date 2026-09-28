@@ -744,6 +744,21 @@ ApplicationWindow {
                 }
             }
             PreviewCard {
+                title: "Colour swatches"
+                description: "dotColor puts a colour dot where the icon goes, for a button that picks a colour. As a toggle, the round container is the swatch's selection ring."
+                Repeater {
+                    model: ["term6", "term2", "term3", "term4", "term5", "term1"]
+                    M3.IconButton {
+                        required property string modelData
+                        size: "xsmall"
+                        toggleable: true
+                        selectedVariant: "tonal"
+                        dotColor: Appearance.m3colors[modelData]
+                        selected: modelData === "term3"
+                    }
+                }
+            }
+            PreviewCard {
                 title: "Application icon"
                 M3.IconButton {
                     iconSource: Quickshell.iconPath("applications-multimedia", "image-missing")
@@ -832,21 +847,6 @@ ApplicationWindow {
                 M3.Chip { variant: "suggestion"; text: "Sounds good" }
                 M3.Chip { variant: "assist"; text: "Disabled"; materialIcon: "block"; enabled: false }
                 M3.Chip { variant: "filter"; text: "Locked download"; selected: true; readOnly: true }
-            }
-            PreviewCard {
-                title: "Colour dot"
-                description: "dotColor names the chip's subject by colour instead of an icon, and stays put while selected. With no text, the chip is the dot alone."
-                M3.Chip { variant: "filter"; dotColor: Appearance.m3colors.term6; text: "Personal" }
-                M3.Chip { variant: "filter"; dotColor: Appearance.m3colors.term2; text: "Work"; selected: true }
-                Repeater {
-                    model: ["term6", "term2", "term3", "term4"]
-                    M3.Chip {
-                        required property string modelData
-                        variant: "filter"
-                        dotColor: Appearance.m3colors[modelData]
-                        selected: modelData === "term3"
-                    }
-                }
             }
         }
     }

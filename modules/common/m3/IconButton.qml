@@ -22,6 +22,9 @@ import qs.modules.common.widgets
  * error: a destructive action (delete, move to trash). M3's error roles stand in
  *   for the accent ones, so the icon reads red wherever the variant would be
  *   primary. Same meaning as Checkbox's error.
+ * dotColor: a colour dot in place of the icon, for a button that picks or stands
+ *   for a colour (a palette swatch). Pair it with toggleable + selected and the
+ *   round container becomes the swatch's selection ring.
  */
 RippleButton {
     id: root
@@ -36,6 +39,9 @@ RippleButton {
     property bool selected: false
     property real iconRotation: 0
     property bool error: false
+    property color dotColor: "transparent"
+
+    readonly property bool hasDot: dotColor.a > 0
 
     // A destructive action swaps M3's accent roles for the error ones.
     readonly property color accentColor: error ? Appearance.colors.colError : Appearance.colors.colPrimary
@@ -82,9 +88,17 @@ RippleButton {
     borderWidth: variant === "outlined" && !showSelected ? Appearance.sizes.m3OutlineWidth : 0
 
     contentItem: Item {
+        Rectangle {
+            anchors.centerIn: parent
+            visible: root.hasDot
+            width: Appearance.spacing.m
+            height: width
+            radius: Appearance.rounding.full
+            color: root.dotColor
+        }
         MaterialSymbol {
             anchors.centerIn: parent
-            visible: root.iconSource.length === 0
+            visible: root.iconSource.length === 0 && !root.hasDot
             text: root.materialIcon
             fill: root.toggleable && root.selected ? 1 : 0
             iconSize: root.size === "xsmall" ? Appearance.font.pixelSize.normal : Appearance.font.pixelSize.larger
