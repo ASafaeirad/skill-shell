@@ -190,7 +190,7 @@ ContentPage {
             title: "World clock"
             tooltip: "Choose the time zone shown beside your local clock."
 
-            FilterableComboBox {
+            M3.FilterableExposedDropdownMenu {
                 buttonIcon: "globe"
                 sourceModel: root.timeZones
                 selectedValue: Config.options.time.worldClock.timeZone
