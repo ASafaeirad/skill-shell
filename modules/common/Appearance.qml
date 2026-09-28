@@ -454,6 +454,10 @@ Singleton {
         property real m3MenuItemHeight: 48
         property real m3SearchBarHeight: 56
         property real m3SearchBarHeightCompact: 40
+        property real m3TabsHeight: 48
+        property real m3TabsCompactHeight: 40
+        property real m3TabsMinWidth: 160
+        property real m3TabsIndicatorHeight: 3
         property real m3DensityStep: 4 // one step of the Material density scale
         property real m3BadgeSmallSize: 6
         property real m3BadgeLargeSize: 16

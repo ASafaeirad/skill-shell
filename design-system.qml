@@ -68,6 +68,7 @@ ApplicationWindow {
         "IconButton": ["standard", "filled", "tonal", "outlined"],
         "Chip": ["assist", "filter", "input", "suggestion"],
         "Card": ["filled", "elevated", "outlined"],
+        "Tabs": ["secondary", "compact"],
         "Snackbar": ["single-line", "two-line"],
         "StatusBadge": ["neutral", "primary", "success", "error"]
     })
@@ -1309,22 +1310,32 @@ ApplicationWindow {
             PageHeading {
                 heading: "Tabs"
                 guideline: "tabs"
-                detail: "Secondary tabs switch between related views. The active tab has an animated underline."
+                detail: "Tabs switch between related views. Secondary tabs have an underline; compact tabs use a pill in narrow toolbars."
             }
             PreviewCard {
                 title: "Live tabs"
                 M3.Tabs {
                     width: Appearance.spacing.xxl * 12
-                    M3.Tab { text: root.sampleText; materialIcon: root.sampleIcon; enabled: root.sampleEnabled }
-                    M3.Tab { text: "Stopwatch"; materialIcon: "timer" }
+                    variant: root.sampleVariant
+                    M3.Tab { variant: root.sampleVariant; text: root.sampleText; materialIcon: root.sampleIcon; enabled: root.sampleEnabled }
+                    M3.Tab { variant: root.sampleVariant; text: "Stopwatch"; materialIcon: "timer" }
                 }
             }
             PreviewCard {
-                title: "Text and icon tabs"
+                title: "Secondary tabs"
                 M3.Tabs {
                     width: Appearance.spacing.xxl * 12
                     M3.Tab { text: "Focus" }
                     M3.Tab { text: "Break"; materialIcon: "coffee" }
+                }
+            }
+            PreviewCard {
+                title: "Compact toolbar tabs"
+                M3.Tabs {
+                    variant: "compact"
+                    M3.Tab { variant: "compact"; text: "Shot"; materialIcon: "photo_camera" }
+                    M3.Tab { variant: "compact"; text: "Record"; materialIcon: "videocam" }
+                    M3.Tab { variant: "compact"; text: "Record + audio"; materialIcon: "mic" }
                 }
             }
         }
