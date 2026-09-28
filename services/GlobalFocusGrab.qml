@@ -52,17 +52,11 @@ Singleton {
         }
     }
 
-    function hasActive(element) {
-        return element?.activeFocus || Array.from(
-            element?.children
-        ).some(
-            (child) => hasActive(child)
-        );
-    }
-
     HyprlandFocusGrab {
         id: grab
-        windows: root.dismissable.every(w => !w?.focusable) || root.dismissable.some(w => hasActive(w?.contentItem)) ? [...root.dismissable, ...root.persistent] : [...root.dismissable]
+        // A bar click can open a popover before it gains focus. Keep the bar in
+        // the grab so that opening click does not immediately dismiss it.
+        windows: [...root.dismissable, ...root.persistent]
         active: root.dismissable.length > 0
         onCleared: () => {
             root.dismiss();
