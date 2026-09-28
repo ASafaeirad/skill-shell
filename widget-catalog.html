@@ -850,6 +850,7 @@ modules/common/m3/LoadingIndicator.qml
 modules/common/m3/MenuItem.qml
 modules/common/m3/NavigationRail.qml
 modules/common/m3/RadioButton.qml
+modules/common/m3/SearchBar.qml
 modules/common/m3/Slider.qml
 modules/common/m3/Snackbar.qml
 modules/common/m3/Switch.qml
@@ -1052,6 +1053,8 @@ modules/widgets/background/Background.qml`
           "M3 snackbar for brief feedback with single-line and two-line layouts, an optional undo action and countdown progress.",
         TextField:
           "M3 filled text field; wraps MaterialTextField.",
+        SearchBar:
+          "M3 search bar input: a pill-shaped query field in default (56 px) and compact (40 px) heights.",
         Tabs:
           "M3 secondary tab bar with an animated active indicator and wheel navigation; wraps SecondaryTabBar.",
         Tab:
@@ -1244,7 +1247,7 @@ modules/widgets/background/Background.qml`
         )
           return "Time & date";
         if (/Notification|Notice/.test(name)) return "Notifications";
-        if (/^(Chip|Checkbox|Fab)$/.test(name)) return "Controls";
+        if (/^(Chip|Checkbox|Fab|SearchBar)$/.test(name)) return "Controls";
         if (/^(Card|ListItem|MenuItem|Divider|Badge)$/.test(name)) return "Layout & navigation";
         if (/^Tooltip$/.test(name)) return "Utilities";
         if (/Dialog|Polkit/.test(name)) return "Dialogs";
