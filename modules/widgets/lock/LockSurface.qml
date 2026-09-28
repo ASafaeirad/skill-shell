@@ -10,6 +10,7 @@ import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.panels.lock
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.modules.widgets.bar as Bar
 import qs.services
 
@@ -136,21 +137,26 @@ MouseArea {
     }
 
     // lock status
-    Toolbar {
+    Item {
         id: lockInfoIsland
 
         scale: root.toolbarScale
         opacity: root.toolbarOpacity
-        padding: Appearance.spacing.m
-        colBackground: ColorUtils.transparentize(Appearance.m3colors.m3surfaceContainer, 1)
-        enableShadow: false
+        implicitWidth: lockInfoColumn.implicitWidth + Appearance.spacing.m * 2
+        implicitHeight: lockInfoColumn.implicitHeight + Appearance.spacing.m * 2
 
+        // Top edge where the clock sat when it was a floating toolbar above the middle
         anchors {
-            bottom: parent.verticalCenter
-            bottomMargin: Appearance.sizes.elevationMargin
+            top: parent.verticalCenter
+            topMargin: -(Appearance.sizes.elevationMargin + Appearance.sizes.m3ToolbarFloatingHeight)
         }
 
         ColumnLayout {
+            id: lockInfoColumn
+
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: Appearance.spacing.m
             spacing: Appearance.spacing.s
 
             StyledText {
@@ -206,7 +212,7 @@ MouseArea {
     }
 
     // Main toolbar: password box
-    Toolbar {
+    M3.Toolbar {
         id: mainIsland
 
         scale: root.toolbarScale
@@ -237,7 +243,7 @@ MouseArea {
 
         }
 
-        ToolbarTextField {
+        M3.ToolbarTextField {
             id: passwordBox
 
             // We're drawing dots manually
@@ -245,11 +251,8 @@ MouseArea {
 
             Layout.rightMargin: -Layout.leftMargin
             placeholderText: GlobalStates.screenUnlockFailed ? "Incorrect password" : "Enter password"
-            // Style
             clip: true
-            font.pixelSize: Appearance.font.pixelSize.small
-            selectedTextColor: materialShapeChars ? "transparent" : Appearance.colors.colOnSecondaryContainer
-            selectionColor: materialShapeChars ? "transparent" : Appearance.colors.colSecondaryContainer
+            drawsOwnText: materialShapeChars
             // Password
             enabled: !root.context.unlockInProgress
             echoMode: TextInput.Password
@@ -263,7 +266,6 @@ MouseArea {
                 root.context.resetClearTimer();
             }
             layer.enabled: true
-            color: ColorUtils.transparentize(Appearance.colors.colOnLayer1, materialShapeChars ? 1 : 0)
 
             Connections {
                 function onCurrentTextChanged() {
@@ -320,31 +322,27 @@ MouseArea {
 
         }
 
-        ToolbarButton {
+        M3.IconButton {
             id: confirmButton
 
-            implicitWidth: height
-            toggled: true
+            variant: "filled"
             enabled: !root.context.unlockInProgress
-            colBackgroundToggled: Appearance.colors.colPrimary
             onClicked: root.context.tryUnlock()
-
-            contentItem: MaterialSymbol {
-                anchors.centerIn: parent
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                iconSize: 24
-                text: {
-                    if (root.context.targetAction === LockContext.ActionEnum.Unlock)
-                        return root.ctrlHeld ? "coffee" : "arrow_right_alt";
-                    else if (root.context.targetAction === LockContext.ActionEnum.Poweroff)
-                        return "power_settings_new";
-                    else if (root.context.targetAction === LockContext.ActionEnum.Reboot)
-                        return "restart_alt";
-                }
-                color: confirmButton.enabled ? Appearance.colors.colOnPrimary : Appearance.colors.colSubtext
+            materialIcon: {
+                if (root.context.targetAction === LockContext.ActionEnum.Unlock)
+                    return root.ctrlHeld ? "coffee" : "arrow_right_alt";
+                else if (root.context.targetAction === LockContext.ActionEnum.Poweroff)
+                    return "power_settings_new";
+                else if (root.context.targetAction === LockContext.ActionEnum.Reboot)
+                    return "restart_alt";
             }
-
+            tooltip: {
+                if (root.context.targetAction === LockContext.ActionEnum.Poweroff)
+                    return "Power off";
+                else if (root.context.targetAction === LockContext.ActionEnum.Reboot)
+                    return "Restart";
+                return "Unlock";
+            }
         }
 
         Behavior on anchors.bottomMargin {
@@ -354,7 +352,7 @@ MouseArea {
     }
 
     // Left toolbar
-    Toolbar {
+    M3.Toolbar {
         id: leftIsland
 
         scale: root.toolbarScale
@@ -424,7 +422,7 @@ MouseArea {
     }
 
     // Right toolbar
-    Toolbar {
+    M3.Toolbar {
         id: rightIsland
 
         scale: root.toolbarScale
@@ -444,24 +442,27 @@ MouseArea {
             color: (Battery.isLow && !Battery.isCharging) ? Appearance.colors.colError : Appearance.colors.colOnSurfaceVariant
         }
 
-        IconToolbarButton {
+        M3.IconButton {
             id: sleepButton
 
             onClicked: Session.suspend()
-            text: "dark_mode"
+            materialIcon: "dark_mode"
+            tooltip: "Sleep"
         }
 
-        PasswordGuardedIconToolbarButton {
+        PasswordGuardedIconButton {
             id: powerButton
 
-            text: "power_settings_new"
+            materialIcon: "power_settings_new"
+            tooltip: "Power off"
             targetAction: LockContext.ActionEnum.Poweroff
         }
 
-        PasswordGuardedIconToolbarButton {
+        PasswordGuardedIconButton {
             id: rebootButton
 
-            text: "restart_alt"
+            materialIcon: "restart_alt"
+            tooltip: "Restart"
             targetAction: LockContext.ActionEnum.Reboot
         }
 
@@ -480,12 +481,14 @@ MouseArea {
         animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
     }
 
-    component PasswordGuardedIconToolbarButton: IconToolbarButton {
+    component PasswordGuardedIconButton: M3.IconButton {
         id: guardedBtn
 
         required property var targetAction
 
-        toggled: root.context.targetAction === guardedBtn.targetAction
+        toggleable: true
+        selectedVariant: "tonal"
+        selected: root.context.targetAction === guardedBtn.targetAction
         onClicked: {
             if (!root.requirePasswordToPower) {
                 root.context.unlocked(guardedBtn.targetAction);
