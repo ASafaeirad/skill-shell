@@ -155,7 +155,7 @@ Panel {
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignLeft
                     visible: root.errorText.length > 0
-                    color: Appearance.m3colors.m3error
+                    error: true
                     text: root.errorText
                 }
 
