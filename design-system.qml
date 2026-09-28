@@ -20,7 +20,7 @@ ApplicationWindow {
     // Material 3 components from qs.modules.common.m3 first, then shell widgets
     // with no M3 counterpart. Keep in sync with modules/common/m3/README.md.
     readonly property var m3Tabs: [
-        "Button", "ButtonGroup", "IconButton", "Fab", "Chip", "Card", "ListItem", "MenuItem", "ExposedDropdownMenu", "Divider", "Badge",
+        "Button", "ButtonGroup", "IconButton", "Fab", "Chip", "Card", "ListItem", "Menu", "MenuItem", "ExposedDropdownMenu", "FilterableExposedDropdownMenu", "Divider", "Badge",
         "Checkbox", "RadioButton", "Switch", "Slider", "TextField", "SearchBar", "Tabs", "Snackbar",
         "LinearProgressIndicator", "CircularProgressIndicator", "LoadingIndicator"
     ]
@@ -37,8 +37,10 @@ ApplicationWindow {
         "Chip": "sell",
         "Card": "crop_landscape",
         "ListItem": "list",
+        "Menu": "menu_open",
         "MenuItem": "menu",
         "ExposedDropdownMenu": "arrow_drop_down_circle",
+        "FilterableExposedDropdownMenu": "search",
         "Divider": "horizontal_rule",
         "Badge": "notifications_unread",
         "Checkbox": "check_box",
@@ -114,8 +116,10 @@ ApplicationWindow {
         case "Chip": return chipPage;
         case "Card": return cardPage;
         case "ListItem": return listItemPage;
+        case "Menu": return menuPage;
         case "MenuItem": return menuItemPage;
         case "ExposedDropdownMenu": return exposedDropdownPage;
+        case "FilterableExposedDropdownMenu": return filterableExposedDropdownPage;
         case "Divider": return dividerPage;
         case "Badge": return badgePage;
         case "Checkbox": return checkboxPage;
@@ -894,6 +898,34 @@ ApplicationWindow {
     }
 
     Component {
+        id: menuPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "Menu"
+                guideline: "menus"
+                detail: "A filled surface for menu actions, divided into groups."
+            }
+            PreviewCard {
+                title: "Action menu"
+                M3.Menu {
+                    implicitWidth: Appearance.spacing.xxl * 9
+                    implicitHeight: menuPreview.implicitHeight + Appearance.spacing.s * 2
+                    ColumnLayout {
+                        id: menuPreview
+                        anchors.fill: parent
+                        anchors.margins: Appearance.spacing.s
+                        spacing: 0
+                        M3.MenuItem { Layout.fillWidth: true; text: "Copy"; leadingIcon: "content_copy" }
+                        M3.Divider {}
+                        M3.MenuItem { Layout.fillWidth: true; text: "Paste"; leadingIcon: "content_paste" }
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
         id: menuItemPage
         ColumnLayout {
             spacing: Appearance.spacing.lg
@@ -915,11 +947,9 @@ ApplicationWindow {
             PreviewCard {
                 title: "A menu"
                 description: "reserveLeadingIcon keeps the icon column on the items that have none, so the labels line up"
-                Rectangle {
+                M3.Menu {
                     implicitWidth: Appearance.spacing.xxl * 9
                     implicitHeight: menuColumn.implicitHeight + Appearance.spacing.xs * 2
-                    radius: Appearance.rounding.small
-                    color: Appearance.m3colors.m3surfaceContainerHigh
 
                     ColumnLayout {
                         id: menuColumn
@@ -994,6 +1024,28 @@ ApplicationWindow {
                     width: Appearance.spacing.xxl * 7
                     model: ["Unavailable"]
                     enabled: false
+                }
+            }
+        }
+    }
+
+    Component {
+        id: filterableExposedDropdownPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "FilterableExposedDropdownMenu"
+                guideline: "menus"
+                detail: "An exposed dropdown with a text filter for long lists."
+            }
+            PreviewCard {
+                title: "Filter and select"
+                M3.FilterableExposedDropdownMenu {
+                    width: Appearance.spacing.xxl * 9
+                    sourceModel: ["Amsterdam", "Berlin", "London", "Paris"]
+                    selectedValue: root.sampleText
+                    filterPlaceholderText: "Filter cities"
+                    onValueActivated: value => root.sampleText = value
                 }
             }
         }

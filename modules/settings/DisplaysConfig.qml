@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 
 ContentPage {
@@ -255,7 +256,7 @@ ContentPage {
                         title: "Resolution"
                         Layout.fillWidth: true
 
-                        StyledComboBox {
+                        M3.ExposedDropdownMenu {
                             buttonIcon: "aspect_ratio"
                             model: card.resolutions
                             currentIndex: Math.max(0, card.resolutions.indexOf(card.selRes))
@@ -272,7 +273,7 @@ ContentPage {
                         title: "Refresh rate"
                         Layout.fillWidth: true
 
-                        StyledComboBox {
+                        M3.ExposedDropdownMenu {
                             buttonIcon: "speed"
                             model: card.refreshes
                             currentIndex: Math.max(0, card.refreshes.indexOf(card.selRefresh))
@@ -287,7 +288,7 @@ ContentPage {
                         title: "Scale"
                         Layout.fillWidth: true
 
-                        StyledComboBox {
+                        M3.ExposedDropdownMenu {
                             buttonIcon: "zoom_in"
                             textRole: "label"
                             model: card.scaleOptions
@@ -308,7 +309,7 @@ ContentPage {
                         title: "Orientation"
                         Layout.fillWidth: true
 
-                        StyledComboBox {
+                        M3.ExposedDropdownMenu {
                             buttonIcon: "screen_rotation"
                             textRole: "label"
                             model: card.transformOptions
@@ -326,7 +327,7 @@ ContentPage {
                         title: "Mirror"
                         Layout.fillWidth: true
 
-                        StyledComboBox {
+                        M3.ExposedDropdownMenu {
                             buttonIcon: "content_copy"
                             textRole: "label"
                             model: card.mirrorOptions

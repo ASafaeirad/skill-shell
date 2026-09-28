@@ -66,8 +66,10 @@ then move into this directory later without changing any callers.
 | [Chips](https://m3.material.io/components/chips) | `M3.Chip` | native | `variant`: assist · filter · input · suggestion; `text`, `materialIcon`, `selected`, `readOnly` for a locked but legible choice, `compact` (28px), `removable`, `removeClicked()` |
 | [Cards](https://m3.material.io/components/cards) | `M3.Card` | native | `variant`: filled · elevated · outlined; children stack in a column; `padding`, `spacing`, `interactive`, `clicked()` |
 | [Lists](https://m3.material.io/components/lists) | `M3.ListItem` | native | `text`, `overline`, `supportingText`, `leadingIcon` / `leadingIconSource` / `leadingText`, `trailingIcon`, `trailingText`, `selected`, `textFormat`, `monospace`, `interactive`, `compact`, `density` (0 to -3); children go to the trailing slot, `headlineLeadingData` before the headline, `supportingData` under it |
+| [Menus](https://m3.material.io/components/menus) | `M3.Menu` | native | Filled menu surface for `M3.MenuItem` rows and `M3.Divider` groups |
 | [Menus](https://m3.material.io/components/menus) | `M3.MenuItem` | native | `text`, `leadingIcon`, `leadingIconSource`, `trailingIcon`, `trailingText`, `selectionControl`: none · checkbox · radio + `checkState`, `density` (0 to -3), `reserveLeadingIcon`, `reserveSelectionControl` |
 | [Menus](https://m3.material.io/components/menus) | `M3.ExposedDropdownMenu` | wraps `StyledComboBox` | `model`, `currentIndex`, `activated(index)`, `buttonIcon` |
+| [Menus](https://m3.material.io/components/menus) | `M3.FilterableExposedDropdownMenu` | wraps `FilterableComboBox` | `sourceModel`, `selectedValue`, `valueActivated(value)`, `filterPlaceholderText`, `noResultsText`, `popupMaxHeight` |
 | [Divider](https://m3.material.io/components/divider) | `M3.Divider` | native | `vertical`, `insetStart`, `insetEnd` |
 | [Badges](https://m3.material.io/components/badges) | `M3.Badge` | native | `text` (empty draws the small dot; four characters at most) |
 | [Checkbox](https://m3.material.io/components/checkbox) | `M3.Checkbox` | native | `text`, `checked`, `tristate`/`checkState`, `error` |
@@ -93,7 +95,6 @@ existing widget rather than writing a new one, and consider adding the M3 compon
 | --- | --- |
 | [Toolbars](https://m3.material.io/components/toolbars) | `Toolbar`, `ToolbarButton`, `IconToolbarButton`, `ToolbarTextField`, `ToolbarPairedFab` |
 | [Dialogs](https://m3.material.io/components/dialogs) | `WindowDialog` + `WindowDialogTitle`/`Paragraph`/`ButtonRow`, `OverlayDialog` |
-| A whole [menu](https://m3.material.io/components/menus) container (`M3.MenuItem` is in the catalog) | `FilterableComboBox` |
 | [Search](https://m3.material.io/components/search) view (the expanded results surface; `M3.SearchBar` is in the catalog) | the launcher's `SearchWidget` |
 | Multi-line [text field](https://m3.material.io/components/text-fields) | `MaterialTextArea`, `StyledTextArea` |
 | [Date pickers](https://m3.material.io/components/date-pickers) | the sidebar's `CalendarWidget` grid, built from `M3.Button` toggles |
