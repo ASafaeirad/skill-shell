@@ -21,7 +21,7 @@ ApplicationWindow {
     // with no M3 counterpart. Keep in sync with modules/common/m3/README.md.
     readonly property var m3Tabs: [
         "Button", "ButtonGroup", "IconButton", "Fab", "Chip", "Card", "ListItem", "Menu", "MenuItem", "ExposedDropdownMenu", "FilterableExposedDropdownMenu", "Divider", "Badge",
-        "Checkbox", "RadioButton", "Switch", "Slider", "TextField", "SearchBar", "Tabs", "Toolbar", "Snackbar",
+        "Checkbox", "RadioButton", "Switch", "Slider", "TextField", "TextArea", "SearchBar", "Tabs", "Toolbar", "Snackbar",
         "LinearProgressIndicator", "CircularProgressIndicator", "LoadingIndicator"
     ]
     readonly property var shellTabs: [
@@ -48,6 +48,7 @@ ApplicationWindow {
         "Switch": "toggle_on",
         "Slider": "tune",
         "TextField": "text_fields",
+        "TextArea": "notes",
         "SearchBar": "search",
         "Tabs": "tab",
         "Toolbar": "toolbar",
@@ -131,6 +132,7 @@ ApplicationWindow {
         case "Switch": return switchPage;
         case "Slider": return sliderPage;
         case "TextField": return textFieldPage;
+        case "TextArea": return m3TextAreaPage;
         case "SearchBar": return searchBarPage;
         case "Tabs": return tabsPage;
         case "Toolbar": return toolbarPage;
@@ -419,7 +421,7 @@ ApplicationWindow {
                         }
 
                         RowLayout {
-                            visible: root.shows(["TextField", "StyledTextArea"])
+                            visible: root.shows(["TextField", "TextArea", "StyledTextArea"])
                             Layout.fillWidth: true
                             StyledText { text: "Read only"; Layout.fillWidth: true }
                             M3.Switch {
@@ -1291,6 +1293,28 @@ ApplicationWindow {
                 title: "Read only and disabled"
                 M3.TextField { width: Appearance.spacing.xxl * 7; text: root.sampleText; readOnly: true }
                 M3.TextField { width: Appearance.spacing.xxl * 7; text: root.sampleText; enabled: false }
+            }
+        }
+    }
+
+    Component {
+        id: m3TextAreaPage
+        ColumnLayout {
+            spacing: Appearance.spacing.lg
+            PageHeading {
+                heading: "TextArea"
+                guideline: "text-fields"
+                detail: "Filled multiline text entry."
+            }
+            PreviewCard {
+                title: "Empty and filled"
+                M3.TextArea { width: Appearance.spacing.xxl * 7; placeholderText: root.sampleText; enabled: root.sampleEnabled; readOnly: root.sampleReadOnly }
+                M3.TextArea { width: Appearance.spacing.xxl * 7; text: root.sampleText; enabled: root.sampleEnabled; readOnly: root.sampleReadOnly }
+            }
+            PreviewCard {
+                title: "Read only and disabled"
+                M3.TextArea { width: Appearance.spacing.xxl * 7; text: root.sampleText; readOnly: true }
+                M3.TextArea { width: Appearance.spacing.xxl * 7; text: root.sampleText; enabled: false }
             }
         }
     }
