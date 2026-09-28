@@ -11,6 +11,7 @@ import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
 import qs.modules.common.functions
+import qs.modules.common.m3 as M3
 
 Item { // Wrapper
     id: root
@@ -150,12 +151,8 @@ Item { // Wrapper
                 }
             }
 
-            Rectangle {
-                // Separator
+            M3.Divider {
                 visible: root.showResults
-                Layout.fillWidth: true
-                height: 1
-                color: Appearance.colors.colOutlineVariant
             }
 
             ListView { // App results
@@ -211,6 +208,8 @@ Item { // Wrapper
                     required property var modelData
                     anchors.left: parent?.left
                     anchors.right: parent?.right
+                    anchors.leftMargin: Appearance.spacing.s
+                    anchors.rightMargin: Appearance.spacing.s
                     entry: modelData
                     query: SearchPrefixes.strip(root.searchingText)
 
