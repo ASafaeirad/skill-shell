@@ -7,6 +7,7 @@ import qs.services
 import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 
 OverlayDialogCard {
     id: root
@@ -199,11 +200,12 @@ OverlayDialogCard {
                 anchors.rightMargin: Appearance.spacing.xl
                 spacing: Appearance.spacing.lg
 
-                IconToolbarButton {
+                M3.IconButton {
                     visible: root.detailsOpen
                     Layout.preferredWidth: Appearance.sizes.barHeight
                     Layout.preferredHeight: Appearance.sizes.barHeight
-                    text: "arrow_back"
+                    materialIcon: "arrow_back"
+                    tooltip: "Back"
                     onClicked: root.closeDetails()
                 }
 
