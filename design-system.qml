@@ -613,6 +613,14 @@ ApplicationWindow {
                 }
             }
             PreviewCard {
+                title: "Destructive and error-recovery actions"
+                description: "error swaps M3's accent roles for the error ones, for the action that deletes something or recovers from a failure."
+                Repeater {
+                    model: root.variantOptions["Button"]
+                    M3.Button { required property string modelData; variant: modelData; text: "Delete"; materialIcon: "delete"; error: true }
+                }
+            }
+            PreviewCard {
                 title: "Trailing text, stretched"
                 description: "trailingText adds a smaller figure after the label; the content stays centred at any width"
                 M3.Button { width: 320; text: "Download"; materialIcon: "download"; trailingText: "~42 MB" }
@@ -725,6 +733,14 @@ ApplicationWindow {
                 Repeater {
                     model: ["small", "xsmall"]
                     M3.IconButton { required property string modelData; size: modelData; variant: "tonal"; materialIcon: "close"; tooltip: modelData }
+                }
+            }
+            PreviewCard {
+                title: "Destructive actions"
+                description: "error swaps M3's accent roles for the error ones, so the icon of a delete action reads red."
+                Repeater {
+                    model: root.variantOptions["IconButton"]
+                    M3.IconButton { required property string modelData; variant: modelData; materialIcon: "delete"; tooltip: "Move to trash"; error: true }
                 }
             }
             PreviewCard {
