@@ -444,6 +444,7 @@ Singleton {
         property real m3IconButtonSize: 40
         property real m3IconButtonSizeXSmall: 32
         property real m3ChipHeight: 32
+        property real m3ChipHeightCompact: 28
         property real m3SelectionControlSize: 18 // checkbox box
         property real m3StateLayerSize: 40 // touch target around selection controls
         property real m3ListItemOneLineHeight: 56

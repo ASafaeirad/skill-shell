@@ -16,6 +16,8 @@ Button {
     property real buttonRadius: Appearance?.rounding?.small ?? 4
     property real buttonRadiusPressed: buttonRadius
     property real buttonEffectiveRadius: root.down ? root.buttonRadiusPressed : root.buttonRadius
+    property real buttonLeftRadius: buttonEffectiveRadius
+    property real buttonRightRadius: buttonEffectiveRadius
     property int rippleDuration: 1200
     property bool rippleEnabled: true
     property var downAction // When left clicking (down)
@@ -23,12 +25,12 @@ Button {
     property var altAction // When right clicking
     property var middleClickAction // When middle clicking
 
-    property color colBackground: ColorUtils.transparentize(Appearance?.colors.colLayer1Hover, 1) || "transparent"
-    property color colBackgroundHover: Appearance?.colors.colLayer1Hover ?? "#E5DFED"
-    property color colBackgroundToggled: Appearance?.colors.colPrimary ?? "#65558F"
-    property color colBackgroundToggledHover: Appearance?.colors.colPrimaryHover ?? "#77699C"
-    property color colRipple: Appearance?.colors.colLayer1Active ?? "#D6CEE2"
-    property color colRippleToggled: Appearance?.colors.colPrimaryActive ?? "#D6CEE2"
+    property color colBackground: ColorUtils.transparentize(Appearance.colors.colLayer1Hover, 1)
+    property color colBackgroundHover: Appearance.colors.colLayer1Hover
+    property color colBackgroundToggled: Appearance.colors.colPrimary
+    property color colBackgroundToggledHover: Appearance.colors.colPrimaryHover
+    property color colRipple: Appearance.colors.colLayer1Active
+    property color colRippleToggled: Appearance.colors.colPrimaryActive
     // An outline on the button's own bounds, for outlined (toggle) buttons.
     // Drawing it in the contentItem instead would inset it by the padding.
     property color colBorder: "transparent"
@@ -138,6 +140,10 @@ Button {
     background: Rectangle {
         id: buttonBackground
         radius: root.buttonEffectiveRadius
+        topLeftRadius: root.buttonLeftRadius
+        bottomLeftRadius: root.buttonLeftRadius
+        topRightRadius: root.buttonRightRadius
+        bottomRightRadius: root.buttonRightRadius
         implicitHeight: 30
         border.width: root.borderWidth
         border.color: root.colBorder
@@ -153,6 +159,10 @@ Button {
                 width: buttonBackground.width
                 height: buttonBackground.height
                 radius: root.buttonEffectiveRadius
+                topLeftRadius: root.buttonLeftRadius
+                bottomLeftRadius: root.buttonLeftRadius
+                topRightRadius: root.buttonRightRadius
+                bottomRightRadius: root.buttonRightRadius
             }
         }
 

@@ -835,6 +835,7 @@
     <script>
       const paths = `modules/common/m3/Badge.qml
 modules/common/m3/Button.qml
+modules/common/m3/ButtonGroup.qml
 modules/common/m3/Card.qml
 modules/common/m3/Checkbox.qml
 modules/common/m3/Chip.qml
@@ -1027,10 +1028,12 @@ modules/widgets/background/Background.qml`
       const exactPurposes = {
         Button:
           "M3 common button: filled, tonal, outlined, text and elevated variants, optional icon and trailing text, toggle state with neutral unselected colours, a content slot, external hover, and quick setting tile layout with a separate icon action.",
+        ButtonGroup:
+          "M3 connected action group or segmented single-choice group with optional configuration binding and a legible read-only state.",
         IconButton:
           "M3 icon button: standard, filled, tonal and outlined variants, small and extra-small sizes, tooltip, optional toggle, rotatable icon.",
         Chip:
-          "M3 chip: assist, filter, input and suggestion variants, selected state, removable input chips.",
+          "M3 chip: assist, filter, input and suggestion variants, selected state, legible read-only state, removable input chips.",
         Card:
           "M3 card: filled, elevated and outlined containers that stack their children, optionally clickable.",
         ListItem:
