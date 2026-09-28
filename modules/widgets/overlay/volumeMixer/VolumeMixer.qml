@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import qs.modules.common
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
 import qs.modules.widgets.overlay
 import qs.modules.widgets.sidebarRight.volumeMixer
@@ -29,7 +30,7 @@ StyledOverlayWidget {
                 margins: parent.padding
             }
 
-            SecondaryTabBar {
+            M3.Tabs {
                 id: tabBar
 
                 currentIndex: Persistent.states.overlay.volumeMixer.tabIndex
@@ -37,14 +38,14 @@ StyledOverlayWidget {
                     Persistent.states.overlay.volumeMixer.tabIndex = tabBar.currentIndex;
                 }
 
-                SecondaryTabButton {
-                    buttonIcon: "media_output"
-                    buttonText: "Output"
+                M3.Tab {
+                    materialIcon: "media_output"
+                    text: "Output"
                 }
 
-                SecondaryTabButton {
-                    buttonIcon: "mic"
-                    buttonText: "Input"
+                M3.Tab {
+                    materialIcon: "mic"
+                    text: "Input"
                 }
 
             }

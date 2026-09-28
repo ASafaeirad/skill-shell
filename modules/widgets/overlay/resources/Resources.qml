@@ -8,6 +8,7 @@ import Qt5Compat.GraphicalEffects
 import qs
 import qs.services
 import qs.modules.common
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
 import qs.modules.widgets.overlay
 
@@ -48,7 +49,7 @@ StyledOverlayWidget {
             }
             spacing: 8
 
-            SecondaryTabBar {
+            M3.Tabs {
                 id: tabBar
 
                 currentIndex: Persistent.states.overlay.resources.tabIndex
@@ -58,11 +59,11 @@ StyledOverlayWidget {
 
                 Repeater {
                     model: root.resources.length
-                    delegate: SecondaryTabButton {
+                    delegate: M3.Tab {
                         required property int index
                         property var modelData: root.resources[index]
-                        buttonIcon: modelData.icon
-                        buttonText: modelData.name
+                        materialIcon: modelData.icon
+                        text: modelData.name
                     }
                 }
             }
