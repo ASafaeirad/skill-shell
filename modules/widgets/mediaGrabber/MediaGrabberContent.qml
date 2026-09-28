@@ -172,11 +172,7 @@ M3.DialogCard {
 
     implicitWidth: Appearance.sizes.mediaGrabberWidth + 2 * Appearance.sizes.elevationMargin
     implicitHeight: 2 * (Appearance.sizes.elevationMargin + root.borderWidth) + contentColumn.implicitHeight
-    surfaceColor: Appearance.colors.colBackgroundSurfaceContainer
-    surface.radius: Appearance.rounding.windowRounding
-    surface.border.color: Appearance.colors.colLayer0Border
-    surface.border.width: root.borderWidth
-    surface.clip: true
+    outlinedSurface: true
 
     Keys.onPressed: event => {
         event.accepted = root.handleKey(event);
