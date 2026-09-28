@@ -59,7 +59,7 @@ then move into this directory later without changing any callers.
 
 | M3 component | Use | Status | API |
 | --- | --- | --- | --- |
-| [Buttons](https://m3.material.io/components/buttons) | `M3.Button` | native | `variant`: filled · tonal · outlined · text · elevated; `text`, `materialIcon`, `trailingText`, `toggleable`, `selected`, `content` (slot), `externalHover`; quick setting tile: `tileLayout`, `supportingText`, `leadingAction`, `leadingSelected` |
+| [Buttons](https://m3.material.io/components/buttons) | `M3.Button` | native | `variant`: filled · tonal · outlined · text · elevated; `text`, `materialIcon`, `trailingText`, `toggleable`, `selected`, `selectedVariant`: filled · tonal, `content` (slot), `externalHover`; quick setting tile: `tileLayout`, `supportingText`, `leadingAction`, `leadingSelected` |
 | [Icon buttons](https://m3.material.io/components/icon-buttons) | `M3.IconButton` | native | `variant`: standard · filled · tonal · outlined; `size`: small · xsmall; `materialIcon`, `iconSource`, `tooltip`, `toggleable`, `selected`, `iconRotation` |
 | [FAB](https://m3.material.io/components/floating-action-button) | `M3.Fab` | wraps `FloatingActionButton` | `iconText`, `buttonText`, `expanded` (extended FAB) |
 | [Chips](https://m3.material.io/components/chips) | `M3.Chip` | native | `variant`: assist · filter · input · suggestion; `text`, `materialIcon`, `selected`, `removable`, `removeClicked()` |

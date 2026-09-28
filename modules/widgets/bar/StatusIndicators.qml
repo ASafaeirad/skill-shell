@@ -20,6 +20,7 @@ M3.Button {
     Layout.fillHeight: false
 
     variant: "text"
+    selectedVariant: "tonal"
     selected: GlobalStates.sidebarRight?.opened ?? false
     externalHover: rightSidebarButton.parentHovered
 

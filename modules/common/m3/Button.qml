@@ -11,7 +11,8 @@ import qs.modules.common.widgets
  *   M3.Button { variant: "tonal"; text: "Retry"; materialIcon: "refresh"; onClicked: ... }
  *
  * variant: "filled" (default) | "tonal" | "outlined" | "text" | "elevated"
- * selected: toggle-button state; a selected button takes the filled colours.
+ * selected: toggle-button state; a selected button uses selectedVariant colours.
+ * selectedVariant: "filled" (default) | "tonal"; colour treatment when selected.
  * toggleable: the button is a toggle, so its unselected state wears the
  *   neutral toggle colours (surface container, on-surface-variant) instead of
  *   the variant's own, as M3 specifies. Leave it off for a plain action.
@@ -32,6 +33,7 @@ RippleButton {
     property string variant: "filled"
     property string materialIcon: ""
     property bool selected: false
+    property string selectedVariant: "filled"
     property bool toggleable: false
     property string trailingText: ""
     property string supportingText: ""
@@ -50,7 +52,7 @@ RippleButton {
     readonly property color containerColor: unselectedToggle ? (variant === "filled" || variant === "tonal" ? Appearance.colors.colSurfaceContainerHighest
             : variant === "elevated" ? Appearance.colors.colSurfaceContainerLow
             : "transparent")
-        : selected ? Appearance.colors.colPrimary
+        : selected ? (selectedVariant === "tonal" ? Appearance.colors.colSecondaryContainer : Appearance.colors.colPrimary)
         : tileLayout ? Appearance.colors.colLayer2
         : variant === "filled" ? Appearance.colors.colPrimary
         : variant === "tonal" ? Appearance.colors.colSecondaryContainer
@@ -58,7 +60,7 @@ RippleButton {
         : "transparent"
     readonly property color contentColor: !enabled ? ColorUtils.applyAlpha(Appearance.colors.colOnSurface, Appearance.stateLayer.disabledContent)
         : unselectedToggle ? Appearance.colors.colOnSurfaceVariant
-        : selected ? Appearance.colors.colOnPrimary
+        : selected ? (selectedVariant === "tonal" ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnPrimary)
         : tileLayout ? Appearance.colors.colOnLayer2
         : variant === "filled" ? Appearance.colors.colOnPrimary
         : variant === "tonal" ? Appearance.colors.colOnSecondaryContainer

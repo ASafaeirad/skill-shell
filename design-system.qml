@@ -492,7 +492,7 @@ ApplicationWindow {
             }
             PreviewCard {
                 title: "Content slot, and external hover"
-                description: "content replaces the icon/label row for a button whose label is not text. externalHover lights the state layer from a larger hover region around it — hover the dashed area."
+                description: "content replaces the icon/label row for a button whose label is not text. selectedVariant uses a tonal active state. externalHover lights the state layer from a larger hover region around it — hover the dashed area."
                 Rectangle {
                     implicitWidth: statusPill.implicitWidth + Appearance.spacing.xxl * 2
                     implicitHeight: statusPill.implicitHeight + Appearance.spacing.lg * 2
@@ -509,6 +509,7 @@ ApplicationWindow {
                         id: statusPill
                         anchors.centerIn: parent
                         variant: "text"
+                        selectedVariant: "tonal"
                         selected: root.sampleChecked
                         externalHover: pillRegion.containsMouse
                         onClicked: root.sampleChecked = !root.sampleChecked
