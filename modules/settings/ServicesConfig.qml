@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 
 ContentPage {
@@ -11,7 +12,7 @@ ContentPage {
         icon: "file_open"
         title: "Save paths"
 
-        MaterialTextArea {
+        M3.TextArea {
             Layout.fillWidth: true
             placeholderText: "Video Recording Path"
             text: Config.options.screenRecord.savePath
@@ -21,7 +22,7 @@ ContentPage {
             }
         }
 
-        MaterialTextArea {
+        M3.TextArea {
             Layout.fillWidth: true
             placeholderText: "Screenshot Path (leave empty to just copy)"
             text: Config.options.screenSnip.savePath
@@ -41,7 +42,7 @@ ContentPage {
             text: "Use Levenshtein distance-based algorithm instead of fuzzy"
             configKey: "search.sloppy"
 
-            StyledToolTip {
+            M3.Tooltip {
                 text: "Could be better if you make a ton of typos,\nbut results can be weird and might not work with acronyms\n(e.g. \"GIMP\" might not give you the paint program)"
             }
 
@@ -65,7 +66,7 @@ ContentPage {
                 text: "Fahrenheit unit"
                 configKey: "bar.weather.useUSCS"
 
-                StyledToolTip {
+                M3.Tooltip {
                     text: "It may take a few seconds to update"
                 }
 
@@ -73,7 +74,7 @@ ContentPage {
 
         }
 
-        MaterialTextArea {
+        M3.TextArea {
             Layout.fillWidth: true
             placeholderText: "City name"
             text: Config.options.bar.weather.city
@@ -127,4 +128,3 @@ ContentPage {
     }
 
 }
-
