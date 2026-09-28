@@ -77,7 +77,7 @@ AbstractQuickPanel {
                 model: ScriptModel {
                     values: Array(root.toggleRows.length)
                 }
-                delegate: ButtonGroup {
+                delegate: M3.ButtonGroup {
                     id: toggleRow
                     required property int index
                     property var modelData: root.toggleRows[index]
@@ -134,7 +134,7 @@ AbstractQuickPanel {
                     model: ScriptModel {
                         values: Array(root.unusedToggleRows.length)
                     }
-                    delegate: ButtonGroup {
+                    delegate: M3.ButtonGroup {
                         id: unusedToggleRow
                         required property int index
                         property var modelData: root.unusedToggleRows[index]

@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 
 ContentPage {
@@ -816,7 +817,8 @@ ContentPage {
         ContentSubsection {
             title: "Profile"
 
-            ConfigSelectionArray {
+            M3.ButtonGroup {
+                    variant: "segmented"
                 currentValue: Fans.selectedMode
                 onSelected: newValue => Fans.setMode(newValue)
                 options: root.profileOptions
@@ -880,7 +882,7 @@ ContentPage {
                         id: differHover
                     }
 
-                    StyledToolTip {
+                    M3.Tooltip {
                         extraVisibleCondition: false
                         alternativeVisibleCondition: differHover.hovered
                         text: "The CPU, GPU and chassis fans currently use different curves. This editor shows the CPU fan and writes one curve to all three."
@@ -969,7 +971,7 @@ ContentPage {
                     enabled: !root.locked
                     onClicked: Fans.resetCurve()
 
-                    StyledToolTip {
+                    M3.Tooltip {
                         text: "Puts back the factory curve for this profile and hands fan control back to the firmware."
                     }
                 }

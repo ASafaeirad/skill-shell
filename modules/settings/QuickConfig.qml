@@ -5,6 +5,7 @@ import Quickshell
 import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 
 ContentPage {
@@ -73,7 +74,7 @@ ContentPage {
                         ]);
                     }
 
-                    StyledToolTip {
+                    M3.Tooltip {
                         text: "Pick wallpaper image on your system"
                     }
 
@@ -109,7 +110,8 @@ ContentPage {
         ContentSubsection {
             title: "Image zoom style"
 
-            ConfigSelectionArray {
+            M3.ButtonGroup {
+                    variant: "segmented"
                 configKey: "background.zoomStyle"
                 options: [{
                     "value": "cover",
@@ -131,7 +133,8 @@ ContentPage {
         ContentSubsection {
             title: "Mode"
 
-            ConfigSelectionArray {
+            M3.ButtonGroup {
+                    variant: "segmented"
                 currentValue: Appearance.m3colors.darkmode ? "dark" : "light"
                 onSelected: (newValue) => {
                     Quickshell.execDetached(["bash", "-c", `${Directories.wallpaperSwitchScriptPath} --mode ${newValue} --noswitch`]);
@@ -153,7 +156,8 @@ ContentPage {
             title: "Palette"
             tooltip: "How colors are derived from your wallpaper"
 
-            ConfigSelectionArray {
+            M3.ButtonGroup {
+                    variant: "segmented"
                 currentValue: Config.options.appearance.palette.type
                 onSelected: (newValue) => {
                     Config.options.appearance.palette.type = newValue;
@@ -212,7 +216,8 @@ ContentPage {
             ContentSubsection {
                 title: "Bar position"
 
-                ConfigSelectionArray {
+                M3.ButtonGroup {
+                    variant: "segmented"
                     currentValue: Config.options.bar.bottom ? 1 : 0
                     onSelected: (newValue) => {
                         Config.options.bar.bottom = (newValue === 1);
@@ -233,7 +238,8 @@ ContentPage {
             ContentSubsection {
                 title: "Bar style"
 
-                ConfigSelectionArray {
+                M3.ButtonGroup {
+                    variant: "segmented"
                     configKey: "bar.cornerStyle"
                     options: [{
                         "displayName": "Hug",
@@ -258,7 +264,8 @@ ContentPage {
             ContentSubsection {
                 title: "Screen round corner"
 
-                ConfigSelectionArray {
+                M3.ButtonGroup {
+                    variant: "segmented"
                     configKey: "appearance.fakeScreenRounding"
                     options: [{
                         "displayName": "No",

@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 
 ContentPage {
@@ -28,7 +29,8 @@ ContentPage {
                 title: "Bar position"
                 Layout.fillWidth: true
 
-                ConfigSelectionArray {
+                M3.ButtonGroup {
+                    variant: "segmented"
                     currentValue: Config.options.bar.bottom ? 1 : 0
                     onSelected: (newValue) => {
                         Config.options.bar.bottom = (newValue === 1);
@@ -50,7 +52,8 @@ ContentPage {
                 title: "Automatically hide"
                 Layout.fillWidth: false
 
-                ConfigSelectionArray {
+                M3.ButtonGroup {
+                    variant: "segmented"
                     configKey: "bar.autoHide.enable"
                     options: [{
                         "displayName": "No",
@@ -72,7 +75,8 @@ ContentPage {
                 title: "Corner style"
                 Layout.fillWidth: true
 
-                ConfigSelectionArray {
+                M3.ButtonGroup {
+                    variant: "segmented"
                     configKey: "bar.cornerStyle"
                     options: [{
                         "displayName": "Hug",
@@ -95,7 +99,8 @@ ContentPage {
                 title: "Group style"
                 Layout.fillWidth: false
 
-                ConfigSelectionArray {
+                M3.ButtonGroup {
+                    variant: "segmented"
                     configKey: "bar.borderless"
                     options: [{
                         "displayName": "Pills",

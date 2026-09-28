@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Bluetooth
 import qs.modules.common
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
 import qs.modules.widgets.sidebarRight.quickToggles.classicStyle
 import qs.services
@@ -14,12 +15,11 @@ AbstractQuickPanel {
     implicitHeight: buttonGroup.implicitHeight
     color: "transparent"
 
-    ButtonGroup {
+    M3.ButtonGroup {
         id: buttonGroup
 
         spacing: 5
         padding: 5
-        color: Appearance.colors.colLayer1
 
         NetworkToggle {
             altAction: () => {

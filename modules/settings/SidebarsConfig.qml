@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 
 ContentPage {
@@ -16,7 +17,7 @@ ContentPage {
             text: 'Keep right sidebar loaded'
             configKey: "sidebar.keepRightSidebarLoaded"
 
-            StyledToolTip {
+            M3.Tooltip {
                 text: "When enabled keeps the content of the right sidebar loaded to reduce the delay when opening,\nat the cost of around 15MB of consistent RAM usage. Delay significance depends on your system's performance.\nUsing a custom kernel like linux-cachyos might help"
             }
 
@@ -25,7 +26,8 @@ ContentPage {
         ContentSubsection {
             title: "Quick toggles"
 
-            ConfigSelectionArray {
+            M3.ButtonGroup {
+                    variant: "segmented"
                 Layout.fillWidth: false
                 configKey: "sidebar.quickToggles.style"
                 options: [{
@@ -103,7 +105,7 @@ ContentPage {
                 text: "Hover to trigger"
                 configKey: "sidebar.cornerOpen.clickless"
 
-                StyledToolTip {
+                M3.Tooltip {
                     text: "When this is off you'll have to click"
                 }
 
@@ -115,7 +117,7 @@ ContentPage {
                     text: "Force hover open at absolute corner"
                     configKey: "sidebar.cornerOpen.clicklessCornerEnd"
 
-                    StyledToolTip {
+                    M3.Tooltip {
                         text: "When the previous option is off and this is on,\nyou can still hover the corner's end to open sidebar,\nand the remaining area can be used for volume/brightness scroll"
                     }
 
@@ -136,7 +138,7 @@ ContentPage {
                         hoverEnabled: true
                         acceptedButtons: Qt.NoButton
 
-                        StyledToolTip {
+                        M3.Tooltip {
                             extraVisibleCondition: mouseArea.containsMouse
                             text: "Why this is cool:\nFor non-0 values, it won't trigger when you reach the\nscreen corner along the horizontal edge, but it will when\nyou do along the vertical edge"
                         }
@@ -155,7 +157,7 @@ ContentPage {
                     text: "Place at bottom"
                     configKey: "sidebar.cornerOpen.bottom"
 
-                    StyledToolTip {
+                    M3.Tooltip {
                         text: "Place the corners to trigger at the bottom"
                     }
 
@@ -166,7 +168,7 @@ ContentPage {
                     text: "Value scroll"
                     configKey: "sidebar.cornerOpen.valueScroll"
 
-                    StyledToolTip {
+                    M3.Tooltip {
                         text: "Brightness and volume"
                     }
 
