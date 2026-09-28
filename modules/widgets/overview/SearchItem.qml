@@ -5,13 +5,14 @@ import qs.modules.common
 import qs.modules.common.models
 import qs.modules.common.widgets
 import qs.modules.common.functions
+import qs.modules.common.m3 as M3
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Hyprland
 
-RippleButton {
+M3.ListItem {
     id: root
     property LauncherSearchResult entry
     property string query
@@ -37,23 +38,18 @@ RippleButton {
     property string materialSymbol: entry.iconType === LauncherSearchResult.IconType.Material ? entry?.iconName ?? "" : ""
     property string cliphistRawString: entry?.rawValue ?? ""
     property bool blurImage: entry?.blurImage ?? false
-    
-    visible: root.entryShown
-    property int horizontalMargin: 10
-    property int buttonHorizontalPadding: 10
-    property int buttonVerticalPadding: 6
-    property bool keyboardDown: false
-    readonly property bool selected: (root.hovered || root.focus)
 
-    implicitHeight: rowLayout.implicitHeight + root.buttonVerticalPadding * 2
-    implicitWidth: rowLayout.implicitWidth + root.buttonHorizontalPadding * 2
-    buttonRadius: Appearance.rounding.normal
-    colBackground: (root.down || root.keyboardDown) ? Appearance.colors.colPrimaryContainerActive : 
-        (selected ? Appearance.colors.colPrimaryContainer : 
-        ColorUtils.transparentize(Appearance.colors.colPrimaryContainer, 1))
-    colBackgroundHover: Appearance.colors.colPrimaryContainer
-    colRipple: Appearance.colors.colPrimaryContainerActive
-    property color colForeground: selected ? Appearance.colors.colOnPrimaryContainer : Appearance.m3colors.m3onSurface
+    visible: root.entryShown
+    selected: root.hovered || root.focus
+    density: -3
+    overline: root.itemType && root.itemType != "App" ? root.itemType : ""
+    leadingIcon: root.materialSymbol
+    leadingIconSource: root.iconType === LauncherSearchResult.IconType.System ? Quickshell.iconPath(root.iconName, "image-missing") : ""
+    leadingText: root.bigText
+    text: root.selected ? StringUtils.escapeHtml(root.itemName) : root.displayContent
+    textFormat: Text.StyledText // RichText also works, but StyledText ensures elide work
+    monospace: root.fontType === "monospace"
+    trailingText: root.selected ? root.itemClickActionName : ""
 
     readonly property string highlightPrefix: `<u><font color="${Appearance.colors.colPrimary}">`
     readonly property string highlightSuffix: `</font></u>`
@@ -98,13 +94,6 @@ RippleButton {
         return matches ? matches : [];
     }
     
-    PointingHandInteraction {}
-
-    background {
-        anchors.fill: root
-        anchors.leftMargin: root.horizontalMargin
-        anchors.rightMargin: root.horizontalMargin
-    }
 
     onClicked: {
         GlobalStates.search?.close()
@@ -118,191 +107,51 @@ RippleButton {
                 deleteAction.execute()
             }
         } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-            root.keyboardDown = true
             root.clicked()
             event.accepted = true;
         }
     }
-    Keys.onReleased: (event) => {
-        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-            root.keyboardDown = false
-            event.accepted = true;
+
+    headlineLeadingData: Row {
+        spacing: Appearance.spacing.xs
+        MaterialSymbol { // Checkmark for copied clipboard entry
+            visible: root.itemName == Quickshell.clipboardText && root.cliphistRawString
+            text: "check_circle"
+            fill: 1
+            iconSize: Appearance.font.pixelSize.larger
+            color: Appearance.colors.colPrimary
+        }
+        Repeater { // Favicons for links
+            model: root.query == root.itemName ? [] : root.urls
+            Favicon {
+                required property var modelData
+                size: Appearance.font.pixelSize.larger
+                url: modelData
+            }
         }
     }
 
-    RowLayout {
-        id: rowLayout
-        spacing: iconLoader.sourceComponent === null ? 0 : 10
-        anchors.fill: parent
-        anchors.leftMargin: root.horizontalMargin + root.buttonHorizontalPadding
-        anchors.rightMargin: root.horizontalMargin + root.buttonHorizontalPadding
-
-        // Icon
-        Loader {
-            id: iconLoader
-            active: true
-            sourceComponent: switch(root.iconType) {
-                case LauncherSearchResult.IconType.Material:
-                    return materialSymbolComponent
-                case LauncherSearchResult.IconType.Text:
-                    return bigTextComponent
-                case LauncherSearchResult.IconType.System:
-                    return iconImageComponent
-                case LauncherSearchResult.IconType.None:
-                    return null
-                default:
-                    return null
-            }
+    supportingData: Loader { // Clipboard image preview
+        id: imagePreviewLoader
+        Layout.fillWidth: true
+        active: root.cliphistRawString && Cliphist.entryIsImage(root.cliphistRawString)
+        sourceComponent: CliphistImage {
+            entry: root.cliphistRawString
+            maxWidth: imagePreviewLoader.width
+            maxHeight: 140
+            blur: root.blurImage
         }
+    }
 
-        Component {
-            id: iconImageComponent
-            IconImage {
-                source: Quickshell.iconPath(root.iconName, "image-missing")
-                width: 35
-                height: 35
-            }
+    Repeater {
+        model: (root.entry.actions ?? []).slice(0, 4)
+        delegate: M3.IconButton {
+            required property var modelData
+            readonly property bool systemIcon: modelData.iconType === LauncherSearchResult.IconType.System && (modelData.iconName ?? "") !== ""
+            materialIcon: systemIcon ? "" : (modelData.iconName || "video_settings")
+            iconSource: systemIcon ? Quickshell.iconPath(modelData.iconName) : ""
+            tooltip: modelData.name
+            onClicked: modelData.execute()
         }
-
-        Component {
-            id: materialSymbolComponent
-            MaterialSymbol {
-                text: root.materialSymbol
-                iconSize: 30
-                color: root.colForeground
-            }
-        }
-
-        Component {
-            id: bigTextComponent
-            StyledText {
-                text: root.bigText
-                font.pixelSize: Appearance.font.pixelSize.larger
-                color: root.colForeground
-            }
-        }
-
-        // Main text
-        ColumnLayout {
-            id: contentColumn
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignVCenter
-            spacing: 0
-            StyledText {
-                font.pixelSize: Appearance.font.pixelSize.smaller
-                color: root.selected ? Appearance.colors.colOnPrimaryContainer : Appearance.colors.colSubtext
-                visible: root.itemType && root.itemType != "App"
-                text: root.itemType
-            }
-            RowLayout {
-                Loader { // Checkmark for copied clipboard entry
-                    visible: itemName == Quickshell.clipboardText && root.cliphistRawString
-                    active: itemName == Quickshell.clipboardText && root.cliphistRawString
-                    sourceComponent: Rectangle {
-                        implicitWidth: activeText.implicitHeight
-                        implicitHeight: activeText.implicitHeight
-                        radius: Appearance.rounding.full
-                        color: Appearance.colors.colPrimary
-                        MaterialSymbol {
-                            id: activeText
-                            anchors.centerIn: parent
-                            text: "check"
-                            font.pixelSize: Appearance.font.pixelSize.normal
-                            color: Appearance.m3colors.m3onPrimary
-                        }
-                    }
-                }
-                Repeater { // Favicons for links
-                    model: root.query == root.itemName ? [] : root.urls
-                    Favicon {
-                        required property var modelData
-                        size: parent.height
-                        url: modelData
-                    }
-                }
-                StyledText { // Item name/content
-                    Layout.fillWidth: true
-                    id: nameText
-                    textFormat: Text.StyledText // RichText also works, but StyledText ensures elide work
-                    font.pixelSize: Appearance.font.pixelSize.small
-                    font.family: Appearance.font.family[root.fontType]
-                    color: root.colForeground
-                    horizontalAlignment: Text.AlignLeft
-                    elide: Text.ElideRight
-                    text: root.selected ? StringUtils.escapeHtml(root.itemName) : root.displayContent
-                }
-            }
-            Loader { // Clipboard image preview
-                active: root.cliphistRawString && Cliphist.entryIsImage(root.cliphistRawString)
-                sourceComponent: CliphistImage {
-                    Layout.fillWidth: true
-                    entry: root.cliphistRawString
-                    maxWidth: contentColumn.width
-                    maxHeight: 140
-                    blur: root.blurImage
-                }
-            }
-        }
-
-        // Action text
-        StyledText {
-            Layout.fillWidth: false
-            visible: root.selected
-            id: clickAction
-            font.pixelSize: Appearance.font.pixelSize.normal
-            color: Appearance.colors.colOnPrimaryContainer
-            horizontalAlignment: Text.AlignRight
-            text: root.itemClickActionName
-        }
-
-        RowLayout {
-            Layout.alignment: Qt.AlignTop
-            Layout.topMargin: root.buttonVerticalPadding
-            Layout.bottomMargin: -root.buttonVerticalPadding // Why is this necessary? Good question.
-            spacing: 4
-            Repeater {
-                model: (root.entry.actions ?? []).slice(0, 4)
-                delegate: RippleButton {
-                    id: actionButton
-                    required property var modelData
-                    property var iconType: modelData.iconType
-                    property string iconName: modelData.iconName ?? ""
-                    implicitHeight: 34
-                    implicitWidth: 34
-
-                    colBackgroundHover: Appearance.colors.colSecondaryContainerHover
-                    colRipple: Appearance.colors.colSecondaryContainerActive
-
-                    contentItem: Item {
-                        id: actionContentItem
-                        anchors.centerIn: parent
-                        Loader {
-                            anchors.centerIn: parent
-                            active: actionButton.iconType === LauncherSearchResult.IconType.Material || actionButton.iconName === ""
-                            sourceComponent: MaterialSymbol {
-                                text: actionButton.iconName || "video_settings"
-                                font.pixelSize: Appearance.font.pixelSize.hugeass
-                                color: root.colForeground
-                            }
-                        }
-                        Loader {
-                            anchors.centerIn: parent
-                            active: actionButton.iconType === LauncherSearchResult.IconType.System && actionButton.iconName !== ""
-                            sourceComponent: IconImage {
-                                source: Quickshell.iconPath(actionButton.iconName)
-                                implicitSize: 20
-                            }
-                        }
-                    }
-
-                    onClicked: modelData.execute()
-
-                    StyledToolTip {
-                        text: modelData.name
-                    }
-                }
-            }
-        }
-
     }
 }

@@ -6,6 +6,7 @@ import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
 import qs.modules.common.functions
+import qs.modules.common.m3 as M3
 
 RowLayout {
     id: root
@@ -27,13 +28,12 @@ RowLayout {
         shape: SearchPrefixes.shape(root.searchPrefixType)
         text: SearchPrefixes.icon(root.searchPrefixType)
     }
-    ToolbarTextField { // Search box
+    M3.SearchBar { // Search box
         id: searchInput
         Layout.topMargin: 4
         Layout.bottomMargin: 4
-        implicitHeight: 40
+        compact: true
         focus: GlobalStates.search?.opened ?? false
-        font.pixelSize: Appearance.font.pixelSize.small
         placeholderText: "Search apps and actions"
         implicitWidth: root.searchingText == "" ? Appearance.sizes.searchWidthCollapsed : Appearance.sizes.searchWidth
 
@@ -70,17 +70,15 @@ RowLayout {
         }
     }
 
-    IconToolbarButton {
+    M3.IconButton {
         Layout.topMargin: 4
         Layout.bottomMargin: 4
         Layout.rightMargin: 4
+        materialIcon: "image_search"
+        tooltip: "Google Lens"
         onClicked: {
             GlobalStates.search?.close();
             GlobalStates.regionSearchRequested();
-        }
-        text: "image_search"
-        StyledToolTip {
-            text: "Google Lens"
         }
     }
 }
