@@ -25,6 +25,9 @@ TabButton {
         : (checked ? Appearance.colors.colPrimary : Appearance.colors.colOnLayer1)
 
     implicitWidth: compact ? contentRow.implicitWidth + Appearance.spacing.m * 2 : 0
+    // TabBar gives every tab without an explicit width an equal share, so compact
+    // tabs pin their width to their content; secondary tabs stay equal-width.
+    width: compact ? implicitWidth : undefined
     implicitHeight: compact ? Appearance.sizes.m3TabsCompactHeight : Appearance.sizes.m3TabsHeight
 
     background: Rectangle {
