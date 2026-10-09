@@ -24,10 +24,18 @@ that first. It is short and it is the source of truth.
 5. Before finishing, run the lint:
 
    ```sh
-   .agents/skills/design-system/lint.py            # lines added on this branch
-   .agents/skills/design-system/lint.py --all FILE # whole files
+   .agents/skills/design-system/lint.py                # whole repository
+   .agents/skills/design-system/lint.py FILE            # whole selected file
+   .agents/skills/design-system/lint.py --changed       # added lines on this branch
+   .agents/skills/design-system/lint.py --all FILE      # explicit whole-file scan
    ```
 
+   The default scan includes tracked and non-ignored untracked QML, even when git is
+   clean. Legacy widgets with M3 replacements are errors outside the shared widget
+   and M3 library directories. Hex colours outside `modules/common/Appearance.qml`
+   and M3 imports without `as M3` are also errors. Errors exit with status 1.
+   Inline components and possible 1px dividers remain advisory warnings.
+   `--changed --base REF` selects added lines relative to REF's merge base.
    Fix every error. For each warning, either act on it or say why it doesn't apply.
 
 ## Adding a component

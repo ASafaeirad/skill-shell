@@ -3,6 +3,8 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
+import qs.modules.common
+import qs.modules.common.functions
 
 Scope {
     id: root
@@ -48,7 +50,7 @@ Scope {
                 id: rect
 
                 anchors.centerIn: parent
-                color: failed ? "#ffe99195" : "#ffD1E8D5"
+                color: failed ? Appearance.colors.colErrorContainer : Appearance.colors.colPrimaryContainer
                 implicitHeight: layout.implicitHeight + 30
                 implicitWidth: layout.implicitWidth + 30
                 radius: 12
@@ -88,7 +90,7 @@ Scope {
                         font.family: "Google Sans Flex"
                         font.pointSize: 14
                         text: root.failed ? "Quickshell: Reload failed" : "Quickshell reloaded"
-                        color: failed ? "#ff93000A" : "#ff0C1F13"
+                        color: failed ? Appearance.m3colors.m3onErrorContainer : Appearance.colors.colOnPrimaryContainer
                     }
 
                     Text {
@@ -96,7 +98,7 @@ Scope {
                         font.family: "JetBrains Mono NF"
                         font.pointSize: 11
                         text: root.errorString
-                        color: failed ? "#ff93000A" : "#ff0C1F13"
+                        color: failed ? Appearance.m3colors.m3onErrorContainer : Appearance.colors.colOnPrimaryContainer
                         // When visible is false, it also takes up no space.
                         visible: root.errorString != ""
                     }
@@ -109,7 +111,7 @@ Scope {
                     id: bar
 
                     z: 2
-                    color: failed ? "#ff93000A" : "#ff0C1F13"
+                    color: failed ? Appearance.m3colors.m3onErrorContainer : Appearance.colors.colOnPrimaryContainer
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
                     anchors.margins: 10
@@ -138,7 +140,7 @@ Scope {
                     id: bar_bg
 
                     z: 1
-                    color: failed ? "#30af1b25" : "#4027643e"
+                    color: ColorUtils.transparentize(bar.color, 0.8)
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
                     anchors.margins: 10
@@ -157,7 +159,7 @@ Scope {
                 verticalOffset: 2
                 radius: 6
                 samples: radius * 2 + 1 // Ideally should be 2 * radius + 1, see qt docs
-                color: "#44000000"
+                color: Appearance.colors.colShadow
                 source: rect
             }
 

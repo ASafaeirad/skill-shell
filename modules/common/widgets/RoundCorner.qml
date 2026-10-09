@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Shapes
+import qs.modules.common
 
 Item {
     id: root
@@ -17,7 +18,7 @@ Item {
     property alias rightVisualMargin: shape.anchors.rightMargin
     property alias bottomVisualMargin: shape.anchors.bottomMargin
     property int implicitSize: 25
-    property color color: "#000000"
+    property color color: Appearance.colors.colLayer0
     property bool isTopLeft: corner === RoundCorner.CornerEnum.TopLeft
     property bool isBottomLeft: corner === RoundCorner.CornerEnum.BottomLeft
     property bool isTopRight: corner === RoundCorner.CornerEnum.TopRight

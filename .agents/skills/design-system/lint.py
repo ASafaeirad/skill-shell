@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-"""Design-system lint for QML changes.
+"""Design-system lint for repository QML.
 
-Reads the lines your branch adds (committed since the merge base with main, plus
-staged, unstaged and untracked QML) and reports:
+Checks all tracked and untracked, non-ignored QML by default and reports:
 
   error    a hex colour literal (theme colours come from Appearance)
   error    qs.modules.common.m3 imported without `as M3`
-  warning  a legacy widget that has an M3 replacement
+  error    a legacy widget that has an M3 replacement outside the library
   warning  an inline `component X: Rectangle/RippleButton/...` in a panel,
            which is usually an M3 component being reinvented
   warning  a 1px Rectangle, which is usually a Divider
 
-Usage:  lint.py [--base main] [--all] [files...]
-  --all   lint every line of the given (or changed) files, not only added lines
+Usage:  lint.py [--all | --changed] [--base main] [files...]
+  --all      explicitly select the default whole-repository (or whole-file) scan
+  --changed  only lines added since the merge base, including local changes
+  files      limit the scan to these files
 Exit status is 1 when there are errors, so it can gate a commit.
 """
 
@@ -68,7 +69,9 @@ def added_lines(base, files):
             m = re.search(r"\+(\d+)(?:,(\d+))?", line)
             start, count = int(m.group(1)), int(m.group(2) or 1)
             out[current].update(range(start, start + count))
-    for path in git("ls-files", "--others", "--exclude-standard", "--", *(files or ["*.qml"])).split():
+    for path in git("ls-files", "-z", "--others", "--exclude-standard", "--", *(files or ["*.qml"])).split("\0"):
+        if not path:
+            continue
         out[path] = None
     return {p: lines for p, lines in out.items() if p.endswith(".qml") and Path(p).exists()}
 
@@ -79,7 +82,7 @@ def lint(path, only):
     for number, line in enumerate(text, 1):
         if only is not None and number not in only:
             continue
-        if HEX.search(line) and not path.endswith("Appearance.qml"):
+        if HEX.search(line) and path != "modules/common/Appearance.qml":
             findings.append(("error", number, "hex colour literal; use an Appearance.colors/m3colors token"))
         if M3_IMPORT.search(line):
             findings.append(("error", number, "import the design system as `import qs.modules.common.m3 as M3`"))
@@ -88,7 +91,7 @@ def lint(path, only):
             findings.append(("warning", number, f"inline component {m.group(1)}: {m.group(2)} — check modules/common/m3/README.md for an M3 component first"))
         m = LEGACY_USE.search(line)
         if m and not path.startswith(EXEMPT_LEGACY):
-            findings.append(("warning", number, f"{m.group(1)} is legacy; use {LEGACY[m.group(1)]}"))
+            findings.append(("error", number, f"{m.group(1)} is legacy; use {LEGACY[m.group(1)]}"))
         if THIN.search(line) and any("Rectangle" in l for l in text[max(0, number - 6):number]):
             findings.append(("warning", number, "1px Rectangle; use M3.Divider"))
     return findings
@@ -97,20 +100,34 @@ def lint(path, only):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--base", default="main")
-    parser.add_argument("--all", action="store_true")
+    scope = parser.add_mutually_exclusive_group()
+    scope.add_argument("--all", action="store_true")
+    scope.add_argument("--changed", action="store_true")
     parser.add_argument("files", nargs="*")
     args = parser.parse_args()
+    requested = [Path(f).resolve() for f in args.files]
 
     root = git("rev-parse", "--show-toplevel").strip()
     if root:
         import os
         os.chdir(root)
 
-    targets = added_lines(args.base, args.files)
-    for f in args.files:
-        targets.setdefault(f, None if args.all else set())
-    if args.all:
-        targets = {p: None for p in targets}
+    # Canonical repo-relative paths keep exemptions consistent for absolute paths
+    # and spellings such as ./modules/common/m3/Switch.qml.
+    args.files = []
+    for path in requested:
+        if not path.is_file() or path.suffix != ".qml":
+            parser.error(f"not a QML file: {path}")
+        try:
+            args.files.append(path.relative_to(Path.cwd()).as_posix())
+        except ValueError:
+            parser.error(f"file is outside the repository: {path}")
+    if args.changed:
+        targets = added_lines(args.base, args.files)
+    else:
+        paths = args.files or git("ls-files", "-z", "--cached", "--others",
+                                  "--exclude-standard", "--", "*.qml").split("\0")
+        targets = {p: None for p in paths if p.endswith(".qml") and Path(p).is_file()}
 
     errors = 0
     for path in sorted(targets):
@@ -118,7 +135,9 @@ def main():
             errors += level == "error"
             print(f"{path}:{number}: {level}: {message}")
     if not targets:
-        print("No changed QML files.")
+        print("No changed QML files." if args.changed else "No QML files.")
+    else:
+        print(f"Checked {len(targets)} QML files; {errors} errors.")
     sys.exit(1 if errors else 0)
 
 

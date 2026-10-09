@@ -6,7 +6,7 @@ Canvas {
     property real amplitudeMultiplier: 0.5
     property real frequency: 6
     property real speedMultiplier: 1
-    property color color: Appearance?.colors.colPrimary ?? "#685496"
+    property color color: Appearance.colors.colPrimary
     property real lineWidth: 4
     property real fullLength: width
 

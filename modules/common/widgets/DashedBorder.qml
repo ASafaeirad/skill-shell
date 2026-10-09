@@ -5,7 +5,7 @@ import qs.modules.common.functions
 Canvas {
     id: root
 
-    property color color: "#ffffff"
+    property color color: Appearance.colors.colOutline
     property int dashLength: 6
     property int gapLength: 4
     property int borderWidth: 1

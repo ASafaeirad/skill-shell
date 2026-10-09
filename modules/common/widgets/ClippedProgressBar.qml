@@ -13,8 +13,8 @@ ProgressBar {
     property bool vertical: false
     property real valueBarWidth: 30
     property real valueBarHeight: 18
-    property color highlightColor: Appearance?.colors.colOnSecondaryContainer ?? "#685496"
-    property color trackColor: ColorUtils.transparentize(highlightColor, 0.5) ?? "#F1D3F9"
+    property color highlightColor: Appearance.colors.colOnSecondaryContainer
+    property color trackColor: ColorUtils.transparentize(highlightColor, 0.5)
     property alias radius: contentItem.radius
     property string text
     default property Item textMask: Item {
