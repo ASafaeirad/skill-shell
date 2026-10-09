@@ -1,54 +1,26 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 
-RippleButton {
+M3.IconButton {
     id: button
 
-    property string buttonIcon
-    property string buttonText
-    property bool keyboardDown: false
-    property real size: 120
-    property color colText: (button.down || button.keyboardDown || button.focus || button.hovered) ? Appearance.m3colors.m3onPrimary : Appearance.colors.colOnLayer0
-
-    buttonRadius: button.down ? size / 2 : Appearance.rounding.verylarge
-    colBackground: button.keyboardDown ? Appearance.colors.colSecondaryContainerActive : button.focus ? Appearance.colors.colPrimary : Appearance.colors.colSecondaryContainer
-    colBackgroundHover: Appearance.colors.colPrimary
-    colRipple: Appearance.colors.colPrimaryActive
+    variant: button.activeFocus ? "filled" : "tonal"
+    size: "xlarge"
+    shape: "square"
     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-    background.implicitHeight: size
-    background.implicitWidth: size
-    Keys.onPressed: (event) => {
+
+    Keys.onPressed: event => {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-            keyboardDown = true;
+            button.down = true;
             button.clicked();
             event.accepted = true;
         }
     }
-    Keys.onReleased: (event) => {
+    Keys.onReleased: event => {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-            keyboardDown = false;
+            button.down = false;
             event.accepted = true;
         }
     }
-
-    StyledToolTip {
-        text: buttonText
-    }
-
-    Behavior on buttonRadius {
-        animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-    }
-
-    contentItem: MaterialSymbol {
-        id: icon
-
-        anchors.fill: parent
-        color: button.colText
-        horizontalAlignment: Text.AlignHCenter
-        iconSize: 45
-        text: buttonIcon
-    }
-
 }
