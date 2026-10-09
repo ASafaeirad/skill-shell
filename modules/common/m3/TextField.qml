@@ -1,11 +1,44 @@
-import qs.modules.common.widgets
+import qs.modules.common
+import QtQuick
+import QtQuick.Controls.Material
+import QtQuick.Controls as QQC
 
 /**
- * Material 3 text field (filled).
+ * Material 3 text field, single line.
  * https://m3.material.io/components/text-fields
  *
- * Implemented by MaterialTextField in qs.modules.common.widgets; see that file for the API.
- * This name is the one to use in new code, so the implementation can move here
- * without touching callers.
+ *   M3.TextField { placeholderText: "Name"; text: root.name; onTextChanged: root.name = text }
+ *
+ * For multiline text use M3.TextArea.
+ * Note: We don't use NativeRendering because it makes the small placeholder text look weird
  */
-MaterialTextField {}
+QQC.TextField {
+    id: root
+    Material.theme: Material.System
+    Material.accent: Appearance.m3colors.m3primary
+    Material.primary: Appearance.m3colors.m3primary
+    Material.background: Appearance.m3colors.m3surface
+    Material.foreground: Appearance.m3colors.m3onSurface
+    Material.containerStyle: Material.Outlined
+    renderType: Text.QtRendering
+
+    selectedTextColor: Appearance.m3colors.m3onSecondaryContainer
+    selectionColor: Appearance.colors.colSecondaryContainer
+    placeholderTextColor: Appearance.m3colors.m3outline
+    clip: true
+
+    font {
+        family: Appearance.font.family.main
+        pixelSize: Appearance?.font.pixelSize.small ?? 15
+        hintingPreference: Font.PreferFullHinting
+        variableAxes: Appearance.font.variableAxes.main
+    }
+    wrapMode: TextEdit.Wrap
+
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.NoButton
+        hoverEnabled: true
+        cursorShape: Qt.IBeamCursor
+    }
+}

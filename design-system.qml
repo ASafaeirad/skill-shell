@@ -1391,7 +1391,7 @@ ApplicationWindow {
             PageHeading {
                 heading: "Slider"
                 guideline: "sliders"
-                detail: "Pick a value from a range. configuration takes StyledSlider.Configuration (XS, S, M, L, XL, Wavy), which needs qs.modules.common.widgets imported."
+                detail: "Pick a value from a range. configuration takes M3.Slider.Configuration (XS, S, M, L, XL, Wavy)."
             }
             PreviewCard {
                 title: "Live slider"
@@ -1399,7 +1399,7 @@ ApplicationWindow {
                     width: Appearance.spacing.xxl * 8
                     value: root.sampleValue
                     enabled: root.sampleEnabled
-                    configuration: root.sampleWavy ? StyledSlider.Configuration.Wavy : StyledSlider.Configuration.S
+                    configuration: root.sampleWavy ? M3.Slider.Configuration.Wavy : M3.Slider.Configuration.S
                     onMoved: root.sampleValue = value
                 }
             }
@@ -1408,13 +1408,13 @@ ApplicationWindow {
                 M3.Slider {
                     width: Appearance.spacing.xxl * 8
                     value: root.sampleValue
-                    configuration: StyledSlider.Configuration.M
+                    configuration: M3.Slider.Configuration.M
                     onMoved: root.sampleValue = value
                 }
                 M3.Slider {
                     width: Appearance.spacing.xxl * 8
                     value: root.sampleValue
-                    configuration: StyledSlider.Configuration.L
+                    configuration: M3.Slider.Configuration.L
                     enabled: false
                 }
             }
