@@ -53,16 +53,18 @@ qs -p design-system.qml ipc call designSystem openTab Chip
 
 ## Catalog
 
-Status: **native** is written in this directory against the M3 spec. **wraps** re-exports a
-widget from `modules/common/widgets`. Use the M3 name in new code. The implementation can
-then move into this directory later without changing any callers.
+Status: **native** is implemented in this directory. **wraps** re-exports a widget from
+`modules/common/widgets`. Use the M3 name in new code. The implementation can then move into
+this directory later without changing any callers. Old widget names whose implementation has
+moved here (`StyledSwitch`, `StyledSlider`, `FloatingActionButton`, …) are thin wrappers
+around the M3 file, kept until their callers are migrated.
 
 | M3 component | Use | Status | API |
 | --- | --- | --- | --- |
 | [Buttons](https://m3.material.io/components/buttons) | `M3.Button` | native | `variant`: filled · tonal · outlined · text · elevated; `shape`: round · square; `text`, `materialIcon`, `trailingText`, `toggleable`, `selected`, `selectedVariant`: filled · tonal, `content` (slot), `externalHover`, `error`; quick setting tile: `tileLayout`, `supportingText`, `leadingAction`, `leadingSelected` |
 | [Button groups](https://m3.material.io/components/button-groups) | `M3.ButtonGroup` | native | `variant`: connected · segmented; connected children use `M3.Button` or `M3.IconButton`; segmented `options`, `currentValue`, `selected(value)`, optional `configKey`, `readOnly`, `equalWidth`, `surface`, `compact` |
 | [Icon buttons](https://m3.material.io/components/icon-buttons) | `M3.IconButton` | native | `variant`: standard · filled · tonal · outlined; `size`: small · xsmall · compact · xlarge; `shape`: round · square; `materialIcon`, `iconSource`, `tooltip`, `toggleable`, `selected`, `selectedVariant`: tonal, `iconRotation`, `error`, `dotColor` for a colour swatch |
-| [FAB](https://m3.material.io/components/floating-action-button) | `M3.Fab` | wraps `FloatingActionButton` | `variant`: primary · secondary · tertiary; `size`: regular · toolbar; `iconText`, `buttonText`, `expanded` (extended FAB), `elevated`, `tooltip` |
+| [FAB](https://m3.material.io/components/floating-action-button) | `M3.Fab` | native | `variant`: primary · secondary · tertiary; `size`: regular · toolbar; `iconText`, `buttonText`, `expanded` (extended FAB), `elevated`, `tooltip`, `baseSize` |
 | [Chips](https://m3.material.io/components/chips) | `M3.Chip` | native | `variant`: assist · filter · input · suggestion; `text`, `materialIcon`, `selected`, `readOnly` for a locked but legible choice, `compact` (28px), `removable`, `removeClicked()` |
 | [Cards](https://m3.material.io/components/cards) | `M3.Card` | native | `variant`: filled · elevated · outlined; children stack in a column; `shape`: square · round; `padding`, `spacing`, `interactive`, `clicked()`, controlled `selected`, `selectedVariant`: tonal · filled, `error` for warning content |
 | [Dialogs](https://m3.material.io/components/dialogs) | `M3.Dialog`, `M3.DialogOverlay` + `M3.DialogCard` | wraps `WindowDialog`, `OverlayDialog` + `OverlayDialogCard` | Basic in-panel dialog: `show`, `dismiss()`, `backgroundWidth`, `backgroundHeight`; overlay: `open()`, `close()`, `dismissed()`, `closeFinished()`; card: `outlinedSurface`; content uses `M3.DialogTitle`, `M3.DialogParagraph` (`error`), `M3.DialogSectionHeader`, `M3.DialogButtonRow` |
@@ -74,18 +76,18 @@ then move into this directory later without changing any callers.
 | [Divider](https://m3.material.io/components/divider) | `M3.Divider` | native | `vertical`, `insetStart`, `insetEnd` |
 | [Badges](https://m3.material.io/components/badges) | `M3.Badge` | native | `text` (empty draws the small dot; four characters at most) |
 | [Checkbox](https://m3.material.io/components/checkbox) | `M3.Checkbox` | native | `text`, `checked`, `tristate`/`checkState`, `error` |
-| [Radio button](https://m3.material.io/components/radio-button) | `M3.RadioButton` | wraps `StyledRadioButton` | `description`, `checked` |
-| [Switch](https://m3.material.io/components/switch) | `M3.Switch` | wraps `StyledSwitch` | `checked`, `toggled()` |
-| [Sliders](https://m3.material.io/components/sliders) | `M3.Slider` | wraps `StyledSlider` | `value`, `from`, `to`, `configuration: StyledSlider.Configuration.S` (the enum lives on `StyledSlider`) |
-| [Text fields](https://m3.material.io/components/text-fields) | `M3.TextField` | wraps `MaterialTextField` | `text`, `placeholderText`, `readOnly` |
+| [Radio button](https://m3.material.io/components/radio-button) | `M3.RadioButton` | native | `description`, `checked` |
+| [Switch](https://m3.material.io/components/switch) | `M3.Switch` | native | `checked`, `toggled()` |
+| [Sliders](https://m3.material.io/components/sliders) | `M3.Slider` | native | `value`, `from`, `to`, `configuration: M3.Slider.Configuration.S` (XS · S · M · L · XL · Wavy) |
+| [Text fields](https://m3.material.io/components/text-fields) | `M3.TextField` | native | `text`, `placeholderText`, `readOnly` |
 | [Text fields](https://m3.material.io/components/text-fields) | `M3.TextArea` | native | `variant`: filled · outlined; multiline `text`, `placeholderText`, `readOnly`, `wrapMode`, `error`; `surface: false` for embedded editors |
 | [Search](https://m3.material.io/components/search) | `M3.SearchBar` | native | the search bar's input: `text`, `placeholderText`, `compact` (40px); leading icon and trailing `M3.IconButton`s go beside it |
-| [Progress indicators](https://m3.material.io/components/progress-indicators) | `M3.LinearProgressIndicator` | wraps `StyledProgressBar` | `value`, `wavy`, `indeterminate` |
-| [Progress indicators](https://m3.material.io/components/progress-indicators) | `M3.CircularProgressIndicator` | wraps `CircularProgress` | `value`, `indeterminate`, `fill`, `implicitSize` |
-| [Loading indicator](https://m3.material.io/components/loading-indicator) | `M3.LoadingIndicator` | wraps `MaterialLoadingIndicator` | `loading` |
+| [Progress indicators](https://m3.material.io/components/progress-indicators) | `M3.LinearProgressIndicator` | native | `value`, `wavy`, `indeterminate` |
+| [Progress indicators](https://m3.material.io/components/progress-indicators) | `M3.CircularProgressIndicator` | native | `value`, `indeterminate`, `fill`, `implicitSize` |
+| [Loading indicator](https://m3.material.io/components/loading-indicator) | `M3.LoadingIndicator` | native | `loading` |
 | [Tooltips](https://m3.material.io/components/tooltips) | `M3.Tooltip` | wraps `StyledToolTip` | `text`, `extraVisibleCondition`; `M3.IconButton` has a `tooltip` property already |
 | [Snackbar](https://m3.material.io/components/snackbar) | `M3.Snackbar` | native | `variant`: single-line · two-line; `text`, `supportingText`, `leadingIcon`, `actionText`, `actionTooltip`, `progress`, `actionClicked()` |
-| [Navigation rail](https://m3.material.io/components/navigation-rail) | `M3.NavigationRail` | wraps `NavigationRailTabs` | `model: [{ name, icon }]`, `currentIndex`, `expanded`, `tabSelected(index)` |
+| [Navigation rail](https://m3.material.io/components/navigation-rail) | `M3.NavigationRail` | native | `model: [{ name, icon }]`, `currentIndex`, `expanded`, `tabSelected(index)` |
 | [Tabs](https://m3.material.io/components/tabs) | `M3.Tabs` + `M3.Tab` | native | `variant`: secondary · compact (toolbar pill); `currentIndex`, `incrementCurrentIndex()`, `decrementCurrentIndex()`; tab `text`, `materialIcon`, `variant` |
 | [Toolbars](https://m3.material.io/components/toolbars) | `M3.Toolbar` + `M3.ToolbarTextField` | native | `variant`: floating · docked; `elevated`, `padding`, `spacing`; children form the row: `M3.IconButton` (toggles with `selectedVariant: "tonal"`), `M3.ToolbarTextField` (`placeholderText`, `drawsOwnText`); pair a `M3.Fab { size: "toolbar"; variant: "tertiary" }` beside it |
 

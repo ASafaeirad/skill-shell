@@ -47,7 +47,7 @@ that first. It is short and it is the source of truth.
      the M3 files, not `QtQuick.Controls`. To extend a Controls type with one of those names,
      go through its `modules/common/widgets` wrapper.
    - If a widget in `modules/common/widgets` already implements it, add a one-line
-     wrapper (see `Switch.qml`) instead of copying it.
+     wrapper (see `Tooltip.qml`) instead of copying it.
 3. Add a page to `design-system.qml`: add the name to `m3Tabs`, give it an icon in
    `tabIcons`, add its variants to `variantOptions`, map it in `componentForTab`, and write
    a `Component` with a live example driven by the property panel and one showing all
