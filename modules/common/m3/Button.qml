@@ -50,11 +50,12 @@ RippleButton {
     property bool externalHover: false
     property bool error: false
 
+    // Avoid on<Color> names: QML treats their bindings as signal handlers.
     // A destructive action swaps M3's accent roles for the error ones.
     readonly property color accentColor: error ? Appearance.colors.colError : Appearance.colors.colPrimary
-    readonly property color onAccentColor: error ? Appearance.colors.colOnError : Appearance.colors.colOnPrimary
+    readonly property color accentContentColor: error ? Appearance.colors.colOnError : Appearance.colors.colOnPrimary
     readonly property color accentContainerColor: error ? Appearance.colors.colErrorContainer : Appearance.colors.colSecondaryContainer
-    readonly property color onAccentContainerColor: error ? Appearance.colors.colOnErrorContainer : Appearance.colors.colOnSecondaryContainer
+    readonly property color accentContainerContentColor: error ? Appearance.colors.colOnErrorContainer : Appearance.colors.colOnSecondaryContainer
 
     readonly property bool showHover: hovered || externalHover
 
@@ -73,10 +74,10 @@ RippleButton {
         : "transparent"
     readonly property color contentColor: !enabled ? ColorUtils.applyAlpha(Appearance.colors.colOnSurface, Appearance.stateLayer.disabledContent)
         : unselectedToggle ? Appearance.colors.colOnSurfaceVariant
-        : selected ? (selectedVariant === "tonal" ? onAccentContainerColor : onAccentColor)
+        : selected ? (selectedVariant === "tonal" ? accentContainerContentColor : accentContentColor)
         : tileLayout ? Appearance.colors.colOnLayer2
-        : variant === "filled" ? onAccentColor
-        : variant === "tonal" ? onAccentContainerColor
+        : variant === "filled" ? accentContentColor
+        : variant === "tonal" ? accentContainerContentColor
         : accentColor
 
     implicitHeight: tileLayout ? Appearance.sizes.m3QuickTileHeight : Appearance.sizes.m3ButtonHeight

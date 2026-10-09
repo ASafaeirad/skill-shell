@@ -43,11 +43,12 @@ RippleButton {
 
     readonly property bool hasDot: dotColor.a > 0
 
+    // Avoid on<Color> names: QML treats their bindings as signal handlers.
     // A destructive action swaps M3's accent roles for the error ones.
     readonly property color accentColor: error ? Appearance.colors.colError : Appearance.colors.colPrimary
-    readonly property color onAccentColor: error ? Appearance.colors.colOnError : Appearance.colors.colOnPrimary
+    readonly property color accentContentColor: error ? Appearance.colors.colOnError : Appearance.colors.colOnPrimary
     readonly property color accentContainerColor: error ? Appearance.colors.colErrorContainer : Appearance.colors.colSecondaryContainer
-    readonly property color onAccentContainerColor: error ? Appearance.colors.colOnErrorContainer : Appearance.colors.colOnSecondaryContainer
+    readonly property color accentContainerContentColor: error ? Appearance.colors.colOnErrorContainer : Appearance.colors.colOnSecondaryContainer
     readonly property color neutralContentColor: error ? Appearance.colors.colError : Appearance.colors.colOnSurfaceVariant
 
     // The variant whose colours are drawn: selectedVariant takes over while selected.
@@ -60,8 +61,8 @@ RippleButton {
         : colorVariant === "outlined" && showSelected ? Appearance.m3colors.m3inverseSurface
         : "transparent"
     readonly property color contentColor: !enabled ? ColorUtils.applyAlpha(Appearance.colors.colOnSurface, Appearance.stateLayer.disabledContent)
-        : colorVariant === "filled" ? (showSelected ? onAccentColor : accentColor)
-        : colorVariant === "tonal" ? (showSelected ? onAccentContainerColor : neutralContentColor)
+        : colorVariant === "filled" ? (showSelected ? accentContentColor : accentColor)
+        : colorVariant === "tonal" ? (showSelected ? accentContainerContentColor : neutralContentColor)
         : colorVariant === "outlined" && showSelected ? Appearance.m3colors.m3inverseOnSurface
         : colorVariant === "standard" && toggleable && selected ? accentColor
         : neutralContentColor
