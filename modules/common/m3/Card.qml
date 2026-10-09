@@ -17,6 +17,7 @@ import qs.modules.common.widgets
  * Children stack in a ColumnLayout inset by `padding`.
  * variant: "filled" (default) | "elevated" | "outlined"
  * interactive: adds the hover state layer and emits clicked().
+ * error: uses the error container and matching content roles for warnings.
  * selected: controlled selection; selectedVariant is "tonal" or "filled".
  */
 Rectangle {
@@ -24,6 +25,7 @@ Rectangle {
 
     property string variant: "filled"
     property bool interactive: false
+    property bool error: false
     property bool selected: false
     property string selectedVariant: "tonal"
     property real padding: Appearance.spacing.lg
@@ -34,11 +36,11 @@ Rectangle {
 
     signal clicked()
 
-    readonly property color containerColor: selected ? (selectedVariant === "filled" ? Appearance.colors.colPrimary : Appearance.colors.colSecondaryContainer)
+    readonly property color containerColor: error ? Appearance.colors.colErrorContainer : selected ? (selectedVariant === "filled" ? Appearance.colors.colPrimary : Appearance.colors.colSecondaryContainer)
         : variant === "elevated" ? Appearance.colors.colSurfaceContainerLow
         : variant === "outlined" ? "transparent"
         : Appearance.colors.colSurfaceContainerHighest
-    readonly property color contentColor: selected ? (selectedVariant === "filled" ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSecondaryContainer) : Appearance.colors.colOnSurface
+    readonly property color contentColor: error ? Appearance.colors.colOnErrorContainer : selected ? (selectedVariant === "filled" ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSecondaryContainer) : Appearance.colors.colOnSurface
 
     implicitWidth: content.implicitWidth + padding * 2
     implicitHeight: content.implicitHeight + padding * 2

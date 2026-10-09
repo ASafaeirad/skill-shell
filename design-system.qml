@@ -741,11 +741,17 @@ ApplicationWindow {
             }
             PreviewCard {
                 title: "Sizes"
-                description: "small (default, 40) · xsmall (32), for dense rows"
+                description: "small (40) · xsmall (32) · xlarge (120), for large action grids"
                 Repeater {
-                    model: ["small", "xsmall"]
+                    model: ["small", "xsmall", "xlarge"]
                     M3.IconButton { required property string modelData; size: modelData; variant: "tonal"; materialIcon: "close"; tooltip: modelData }
                 }
+            }
+            PreviewCard {
+                title: "Large square actions"
+                description: "A rounded square for session actions. Tab focuses the button; the focus state uses the shared state layer."
+                M3.IconButton { size: "xlarge"; shape: "square"; variant: "tonal"; materialIcon: "lock"; tooltip: "Lock" }
+                M3.IconButton { size: "xlarge"; shape: "square"; variant: "tonal"; materialIcon: "power_settings_new"; tooltip: "Disabled"; enabled: false }
             }
             PreviewCard {
                 title: "Destructive actions"
@@ -894,6 +900,14 @@ ApplicationWindow {
                         M3.Button { variant: "text"; text: "Dismiss" }
                         M3.Button { variant: "filled"; text: "Open" }
                     }
+                }
+            }
+            PreviewCard {
+                title: "Warning card"
+                M3.Card {
+                    id: warningCard
+                    error: true
+                    StyledText { text: "Your package manager is running"; color: warningCard.contentColor }
                 }
             }
             PreviewCard {
