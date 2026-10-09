@@ -16,9 +16,9 @@ RippleButton { // Expand button
     Layout.fillHeight: false
 
     buttonRadius: Appearance.rounding.full
-    colBackground: ColorUtils.mix(Appearance?.colors.colLayer2, Appearance?.colors.colLayer2Hover, 0.5)
-    colBackgroundHover: Appearance?.colors.colLayer2Hover ?? "#E5DFED"
-    colRipple: Appearance?.colors.colLayer2Active ?? "#D6CEE2"
+    colBackground: ColorUtils.mix(Appearance.colors.colLayer2, Appearance.colors.colLayer2Hover, 0.5)
+    colBackgroundHover: Appearance.colors.colLayer2Hover
+    colRipple: Appearance.colors.colLayer2Active
 
     contentItem: Item {
         anchors.centerIn: parent

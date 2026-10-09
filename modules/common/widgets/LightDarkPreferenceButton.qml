@@ -10,8 +10,8 @@ RippleButton {
     id: lightDarkButtonRoot
 
     required property bool dark
-    property color previewBg: dark ? ColorUtils.colorWithHueOf("#3f3838", Appearance.m3colors.m3primary) : ColorUtils.colorWithHueOf("#F7F9FF", Appearance.m3colors.m3primary)
-    property color previewFg: dark ? Qt.lighter(previewBg, 2.2) : ColorUtils.mix(previewBg, "#292929", 0.85)
+    property color previewBg: dark ? Appearance.colors.colPreviewDark : Appearance.colors.colPreviewLight
+    property color previewFg: dark ? Qt.lighter(previewBg, 2.2) : ColorUtils.mix(previewBg, Appearance.colors.colPreviewOnLight, 0.85)
 
     padding: 5
     Layout.fillWidth: true

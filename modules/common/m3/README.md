@@ -124,19 +124,28 @@ Migrate one panel at a time and leave its behaviour alone.
 4. Preview it (`.agents/skills/preview-widget`) and compare it with the design in `design/`
    if the panel has one.
 
-### Backlog at the time of writing
+## Lint enforcement
 
-| Pattern | Count | Replacement |
-| --- | --- | --- |
-| Inline `component X: Rectangle/RippleButton` | 8 | `Separator` → `M3.Divider`; `TitlebarButton`, `WidgetButton` → `M3.IconButton`; `BigRecorderButton` → `M3.Button` |
-| `MaterialTextField` | 6 | `M3.TextField` |
-| 1 px `Rectangle` dividers | 4 | `M3.Divider` |
-| `StyledProgressBar` | 3 | `M3.LinearProgressIndicator` |
-| Other wrapped widgets (`StyledSwitch`, `MaterialLoadingIndicator`) | 2 | the `M3.*` name for each |
+Run `.agents/skills/design-system/lint.py` before finishing a change. It checks every
+tracked and non-ignored untracked QML file, including unchanged files on a clean
+branch. A file argument limits the scan to that whole file; `--all` explicitly
+selects the same whole-repository or whole-file behaviour.
 
-`bar` and `sidebarRight` are done. The largest area left is `settings` (39 findings),
-then `overlay` and `gmailInbox` (10 each).
+Legacy widgets with M3 replacements are errors outside `modules/common/widgets/`
+and `modules/common/m3/`, where compatibility wrappers and implementations live.
+Hex colour literals outside `modules/common/Appearance.qml` and M3 imports without
+`as M3` are also errors. Any error makes the command exit with status 1.
 
-The tooltip sweep is complete: panels, settings and shared shell widgets use
+Inline components and possible 1px Rectangle dividers remain warnings for manual
+review. The remaining findings are a shared tab bar bottom border, a region selection
+aim line, the fan curve plot and screen translator bounding boxes. The tab border
+is inside a shared widget implementation; the other findings are custom drawing
+elements rather than controls with M3 replacements.
+
+For a focused check of added lines, use `lint.py --changed`, optionally with
+`--base REF` or file arguments. Use the default scan to check for regressions
+across the repository.
+
+The tooltip sweep is complete. Panels, settings and shared shell widgets use
 `M3.Tooltip` or a component's `tooltip` property. `StyledToolTip` remains only
 as the implementation used inside the M3 component library.

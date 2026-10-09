@@ -186,6 +186,11 @@ Singleton {
         property color colOnSurface: m3colors.m3onSurface
         property color colOnSurfaceVariant: m3colors.m3onSurfaceVariant
         // Misc
+        // Fixed light/dark samples for the theme selector, tinted by the wallpaper.
+        property color colPreviewDark: ColorUtils.colorWithHueOf("#3f3838", m3colors.m3primary)
+        property color colPreviewLight: ColorUtils.colorWithHueOf("#F7F9FF", m3colors.m3primary)
+        property color colPreviewOnLight: "#292929"
+
         property color colTooltip: m3colors.m3inverseSurface
         property color colOnTooltip: m3colors.m3inverseOnSurface
         property color colScrim: ColorUtils.transparentize(m3colors.m3scrim, 0.5)
