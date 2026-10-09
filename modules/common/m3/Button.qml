@@ -11,6 +11,10 @@ import qs.modules.common.widgets
  *   M3.Button { variant: "tonal"; text: "Retry"; materialIcon: "refresh"; onClicked: ... }
  *
  * variant: "filled" (default) | "tonal" | "outlined" | "text" | "elevated"
+ * variant "indicator": shell workspace dot, with a transparent container so
+ *   the workspace group's occupied and animated active markers remain visible.
+ * occupied: indicator dot uses on-secondary-container instead of inactive text.
+ *   selected uses on-primary. Geometry comes from the m3Workspace tokens.
  * shape: "round" (default) | "square"; M3's square shape keeps small corners,
  *   for a button that sits in a grid of equal cells (a calendar day).
  * selected: toggle-button state; a selected button uses selectedVariant colours.
@@ -37,6 +41,7 @@ RippleButton {
 
     property string variant: "filled"
     property string shape: "round"
+    property bool occupied: false
     property string materialIcon: ""
     property bool selected: false
     property string selectedVariant: "filled"
@@ -63,7 +68,7 @@ RippleButton {
     readonly property bool unselectedToggle: toggleable && !selected
 
     readonly property bool hasContainer: variant === "filled" || variant === "tonal" || variant === "elevated"
-    readonly property color containerColor: unselectedToggle ? (variant === "filled" || variant === "tonal" ? Appearance.colors.colSurfaceContainerHighest
+    readonly property color containerColor: variant === "indicator" ? "transparent" : unselectedToggle ? (variant === "filled" || variant === "tonal" ? Appearance.colors.colSurfaceContainerHighest
             : variant === "elevated" ? Appearance.colors.colSurfaceContainerLow
             : "transparent")
         : selected ? (selectedVariant === "tonal" ? accentContainerColor : accentColor)
@@ -73,6 +78,8 @@ RippleButton {
         : variant === "elevated" ? Appearance.colors.colSurfaceContainerLow
         : "transparent"
     readonly property color contentColor: !enabled ? ColorUtils.applyAlpha(Appearance.colors.colOnSurface, Appearance.stateLayer.disabledContent)
+        : variant === "indicator" ? (selected ? Appearance.m3colors.m3onPrimary
+            : occupied ? Appearance.m3colors.m3onSecondaryContainer : Appearance.colors.colOnLayer1Inactive)
         : unselectedToggle ? Appearance.colors.colOnSurfaceVariant
         : selected ? (selectedVariant === "tonal" ? accentContainerContentColor : accentContentColor)
         : tileLayout ? Appearance.colors.colOnLayer2
@@ -80,9 +87,10 @@ RippleButton {
         : variant === "tonal" ? accentContainerContentColor
         : accentColor
 
-    implicitHeight: tileLayout ? Appearance.sizes.m3QuickTileHeight : Appearance.sizes.m3ButtonHeight
-    leftPadding: tileLayout ? Appearance.spacing.xs : (materialIcon.length > 0 ? Appearance.spacing.lg : Appearance.spacing.xl)
-    rightPadding: tileLayout ? Appearance.spacing.xs : Appearance.spacing.xl
+    implicitWidth: variant === "indicator" ? Appearance.sizes.m3WorkspaceButtonWidth : implicitContentWidth + leftPadding + rightPadding
+    implicitHeight: variant === "indicator" ? Appearance.sizes.barHeight : tileLayout ? Appearance.sizes.m3QuickTileHeight : Appearance.sizes.m3ButtonHeight
+    leftPadding: variant === "indicator" ? 0 : tileLayout ? Appearance.spacing.xs : (materialIcon.length > 0 ? Appearance.spacing.lg : Appearance.spacing.xl)
+    rightPadding: variant === "indicator" ? 0 : tileLayout ? Appearance.spacing.xs : Appearance.spacing.xl
     buttonRadius: tileLayout ? Appearance.rounding.large
         : shape === "square" ? Appearance.rounding.small
         : Appearance.rounding.full
@@ -110,8 +118,17 @@ RippleButton {
     // The content stays centred when the button is stretched wider than it;
     // quick tiles fill the width so the icon and labels start at the leading edge.
     contentItem: Item {
-        implicitWidth: root.content ? customContent.implicitWidth : contentRow.implicitWidth
-        implicitHeight: root.content ? customContent.implicitHeight : contentRow.implicitHeight
+        implicitWidth: root.variant === "indicator" ? Appearance.sizes.m3WorkspaceDotSize : root.content ? customContent.implicitWidth : contentRow.implicitWidth
+        implicitHeight: root.variant === "indicator" ? Appearance.sizes.m3WorkspaceDotSize : root.content ? customContent.implicitHeight : contentRow.implicitHeight
+
+        Rectangle {
+            visible: root.variant === "indicator"
+            anchors.centerIn: parent
+            width: Appearance.sizes.m3WorkspaceDotSize
+            height: width
+            radius: Appearance.rounding.full
+            color: root.contentColor
+        }
 
         Loader {
             id: customContent
@@ -123,7 +140,7 @@ RippleButton {
         RowLayout {
             id: contentRow
 
-            visible: !root.content
+            visible: !root.content && root.variant !== "indicator"
             anchors.centerIn: parent
             width: root.tileLayout ? parent.width : Math.min(implicitWidth, parent.width)
             spacing: root.tileLayout ? Appearance.sizes.m3QuickTileIconGap : Appearance.spacing.s

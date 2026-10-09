@@ -65,7 +65,7 @@ ApplicationWindow {
         "StyledComboBox": "arrow_drop_down_circle"
     })
     readonly property var variantOptions: ({
-        "Button": ["filled", "tonal", "outlined", "text", "elevated"],
+        "Button": ["filled", "tonal", "outlined", "text", "elevated", "indicator"],
         "ButtonGroup": ["connected", "segmented"],
         "IconButton": ["standard", "filled", "tonal", "outlined"],
         "Fab": ["primary", "secondary", "tertiary"],
@@ -635,6 +635,18 @@ ApplicationWindow {
                 title: "Trailing text, stretched"
                 description: "trailingText adds a smaller figure after the label; the content stays centred at any width"
                 M3.Button { width: 320; text: "Download"; materialIcon: "download"; trailingText: "~42 MB" }
+            }
+            PreviewCard {
+                title: "Workspace indicators"
+                description: "indicator draws a dot on a transparent state layer. occupied chooses the occupied dot colour; selected chooses on-primary for the group's active marker."
+                RowLayout {
+                    M3.Button { variant: "indicator"; Accessible.name: "Empty workspace" }
+                    M3.Button { variant: "indicator"; occupied: true; Accessible.name: "Occupied workspace" }
+                    M3.Card {
+                        M3.Button { variant: "indicator"; selected: true; Accessible.name: "Active workspace" }
+                    }
+                    M3.Button { variant: "indicator"; enabled: false; Accessible.name: "Disabled workspace" }
+                }
             }
             PreviewCard {
                 title: "Quick setting tile"
