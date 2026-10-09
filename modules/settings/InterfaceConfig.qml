@@ -122,7 +122,7 @@ ContentPage {
         ConfigRow {
             enabled: Config.options.notifications.forceMonitor.enable
 
-            MaterialTextArea {
+            M3.TextArea {
                 Layout.fillWidth: true
                 placeholderText: "Monitor name to show notifications on (e.g., eDP-1)"
                 text: Config.options.notifications.forceMonitor.name
@@ -158,7 +158,7 @@ ContentPage {
         icon: "point_scan"
         title: "Overlay: Floating Image"
 
-        MaterialTextArea {
+        M3.TextArea {
             Layout.fillWidth: true
             placeholderText: "Image source"
             text: Config.options.overlay.floatingImage.imageSource
@@ -262,7 +262,7 @@ ContentPage {
             uniform: true
 
             M3.ButtonGroup {
-                    variant: "segmented"
+                variant: "segmented"
                 configKey: "overview.orderRightLeft"
                 options: [{
                     "displayName": "Left to right",
@@ -276,7 +276,7 @@ ContentPage {
             }
 
             M3.ButtonGroup {
-                    variant: "segmented"
+                variant: "segmented"
                 configKey: "overview.orderBottomUp"
                 options: [{
                     "displayName": "Top-down",
