@@ -1,5 +1,6 @@
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 import QtQuick
 import QtQuick.Layouts
@@ -7,8 +8,8 @@ import Quickshell
 
 Item {
     id: root
-    property real dialogPadding: 15
-    property real dialogMargin: 30
+    property real dialogPadding: Appearance.spacing.lg
+    property real dialogMargin: Appearance.spacing.xxl
     property string titleText: "Selection Dialog"
     property alias items: choiceModel.values
     property int selectedId: choiceListView.currentIndex
@@ -41,7 +42,7 @@ Item {
         ColumnLayout {
             id: dialogColumnLayout
             anchors.fill: parent
-            spacing: 16
+            spacing: Appearance.spacing.lg
 
             StyledText {
                 id: dialogTitle
@@ -54,9 +55,7 @@ Item {
                 text: root.titleText
             }
 
-            Rectangle {
-                color: Appearance.m3colors.m3outline
-                implicitHeight: 1
+            M3.Divider {
                 Layout.fillWidth: true
                 Layout.leftMargin: dialogPadding
                 Layout.rightMargin: dialogPadding
@@ -68,13 +67,13 @@ Item {
                 Layout.fillHeight: true
                 clip: true
                 currentIndex: root.defaultChoice !== undefined ? root.items.indexOf(root.defaultChoice) : -1
-                spacing: 6
+                spacing: Appearance.spacing.xs
 
                 model: ScriptModel {
                     id: choiceModel
                 }
 
-                delegate: StyledRadioButton {
+                delegate: M3.RadioButton {
                     id: radioButton
                     required property var modelData
                     required property int index
@@ -96,9 +95,7 @@ Item {
                 }
             }
 
-            Rectangle {
-                color: Appearance.m3colors.m3outline
-                implicitHeight: 1
+            M3.Divider {
                 Layout.fillWidth: true
                 Layout.leftMargin: dialogPadding
                 Layout.rightMargin: dialogPadding
@@ -111,12 +108,14 @@ Item {
                 Layout.rightMargin: dialogPadding
                 Layout.alignment: Qt.AlignRight
 
-                DialogButton {
-                    buttonText: "Cancel"
+                M3.Button {
+                    variant: "text"
+                    text: "Cancel"
                     onClicked: root.canceled()
                 }
-                DialogButton {
-                    buttonText: "OK"
+                M3.Button {
+                    variant: "text"
+                    text: "OK"
                     onClicked: root.selected(
                         root.selectedId === -1 ? null :
                         root.items[root.selectedId]

@@ -23,8 +23,6 @@ import sys
 from pathlib import Path
 
 LEGACY = {
-    "DialogButton": "M3.Button { variant: \"text\" }",
-    "RippleButtonWithIcon": "M3.Button { materialIcon: ... }",
     "StyledSwitch": "M3.Switch",
     "StyledSlider": "M3.Slider",
     "StyledRadioButton": "M3.RadioButton",
@@ -36,8 +34,6 @@ LEGACY = {
     "FloatingActionButton": "M3.Fab",
     "StyledToolTip": "M3.Tooltip (or IconButton's tooltip property)",
     "NavigationRailTabs": "M3.NavigationRail",
-    "WindowDialogSeparator": "M3.Divider",
-    "DialogListItem": "M3.ListItem",
 }
 # Files that implement the design system itself may use the legacy names.
 EXEMPT_LEGACY = ("modules/common/widgets/", "modules/common/m3/")

@@ -116,10 +116,9 @@ Migrate one panel at a time and leave its behaviour alone.
 1. Run `.agents/skills/design-system/lint.py --all <panel files>`. It lists legacy widgets with
    their M3 replacements, inline components that reinvent one, and hard-coded colours.
 2. Replace them one at a time. `StyledSwitch` → `M3.Switch` and the other wrapped
-   components are drop-in. `DialogButton` → `M3.Button { variant: "text" }` and
-   `RippleButtonWithIcon` → `M3.Button { materialIcon: ... }` need their properties renamed:
-   `buttonText` → `text` on `DialogButton`, and `mainText` → `text`, `primary: true` →
-   `variant: "filled"` (otherwise `"tonal"`) on `RippleButtonWithIcon`. `materialIcon` keeps its name.
+   components are drop-in. Use `M3.Button { variant: "text" }` for dialog actions,
+   `M3.Button { materialIcon: ... }` for labelled icon buttons, `M3.Divider` for
+   separators, and `M3.ListItem` for interactive list rows.
 3. Styled `RippleButton`s and inline components need a closer look. Name the M3 component the
    design means, then pick the variant. If none fits, add a variant or property here (Rule 3).
 4. Preview it (`.agents/skills/preview-widget`) and compare it with the design in `design/`
@@ -129,10 +128,8 @@ Migrate one panel at a time and leave its behaviour alone.
 
 | Pattern | Count | Replacement |
 | --- | --- | --- |
-| `RippleButtonWithIcon` | 12 | `M3.Button { materialIcon }` |
 | Inline `component X: Rectangle/RippleButton` | 8 | `Separator` → `M3.Divider`; `TitlebarButton`, `WidgetButton` → `M3.IconButton`; `BigRecorderButton` → `M3.Button` |
 | `MaterialTextField` | 6 | `M3.TextField` |
-| `DialogButton` | 2 | `M3.Button { variant: "text" }` |
 | 1 px `Rectangle` dividers | 4 | `M3.Divider` |
 | `StyledProgressBar` | 3 | `M3.LinearProgressIndicator` |
 | Other wrapped widgets (`StyledSwitch`, `MaterialLoadingIndicator`) | 2 | the `M3.*` name for each |
