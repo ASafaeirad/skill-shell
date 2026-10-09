@@ -174,9 +174,8 @@ ContentPage {
     }
 
     // A live reading: what the sensor says, and under it the fan that answers to it, turning
-    // at its own speed. Inline rather than a file in this directory: modules/settings is not
-    // a registered QML module, so a sibling .qml here is not importable.
-    component StatCard: Rectangle {
+    // at its own speed. The shared filled card owns the surface and content layout.
+    component StatCard: M3.Card {
         id: card
 
         property string icon: ""
@@ -187,68 +186,61 @@ ContentPage {
         property int rpm: -1
 
         Layout.fillWidth: true
-        implicitHeight: cardColumn.implicitHeight + Appearance.spacing.m * 2
-        radius: Appearance.rounding.normal
-        color: Appearance.colors.colLayer1
+        Layout.preferredWidth: 0
+        variant: "filled"
+        padding: Appearance.spacing.m
+        spacing: Appearance.spacing.xs
 
-        ColumnLayout {
-            id: cardColumn
-
-            anchors.fill: parent
-            anchors.margins: Appearance.spacing.m
+        RowLayout {
             spacing: Appearance.spacing.xs
 
-            RowLayout {
-                spacing: Appearance.spacing.xs
-
-                MaterialSymbol {
-                    text: card.icon
-                    iconSize: Appearance.font.pixelSize.large
-                    color: Appearance.colors.colSubtext
-                }
-
-                StyledText {
-                    text: card.label
-                    color: Appearance.colors.colSubtext
-                    font.pixelSize: Appearance.font.pixelSize.smallie
-                }
+            MaterialSymbol {
+                text: card.icon
+                iconSize: Appearance.font.pixelSize.large
+                color: Appearance.colors.colSubtext
             }
 
-            RowLayout {
-                spacing: Appearance.spacing.xxs
+            StyledText {
+                text: card.label
+                color: Appearance.colors.colSubtext
+                font.pixelSize: Appearance.font.pixelSize.smallie
+            }
+        }
 
-                StyledText {
-                    Layout.alignment: Qt.AlignBaseline
-                    text: card.value
-                    color: Appearance.colors.colOnLayer1
-                    font.pixelSize: Appearance.font.pixelSize.hugeass
-                    font.family: Appearance.font.family.numbers
-                }
+        RowLayout {
+            spacing: Appearance.spacing.xxs
 
-                StyledText {
-                    Layout.alignment: Qt.AlignBaseline
-                    visible: card.unit.length > 0
-                    text: card.unit
-                    color: Appearance.colors.colSubtext
-                    font.pixelSize: Appearance.font.pixelSize.small
-                }
+            StyledText {
+                Layout.alignment: Qt.AlignBaseline
+                text: card.value
+                color: Appearance.colors.colOnLayer1
+                font.pixelSize: Appearance.font.pixelSize.hugeass
+                font.family: Appearance.font.family.numbers
             }
 
-            RowLayout {
-                spacing: Appearance.spacing.xs
+            StyledText {
+                Layout.alignment: Qt.AlignBaseline
+                visible: card.unit.length > 0
+                text: card.unit
+                color: Appearance.colors.colSubtext
+                font.pixelSize: Appearance.font.pixelSize.small
+            }
+        }
 
-                FanSpinner {
-                    rpm: card.rpm
-                }
+        RowLayout {
+            spacing: Appearance.spacing.xs
 
-                StyledText {
-                    Layout.fillWidth: true
-                    text: card.caption
-                    color: Appearance.colors.colSubtext
-                    font.pixelSize: Appearance.font.pixelSize.smaller
-                    font.family: Appearance.font.family.numbers
-                    elide: Text.ElideRight
-                }
+            FanSpinner {
+                rpm: card.rpm
+            }
+
+            StyledText {
+                Layout.fillWidth: true
+                text: card.caption
+                color: Appearance.colors.colSubtext
+                font.pixelSize: Appearance.font.pixelSize.smaller
+                font.family: Appearance.font.family.numbers
+                elide: Text.ElideRight
             }
         }
     }
@@ -915,11 +907,9 @@ ContentPage {
                 wrapMode: Text.WordWrap
             }
 
-            Rectangle {
+            M3.Divider {
                 Layout.fillWidth: true
                 Layout.topMargin: Appearance.spacing.m
-                implicitHeight: 1
-                color: Appearance.colors.colOutlineVariant
             }
 
             RowLayout {
@@ -957,17 +947,19 @@ ContentPage {
                     elide: Text.ElideRight
                 }
 
-                RippleButtonWithIcon {
+                M3.Button {
+                    variant: "tonal"
                     visible: root.dirty
                     materialIcon: "undo"
-                    mainText: "Revert"
+                    text: "Revert"
                     enabled: !Fans.busy
                     onClicked: root.seedDraft()
                 }
 
-                RippleButtonWithIcon {
+                M3.Button {
+                    variant: "tonal"
                     materialIcon: "restart_alt"
-                    mainText: "Restore default"
+                    text: "Restore default"
                     enabled: !root.locked
                     onClicked: Fans.resetCurve()
 
@@ -976,10 +968,10 @@ ContentPage {
                     }
                 }
 
-                RippleButtonWithIcon {
+                M3.Button {
                     materialIcon: root.applied ? "check" : "save"
-                    mainText: root.applied ? "Applied" : "Apply"
-                    primary: root.dirty
+                    text: root.applied ? "Applied" : "Apply"
+                    variant: root.dirty ? "filled" : "tonal"
                     enabled: root.dirty && !root.locked
                     onClicked: {
                         root.applying = true;
