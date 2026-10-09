@@ -11,6 +11,8 @@ import qs.modules.common.widgets
  *   M3.Button { variant: "tonal"; text: "Retry"; materialIcon: "refresh"; onClicked: ... }
  *
  * variant: "filled" (default) | "tonal" | "outlined" | "text" | "elevated"
+ * shape: "round" (default) | "square"; M3's square shape keeps small corners,
+ *   for a button that sits in a grid of equal cells (a calendar day).
  * selected: toggle-button state; a selected button uses selectedVariant colours.
  * selectedVariant: "filled" (default) | "tonal"; colour treatment when selected.
  * toggleable: the button is a toggle, so its unselected state wears the
@@ -34,6 +36,7 @@ RippleButton {
     id: root
 
     property string variant: "filled"
+    property string shape: "round"
     property string materialIcon: ""
     property bool selected: false
     property string selectedVariant: "filled"
@@ -79,8 +82,10 @@ RippleButton {
     implicitHeight: tileLayout ? Appearance.sizes.m3QuickTileHeight : Appearance.sizes.m3ButtonHeight
     leftPadding: tileLayout ? Appearance.spacing.xs : (materialIcon.length > 0 ? Appearance.spacing.lg : Appearance.spacing.xl)
     rightPadding: tileLayout ? Appearance.spacing.xs : Appearance.spacing.xl
-    buttonRadius: tileLayout ? Appearance.rounding.large : Appearance.rounding.full
-    buttonRadiusPressed: Appearance.rounding.small
+    buttonRadius: tileLayout ? Appearance.rounding.large
+        : shape === "square" ? Appearance.rounding.small
+        : Appearance.rounding.full
+    buttonRadiusPressed: shape === "square" ? Appearance.rounding.verysmall : Appearance.rounding.small
     opacity: 1
 
     toggled: selected

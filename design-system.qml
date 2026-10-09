@@ -613,6 +613,18 @@ ApplicationWindow {
                 }
             }
             PreviewCard {
+                title: "Shapes"
+                description: "shape: round (default) · square. Square keeps small corners for a button in a grid of equal cells, such as a calendar day; press it to see the corners tighten."
+                Repeater {
+                    model: ["round", "square"]
+                    M3.Button { required property string modelData; variant: "tonal"; shape: modelData; text: modelData }
+                }
+                Repeater {
+                    model: ["round", "square"]
+                    M3.Button { required property string modelData; variant: "text"; shape: modelData; toggleable: true; selected: true; text: modelData }
+                }
+            }
+            PreviewCard {
                 title: "Destructive and error-recovery actions"
                 description: "error swaps M3's accent roles for the error ones, for the action that deletes something or recovers from a failure."
                 Repeater {
