@@ -206,35 +206,30 @@ MouseArea {
                                 name: "Wallpapers",
                                 path: `${Directories.pictures}/Wallpapers`
                             }]
-                        delegate: RippleButton {
-                            id: quickDirButton
+                        delegate: Item {
                             required property var modelData
-                            anchors {
-                                left: parent.left
-                                right: parent.right
-                            }
-                            onClicked: Wallpapers.setDirectory(quickDirButton.modelData.path)
-                            enabled: modelData.icon.length > 0
-                            toggled: Wallpapers.directory === Qt.resolvedUrl(modelData.path)
-                            colBackgroundToggled: Appearance.colors.colSecondaryContainer
-                            colBackgroundToggledHover: Appearance.colors.colSecondaryContainerHover
-                            colRippleToggled: Appearance.colors.colSecondaryContainerActive
-                            buttonRadius: height / 2
-                            implicitHeight: 38
+                            width: ListView.view.width
+                            height: folderItem.visible ? folderItem.implicitHeight : folderDivider.implicitHeight + Appearance.spacing.lg
 
-                            contentItem: RowLayout {
-                                MaterialSymbol {
-                                    color: quickDirButton.toggled ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer1
-                                    iconSize: Appearance.font.pixelSize.larger
-                                    text: quickDirButton.modelData.icon
-                                    fill: quickDirButton.toggled ? 1 : 0
-                                }
-                                StyledText {
-                                    Layout.fillWidth: true
-                                    horizontalAlignment: Text.AlignLeft
-                                    color: quickDirButton.toggled ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer1
-                                    text: quickDirButton.modelData.name
-                                }
+                            M3.ListItem {
+                                id: folderItem
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                visible: modelData.icon.length > 0
+                                compact: true
+                                density: -2
+                                leadingIcon: modelData.icon
+                                text: modelData.name
+                                selected: Wallpapers.directory === Qt.resolvedUrl(modelData.path)
+                                onClicked: Wallpapers.setDirectory(modelData.path)
+                            }
+                            M3.Divider {
+                                id: folderDivider
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: parent.width
+                                visible: !folderItem.visible
+                                insetStart: Appearance.spacing.s
+                                insetEnd: Appearance.spacing.s
                             }
                         }
                     }
@@ -263,7 +258,7 @@ MouseArea {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
-                    StyledProgressBar {
+                    M3.LinearProgressIndicator {
                         visible: Wallpapers.thumbnailGenerationRunning
                         indeterminate: Wallpapers.thumbnailGenerationProgress <= 0
                         value: Wallpapers.thumbnailGenerationProgress
@@ -316,8 +311,8 @@ MouseArea {
                             fileModelData: modelData
                             width: grid.cellWidth
                             height: grid.cellHeight
-                            colBackground: (index === grid?.currentIndex || containsMouse) ? Appearance.colors.colPrimary : (fileModelData.filePath === Config.options.background.wallpaperPath) ? Appearance.colors.colSecondaryContainer : ColorUtils.transparentize(Appearance.colors.colPrimaryContainer)
-                            colText: (index === grid.currentIndex || containsMouse) ? Appearance.colors.colOnPrimary : (fileModelData.filePath === Config.options.background.wallpaperPath) ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer0
+                            current: index === grid.currentIndex
+                            applied: fileModelData.filePath === Config.options.background.wallpaperPath
 
                             onEntered: {
                                 grid.currentIndex = index;
