@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
 import "calendar_layout.js" as CalendarLayout
+import qs.modules.common
+import qs.modules.common.widgets
 import qs.modules.common.m3 as M3
 
 Item {
@@ -89,11 +91,16 @@ Item {
             Repeater {
                 model: CalendarLayout.weekDays
 
-                delegate: CalendarDayButton {
-                    day: modelData.day
-                    isToday: modelData.today
-                    bold: true
-                    enabled: false
+                // Column labels, not controls: plain text in a day-sized cell.
+                delegate: StyledText {
+                    Layout.preferredWidth: Appearance.sizes.calendarDaySize
+                    Layout.preferredHeight: Appearance.sizes.calendarDaySize
+                    text: modelData.day
+                    color: Appearance.colors.colOnSurface
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    font.weight: Font.DemiBold
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
 
             }
