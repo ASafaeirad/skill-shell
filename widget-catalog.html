@@ -833,7 +833,9 @@
     </dialog>
 
     <script>
-      const paths = `modules/common/m3/Badge.qml
+      const paths = `modules/widgets/sessionScreen/SessionScreen.qml
+modules/widgets/sessionScreen/SessionActionButton.qml
+modules/common/m3/Badge.qml
 modules/common/m3/Button.qml
 modules/common/m3/ButtonGroup.qml
 modules/common/m3/Card.qml
@@ -1035,6 +1037,10 @@ modules/widgets/background/Background.qml`
           "Modal passphrase prompt with a password field and cancel or confirm actions, returned to the caller through a FIFO.",
         Polkit:
           "Fullscreen policy authentication window that hosts the shared authentication content.",
+        SessionScreen:
+          "Session action grid with M3 tonal icon buttons, keyboard navigation, action labels and warning cards.",
+        SessionActionButton:
+          "Large square M3 tonal icon button with a tooltip and Enter activation for session actions.",
         PolkitContent:
           "Authentication prompt with a password field and cancel or confirm actions, backed by the polkit agent.",
         Button:
