@@ -903,6 +903,15 @@ ApplicationWindow {
                 }
             }
             PreviewCard {
+                title: "Round elevated card"
+                M3.Card {
+                    id: roundCard
+                    variant: "elevated"
+                    shape: "round"
+                    StyledText { text: "Pill surface"; color: roundCard.contentColor }
+                }
+            }
+            PreviewCard {
                 title: "Warning card"
                 M3.Card {
                     id: warningCard

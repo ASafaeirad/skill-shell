@@ -16,6 +16,7 @@ import qs.modules.common.widgets
  *
  * Children stack in a ColumnLayout inset by `padding`.
  * variant: "filled" (default) | "elevated" | "outlined"
+ * shape: square (default rounded corners) | round (pill outline).
  * interactive: adds the hover state layer and emits clicked().
  * error: uses the error container and matching content roles for warnings.
  * selected: controlled selection; selectedVariant is "tonal" or "filled".
@@ -24,6 +25,7 @@ Rectangle {
     id: root
 
     property string variant: "filled"
+    property string shape: "square"
     property bool interactive: false
     property bool error: false
     property bool selected: false
@@ -44,7 +46,7 @@ Rectangle {
 
     implicitWidth: content.implicitWidth + padding * 2
     implicitHeight: content.implicitHeight + padding * 2
-    radius: Appearance.rounding.small
+    radius: shape === "round" ? Appearance.rounding.full : Appearance.rounding.small
     color: pressed ? ColorUtils.stateLayer(containerColor, contentColor, Appearance.stateLayer.pressed)
         : hovered ? ColorUtils.stateLayer(containerColor, contentColor, Appearance.stateLayer.hover)
         : containerColor
