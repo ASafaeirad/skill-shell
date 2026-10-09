@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell.Widgets
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 
 Item {
     id: root
@@ -14,24 +15,19 @@ Item {
     property bool scaleIcon: false
     property alias from: valueProgressBar.from
     property alias to: valueProgressBar.to
-    property real valueIndicatorVerticalPadding: 9
-    property real valueIndicatorLeftPadding: 10
-    property real valueIndicatorRightPadding: 20 // An icon is circle ish, a column isn't, hence the extra padding
+    property real valueIndicatorVerticalPadding: Appearance.sizes.osdVerticalPadding
+    property real valueIndicatorLeftPadding: Appearance.sizes.osdLeftPadding
+    property real valueIndicatorRightPadding: Appearance.sizes.osdRightPadding // An icon is circle ish, a column isn't, hence the extra padding
 
     implicitWidth: Appearance.sizes.osdWidth + 2 * Appearance.sizes.elevationMargin
     implicitHeight: valueIndicator.implicitHeight + 2 * Appearance.sizes.elevationMargin
 
-    StyledRectangularShadow {
-        target: valueIndicator
-    }
-
-    Rectangle {
+    M3.Card {
         id: valueIndicator
 
-        radius: Appearance.rounding.full
-        color: Appearance.colors.colLayer0
-        implicitWidth: valueRow.implicitWidth
-        implicitHeight: valueRow.implicitHeight
+        variant: "elevated"
+        shape: "round"
+        padding: 0
 
         anchors {
             fill: parent
@@ -42,13 +38,12 @@ Item {
         RowLayout {
             id: valueRow
 
-            Layout.margins: 10
-            anchors.fill: parent
-            spacing: 10
+            Layout.fillWidth: true
+            spacing: Appearance.sizes.osdIconGap
 
             Item {
-                implicitWidth: 30
-                implicitHeight: 30
+                implicitWidth: Appearance.sizes.osdIconSize
+                implicitHeight: Appearance.sizes.osdIconSize
                 Layout.alignment: Qt.AlignVCenter
                 Layout.leftMargin: valueIndicatorLeftPadding
                 Layout.topMargin: valueIndicatorVerticalPadding
@@ -56,10 +51,10 @@ Item {
 
                 // Icon
                 MaterialSymbol {
-                    color: Appearance.colors.colOnLayer0
+                    color: valueIndicator.contentColor
                     renderType: Text.QtRendering
                     text: root.icon
-                    iconSize: 20 + 10 * (root.scaleIcon ? value : 1)
+                    iconSize: Appearance.sizes.osdIconMinSize + (Appearance.sizes.osdIconSize - Appearance.sizes.osdIconMinSize) * (root.scaleIcon ? value : 1)
                     rotation: 180 * (root.rotateIcon ? value : 0)
 
                     anchors {
@@ -82,8 +77,9 @@ Item {
 
             ColumnLayout {
                 Layout.alignment: Qt.AlignVCenter
+                Layout.fillWidth: true
                 Layout.rightMargin: valueIndicatorRightPadding
-                spacing: 5
+                spacing: Appearance.sizes.osdContentGap
 
                 // Name fill left, value on the right end
                 RowLayout {
@@ -91,14 +87,14 @@ Item {
                     Layout.rightMargin: valueProgressBar.height / 2 // Align text with progressbar radius curve's left end
 
                     StyledText {
-                        color: Appearance.colors.colOnLayer0
+                        color: valueIndicator.contentColor
                         font.pixelSize: Appearance.font.pixelSize.small
                         Layout.fillWidth: true
                         text: root.name
                     }
 
                     StyledText {
-                        color: Appearance.colors.colOnLayer0
+                        color: valueIndicator.contentColor
                         font.pixelSize: Appearance.font.pixelSize.small
                         Layout.fillWidth: false
                         text: Math.round(root.value * 100)
@@ -106,7 +102,7 @@ Item {
 
                 }
 
-                StyledProgressBar {
+                M3.LinearProgressIndicator {
                     id: valueProgressBar
 
                     Layout.fillWidth: true

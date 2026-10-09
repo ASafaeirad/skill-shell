@@ -833,7 +833,13 @@
     </dialog>
 
     <script>
-      const paths = `modules/widgets/sessionScreen/SessionScreen.qml
+      const paths = `modules/widgets/textPopup/TextPopup.qml
+modules/widgets/textPopup/TextPopupContent.qml
+modules/widgets/selector/Selector.qml
+modules/widgets/selector/SelectorContent.qml
+modules/widgets/onScreenDisplay/OnScreenDisplay.qml
+modules/widgets/onScreenDisplay/OsdValueIndicator.qml
+modules/widgets/sessionScreen/SessionScreen.qml
 modules/widgets/sessionScreen/SessionActionButton.qml
 modules/common/m3/Badge.qml
 modules/common/m3/Button.qml
@@ -1033,6 +1039,12 @@ modules/widgets/background/Background.qml`
         .split("\n");
 
       const exactPurposes = {
+        TextPopup: "Script-driven read-only M3 dialog with file input and completion signaling.",
+        TextPopupContent: "Scrollable M3 dialog paragraph with Copy and Close text buttons.",
+        Selector: "Script-driven M3 selection dialog with filtering and optional free-form input.",
+        SelectorContent: "M3 text field and compact list items with keyboard navigation, hover selection and custom text submission.",
+        OnScreenDisplay: "Transient volume, brightness and gamma feedback on the focused monitor.",
+        OsdValueIndicator: "Round elevated M3 card with an animated icon, value label and linear progress indicator.",
         Pinentry:
           "Modal passphrase prompt with a password field and cancel or confirm actions, returned to the caller through a FIFO.",
         Polkit:

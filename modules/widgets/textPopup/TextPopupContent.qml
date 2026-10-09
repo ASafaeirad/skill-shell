@@ -15,7 +15,7 @@ M3.DialogCard {
 
     property string title: ""
     property string body: ""
-    property int maxBodyHeight: 500
+    property int maxBodyHeight: Appearance.sizes.textPopupMaxBodyHeight
 
     signal dismissed()
 
@@ -24,7 +24,7 @@ M3.DialogCard {
     }
 
     Component.onCompleted: animateIn()
-    implicitWidth: 600
+    implicitWidth: Appearance.sizes.textPopupWidth
     implicitHeight: 2 * Appearance.sizes.elevationMargin + 2 * padding + contentColumn.implicitHeight
 
     // Show new text from the top.
@@ -47,7 +47,7 @@ M3.DialogCard {
 
         anchors.fill: parent
         anchors.margins: root.padding
-        spacing: 16
+        spacing: Appearance.spacing.lg
 
         M3.DialogTitle {
             Layout.fillWidth: true

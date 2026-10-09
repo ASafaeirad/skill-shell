@@ -19,9 +19,9 @@ M3.DialogCard {
     // typed text, even while an entry is highlighted.
     property bool allowCustom: false
     // Sizing
-    property int itemHeight: 40
-    property int itemSpacing: 2
-    property int maxListHeight: 360
+    property int itemHeight: Appearance.sizes.m3ListItemCompactHeight - 2 * Appearance.sizes.m3DensityStep
+    property int itemSpacing: Appearance.spacing.xxs
+    property int maxListHeight: Appearance.sizes.selectorMaxListHeight
     property real listContentHeight: filtered.length * itemHeight + Math.max(0, filtered.length - 1) * itemSpacing
     property real visibleListHeight: Math.min(listContentHeight, maxListHeight)
     // Free-form affordance shown when nothing matches what's typed.
@@ -89,15 +89,15 @@ M3.DialogCard {
         searchField.forceActiveFocus();
         animateIn();
     }
-    implicitWidth: 500
+    implicitWidth: Appearance.sizes.selectorWidth
     // Grow with the number of results, up to maxListHeight, then scroll.
-    implicitHeight: 2 * Appearance.sizes.elevationMargin + 2 * 12 + searchField.implicitHeight + 8 + visibleListHeight + (showCustomRow ? itemHeight : 0)
+    implicitHeight: 2 * Appearance.sizes.elevationMargin + 2 * Appearance.spacing.m + searchField.implicitHeight + Appearance.spacing.s + visibleListHeight + (showCustomRow ? itemHeight : 0)
     onFilteredChanged: listView.currentIndex = filtered.length > 0 ? 0 : -1
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 12
-        spacing: 8
+        anchors.margins: Appearance.spacing.m
+        spacing: Appearance.spacing.s
 
         M3.TextField {
             id: searchField
@@ -142,7 +142,7 @@ M3.DialogCard {
             model: root.filtered
             currentIndex: 0
 
-            delegate: Rectangle {
+            delegate: M3.ListItem {
                 id: item
 
                 required property var modelData
@@ -150,86 +150,35 @@ M3.DialogCard {
 
                 width: listView.width
                 height: root.itemHeight
-                radius: Appearance.rounding.small
-                color: (index === listView.currentIndex) ? Appearance.colors.colPrimaryContainer : itemMouse.containsMouse ? Appearance.colors.colLayer1Hover : "transparent"
-
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 12
-                    anchors.rightMargin: 12
-                    spacing: 10
-
-                    MaterialSymbol {
-                        visible: text.length > 0
-                        text: root.iconOf(item.modelData.item)
-                        iconSize: Appearance.font.pixelSize.larger
-                        color: (item.index === listView.currentIndex) ? Appearance.colors.colOnPrimaryContainer : Appearance.colors.colOnLayer0
-                    }
-
-                    StyledText {
-                        Layout.fillWidth: true
-                        elide: Text.ElideRight
-                        text: root.displayText(item.modelData.item)
-                        color: (item.index === listView.currentIndex) ? Appearance.colors.colOnPrimaryContainer : Appearance.colors.colOnLayer0
-                    }
-
+                compact: true
+                density: -2
+                text: root.displayText(modelData.item)
+                leadingIcon: root.iconOf(modelData.item)
+                selected: index === listView.currentIndex
+                // Leave keyboard focus in the query field after mouse selection.
+                focusPolicy: Qt.NoFocus
+                onHoveredChanged: {
+                    if (hovered)
+                        listView.currentIndex = index;
                 }
-
-                MouseArea {
-                    id: itemMouse
-
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onEntered: listView.currentIndex = item.index
-                    onClicked: {
-                        listView.currentIndex = item.index;
-                        root.activateCurrent();
-                    }
+                onClicked: {
+                    listView.currentIndex = index;
+                    root.activateCurrent();
                 }
-
             }
-
         }
 
-        Rectangle {
-            id: customRow
-
+        M3.ListItem {
             Layout.fillWidth: true
             Layout.preferredHeight: root.itemHeight
             visible: root.showCustomRow
-            radius: Appearance.rounding.small
-            color: customMouse.containsMouse ? Appearance.colors.colLayer1Hover : Appearance.colors.colPrimaryContainer
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 10
-
-                MaterialSymbol {
-                    text: "keyboard_return"
-                    iconSize: Appearance.font.pixelSize.larger
-                    color: Appearance.colors.colOnPrimaryContainer
-                }
-
-                StyledText {
-                    Layout.fillWidth: true
-                    elide: Text.ElideRight
-                    text: `Use "${root.query.trim()}"`
-                    color: Appearance.colors.colOnPrimaryContainer
-                }
-
-            }
-
-            MouseArea {
-                id: customMouse
-
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: root.submitCustom()
-            }
+            compact: true
+            density: -2
+            selected: true
+            leadingIcon: "keyboard_return"
+            text: `Use "${root.query.trim()}"`
+            focusPolicy: Qt.NoFocus
+            onClicked: root.submitCustom()
 
         }
 

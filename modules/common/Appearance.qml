@@ -432,6 +432,17 @@ Singleton {
         property real mediaGrabberWidth: 640
         property real mediaGrabberThumbnailWidth: 220
         property real notificationPopupWidth: 410
+        property real textPopupWidth: 600
+        property real textPopupMaxBodyHeight: 500
+        property real selectorWidth: 500
+        property real selectorMaxListHeight: 360
+        property real osdVerticalPadding: 9
+        property real osdLeftPadding: 10
+        property real osdRightPadding: 20
+        property real osdIconGap: 10
+        property real osdContentGap: 5
+        property real osdIconSize: 30
+        property real osdIconMinSize: 20
         property real osdWidth: 180
         property real searchWidthCollapsed: 210
         property real searchWidth: 360
