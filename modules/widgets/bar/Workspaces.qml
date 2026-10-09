@@ -3,9 +3,9 @@ import qs.services
 import qs.modules.common
 import qs.modules.common.models
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.modules.common.functions
 import QtQuick
-import QtQuick.Controls
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
@@ -22,13 +22,9 @@ Item {
     readonly property int workspacesShown: 10
     readonly property int workspaceGroup: Math.floor((effectiveActiveWorkspaceId - 1) / root.workspacesShown)
     property list<bool> workspaceOccupied: []
-    property int widgetPadding: 2
-    property int workspaceButtonWidth: 26
-    property real activeWorkspaceMargin: 2
-    property real workspaceIconSize: workspaceButtonWidth * 0.69
-    property real workspaceIconSizeShrinked: workspaceButtonWidth * 0.55
-    property real workspaceIconOpacityShrinked: 1
-    property real workspaceIconMarginShrinked: -4
+    readonly property real widgetPadding: Appearance.sizes.m3WorkspacePadding
+    readonly property real workspaceButtonWidth: Appearance.sizes.m3WorkspaceButtonWidth
+    readonly property real activeWorkspaceMargin: Appearance.sizes.m3WorkspaceIndicatorMargin
     property int workspaceIndexInGroup: (effectiveActiveWorkspaceId - 1) % root.workspacesShown
 
 
@@ -165,52 +161,16 @@ Item {
         Repeater {
             model: root.workspacesShown
 
-            Button {
+            M3.Button {
                 id: button
                 property int workspaceValue: workspaceGroup * root.workspacesShown + index + 1
-                implicitHeight: Appearance.sizes.barHeight
-                implicitWidth: root.workspaceButtonWidth
-                onPressed: Hyprland.dispatch(`hl.dsp.focus({ workspace = ${workspaceValue} })`)
-                width: root.workspaceButtonWidth
-
-                background: Item {
-                    id: workspaceButtonBackground
-                    implicitWidth: workspaceButtonWidth
-                    implicitHeight: workspaceButtonWidth
-                    property var biggestWindow: HyprlandData.biggestWindowForWorkspace(button.workspaceValue)
-                    property var mainAppIconSource: Quickshell.iconPath(AppSearch.guessIcon(biggestWindow?.class), "image-missing")
-
-                    Rectangle { // Dot instead of ws number
-                        id: wsDot
-                        opacity: 1
-                        visible: opacity > 0
-                        anchors.centerIn: parent
-                        width: workspaceButtonWidth * 0.18
-                        height: width
-                        radius: width / 2
-                        color: (root.effectiveActiveWorkspaceId == button.workspaceValue) ?
-                            Appearance.m3colors.m3onPrimary :
-                            (workspaceOccupied[index] ? Appearance.m3colors.m3onSecondaryContainer :
-                                Appearance.colors.colOnLayer1Inactive)
-
-                        Behavior on opacity {
-                            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-                        }
-                    }
-                    Item { // Main app icon
-                        anchors.centerIn: parent
-                        width: workspaceButtonWidth
-                        height: workspaceButtonWidth
-                        opacity: workspaceButtonBackground.biggestWindow ? workspaceIconOpacityShrinked : 0
-                            visible: opacity > 0
-                    }
-                }
-
-
+                variant: "indicator"
+                selected: root.effectiveActiveWorkspaceId === workspaceValue
+                occupied: root.workspaceOccupied[index] ?? false
+                Accessible.name: "Workspace " + workspaceValue
+                // RippleButton invokes downAction on press, preserving immediate switching.
+                downAction: () => Hyprland.dispatch(`hl.dsp.focus({ workspace = ${workspaceValue} })`)
             }
-
         }
-
     }
-
 }

@@ -468,6 +468,10 @@ Singleton {
         property real wallpaperSelectorItemMargins: 8
         property real wallpaperSelectorItemPadding: 6
         // Material 3 component geometry, used by qs.modules.common.m3
+        property real m3WorkspacePadding: 2
+        property real m3WorkspaceButtonWidth: 26
+        property real m3WorkspaceIndicatorMargin: 2
+        property real m3WorkspaceDotSize: 4.68
         property real m3ButtonHeight: 40
         property real m3DialogPreviewHeight: 240
         property real m3DialogOverlayWidth: 350
