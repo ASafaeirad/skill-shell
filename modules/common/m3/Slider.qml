@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.functions
 import QtQuick
 import QtQuick.Controls as QQC
 import QtQuick.Layouts
@@ -12,11 +13,19 @@ import QtQuick.Layouts
  *   M3.Slider { value: Audio.volume; onMoved: Audio.setVolume(value); configuration: M3.Slider.Configuration.M }
  *
  * configuration: the track size, M3.Slider.Configuration.{XS, S (default), M, L, XL, Wavy}.
+ * materialIcon and secondaryMaterialIcon draw trailing icons. secondaryIconPosition
+ * is normalized to the range (default 0.3); dividerValues can mark that position.
+ * Icon presentation is for horizontal, non-mirrored sliders.
  * It doesn't exactly match the spec because the spec sizes are too large on a desktop.
  * Should be at 3/4 scale...
  */
 QQC.Slider {
     id: root
+
+    // Icons follow the handle when the active track reaches their resting position.
+    property string materialIcon: ""
+    property string secondaryMaterialIcon: ""
+    property real secondaryIconPosition: 0.3
 
     property list<real> stopIndicatorValues: [1]
     property list<real> dividerValues: []
@@ -33,11 +42,11 @@ QQC.Slider {
 
     property real handleDefaultWidth: 3
     property real handlePressedWidth: 1.5
-    property color highlightColor: Appearance.colors.colPrimary
-    property color trackColor: Appearance.colors.colSecondaryContainer
-    property color handleColor: Appearance.colors.colPrimary
-    property color dotColor: Appearance.m3colors.m3onSecondaryContainer
-    property color dotColorHighlighted: Appearance.m3colors.m3onPrimary
+    property color highlightColor: enabled ? Appearance.colors.colPrimary : ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, Appearance.stateLayer.disabledContent)
+    property color trackColor: enabled ? Appearance.colors.colSecondaryContainer : ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, Appearance.stateLayer.disabledContainer)
+    property color handleColor: enabled ? Appearance.colors.colPrimary : ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, Appearance.stateLayer.disabledContent)
+    property color dotColor: enabled ? Appearance.m3colors.m3onSecondaryContainer : ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, Appearance.stateLayer.disabledContent)
+    property color dotColorHighlighted: enabled ? Appearance.m3colors.m3onPrimary : ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, Appearance.stateLayer.disabledContent)
     property real unsharpenRadius: Appearance.rounding.unsharpen
     property real trackWidth: configuration
     property real trackRadius: trackWidth >= Slider.Configuration.XL ? 21
@@ -197,6 +206,39 @@ QQC.Slider {
                 anchors.verticalCenter: parent?.verticalCenter
             }
         }
+    }
+
+    MaterialSymbol {
+        visible: root.orientation === Qt.Horizontal && !root.mirrored && root.materialIcon.length > 0
+        property bool nearFull: root.position >= 1 - Appearance.sizes.m3SliderIconThreshold
+        anchors {
+            verticalCenter: root.verticalCenter
+            right: nearFull ? root.handle.right : root.right
+            rightMargin: nearFull ? Appearance.sizes.m3SliderIconHandleMargin : Appearance.sizes.m3SliderIconEdgeMargin
+        }
+        iconSize: Appearance.sizes.m3SliderIconSize
+        color: !root.enabled ? ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, Appearance.stateLayer.disabledContent)
+            : nearFull ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSecondaryContainer
+        text: root.materialIcon
+        Behavior on color { animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this) }
+        Behavior on anchors.rightMargin { animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this) }
+    }
+
+    MaterialSymbol {
+        visible: root.orientation === Qt.Horizontal && !root.mirrored && root.secondaryMaterialIcon.length > 0
+        property bool nearIcon: root.secondaryIconPosition - root.position <= Appearance.sizes.m3SliderIconThreshold
+            && root.secondaryIconPosition - root.position > (root.handleWidth + Appearance.sizes.m3SliderIconEdgeMargin - Appearance.sizes.m3SliderIconHandleMargin) / root.effectiveDraggingWidth
+        anchors {
+            verticalCenter: root.verticalCenter
+            right: nearIcon ? root.handle.right : root.right
+            rightMargin: nearIcon ? Appearance.sizes.m3SliderIconHandleMargin
+                : (1 - root.secondaryIconPosition) * root.effectiveDraggingWidth + root.rightPadding + Appearance.sizes.m3SliderIconEdgeMargin
+        }
+        iconSize: Appearance.sizes.m3SliderIconSize
+        color: !root.enabled ? ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, Appearance.stateLayer.disabledContent)
+            : root.position >= root.secondaryIconPosition - Appearance.sizes.m3SliderIconThreshold ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSecondaryContainer
+        text: root.secondaryMaterialIcon
+        Behavior on color { animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this) }
     }
 
     handle: Rectangle {
