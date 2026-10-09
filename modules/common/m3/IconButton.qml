@@ -10,7 +10,8 @@ import qs.modules.common.widgets
  *   M3.IconButton { materialIcon: "close"; tooltip: "Close"; onClicked: ... }
  *
  * variant: "standard" (default) | "filled" | "tonal" | "outlined"
- * size: "small" (default, 40) | "xsmall" (32), for dense rows
+ * size: "small" (default, 40) | "xsmall" (32) | "xlarge" (120)
+ * shape: "round" (default) | "square", with rounded corners
  * toggleable: acts as a toggle; `selected` then picks the selected colours
  *   and fills the icon. Leave it off for plain actions. `selected` is
  *   controlled: bind it to your state and flip that state in onClicked.
@@ -32,6 +33,7 @@ RippleButton {
     property string variant: "standard"
     property string selectedVariant: ""
     property string size: "small"
+    property string shape: "round"
     property string materialIcon: ""
     property string iconSource: ""
     property string tooltip: ""
@@ -67,12 +69,13 @@ RippleButton {
         : colorVariant === "standard" && toggleable && selected ? accentColor
         : neutralContentColor
 
-    readonly property real buttonSize: size === "xsmall" ? Appearance.sizes.m3IconButtonSizeXSmall : Appearance.sizes.m3IconButtonSize
+    readonly property real buttonSize: size === "xlarge" ? Appearance.sizes.m3IconButtonSizeXLarge
+        : size === "xsmall" ? Appearance.sizes.m3IconButtonSizeXSmall : Appearance.sizes.m3IconButtonSize
 
     implicitWidth: buttonSize
     implicitHeight: buttonSize
     padding: 0
-    buttonRadius: Appearance.rounding.full
+    buttonRadius: shape === "square" ? Appearance.rounding.verylarge : Appearance.rounding.full
     buttonRadiusPressed: Appearance.rounding.small
     opacity: 1
 
@@ -84,6 +87,7 @@ RippleButton {
     colRipple: ColorUtils.applyAlpha(contentColor, Appearance.stateLayer.pressed * 2)
     colRippleToggled: colRipple
     buttonColor: !enabled ? (hasContainer ? ColorUtils.applyAlpha(Appearance.colors.colOnSurface, Appearance.stateLayer.disabledContainer) : "transparent")
+        : activeFocus ? ColorUtils.stateLayer(containerColor, contentColor, Appearance.stateLayer.focus)
         : hovered ? colBackgroundHover : colBackground
     colBorder: Appearance.colors.colOutlineVariant
     borderWidth: variant === "outlined" && !showSelected ? Appearance.sizes.m3OutlineWidth : 0
@@ -102,7 +106,8 @@ RippleButton {
             visible: root.iconSource.length === 0 && !root.hasDot
             text: root.materialIcon
             fill: root.toggleable && root.selected ? 1 : 0
-            iconSize: root.size === "xsmall" ? Appearance.font.pixelSize.normal : Appearance.font.pixelSize.larger
+            iconSize: root.size === "xlarge" ? Appearance.sizes.m3IconButtonIconSizeXLarge
+                : root.size === "xsmall" ? Appearance.font.pixelSize.normal : Appearance.font.pixelSize.larger
             color: root.contentColor
             rotation: root.iconRotation
 

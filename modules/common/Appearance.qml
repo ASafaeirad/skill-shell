@@ -451,6 +451,8 @@ Singleton {
         property real m3QuickTileIconGap: 4
         property real m3IconButtonSize: 40
         property real m3IconButtonSizeXSmall: 32
+        property real m3IconButtonSizeXLarge: 120
+        property real m3IconButtonIconSizeXLarge: 45
         property real m3ChipHeight: 32
         property real m3ChipHeightCompact: 28
         property real m3SelectionControlSize: 18 // checkbox box
