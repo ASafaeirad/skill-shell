@@ -10,7 +10,7 @@ import qs.modules.common.widgets
  *   M3.IconButton { materialIcon: "close"; tooltip: "Close"; onClicked: ... }
  *
  * variant: "standard" (default) | "filled" | "tonal" | "outlined"
- * size: "small" (default, 40) | "xsmall" (32) | "compact" (20, inline actions) | "xlarge" (120)
+ * size: "small" (default, 40) | "medium" (44) | "xsmall" (32) | "compact" (20, inline actions) | "xlarge" (120)
  * shape: "round" (default) | "square", with rounded corners
  * toggleable: acts as a toggle; `selected` then picks the selected colours
  *   and fills the icon. Leave it off for plain actions. `selected` is
@@ -18,6 +18,7 @@ import qs.modules.common.widgets
  * selectedVariant: "" (default, the variant's own selected colours) | "tonal";
  *   a toggle that wears the tonal selected container when selected, as the
  *   standard icon buttons in a toolbar do.
+ * iconFilled: fills an action glyph independently of toggle selection.
  * iconRotation: turns the icon, animated — for a chevron that flips when the
  *   thing it opens is open.
  * error: a destructive action (delete, move to trash). M3's error roles stand in
@@ -35,6 +36,7 @@ RippleButton {
     property string size: "small"
     property string shape: "round"
     property string materialIcon: ""
+    property bool iconFilled: false
     property string iconSource: ""
     property string tooltip: ""
     property bool toggleable: false
@@ -70,13 +72,14 @@ RippleButton {
         : neutralContentColor
 
     readonly property real buttonSize: size === "xlarge" ? Appearance.sizes.m3IconButtonSizeXLarge
+        : size === "medium" ? Appearance.sizes.m3IconButtonSizeMedium
         : size === "compact" ? Appearance.sizes.m3IconButtonSizeCompact
         : size === "xsmall" ? Appearance.sizes.m3IconButtonSizeXSmall : Appearance.sizes.m3IconButtonSize
 
     implicitWidth: buttonSize
     implicitHeight: buttonSize
     padding: 0
-    buttonRadius: shape === "square" ? Appearance.rounding.verylarge : Appearance.rounding.full
+    buttonRadius: shape === "square" ? (size === "medium" ? Appearance.rounding.normal : Appearance.rounding.verylarge) : Appearance.rounding.full
     buttonRadiusPressed: Appearance.rounding.small
     opacity: 1
 
@@ -106,8 +109,9 @@ RippleButton {
             anchors.centerIn: parent
             visible: root.iconSource.length === 0 && !root.hasDot
             text: root.materialIcon
-            fill: root.toggleable && root.selected ? 1 : 0
+            fill: root.iconFilled || (root.toggleable && root.selected) ? 1 : 0
             iconSize: root.size === "xlarge" ? Appearance.sizes.m3IconButtonIconSizeXLarge
+                : root.size === "medium" ? Appearance.sizes.m3IconButtonIconSizeMedium
                 : root.size === "xsmall" || root.size === "compact" ? Appearance.font.pixelSize.normal : Appearance.font.pixelSize.larger
             color: root.contentColor
             rotation: root.iconRotation

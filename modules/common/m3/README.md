@@ -63,7 +63,7 @@ around the M3 file, kept until their callers are migrated.
 | --- | --- | --- | --- |
 | [Buttons](https://m3.material.io/components/buttons) | `M3.Button` | native | `variant`: filled · tonal · outlined · text · elevated; `shape`: round · square; `text`, `materialIcon`, `trailingText`, `toggleable`, `selected`, `selectedVariant`: filled · tonal, `content` (slot), `externalHover`, `error`; quick setting tile: `tileLayout`, `supportingText`, `leadingAction`, `leadingSelected` |
 | [Button groups](https://m3.material.io/components/button-groups) | `M3.ButtonGroup` | native | `variant`: connected · segmented; connected children use `M3.Button` or `M3.IconButton`; segmented `options`, `currentValue`, `selected(value)`, optional `configKey`, `readOnly`, `equalWidth`, `surface`, `compact` |
-| [Icon buttons](https://m3.material.io/components/icon-buttons) | `M3.IconButton` | native | `variant`: standard · filled · tonal · outlined; `size`: small · xsmall · compact · xlarge; `shape`: round · square; `materialIcon`, `iconSource`, `tooltip`, `toggleable`, `selected`, `selectedVariant`: tonal, `iconRotation`, `error`, `dotColor` for a colour swatch |
+| [Icon buttons](https://m3.material.io/components/icon-buttons) | `M3.IconButton` | native | `variant`: standard · filled · tonal · outlined; `size`: small · medium · xsmall · compact · xlarge; `shape`: round · square; `materialIcon`, `iconSource`, `iconFilled` for filled action glyphs, `tooltip`, `toggleable`, `selected`, `selectedVariant`: tonal, `iconRotation`, `error`, `dotColor` for a colour swatch |
 | [FAB](https://m3.material.io/components/floating-action-button) | `M3.Fab` | native | `variant`: primary · secondary · tertiary; `size`: regular · toolbar; `iconText`, `buttonText`, `expanded` (extended FAB), `elevated`, `tooltip`, `baseSize` |
 | [Chips](https://m3.material.io/components/chips) | `M3.Chip` | native | `variant`: assist · filter · input · suggestion; `text`, `materialIcon`, `selected`, `readOnly` for a locked but legible choice, `compact` (28px), `removable`, `removeClicked()` |
 | [Cards](https://m3.material.io/components/cards) | `M3.Card` | native | `variant`: filled · elevated · outlined; children stack in a column; `shape`: square · round; `padding`, `spacing`, `interactive`, `clicked()`, controlled `selected`, `selectedVariant`: tonal · filled, `error` for warning content |
@@ -149,3 +149,8 @@ across the repository.
 The tooltip sweep is complete. Panels, settings and shared shell widgets use
 `M3.Tooltip` or a component's `tooltip` property. `StyledToolTip` remains only
 as the implementation used inside the M3 component library.
+
+The media player uses the wallpaper palette for its controls, text, visualizer and
+background. Album art remains an image, but does not generate a separate control
+palette. Its play/pause action uses the medium IconButton size and iconFilled,
+with the existing filled/tonal and square/round presentation properties.

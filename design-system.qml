@@ -740,11 +740,17 @@ ApplicationWindow {
             }
             PreviewCard {
                 title: "Sizes"
-                description: "small (40) · xsmall (32) · compact (20), for inline actions · xlarge (120), for large action grids"
+                description: "small (40) · medium (44) · xsmall (32) · compact (20), for inline actions · xlarge (120), for large action grids"
                 Repeater {
-                    model: ["small", "xsmall", "compact", "xlarge"]
+                    model: ["small", "medium", "xsmall", "compact", "xlarge"]
                     M3.IconButton { required property string modelData; size: modelData; variant: "tonal"; materialIcon: "close"; tooltip: modelData }
                 }
+            }
+            PreviewCard {
+                title: "Playback actions"
+                description: "Medium actions keep their filled glyph in both playback states. The playing action uses a filled square; the paused action uses a tonal circle."
+                M3.IconButton { size: "medium"; variant: "filled"; shape: "square"; materialIcon: "pause"; iconFilled: true; tooltip: "Pause" }
+                M3.IconButton { size: "medium"; variant: "tonal"; materialIcon: "play_arrow"; iconFilled: true; tooltip: "Play" }
             }
             PreviewCard {
                 title: "Large square actions"
