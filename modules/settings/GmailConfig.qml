@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 
 ContentPage {
@@ -52,14 +53,14 @@ ContentPage {
             wrapMode: Text.Wrap
         }
 
-        MaterialTextField {
+        M3.TextField {
             id: clientIdField
             Layout.fillWidth: true
             placeholderText: "OAuth client ID"
             text: Gmail.savedClientId
         }
 
-        MaterialTextField {
+        M3.TextField {
             id: clientSecretField
             Layout.fillWidth: true
             placeholderText: Gmail.hasSavedClientSecret ? "Client secret stored in keyring" : "OAuth client secret"
@@ -67,16 +68,17 @@ ContentPage {
         }
 
         ConfigRow {
-            RippleButtonWithIcon {
+            M3.Button {
+                variant: "tonal"
                 materialIcon: "save"
-                mainText: "Save credentials"
+                text: "Save credentials"
                 onClicked: Gmail.saveCredentials(clientIdField.text, clientSecretField.text)
             }
 
-            RippleButtonWithIcon {
-                primary: true
+            M3.Button {
+                variant: "filled"
                 materialIcon: "login"
-                mainText: Gmail.signingIn ? "Waiting for Google" : "Sign in with Google"
+                text: Gmail.signingIn ? "Waiting for Google" : "Sign in with Google"
                 enabled: !Gmail.signingIn
                 onClicked: Gmail.signIn(clientIdField.text, clientSecretField.text)
             }
@@ -108,24 +110,15 @@ ContentPage {
         Repeater {
             model: Gmail.configuredAccounts
 
-            delegate: Rectangle {
+            delegate: M3.Card {
                 id: accountRow
 
                 required property var modelData
                 Layout.fillWidth: true
-                implicitHeight: accountLayout.implicitHeight + Appearance.spacing.s * 2
-                radius: Appearance.rounding.small
-                color: Appearance.colors.colLayer1
+                padding: Appearance.spacing.s
 
                 RowLayout {
-                    id: accountLayout
-                    anchors {
-                        fill: parent
-                        leftMargin: Appearance.spacing.s
-                        rightMargin: Appearance.spacing.s
-                        topMargin: Appearance.spacing.s
-                        bottomMargin: Appearance.spacing.s
-                    }
+                    Layout.fillWidth: true
                     spacing: Appearance.spacing.s
 
                     Rectangle {
@@ -142,43 +135,42 @@ ContentPage {
                         spacing: Appearance.spacing.xxs
 
                         StyledText {
+                            Layout.fillWidth: true
                             text: accountRow.modelData.label || accountRow.modelData.email
-                            color: Appearance.colors.colOnLayer1
+                            color: Appearance.colors.colOnSurface
                             font.pixelSize: Appearance.font.pixelSize.normal
+                            elide: Text.ElideRight
                         }
 
                         StyledText {
+                            Layout.fillWidth: true
                             visible: accountRow.modelData.label !== accountRow.modelData.email
                             text: accountRow.modelData.email
                             color: Appearance.colors.colSubtext
                             font.pixelSize: Appearance.font.pixelSize.small
+                            elide: Text.ElideRight
                         }
                     }
 
-                    MaterialSymbol {
+                    M3.IconButton {
                         Layout.alignment: Qt.AlignVCenter
                         visible: Gmail.notifyOnNewMail
-                        text: accountRow.modelData.notify === false ? "notifications_off" : "notifications_active"
-                        iconSize: Appearance.font.pixelSize.larger
-                        color: accountRow.modelData.notify === false ? Appearance.colors.colSubtext
-                                                                     : Appearance.colors.colOnLayer1
-
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Gmail.setAccountNotify(accountRow.modelData.id,
-                                                              accountRow.modelData.notify === false)
-                        }
+                        materialIcon: accountRow.modelData.notify === false ? "notifications_off" : "notifications_active"
+                        tooltip: accountRow.modelData.notify === false ? "Notify for this inbox" : "Silence this inbox"
+                        onClicked: Gmail.setAccountNotify(accountRow.modelData.id,
+                                                          accountRow.modelData.notify === false)
                     }
 
-                    StyledSwitch {
+                    M3.Switch {
                         checked: accountRow.modelData.enabled !== false
                         onClicked: Gmail.setAccountEnabled(accountRow.modelData.id, checked)
                     }
 
-                    RippleButtonWithIcon {
+                    M3.Button {
+                        variant: "text"
+                        error: true
                         materialIcon: "delete"
-                        mainText: "Remove"
+                        text: "Remove"
                         onClicked: Gmail.removeAccount(accountRow.modelData.id)
                     }
                 }
