@@ -335,7 +335,7 @@ ApplicationWindow {
                             visible: root.currentVariants.length > 0
                             text: root.currentComponent === "StatusBadge" ? "Tone" : "Variant"
                         }
-                        StyledComboBox {
+                        M3.ExposedDropdownMenu {
                             visible: root.currentVariants.length > 0
                             Layout.fillWidth: true
                             model: root.currentVariants
@@ -1860,7 +1860,7 @@ ApplicationWindow {
             }
             PreviewCard {
                 title: "Live selection"
-                StyledComboBox {
+                M3.ExposedDropdownMenu {
                     width: Appearance.spacing.xxl * 7
                     model: [root.sampleText, "Second option", "Third option"]
                     currentIndex: root.sampleOption
@@ -1870,12 +1870,12 @@ ApplicationWindow {
             }
             PreviewCard {
                 title: "Icon and disabled"
-                StyledComboBox {
+                M3.ExposedDropdownMenu {
                     width: Appearance.spacing.xxl * 7
                     model: ["First", "Second"]
                     buttonIcon: "tune"
                 }
-                StyledComboBox {
+                M3.ExposedDropdownMenu {
                     width: Appearance.spacing.xxl * 7
                     model: ["Unavailable"]
                     enabled: false

@@ -5,7 +5,8 @@ Checks all tracked and untracked, non-ignored QML by default and reports:
 
   error    a hex colour literal (theme colours come from Appearance)
   error    qs.modules.common.m3 imported without `as M3`
-  error    a legacy widget that has an M3 replacement outside the library
+  error    a legacy type construction, inline base or enum outside the library
+  warning  a directly restyled panel RippleButton, Button or M3 component
   warning  an inline `component X: Rectangle/RippleButton/...` in a panel,
            which is usually an M3 component being reinvented
   warning  a 1px Rectangle, which is usually a Divider
@@ -18,6 +19,7 @@ Exit status is 1 when there are errors, so it can gate a commit.
 """
 
 import argparse
+import bisect
 import re
 import subprocess
 import sys
@@ -35,15 +37,85 @@ LEGACY = {
     "FloatingActionButton": "M3.Fab",
     "StyledToolTip": "M3.Tooltip (or IconButton's tooltip property)",
     "NavigationRailTabs": "M3.NavigationRail",
+    "ButtonGroup": "M3.ButtonGroup",
+    "GroupButton": "M3.Button in M3.ButtonGroup",
+    "SelectionGroupButton": "M3.ButtonGroup with segmented options",
+    "ConfigSelectionArray": "M3.ButtonGroup with configKey",
+    "Toolbar": "M3.Toolbar",
+    "ToolbarButton": "M3.Button or M3.IconButton in M3.Toolbar",
+    "IconToolbarButton": "M3.IconButton in M3.Toolbar",
+    "ToolbarTextField": "M3.ToolbarTextField",
+    "DialogButton": 'M3.Button { variant: "text" }',
+    "RippleButtonWithIcon": "M3.Button or M3.IconButton",
+    "WindowDialogSeparator": "M3.Divider",
+    "DialogListItem": "M3.ListItem",
+    "MaterialTextArea": "M3.TextArea",
+    "StyledTextArea": "M3.TextArea",
+    "WindowDialog": "M3.Dialog",
+    "OverlayDialog": "M3.DialogOverlay",
+    "OverlayDialogCard": "M3.DialogCard",
+    "WindowDialogTitle": "M3.DialogTitle",
+    "WindowDialogParagraph": "M3.DialogParagraph",
+    "WindowDialogSectionHeader": "M3.DialogSectionHeader",
+    "WindowDialogButtonRow": "M3.DialogButtonRow",
+    "WindowDialogSlider": "M3.Slider with M3.DialogSectionHeader",
+    "MenuButton": "M3.MenuItem",
+    "StyledComboBox": "M3.ExposedDropdownMenu",
+    "FilterableComboBox": "M3.FilterableExposedDropdownMenu",
+    "SecondaryTabBar": "M3.Tabs",
+    "SecondaryTabButton": "M3.Tab",
+    "ToolbarTabBar": 'M3.Tabs { variant: "compact" }',
+    "ToolbarTabButton": 'M3.Tab { variant: "compact" }',
+
 }
 # Files that implement the design system itself may use the legacy names.
 EXEMPT_LEGACY = ("modules/common/widgets/", "modules/common/m3/")
+# These retired unqualified names also name supported M3 components. Do not
+# exempt misspellings like M3.StyledSlider, which are still legacy names.
+SHARED_M3_NAMES = {"ButtonGroup", "Toolbar", "ToolbarTextField"}
 
 HEX = re.compile(r"[\"']#[0-9a-fA-F]{3,8}[\"']")
 M3_IMPORT = re.compile(r"^\s*import\s+qs\.modules\.common\.m3\b(?!\s+as\s+M3\b)")
 INLINE = re.compile(r"^\s*component\s+(\w+)\s*:\s*(Rectangle|RippleButton|MouseArea|Button)\b")
 THIN = re.compile(r"^\s*(implicitHeight|height|implicitWidth|width)\s*:\s*1\s*$")
-LEGACY_USE = re.compile(r"^\s*(" + "|".join(LEGACY) + r")\s*\{")
+LEGACY_USE = re.compile(r"\b(" + "|".join(LEGACY) + r")\b\s*(?:\{|(?=\.\s*[A-Z]))")
+# Keep offsets/newlines intact so multiline QML reports the original source line.
+LEXICAL = re.compile(r"//[^\n]*|/\*[\s\S]*?\*/|\"(?:\\[\s\S]|[^\"\\])*\"|'(?:\\[\s\S]|[^'\\])*'|`(?:\\[\s\S]|[^`\\])*`")
+CONTROL = re.compile(r"(?<![\w.])(M3\.\w+|(?:[A-Z]\w*\.)?(?:RippleButton|Button))\s*\{")
+RESTYLE = re.compile(r"\b(background|contentItem|colBackground\w*|colRipple\w*|buttonRadius\w*)\s*:")
+
+
+def masked_source(source, strings=True):
+    """Mask comments, and optionally string literals, without changing positions."""
+    def mask(match):
+        value = match.group()
+        if not strings and not value.startswith(("//", "/*")):
+            return value
+        return re.sub(r"[^\n]", " ", value)
+    return LEXICAL.sub(mask, source)
+
+
+def restyled_controls(code):
+    """Find direct styling properties in panel controls, ignoring nested drawings."""
+    for match in CONTROL.finditer(code):
+        start = match.end()
+        depth = 1
+        cursor = start
+        direct = []
+        for brace in re.finditer(r"[{}]", code[start:]):
+            position = start + brace.start()
+            if depth == 1:
+                direct.extend(cursor + style.start() for style in RESTYLE.finditer(code[cursor:position]))
+            if brace.group() == "{":
+                depth += 1
+            else:
+                depth -= 1
+            cursor = position + 1
+            if depth == 0:
+                break
+        if direct:
+            yield match, direct
+
 
 
 def git(*args):
@@ -78,23 +150,46 @@ def added_lines(base, files):
 
 def lint(path, only):
     findings = []
-    text = Path(path).read_text().splitlines()
-    for number, line in enumerate(text, 1):
-        if only is not None and number not in only:
-            continue
-        if HEX.search(line) and path != "modules/common/Appearance.qml":
-            findings.append(("error", number, "hex colour literal; use an Appearance.colors/m3colors token"))
+    source = Path(path).read_text()
+    code = masked_source(source)
+    comment_free = masked_source(source, strings=False)
+    lines = code.splitlines()
+    offsets = [match.start() for match in re.finditer("\n", source)]
+
+    def report(level, offset, message):
+        number = bisect.bisect_left(offsets, offset) + 1
+        if only is None or number in only:
+            findings.append((level, number, message))
+
+    if path != "modules/common/Appearance.qml":
+        for match in HEX.finditer(comment_free):
+            report("error", match.start(), "hex colour literal; use an Appearance.colors/m3colors token")
+    if not path.startswith(EXEMPT_LEGACY):
+        for match in LEGACY_USE.finditer(code):
+            name = match.group(1)
+            if name in SHARED_M3_NAMES and re.search(r"\bM3\s*\.\s*$", code[:match.start()]):
+                continue
+            report("error", match.start(), f"{name} is legacy; use {LEGACY[name]}")
+    if path.startswith(("modules/widgets/", "modules/settings/")):
+        for match, properties in restyled_controls(code):
+            # In changed mode, locate an added styling property even when the
+            # enclosing control's declaration is unchanged.
+            eligible = [offset for offset in properties
+                        if only is None or bisect.bisect_left(offsets, offset) + 1 in only]
+            if eligible:
+                report("warning", eligible[0], f"restyled {match.group(1)}; review for an M3.Button/IconButton variant or content API")
+
+    offset = 0
+    for number, line in enumerate(lines, 1):
         if M3_IMPORT.search(line):
-            findings.append(("error", number, "import the design system as `import qs.modules.common.m3 as M3`"))
-        m = INLINE.search(line)
-        if m and path.startswith(("modules/widgets/", "modules/settings/")):
-            findings.append(("warning", number, f"inline component {m.group(1)}: {m.group(2)} — check modules/common/m3/README.md for an M3 component first"))
-        m = LEGACY_USE.search(line)
-        if m and not path.startswith(EXEMPT_LEGACY):
-            findings.append(("error", number, f"{m.group(1)} is legacy; use {LEGACY[m.group(1)]}"))
-        if THIN.search(line) and any("Rectangle" in l for l in text[max(0, number - 6):number]):
-            findings.append(("warning", number, "1px Rectangle; use M3.Divider"))
-    return findings
+            report("error", offset, "import the design system as `import qs.modules.common.m3 as M3`")
+        match = INLINE.search(line)
+        if match and path.startswith(("modules/widgets/", "modules/settings/")):
+            report("warning", offset, f"inline component {match.group(1)}: {match.group(2)} — check modules/common/m3/README.md for an M3 component first")
+        if THIN.search(line) and any("Rectangle" in nearby for nearby in lines[max(0, number - 6):number]):
+            report("warning", offset, "1px Rectangle; use M3.Divider")
+        offset += len(line) + 1
+    return sorted(findings, key=lambda finding: finding[1])
 
 
 def main():
