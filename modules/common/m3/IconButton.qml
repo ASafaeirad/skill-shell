@@ -10,7 +10,7 @@ import qs.modules.common.widgets
  *   M3.IconButton { materialIcon: "close"; tooltip: "Close"; onClicked: ... }
  *
  * variant: "standard" (default) | "filled" | "tonal" | "outlined"
- * size: "small" (default, 40) | "xsmall" (32) | "xlarge" (120)
+ * size: "small" (default, 40) | "xsmall" (32) | "compact" (20, inline actions) | "xlarge" (120)
  * shape: "round" (default) | "square", with rounded corners
  * toggleable: acts as a toggle; `selected` then picks the selected colours
  *   and fills the icon. Leave it off for plain actions. `selected` is
@@ -70,6 +70,7 @@ RippleButton {
         : neutralContentColor
 
     readonly property real buttonSize: size === "xlarge" ? Appearance.sizes.m3IconButtonSizeXLarge
+        : size === "compact" ? Appearance.sizes.m3IconButtonSizeCompact
         : size === "xsmall" ? Appearance.sizes.m3IconButtonSizeXSmall : Appearance.sizes.m3IconButtonSize
 
     implicitWidth: buttonSize
@@ -107,7 +108,7 @@ RippleButton {
             text: root.materialIcon
             fill: root.toggleable && root.selected ? 1 : 0
             iconSize: root.size === "xlarge" ? Appearance.sizes.m3IconButtonIconSizeXLarge
-                : root.size === "xsmall" ? Appearance.font.pixelSize.normal : Appearance.font.pixelSize.larger
+                : root.size === "xsmall" || root.size === "compact" ? Appearance.font.pixelSize.normal : Appearance.font.pixelSize.larger
             color: root.contentColor
             rotation: root.iconRotation
 

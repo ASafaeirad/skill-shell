@@ -26,7 +26,7 @@ ApplicationWindow {
     ]
     readonly property var shellTabs: [
         "StatusBadge", "NoticeBox", "StyledText", "MaterialSymbol",
-        "StyledSpinBox", "StyledComboBox", "StyledTextArea"
+        "StyledSpinBox", "StyledComboBox"
     ]
     readonly property var tabs: m3Tabs.concat(shellTabs)
     readonly property var tabIcons: ({
@@ -62,8 +62,7 @@ ApplicationWindow {
         "StyledText": "title",
         "MaterialSymbol": "interests",
         "StyledSpinBox": "pin",
-        "StyledComboBox": "arrow_drop_down_circle",
-        "StyledTextArea": "notes"
+        "StyledComboBox": "arrow_drop_down_circle"
     })
     readonly property var variantOptions: ({
         "Button": ["filled", "tonal", "outlined", "text", "elevated"],
@@ -74,6 +73,7 @@ ApplicationWindow {
         "Card": ["filled", "elevated", "outlined"],
         "Tabs": ["secondary", "compact"],
         "Toolbar": ["floating", "docked"],
+        "TextArea": ["filled", "outlined"],
         "Snackbar": ["single-line", "two-line"],
         "StatusBadge": ["neutral", "primary", "success", "error"]
     })
@@ -148,7 +148,6 @@ ApplicationWindow {
         case "MaterialSymbol": return symbolPage;
         case "StyledSpinBox": return spinPage;
         case "StyledComboBox": return comboPage;
-        case "StyledTextArea": return textAreaPage;
         }
         return buttonPage;
     }
@@ -423,7 +422,7 @@ ApplicationWindow {
                         }
 
                         RowLayout {
-                            visible: root.shows(["TextField", "TextArea", "StyledTextArea"])
+                            visible: root.shows(["TextField", "TextArea"])
                             Layout.fillWidth: true
                             StyledText { text: "Read only"; Layout.fillWidth: true }
                             M3.Switch {
@@ -741,9 +740,9 @@ ApplicationWindow {
             }
             PreviewCard {
                 title: "Sizes"
-                description: "small (40) · xsmall (32) · xlarge (120), for large action grids"
+                description: "small (40) · xsmall (32) · compact (20), for inline actions · xlarge (120), for large action grids"
                 Repeater {
-                    model: ["small", "xsmall", "xlarge"]
+                    model: ["small", "xsmall", "compact", "xlarge"]
                     M3.IconButton { required property string modelData; size: modelData; variant: "tonal"; materialIcon: "close"; tooltip: modelData }
                 }
             }
@@ -1429,7 +1428,7 @@ ApplicationWindow {
             PageHeading {
                 heading: "TextField"
                 guideline: "text-fields"
-                detail: "Single-line text entry. For multi-line text use StyledTextArea."
+                detail: "Single-line text entry. For multi-line text use M3.TextArea."
             }
             PreviewCard {
                 title: "Empty and filled"
@@ -1461,17 +1460,24 @@ ApplicationWindow {
             PageHeading {
                 heading: "TextArea"
                 guideline: "text-fields"
-                detail: "Filled multiline text entry."
+                detail: "Filled and outlined multiline text fields. Set surface to false when embedding an editor in an existing surface."
             }
             PreviewCard {
                 title: "Empty and filled"
-                M3.TextArea { width: Appearance.spacing.xxl * 7; placeholderText: root.sampleText; enabled: root.sampleEnabled; readOnly: root.sampleReadOnly }
-                M3.TextArea { width: Appearance.spacing.xxl * 7; text: root.sampleText; enabled: root.sampleEnabled; readOnly: root.sampleReadOnly }
+                M3.TextArea { variant: root.sampleVariant || "filled"; width: Appearance.spacing.xxl * 7; placeholderText: root.sampleText; enabled: root.sampleEnabled; readOnly: root.sampleReadOnly }
+                M3.TextArea { variant: root.sampleVariant || "filled"; width: Appearance.spacing.xxl * 7; text: root.sampleText + "\nSecond line"; enabled: root.sampleEnabled; readOnly: root.sampleReadOnly }
             }
             PreviewCard {
                 title: "Read only and disabled"
                 M3.TextArea { width: Appearance.spacing.xxl * 7; text: root.sampleText; readOnly: true }
                 M3.TextArea { width: Appearance.spacing.xxl * 7; text: root.sampleText; enabled: false }
+            }
+            PreviewCard {
+                title: "Variants and embedded editor"
+                M3.TextArea { width: Appearance.spacing.xxl * 7; variant: "filled"; text: "Filled\nSecond line" }
+                M3.TextArea { width: Appearance.spacing.xxl * 7; variant: "outlined"; text: "Outlined\nSecond line" }
+                M3.TextArea { width: Appearance.spacing.xxl * 7; variant: "outlined"; text: "Invalid entry"; error: true }
+                M3.TextArea { width: Appearance.spacing.xxl * 7; surface: false; placeholderText: "Embedded notes editor" }
             }
         }
     }
@@ -1846,35 +1852,5 @@ ApplicationWindow {
         }
     }
 
-    Component {
-        id: textAreaPage
-        ColumnLayout {
-            spacing: Appearance.spacing.lg
-            PageHeading {
-                heading: "StyledTextArea"
-                detail: "A multi-line editor with the shell's selection and placeholder colors."
-            }
-            PreviewCard {
-                title: "Live editor"
-                Rectangle {
-                    width: Appearance.spacing.xxl * 10
-                    height: Appearance.spacing.xxl * 4
-                    radius: Appearance.rounding.small
-                    color: Appearance.m3colors.m3surfaceContainerHigh
-                    StyledTextArea {
-                        anchors.fill: parent
-                        anchors.margins: Appearance.spacing.m
-                        placeholderText: root.sampleText
-                        enabled: root.sampleEnabled
-                        readOnly: root.sampleReadOnly
-                    }
-                }
-            }
-            PreviewCard {
-                title: "Read only and disabled"
-                StyledTextArea { text: root.sampleText; readOnly: true }
-                StyledTextArea { text: root.sampleText; enabled: false }
-            }
-        }
-    }
+
 }

@@ -462,6 +462,7 @@ Singleton {
         property real m3QuickTileIconGap: 4
         property real m3IconButtonSize: 40
         property real m3IconButtonSizeXSmall: 32
+        property real m3IconButtonSizeCompact: 20
         property real m3IconButtonSizeXLarge: 120
         property real m3IconButtonIconSizeXLarge: 45
         property real m3ChipHeight: 32
@@ -473,6 +474,10 @@ Singleton {
         property real m3ListItemTwoLineHeight: 72
         property real m3ListItemLeadingImageSize: 40 // avatar / app icon
         property real m3MenuItemHeight: 48
+        property real m3TextAreaMinHeight: 56
+        property real m3TextAreaRadius: 4
+        property real m3TextAreaFocusIndicatorWidth: 2
+        property real m3TextAreaEditorPadding: 24
         property real m3SearchBarHeight: 56
         property real m3SearchBarHeightCompact: 40
         property real m3TabsHeight: 48
