@@ -189,6 +189,10 @@ Singleton {
         property color colTooltip: m3colors.m3inverseSurface
         property color colOnTooltip: m3colors.m3inverseOnSurface
         property color colScrim: ColorUtils.transparentize(m3colors.m3scrim, 0.5)
+        // A scrim dark enough to read text on, for full-screen overlays over arbitrary content
+        property color colScrimStrong: ColorUtils.transparentize(m3colors.m3scrim, 0.27)
+        // Text and icons on a scrim: the palette's light neutral in either mode
+        property color colOnScrim: m3colors.darkmode ? m3colors.m3onSurface : m3colors.m3inverseOnSurface
         property color colShadow: ColorUtils.transparentize(m3colors.m3shadow, 0.7)
         property color colOutline: m3colors.m3outline
         property color colOutlineVariant: m3colors.m3outlineVariant
