@@ -11,6 +11,7 @@ import qs.modules.common.functions
 import qs.modules.common.models.gCloud
 import qs.modules.common.utils
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.services
 
 Item {
@@ -19,8 +20,8 @@ Item {
     signal dismiss()
 
     property double scaleFactor: 1
-    property color overlayColor: "#BB000000"
-    property color textColor: "white"
+    property color overlayColor: Appearance.colors.colScrimStrong
+    property color textColor: Appearance.colors.colOnScrim
     required property string screenshotPath
 
     readonly property string wikiLink: "https://ii.clsty.link/en/ii-qs/02usage/#setting-it-up" // TODO: write a page for this
@@ -75,7 +76,7 @@ Item {
             visible: !root.error
             anchors.centerIn: parent
             spacing: 10 * root.scaleFactor
-            MaterialLoadingIndicator {
+            M3.LoadingIndicator {
                 anchors.horizontalCenter: parent.horizontalCenter
                 implicitSize: 100 * root.scaleFactor
                 scale: 1 + ((1 - loadingOverlay.opacity) * 0.5) * root.scaleFactor

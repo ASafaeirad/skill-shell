@@ -132,10 +132,9 @@ Migrate one panel at a time and leave its behaviour alone.
 | Inline `component X: Rectangle/RippleButton` | 8 | `Separator` → `M3.Divider`; `TitlebarButton`, `WidgetButton` → `M3.IconButton`; `BigRecorderButton` → `M3.Button` |
 | `MaterialTextField` | 6 | `M3.TextField` |
 | `DialogButton` | 2 | `M3.Button { variant: "text" }` |
-| Hex colour literals | 4 | `regionSelector`, `screenTranslator` overlays: an `Appearance` token (`colScrim`, …) |
 | 1 px `Rectangle` dividers | 4 | `M3.Divider` |
 | `StyledProgressBar` | 3 | `M3.LinearProgressIndicator` |
-| Other wrapped widgets (`StyledSwitch`, `MaterialLoadingIndicator`) | 3 | the `M3.*` name for each |
+| Other wrapped widgets (`StyledSwitch`, `MaterialLoadingIndicator`) | 2 | the `M3.*` name for each |
 
 `bar` and `sidebarRight` are done. The largest area left is `settings` (39 findings),
 then `overlay` and `gmailInbox` (10 each).

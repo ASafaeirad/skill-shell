@@ -19,8 +19,7 @@ PanelWindow {
 
     // Window props
     visible: false
-    // color: Appearance.colors.colLayer0
-    color: "black"
+    color: Appearance.m3colors.m3scrim
     WlrLayershell.namespace: "quickshell:regionSelector"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
