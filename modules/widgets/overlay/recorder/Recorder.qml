@@ -6,6 +6,7 @@ import qs
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.modules.widgets.overlay
 
 StyledOverlayWidget {
@@ -16,46 +17,50 @@ StyledOverlayWidget {
     contentItem: OverlayBackground {
         id: contentItem
         radius: root.contentRadius
-        property real padding: 8
+        property real padding: Appearance.spacing.s
         ColumnLayout {
             id: contentColumn
             anchors.centerIn: parent
-            spacing: 10
+            spacing: Appearance.spacing.s + Appearance.spacing.xxs
 
             Row {
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                spacing: 10
+                spacing: Appearance.spacing.s + Appearance.spacing.xxs
 
-                BigRecorderButton {
-                    materialSymbol: "screenshot_region"
-                    name: "Screenshot region"
+                M3.Fab {
+                    variant: "secondary"
+                    iconText: "screenshot_region"
+                    tooltip: "Screenshot region"
                     onClicked: {
                         OverlayContext.overlayOpen = false;
                         GlobalStates.regionCaptureRequested();
                     }
                 }
 
-                BigRecorderButton {
-                    materialSymbol: "photo_camera"
-                    name: "Screenshot"
+                M3.Fab {
+                    variant: "secondary"
+                    iconText: "photo_camera"
+                    tooltip: "Screenshot"
                     onClicked: {
                         OverlayContext.overlayOpen = false;
                         Quickshell.execDetached(["bash", "-c", "grim - | wl-copy"]);
                     }
                 }
 
-                BigRecorderButton {
-                    materialSymbol: "screen_record"
-                    name: "Record region"
+                M3.Fab {
+                    variant: "secondary"
+                    iconText: "screen_record"
+                    tooltip: "Record region"
                     onClicked: {
                         OverlayContext.overlayOpen = false;
                         GlobalStates.regionCaptureRequested();
                     }
                 }
                 
-                BigRecorderButton {
-                    materialSymbol: "capture"
-                    name: "Record screen"
+                M3.Fab {
+                    variant: "secondary"
+                    iconText: "capture"
+                    tooltip: "Record screen"
                     onClicked: {
                         OverlayContext.overlayOpen = false;
                         Quickshell.execDetached([Directories.recordScriptPath, "--fullscreen", "--sound"]);
@@ -63,56 +68,16 @@ StyledOverlayWidget {
                 }
             }
 
-            RippleButton {
+            M3.Button {
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                Layout.fillWidth: false
-                buttonRadius: height / 2
-                colBackground: Appearance.colors.colLayer3
-                colBackgroundHover: Appearance.colors.colLayer3Hover
-                colRipple: Appearance.colors.colLayer3Active
+                variant: "tonal"
+                materialIcon: "animated_images"
+                text: "Open recordings folder"
                 onClicked: {
                     OverlayContext.overlayOpen = false;
                     Qt.openUrlExternally(`file://${Config.options.screenRecord.savePath}`);
                 }
-                contentItem: Row {
-                    anchors.centerIn: parent
-                    spacing: 6
-                    MaterialSymbol {
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: "animated_images"
-                        iconSize: 20
-                    }
-                    StyledText {
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: "Open recordings folder"
-                    }
-                }
             }
-        }
-    }
-
-    component BigRecorderButton: RippleButton {
-        id: bigButton
-        required property string materialSymbol
-        required property string name
-        implicitHeight: 66
-        implicitWidth: 66
-        buttonRadius: height / 2
-
-        colBackground: Appearance.colors.colLayer3
-        colBackgroundHover: Appearance.colors.colLayer3Hover
-        colRipple: Appearance.colors.colLayer3Active
-
-        contentItem: MaterialSymbol {
-            anchors.centerIn: parent
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            text: bigButton.materialSymbol
-            iconSize: 28
-        }
-
-        StyledToolTip {
-            text: bigButton.name
         }
     }
 }

@@ -7,6 +7,7 @@ import qs
 import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets.widgetCanvas
 
 /*
@@ -35,8 +36,8 @@ AbstractOverlayWidget {
     property real radius: Appearance.rounding.windowRounding
     property real minimumWidth: contentItem.implicitWidth
     property real minimumHeight: contentItem.implicitHeight
-    property real resizeMargin: 8
-    property real padding: 6
+    property real resizeMargin: Appearance.spacing.s
+    property real padding: Appearance.spacing.xs
     property real contentRadius: radius - padding
 
     // Resizing
@@ -202,7 +203,7 @@ AbstractOverlayWidget {
         color: ColorUtils.transparentize(Appearance.colors.colLayer1Base, (root.fancyBorders && OverlayContext.overlayOpen) ? 0 : 1)
         radius: root.radius
         border.color: ColorUtils.transparentize(Appearance.colors.colOutlineVariant, OverlayContext.overlayOpen ? 0 : 1)
-        border.width: 1
+        border.width: Appearance.sizes.m3OutlineWidth
 
         layer.enabled: OverlayContext.overlayOpen
         layer.effect: OpacityMask {
@@ -228,7 +229,7 @@ AbstractOverlayWidget {
                 implicitHeight: titleBarRow.implicitHeight + root.padding * 2
                 color: root.fancyBorders ? "transparent" : Appearance.colors.colLayer1Base
                 // border.color: Appearance.colors.colOutlineVariant
-                // border.width: 1
+                // border.width: Appearance.sizes.m3OutlineWidth
                 
                 RowLayout {
                     id: titleBarRow
@@ -236,14 +237,14 @@ AbstractOverlayWidget {
                         fill: parent
                         margins: root.padding
                     }
-                    spacing: 2
+                    spacing: Appearance.spacing.xxs
 
                     MaterialSymbol {
                         text: root.materialSymbol
-                        Layout.leftMargin: 6
-                        iconSize: 20
+                        Layout.leftMargin: Appearance.spacing.xs
+                        iconSize: Appearance.font.pixelSize.larger
                         Layout.alignment: Qt.AlignVCenter
-                        Layout.rightMargin: 4
+                        Layout.rightMargin: Appearance.spacing.xxs * 2
                     }
                     
                     StyledText {
@@ -252,40 +253,40 @@ AbstractOverlayWidget {
                         elide: Text.ElideRight
                     }
 
-                    TitlebarButton {
+                    M3.IconButton {
+                        size: "xsmall"
                         visible: root.showCenterButton
-                        materialSymbol: "recenter"
+                        materialIcon: "recenter"
+                        tooltip: "Center"
                         onClicked: root.center()
-                        StyledToolTip {
-                            text: "Center"
-                        }
                     }
 
-                    TitlebarButton {
-                        visible: (root.pinned && root.showClickabilityButton)
-                        materialSymbol: "mouse"
-                        toggled: !root.clickthrough
+                    M3.IconButton {
+                        size: "xsmall"
+                        visible: root.pinned && root.showClickabilityButton
+                        materialIcon: "mouse"
+                        tooltip: "Clickable when pinned"
+                        toggleable: true
+                        selectedVariant: "tonal"
+                        selected: !root.clickthrough
                         onClicked: root.toggleClickthrough()
-                        StyledToolTip {
-                            text: "Clickable when pinned"
-                        }
                     }
 
-                    TitlebarButton {
-                        materialSymbol: "keep"
-                        toggled: root.pinned
+                    M3.IconButton {
+                        size: "xsmall"
+                        materialIcon: "keep"
+                        tooltip: "Pin"
+                        toggleable: true
+                        selectedVariant: "tonal"
+                        selected: root.pinned
                         onClicked: root.togglePinned()
-                        StyledToolTip {
-                            text: "Pin"
-                        }
                     }
 
-                    TitlebarButton {
-                        materialSymbol: "close"
+                    M3.IconButton {
+                        size: "xsmall"
+                        materialIcon: "close"
+                        tooltip: "Close"
                         onClicked: root.close()
-                        StyledToolTip {
-                            text: "Close"
-                        }
                     }
                 }
             }
@@ -305,32 +306,4 @@ AbstractOverlayWidget {
         }
     }
 
-
-    component TitlebarButton: RippleButton {
-        id: titlebarButton
-        required property string materialSymbol
-        buttonRadius: height / 2
-        implicitHeight: contentItem.implicitHeight
-        implicitWidth: implicitHeight
-        padding: 0
-
-        colBackgroundToggled: Appearance.colors.colSecondaryContainer
-        colBackgroundToggledHover: Appearance.colors.colSecondaryContainerHover
-        colRippleToggled: Appearance.colors.colSecondaryContainerActive
-
-        contentItem: Item {
-            anchors.centerIn: parent
-            implicitWidth: 30
-            implicitHeight: 30
-
-            MaterialSymbol {
-                id: iconWidget
-                anchors.centerIn: parent
-                iconSize: 20
-                text: titlebarButton.materialSymbol
-                fill: titlebarButton.toggled
-                color: titlebarButton.toggled ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnSurface
-            }
-        }
-    }
 }

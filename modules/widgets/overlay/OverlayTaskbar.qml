@@ -7,12 +7,13 @@ import qs.services
 import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets.widgetCanvas
 
 Rectangle {
     id: root
 
-    property real padding: 8
+    property real padding: Appearance.spacing.s
 
     opacity: OverlayContext.overlayOpen ? 1 : 0
     implicitWidth: contentRow.implicitWidth + (padding * 2)
@@ -20,7 +21,7 @@ Rectangle {
     color: Appearance.m3colors.m3surfaceContainer
     radius: Appearance.rounding.large
     border.color: Appearance.colors.colOutlineVariant
-    border.width: 1
+    border.width: Appearance.sizes.m3OutlineWidth
 
     Behavior on opacity {
         animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
@@ -32,25 +33,43 @@ Rectangle {
             fill: parent
             margins: root.padding
         }
-        spacing: 6
+        spacing: Appearance.spacing.xs
 
         Row {
-            spacing: 4
+            spacing: Appearance.spacing.xxs * 2
             Repeater {
                 model: ScriptModel {
                     values: OverlayContext.availableWidgets
                 }
-                delegate: WidgetButton {
+                delegate: M3.IconButton {
                     required property var modelData
-                    identifier: modelData.identifier
-                    materialSymbol: modelData.materialSymbol
+                    materialIcon: modelData.materialSymbol
+                    tooltip: modelData.identifier.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())
+                    toggleable: true
+                    selectedVariant: "tonal"
+                    selected: Persistent.states.overlay.open.includes(modelData.identifier)
+                    altAction: () => OverlayContext.requestCenter(modelData.identifier)
+                    onClicked: {
+                        if (selected) {
+                            Persistent.states.overlay.open = Persistent.states.overlay.open.filter(type => type !== modelData.identifier);
+                        } else {
+                            Persistent.states.overlay.open.push(modelData.identifier);
+                        }
+                    }
                 }
             }
         }
 
-        Separator {}
+        M3.Divider {
+            vertical: true
+            insetStart: Appearance.spacing.s + Appearance.spacing.xxs
+            insetEnd: insetStart
+        }
         TimeWidget {}
-        Separator {
+        M3.Divider {
+            vertical: true
+            insetStart: Appearance.spacing.s + Appearance.spacing.xxs
+            insetEnd: insetStart
             visible: Battery.available
         }
         BatteryWidget {
@@ -58,34 +77,26 @@ Rectangle {
         }
     }
 
-    component Separator: Rectangle {
-        implicitWidth: 1
-        color: Appearance.colors.colOutlineVariant
-        Layout.fillHeight: true
-        Layout.topMargin: 10
-        Layout.bottomMargin: 10
-    }
-
     component TimeWidget: StyledText {
         Layout.alignment: Qt.AlignVCenter
-        Layout.leftMargin: 8
-        Layout.rightMargin: 6
+        Layout.leftMargin: Appearance.spacing.s
+        Layout.rightMargin: Appearance.spacing.xs
 
         text: DateTime.time
         color: Appearance.colors.colOnSurface
         font {
             family: Appearance.font.family.numbers
             variableAxes: Appearance.font.variableAxes.numbers
-            pixelSize: 22
+            pixelSize: Appearance.font.pixelSize.huge
         }
     }
     
     component BatteryWidget: Row {
         id: batteryWidget
         Layout.alignment: Qt.AlignVCenter
-        Layout.leftMargin: 6
-        Layout.rightMargin: 6
-        spacing: 2
+        Layout.leftMargin: Appearance.spacing.xs
+        Layout.rightMargin: Appearance.spacing.xs
+        spacing: Appearance.spacing.xxs
         property color colText: Battery.isLowAndNotCharging ? Appearance.colors.colError : Appearance.colors.colOnSurface
 
         MaterialSymbol {
@@ -94,7 +105,7 @@ Rectangle {
             fill: 1
             text: Battery.isCharging ? "bolt" : "battery_android_full"
             color: batteryWidget.colText
-            iconSize: 24
+            iconSize: Appearance.font.pixelSize.hugeass
             animateChange: true
         }
         
@@ -106,46 +117,9 @@ Rectangle {
             font {
                 family: Appearance.font.family.numbers
                 variableAxes: Appearance.font.variableAxes.numbers
-                pixelSize: 18
+                pixelSize: Appearance.font.pixelSize.large
             }
         }
     }
 
-    component WidgetButton: RippleButton {
-        id: widgetButton
-        required property string identifier
-        required property string materialSymbol
-
-        Layout.alignment: Qt.AlignVCenter
-
-        toggled: Persistent.states.overlay.open.includes(identifier)
-        altAction: () => OverlayContext.requestCenter(identifier)
-        onClicked: {
-            if (widgetButton.toggled) {
-                Persistent.states.overlay.open = Persistent.states.overlay.open.filter(type => type !== identifier);
-            } else {
-                Persistent.states.overlay.open.push(identifier);
-            }
-        }
-        implicitWidth: implicitHeight
-
-        colBackgroundToggled: Appearance.colors.colSecondaryContainer
-        colBackgroundToggledHover: Appearance.colors.colSecondaryContainerHover
-        colRippleToggled: Appearance.colors.colSecondaryContainerActive
-
-        buttonRadius: root.radius - (root.height - height) / 2
-
-        contentItem: Item {
-            anchors.centerIn: parent
-            implicitWidth: 32
-            implicitHeight: 32
-            MaterialSymbol {
-                id: iconWidget
-                anchors.centerIn: parent
-                iconSize: 24
-                text: widgetButton.materialSymbol
-                color: widgetButton.toggled ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnSurfaceVariant
-            }
-        }
-    }
 }
