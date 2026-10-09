@@ -405,6 +405,7 @@ Singleton {
         property real progressBarWidth: 120
         property real progressBarHeight: root.spacing.xxs * 2
         property real circularProgressSize: 48
+        property real calendarDaySize: 38 // one cell of the sidebar calendar grid
         property real pomodoroProgressSize: 200
         property real pomodoroProgressLineWidth: 8
         property real pomodoroCycleSize: 36
