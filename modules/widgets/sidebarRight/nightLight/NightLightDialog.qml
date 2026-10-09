@@ -93,7 +93,7 @@ M3.Dialog {
                 anchors.right: parent.right
                 anchors.leftMargin: 4
                 anchors.rightMargin: 4
-                configuration: StyledSlider.Configuration.S
+                configuration: M3.Slider.Configuration.S
                 from: 6500
                 to: 1200
                 stopIndicatorValues: [5000, to]
@@ -126,7 +126,7 @@ M3.Dialog {
                 leftMargin: 4
                 rightMargin: 4
             }
-            configuration: StyledSlider.Configuration.S
+            configuration: M3.Slider.Configuration.S
             value: root.brightnessMonitor.brightness
             onMoved: root.brightnessMonitor.setBrightness(value)
         }
@@ -155,7 +155,7 @@ M3.Dialog {
                 leftMargin: 4
                 rightMargin: 4
             }
-            configuration: StyledSlider.Configuration.S
+            configuration: M3.Slider.Configuration.S
             from: Hyprsunset.gammaLowerLimit / 100
             value: Hyprsunset.gamma / 100
             onMoved: Hyprsunset.setGamma(value * 100)

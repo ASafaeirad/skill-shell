@@ -59,7 +59,7 @@ Item {
                 id: slider
                 value: root.node?.audio.volume ?? 0
                 onMoved: root.node.audio.volume = value
-                configuration: StyledSlider.Configuration.S
+                configuration: M3.Slider.Configuration.S
             }
         }
     }

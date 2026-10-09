@@ -1410,6 +1410,20 @@ ApplicationWindow {
                 }
             }
             PreviewCard {
+                title: "Icons and divider"
+                M3.Slider {
+                    width: Appearance.spacing.xxl * 8
+                    configuration: M3.Slider.Configuration.M
+                    materialIcon: "light_mode"
+                    secondaryMaterialIcon: "wb_twilight"
+                    dividerValues: [secondaryIconPosition]
+                    stopIndicatorValues: [0.7]
+                    value: root.sampleValue
+                    enabled: root.sampleEnabled
+                    onMoved: root.sampleValue = value
+                }
+            }
+            PreviewCard {
                 title: "Track variants"
                 M3.Slider {
                     width: Appearance.spacing.xxl * 8

@@ -411,6 +411,13 @@ Singleton {
     }
 
     sizes: QtObject {
+        property real m3QuickSlidersVerticalPadding: 4
+        property real m3QuickSlidersHorizontalPadding: 12
+        property real m3SliderIconSize: 20
+        property real m3SliderIconEdgeMargin: 8
+        property real m3SliderIconHandleMargin: 14
+        property real m3SliderIconThreshold: 0.1
+
         property real progressBarWidth: 120
         property real progressBarHeight: root.spacing.xxs * 2
         property real circularProgressSize: 48
