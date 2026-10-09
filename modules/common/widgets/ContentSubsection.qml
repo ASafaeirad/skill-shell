@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 
 ColumnLayout {
     id: root
@@ -37,7 +38,7 @@ ColumnLayout {
                 hoverEnabled: true
                 cursorShape: Qt.WhatsThisCursor
 
-                StyledToolTip {
+                M3.Tooltip {
                     extraVisibleCondition: false
                     alternativeVisibleCondition: infoMouseArea.containsMouse
                     text: root.tooltip

@@ -1,6 +1,7 @@
 import qs.services
 import qs.modules.common
 import qs.modules.common.functions
+import qs.modules.common.m3 as M3
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -220,7 +221,7 @@ MouseArea { // Notification group area
                         onClicked: { root.toggleExpanded() }
                         altAction: () => { root.toggleExpanded() }
 
-                        StyledToolTip {
+                        M3.Tooltip {
                             text: "Tip: right-clicking a group\nalso expands it"
                         }
                     }
