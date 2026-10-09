@@ -136,8 +136,21 @@ and `modules/common/m3/`, where compatibility wrappers and implementations live.
 Hex colour literals outside `modules/common/Appearance.qml` and M3 imports without
 `as M3` are also errors. Any error makes the command exit with status 1.
 
-Inline components and possible 1px Rectangle dividers remain warnings for manual
-review. The remaining findings are a shared tab bar bottom border, a region selection
+Legacy construction is detected in property values and inline component base types,
+and legacy enum references are checked too. The replacement table covers retired button
+and dialog helpers, multiline text fields, menus, connected/segmented button groups, tabs and toolbar controls.
+Comments and string contents do not count as type usage.
+
+Direct panel restyles of `RippleButton`, Qt control `Button`, and `M3.*` components
+produce advisory warnings for `background`, `contentItem`, colour roles and radius
+properties. Use a shared variant or supported `content` API. Library implementations
+and compatibility wrappers are exempt; nested custom drawing elements are not controls.
+Changed scans report added styling properties inside existing control blocks.
+
+The lint is a lexical check, not a QML parser. Imported aliases, custom subclasses,
+JavaScript code embedded in template strings and external property assignments still
+need manual review. Inline components and possible 1px Rectangle dividers remain
+warnings for manual review. The remaining findings are a shared tab bar bottom border, a region selection
 aim line, the fan curve plot and screen translator bounding boxes. The tab border
 is inside a shared widget implementation; the other findings are custom drawing
 elements rather than controls with M3 replacements.

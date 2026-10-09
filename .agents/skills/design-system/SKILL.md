@@ -34,7 +34,23 @@ that first. It is short and it is the source of truth.
    clean. Legacy widgets with M3 replacements are errors outside the shared widget
    and M3 library directories. Hex colours outside `modules/common/Appearance.qml`
    and M3 imports without `as M3` are also errors. Errors exit with status 1.
+   Legacy construction is checked anywhere in QML, including property values and
+   inline component inheritance; enum references such as `StyledSlider.Configuration.M`
+   are checked too. Comments and string contents are masked before type checks.
+   Retired buttons and dialog helpers, multiline text, menus, connected/segmented button groups, tabs and toolbar
+   controls are covered by the replacement table.
+
+   Panel `RippleButton`, Qt control `Button` and `M3.*` blocks with direct styling
+   properties (`background`, `contentItem`, colour roles or radii) produce manual-review
+   warnings. Prefer the documented variant or `content` API. Implementation and
+   compatibility directories are exempt from legacy and restyle checks. Nested drawing
+   elements are not control restyles. In changed mode, the restyle warning points to
+   the added styling property even when the control declaration is unchanged.
    Inline components and possible 1px dividers remain advisory warnings.
+   The scan is lexical rather than a full QML/JavaScript parser. It does not resolve
+   imported aliases to retired types, JavaScript templates with embedded code, arbitrary
+   custom subclasses, or styles applied through external property assignments. Review
+   those cases manually.
    `--changed --base REF` selects added lines relative to REF's merge base.
    Fix every error. For each warning, either act on it or say why it doesn't apply.
 
