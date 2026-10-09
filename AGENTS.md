@@ -64,7 +64,7 @@ M3.Divider {}
   `.agents/skills/design-system/lint.py`.
 - See every component live: `qs -p design-system.qml` (IPC target `designSystem`:
   `openTab <Name>`, `listTabs`).
-- Existing panels still use legacy widgets (`DialogButton`, `StyledSwitch`, …).
+- Existing panels still use legacy widgets (`StyledSwitch`, `StyledSlider`, …).
   They are being migrated one panel at a time; the backlog is in the catalog README.
   Code you touch should use `M3.*`.
 
