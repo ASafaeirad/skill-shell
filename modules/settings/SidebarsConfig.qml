@@ -27,7 +27,7 @@ ContentPage {
             title: "Quick toggles"
 
             M3.ButtonGroup {
-                    variant: "segmented"
+                variant: "segmented"
                 Layout.fillWidth: false
                 configKey: "sidebar.quickToggles.style"
                 options: [{
