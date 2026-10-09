@@ -129,7 +129,6 @@ Migrate one panel at a time and leave its behaviour alone.
 
 | Pattern | Count | Replacement |
 | --- | --- | --- |
-| `StyledToolTip` | 43 | `M3.Tooltip`, or `M3.IconButton { tooltip }` |
 | `RippleButtonWithIcon` | 12 | `M3.Button { materialIcon }` |
 | Inline `component X: Rectangle/RippleButton` | 8 | `Separator` → `M3.Divider`; `TitlebarButton`, `WidgetButton` → `M3.IconButton`; `BigRecorderButton` → `M3.Button` |
 | `MaterialTextField` | 6 | `M3.TextField` |
@@ -140,3 +139,7 @@ Migrate one panel at a time and leave its behaviour alone.
 
 `bar` and `sidebarRight` are done. The largest area left is `settings` (39 findings),
 then `overlay` and `gmailInbox` (10 each).
+
+The tooltip sweep is complete: panels, settings and shared shell widgets use
+`M3.Tooltip` or a component's `tooltip` property. `StyledToolTip` remains only
+as the implementation used inside the M3 component library.
