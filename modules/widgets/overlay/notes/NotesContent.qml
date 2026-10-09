@@ -7,6 +7,7 @@ import qs
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.modules.common.m3 as M3
 import qs.modules.widgets.overlay
 
 OverlayBackground {
@@ -18,7 +19,6 @@ OverlayBackground {
     property string lastParsedCopylistText: ""
     property var parsedCopylistLines: []
     property bool isClickthrough: false
-    property real maxCopyButtonSize: 20
 
     Component.onCompleted: {
         noteFile.reload();
@@ -152,7 +152,7 @@ OverlayBackground {
             ScrollBar.vertical.policy: ScrollBar.AsNeeded
             onWidthChanged: root.scheduleCopylistUpdate(true)
 
-            StyledTextArea { // This has to be a direct child of ScrollView for proper scrolling
+            M3.TextArea { // This has to be a direct child of ScrollView for proper scrolling
                 id: textInput
                 anchors {
                     left: parent.left
@@ -163,8 +163,7 @@ OverlayBackground {
                 selectByMouse: true
                 persistentSelection: true
                 textFormat: TextEdit.PlainText
-                background: null
-                padding: 24
+                surface: false
 
                 onTextChanged: {
                     if (textInput.activeFocus) {
@@ -189,17 +188,14 @@ OverlayBackground {
                     model: ScriptModel {
                         values: root.copyListEntries
                     }
-                    delegate: RippleButton {
+                    delegate: M3.IconButton {
                         id: copyButton
                         required property var modelData
-                        readonly property real lineHeight: Math.min(Math.max(modelData.height, Appearance.font.pixelSize.normal + 6), root.maxCopyButtonSize)
-                        readonly property real iconSizeLocal: Appearance.font.pixelSize.normal
-                        readonly property real hitPadding: 6
                         property bool justCopied: false
 
-                        implicitHeight: lineHeight
-                        implicitWidth: lineHeight
-                        buttonRadius: height / 2
+                        size: "compact"
+                        materialIcon: justCopied ? "check" : "content_copy"
+                        tooltip: justCopied ? "Copied" : "Copy bullet"
                         y: modelData.y
                         anchors.right: parent.right
                         anchors.rightMargin: 10
@@ -217,17 +213,6 @@ OverlayBackground {
                             Quickshell.clipboardText = copyButton.modelData.content;
                             justCopied = true;
                             resetState.start();
-                        }
-
-                        contentItem: Item {
-                            anchors.centerIn: parent
-                            MaterialSymbol {
-                                id: iconItem
-                                anchors.centerIn: parent
-                                text: copyButton.justCopied ? "check" : "content_copy"
-                                iconSize: copyButton.iconSizeLocal
-                                color: Appearance.colors.colOnLayer1
-                            }
                         }
                     }
                 }
