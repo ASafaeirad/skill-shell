@@ -434,6 +434,9 @@ Singleton {
         property real mediaControlsWidth: 440
         property real gmailPopoverWidth: 480
         property real mediaControlsHeight: 160
+        property real mediaPlayerPadding: 13
+        property real mediaPlayerGap: 15
+        property real mediaPlayerTextAnimationDistance: 6
         property real mediaGrabberWidth: 640
         property real mediaGrabberThumbnailWidth: 220
         property real notificationPopupWidth: 410
@@ -466,6 +469,8 @@ Singleton {
         property real m3QuickTileIconSize: 44
         property real m3QuickTileIconGap: 4
         property real m3IconButtonSize: 40
+        property real m3IconButtonSizeMedium: 44
+        property real m3IconButtonIconSizeMedium: 30
         property real m3IconButtonSizeXSmall: 32
         property real m3IconButtonSizeCompact: 20
         property real m3IconButtonSizeXLarge: 120
@@ -506,6 +511,8 @@ Singleton {
     // Material 3 state layer opacities: the content colour drawn over a container
     // https://m3.material.io/foundations/interaction/states/state-layers
     stateLayer: QtObject {
+        property real mediaPlayerArtScrimTransparency: 0.3
+        property real mediaPlayerArtBackgroundTransparency: 0.5
         property real hover: 0.08
         property real focus: 0.10
         property real pressed: 0.10

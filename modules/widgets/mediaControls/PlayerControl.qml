@@ -21,7 +21,6 @@ Item { // Player instance
     property string artDownloadLocation: Directories.coverArt
     property string artFileName: Qt.md5(artUrl)
     property string artFilePath: `${artDownloadLocation}/${artFileName}`
-    property color artDominantColor: ColorUtils.mix((colorQuantizer?.colors[0] ?? Appearance.colors.colPrimary), Appearance.colors.colPrimaryContainer, 0.8) || Appearance.m3colors.m3secondaryContainer
     property bool downloaded: false
     property list<real> visualizerPoints: []
     property real maxVisualizerValue: 1000 // Max value in the data points
@@ -41,12 +40,11 @@ Item { // Player instance
 
     onArtFilePathChanged: {
         if (root.artUrl.length == 0) {
-            root.artDominantColor = Appearance.m3colors.m3secondaryContainer
             return;
         }
 
         // Binding does not work in Process
-        coverArtDownloader.targetFile = root.artUrl 
+        coverArtDownloader.targetFile = root.artUrl
         coverArtDownloader.artFilePath = root.artFilePath
         // Download
         root.downloaded = false
@@ -63,17 +61,6 @@ Item { // Player instance
         }
     }
 
-    ColorQuantizer {
-        id: colorQuantizer
-        source: root.displayedArtFilePath
-        depth: 0 // 2^0 = 1 color
-        rescaleSize: 1 // Rescale to 1x1 pixel for faster processing
-    }
-
-    property QtObject blendedColors: AdaptedMaterialScheme {
-        color: artDominantColor
-    }
-
     StyledRectangularShadow {
         target: background
     }
@@ -81,7 +68,7 @@ Item { // Player instance
         id: background
         anchors.fill: parent
         anchors.margins: Appearance.sizes.elevationMargin
-        color: ColorUtils.applyAlpha(blendedColors.colLayer0, 1)
+        color: Appearance.colors.colLayer0
         radius: root.radius
 
         layer.enabled: true
@@ -109,7 +96,7 @@ Item { // Player instance
 
             Rectangle {
                 anchors.fill: parent
-                color: ColorUtils.transparentize(blendedColors.colLayer0, 0.3)
+                color: ColorUtils.transparentize(Appearance.colors.colLayer0, Appearance.stateLayer.mediaPlayerArtScrimTransparency)
                 radius: root.radius
             }
         }
@@ -121,7 +108,7 @@ Item { // Player instance
             points: root.visualizerPoints
             maxVisualizerValue: root.maxVisualizerValue
             smoothing: root.visualizerSmoothing
-            color: blendedColors.colPrimary
+            color: Appearance.colors.colPrimary
         }
 
         MouseArea {
@@ -139,8 +126,8 @@ Item { // Player instance
             id: hoverHighlight
             anchors.fill: parent
             radius: root.radius
-            color: blendedColors.colOnLayer0
-            opacity: rowClickArea.containsMouse ? 0.08 : 0
+            color: Appearance.colors.colOnLayer0
+            opacity: rowClickArea.containsMouse ? Appearance.stateLayer.hover : 0
             Behavior on opacity {
                 animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
             }
@@ -148,15 +135,15 @@ Item { // Player instance
 
         RowLayout {
             anchors.fill: parent
-            anchors.margins: 13
-            spacing: 15
+            anchors.margins: Appearance.sizes.mediaPlayerPadding
+            spacing: Appearance.sizes.mediaPlayerGap
 
             Rectangle { // Art background
                 id: artBackground
                 Layout.fillHeight: true
                 implicitWidth: height
                 radius: Appearance.rounding.verysmall
-                color: ColorUtils.transparentize(blendedColors.colLayer1, 0.5)
+                color: ColorUtils.transparentize(Appearance.colors.colLayer1, Appearance.stateLayer.mediaPlayerArtBackgroundTransparency)
 
                 layer.enabled: true
                 layer.effect: OpacityMask {
@@ -184,28 +171,28 @@ Item { // Player instance
 
             ColumnLayout { // Info & controls
                 Layout.fillHeight: true
-                spacing: 2
+                spacing: Appearance.spacing.xxs
 
                 StyledText {
                     id: trackTitle
                     Layout.fillWidth: true
                     font.pixelSize: Appearance.font.pixelSize.large
-                    color: blendedColors.colOnLayer0
+                    color: Appearance.colors.colOnLayer0
                     elide: Text.ElideRight
                     text: StringUtils.cleanMusicTitle(root.player?.trackTitle) || "Untitled"
                     animateChange: true
-                    animationDistanceX: 6
+                    animationDistanceX: Appearance.sizes.mediaPlayerTextAnimationDistance
                     animationDistanceY: 0
                 }
                 StyledText {
                     id: trackArtist
                     Layout.fillWidth: true
                     font.pixelSize: Appearance.font.pixelSize.smaller
-                    color: blendedColors.colSubtext
+                    color: Appearance.colors.colSubtext
                     elide: Text.ElideRight
                     text: root.player?.trackArtist
                     animateChange: true
-                    animationDistanceX: 6
+                    animationDistanceX: Appearance.sizes.mediaPlayerTextAnimationDistance
                     animationDistanceY: 0
                 }
                 Item { Layout.fillHeight: true }
@@ -216,10 +203,10 @@ Item { // Player instance
                     StyledText {
                         id: trackTime
                         anchors.bottom: sliderRow.top
-                        anchors.bottomMargin: 5
+                        anchors.bottomMargin: Appearance.spacing.xs
                         anchors.left: parent.left
                         font.pixelSize: Appearance.font.pixelSize.small
-                        color: blendedColors.colSubtext
+                        color: Appearance.colors.colSubtext
                         elide: Text.ElideRight
                         text: `${StringUtils.friendlyTimeForSeconds(root.player?.position)} / ${StringUtils.friendlyTimeForSeconds(root.player?.length)}`
                     }
@@ -245,12 +232,9 @@ Item { // Player instance
                                 id: sliderLoader
                                 anchors.fill: parent
                                 active: root.player?.canSeek ?? false
-                                sourceComponent: StyledSlider { 
-                                    configuration: StyledSlider.Configuration.Wavy
-                                    highlightColor: blendedColors.colPrimary
-                                    trackColor: blendedColors.colSecondaryContainer
-                                    handleColor: blendedColors.colPrimary
-                                    value: root.player?.position / root.player?.length
+                                sourceComponent: M3.Slider {
+                                    configuration: M3.Slider.Configuration.Wavy
+                                    value: root.player?.length > 0 ? root.player.position / root.player.length : 0
                                     onMoved: {
                                         root.player.position = value * root.player.length;
                                     }
@@ -265,15 +249,13 @@ Item { // Player instance
                                     right: parent.right
                                 }
                                 active: !(root.player?.canSeek ?? false)
-                                sourceComponent: StyledProgressBar { 
+                                sourceComponent: M3.LinearProgressIndicator {
                                     wavy: root.player?.isPlaying
-                                    highlightColor: blendedColors.colPrimary
-                                    trackColor: blendedColors.colSecondaryContainer
-                                    value: root.player?.position / root.player?.length
+                                    value: root.player?.length > 0 ? root.player.position / root.player.length : 0
                                 }
                             }
 
-                            
+
                         }
                         M3.IconButton {
                             size: "xsmall"
@@ -283,32 +265,18 @@ Item { // Player instance
                         }
                     }
 
-                    RippleButton {
+                    M3.IconButton {
                         id: playPauseButton
                         anchors.right: parent.right
                         anchors.bottom: sliderRow.top
-                        anchors.bottomMargin: 5
-                        property real size: 44
-                        implicitWidth: size
-                        implicitHeight: size
-                        downAction: () => root.player.togglePlaying();
-
-                        buttonRadius: root.player?.isPlaying ? Appearance?.rounding.normal : size / 2
-                        colBackground: root.player?.isPlaying ? blendedColors.colPrimary : blendedColors.colSecondaryContainer
-                        colBackgroundHover: root.player?.isPlaying ? blendedColors.colPrimaryHover : blendedColors.colSecondaryContainerHover
-                        colRipple: root.player?.isPlaying ? blendedColors.colPrimaryActive : blendedColors.colSecondaryContainerActive
-
-                        contentItem: MaterialSymbol {
-                            iconSize: Appearance.font.pixelSize.huge
-                            fill: 1
-                            horizontalAlignment: Text.AlignHCenter
-                            color: root.player?.isPlaying ? blendedColors.colOnPrimary : blendedColors.colOnSecondaryContainer
-                            text: root.player?.isPlaying ? "pause" : "play_arrow"
-
-                            Behavior on color {
-                                animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
-                            }
-                        }
+                        anchors.bottomMargin: Appearance.spacing.xs
+                        size: "medium"
+                        variant: root.player?.isPlaying ? "filled" : "tonal"
+                        shape: root.player?.isPlaying ? "square" : "round"
+                        materialIcon: root.player?.isPlaying ? "pause" : "play_arrow"
+                        iconFilled: true
+                        tooltip: root.player?.isPlaying ? "Pause" : "Play"
+                        onClicked: root.player?.togglePlaying()
                     }
                 }
             }
