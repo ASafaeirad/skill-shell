@@ -17,12 +17,15 @@ import qs.modules.common.widgets
  * Children stack in a ColumnLayout inset by `padding`.
  * variant: "filled" (default) | "elevated" | "outlined"
  * interactive: adds the hover state layer and emits clicked().
+ * selected: controlled selection; selectedVariant is "tonal" or "filled".
  */
 Rectangle {
     id: root
 
     property string variant: "filled"
     property bool interactive: false
+    property bool selected: false
+    property string selectedVariant: "tonal"
     property real padding: Appearance.spacing.lg
     property alias spacing: content.spacing
     default property alias contentData: content.data
@@ -31,10 +34,11 @@ Rectangle {
 
     signal clicked()
 
-    readonly property color containerColor: variant === "elevated" ? Appearance.colors.colSurfaceContainerLow
+    readonly property color containerColor: selected ? (selectedVariant === "filled" ? Appearance.colors.colPrimary : Appearance.colors.colSecondaryContainer)
+        : variant === "elevated" ? Appearance.colors.colSurfaceContainerLow
         : variant === "outlined" ? "transparent"
         : Appearance.colors.colSurfaceContainerHighest
-    readonly property color contentColor: Appearance.colors.colOnSurface
+    readonly property color contentColor: selected ? (selectedVariant === "filled" ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSecondaryContainer) : Appearance.colors.colOnSurface
 
     implicitWidth: content.implicitWidth + padding * 2
     implicitHeight: content.implicitHeight + padding * 2

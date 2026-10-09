@@ -897,6 +897,26 @@ ApplicationWindow {
                 }
             }
             PreviewCard {
+                title: "Selectable cards"
+                RowLayout {
+                    Repeater {
+                        model: ["tonal", "filled"]
+                        M3.Card {
+                            id: selectableCard
+                            required property string modelData
+                            interactive: true
+                            selectedVariant: modelData
+                            selected: true
+                            onClicked: selected = !selected
+                            StyledText {
+                                text: selectableCard.modelData + " selection"
+                                color: selectableCard.contentColor
+                            }
+                        }
+                    }
+                }
+            }
+            PreviewCard {
                 title: "Variants"
                 Repeater {
                     model: root.variantOptions["Card"]
