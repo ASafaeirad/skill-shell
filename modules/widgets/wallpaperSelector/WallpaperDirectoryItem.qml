@@ -3,39 +3,42 @@ import QtQuick
 import QtQuick.Layouts
 import qs.modules.common
 import qs.modules.common.functions
+import qs.modules.common.m3 as M3
 import qs.modules.common.widgets
 import qs.services
 
-MouseArea {
+Item {
     id: root
 
     required property var fileModelData
     property bool isDirectory: fileModelData.fileIsDir
     property bool useThumbnail: Images.isValidImageByName(fileModelData.fileName)
-    property alias colBackground: background.color
-    property alias colText: wallpaperItemName.color
-    property alias radius: background.radius
-    property alias margins: background.anchors.margins
-    property alias padding: wallpaperItemColumnLayout.anchors.margins
+    property bool current: false
+    property bool applied: false
 
     signal activated()
+    signal entered()
 
-    margins: Appearance.sizes.wallpaperSelectorItemMargins
-    padding: Appearance.sizes.wallpaperSelectorItemPadding
-    hoverEnabled: true
-    onClicked: root.activated()
-
-    Rectangle {
-        id: background
-
+    M3.Card {
+        id: tile
         anchors.fill: parent
-        radius: Appearance.rounding.normal
+        anchors.margins: Appearance.sizes.wallpaperSelectorItemMargins
+        variant: "filled"
+        interactive: true
+        padding: Appearance.sizes.wallpaperSelectorItemPadding
+        spacing: Appearance.spacing.xs
+        selected: root.current || root.applied
+        selectedVariant: root.current ? "filled" : "tonal"
+        onClicked: root.activated()
+
+        onHoveredChanged: if (hovered) root.entered()
 
         ColumnLayout {
             id: wallpaperItemColumnLayout
 
-            anchors.fill: parent
-            spacing: 4
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            spacing: Appearance.spacing.xs
 
             Item {
                 id: wallpaperItemImageContainer
@@ -131,12 +134,13 @@ MouseArea {
                 id: wallpaperItemName
 
                 Layout.fillWidth: true
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
+                Layout.leftMargin: Appearance.spacing.s
+                Layout.rightMargin: Appearance.spacing.s
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
                 font.pixelSize: Appearance.font.pixelSize.smaller
                 text: fileModelData.fileName
+                color: tile.contentColor
 
                 Behavior on color {
                     animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
@@ -146,10 +150,5 @@ MouseArea {
 
         }
 
-        Behavior on color {
-            animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
-        }
-
     }
-
 }
