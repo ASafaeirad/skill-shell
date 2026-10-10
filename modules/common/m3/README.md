@@ -79,7 +79,7 @@ around the M3 file, kept until their callers are migrated.
 | [Radio button](https://m3.material.io/components/radio-button) | `M3.RadioButton` | native | `description`, `checked` |
 | [Switch](https://m3.material.io/components/switch) | `M3.Switch` | native | `checked`, `toggled()` |
 | [Sliders](https://m3.material.io/components/sliders) | `M3.Slider` | native | `value`, `from`, `to`, `configuration: M3.Slider.Configuration.S` (XS · S · M · L · XL · Wavy); `materialIcon`, `secondaryMaterialIcon` (horizontal, non-mirrored), `secondaryIconPosition` (normalized position, default 0.3), `stopIndicatorValues`, `dividerValues` |
-| [Text fields](https://m3.material.io/components/text-fields) | `M3.TextField` | native | `text`, `placeholderText`, `readOnly` |
+| [Text fields](https://m3.material.io/components/text-fields) | `M3.TextField` | native | Outlined Material control with floating label, explicitly selected even under the shell's Basic style; `text`, `placeholderText`, `readOnly` |
 | [Text fields](https://m3.material.io/components/text-fields) | `M3.TextArea` | native | `variant`: filled · outlined; multiline `text`, `placeholderText`, `readOnly`, `wrapMode`, `error`; `surface: false` for embedded editors |
 | [Search](https://m3.material.io/components/search) | `M3.SearchBar` | native | the search bar's input: `text`, `placeholderText`, `compact` (40px); leading icon and trailing `M3.IconButton`s go beside it |
 | [Progress indicators](https://m3.material.io/components/progress-indicators) | `M3.LinearProgressIndicator` | native | `value`, `wavy`, `indeterminate` |
