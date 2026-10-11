@@ -41,6 +41,7 @@ PanelWindow {
         RegionSelection.SnipAction.RecordWithSound
     ]
     readonly property bool captureModes: root.captureModeActions.includes(root.action)
+    property bool fullscreen: false
     function cycleCaptureMode(step) {
         if (!root.captureModes) return;
         const current = Math.max(0, root.captureModeActions.indexOf(root.action));
@@ -223,8 +224,8 @@ PanelWindow {
         running: root.captureModes
         command: ["pidof", "wf-recorder"]
         onExited: (exitCode, exitStatus) => {
-            root.preparationDone = !screenshotProc.running
             root.recordingShouldStop = (exitCode === 0);
+            root.preparationDone = !screenshotProc.running
         }
     }
     property bool preparationDone: false
@@ -278,10 +279,17 @@ PanelWindow {
 
     // Execution after selection
     function snip() {
+        if (root.fullscreen) {
+            root.regionX = 0;
+            root.regionY = 0;
+            root.regionWidth = root.screen.width;
+            root.regionHeight = root.screen.height;
+        }
         // Validity check
         if (root.regionWidth <= 0 || root.regionHeight <= 0) {
             console.warn("[Region Selector] Invalid region size, skipping snip.");
             root.dismissAndRestoreCursor();
+            return;
         }
 
         // Clamp region to screen bounds
@@ -298,7 +306,12 @@ PanelWindow {
         const screenshotDir = Config.options.screenSnip.savePath !== "" ? //
             Config.options.screenSnip.savePath : "";
         var screenshotAction = root.getScreenshotAction();
-        const command = ScreenshotAction.getCommand(
+        const isRecording = root.action === RegionSelection.SnipAction.Record
+            || root.action === RegionSelection.SnipAction.RecordWithSound;
+        const command = root.fullscreen && isRecording
+            ? [Directories.recordScriptPath, "--fullscreen", "--output", root.screen.name,
+                ...(root.action === RegionSelection.SnipAction.RecordWithSound ? ["--sound"] : [])]
+            : ScreenshotAction.getCommand(
             root.regionX * root.monitorScale, //
             root.regionY * root.monitorScale, //
             root.regionWidth * root.monitorScale,//
@@ -308,6 +321,10 @@ PanelWindow {
             screenshotDir
         )
         Quickshell.execDetached(command);
+        if (root.fullscreen && isRecording) {
+            root.dismissAndRestoreCursor();
+            return;
+        }
         if (root.action == RegionSelection.SnipAction.Record || root.action == RegionSelection.SnipAction.RecordWithSound) {
             root.phase = RegionSelection.Phase.Post
             // Remap the surface: the compositor won't return keyboard focus to the
@@ -350,6 +367,9 @@ PanelWindow {
             } else if (event.key === Qt.Key_Backtab) {
                 root.cycleCaptureMode(-1);
                 event.accepted = true;
+            } else if (root.fullscreen && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter)) {
+                root.snip();
+                event.accepted = true;
             }
         }
     }
@@ -363,6 +383,7 @@ PanelWindow {
 
         // Controls
         onPressed: (mouse) => {
+            if (root.fullscreen) return;
             root.dragStartX = mouse.x;
             root.dragStartY = mouse.y;
             root.draggingX = mouse.x;
@@ -371,6 +392,10 @@ PanelWindow {
             root.mouseButton = mouse.button;
         }
         onReleased: (mouse) => {
+            if (root.fullscreen) {
+                root.snip();
+                return;
+            }
             // Detect if it was a click -> Try to select targeted region
             if (root.draggingX === root.dragStartX && root.draggingY === root.dragStartY) {
                 if (root.targetedRegionValid()) {
@@ -380,6 +405,7 @@ PanelWindow {
             root.snip();
         }
         onPositionChanged: (mouse) => {
+            if (root.fullscreen) return;
             root.updateTargetedRegion(mouse.x, mouse.y);
             if (!root.dragging) return;
             root.draggingX = mouse.x;
@@ -509,7 +535,7 @@ PanelWindow {
                 target: root
                 function onVisibleChanged() {
                     if (!visible) return;
-                    regionSelectionControls.anchors.bottomMargin = 8;
+                    regionSelectionControls.anchors.bottomMargin = Appearance.spacing.s;
                     regionSelectionControls.opacity = 1;
                 }
             }
@@ -519,16 +545,32 @@ PanelWindow {
             Behavior on anchors.bottomMargin {
                 animation: Appearance.animation.elementMove.numberAnimation.createObject(this)
             }
-            spacing: 6
+            spacing: Appearance.spacing.xs
+
+            M3.Toolbar {
+                visible: root.captureModes
+                anchors.verticalCenter: parent.verticalCenter
+
+                M3.Tabs {
+                    variant: "compact"
+                    currentIndex: root.fullscreen ? 1 : 0
+                    onCurrentIndexChanged: root.fullscreen = currentIndex === 1
+                    M3.Tab { variant: "compact"; materialIcon: "screenshot_region"; text: "Select region" }
+                    M3.Tab { variant: "compact"; materialIcon: "fullscreen"; text: "Fullscreen" }
+                }
+            }
 
             OptionsToolbar {
+                anchors.verticalCenter: parent.verticalCenter
                 captureModes: root.captureModes
+                fullscreen: root.fullscreen
                 // Nothing to switch between for search/ocr
                 visible: root.captureModes
                 Synchronizer on action {
                     property alias source: root.action
                 }
                 onCaptureModeSelected: index => root.setCaptureMode(index);
+                onCaptureRequested: root.snip();
                 onDismiss: root.dismissAndRestoreCursor();
             }
             M3.Fab {

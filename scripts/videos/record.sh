@@ -3,7 +3,7 @@
 CONFIG_FILE="$HOME/.config/skill-shell/config.json"
 JSON_PATH=".screenRecord.savePath"
 
-CUSTOM_PATH=$(jq -r "$JSON_PATH" "$CONFIG_FILE" 2>/dev/null)
+CUSTOM_PATH=$(jq -r "$JSON_PATH // empty" "$CONFIG_FILE" 2>/dev/null)
 
 RECORDING_DIR=""
 
@@ -17,7 +17,10 @@ getdate() {
     date '+%Y-%m-%d_%H.%M.%S'
 }
 getaudiooutput() {
-    pactl list sources | grep 'Name' | grep 'monitor' | cut -d ' ' -f2
+    local sink
+    sink=$(pactl get-default-sink) || return 1
+    [[ -n "$sink" ]] || return 1
+    printf '%s.monitor\n' "$sink"
 }
 getactivemonitor() {
     hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .name'
@@ -31,6 +34,7 @@ ARGS=("$@")
 MANUAL_REGION=""
 SOUND_FLAG=0
 FULLSCREEN_FLAG=0
+OUTPUT=""
 for ((i=0;i<${#ARGS[@]};i++)); do
     if [[ "${ARGS[i]}" == "--region" ]]; then
         if (( i+1 < ${#ARGS[@]} )); then
@@ -43,20 +47,28 @@ for ((i=0;i<${#ARGS[@]};i++)); do
         SOUND_FLAG=1
     elif [[ "${ARGS[i]}" == "--fullscreen" ]]; then
         FULLSCREEN_FLAG=1
+    elif [[ "${ARGS[i]}" == "--output" ]]; then
+        (( i+1 < ${#ARGS[@]} )) || exit 1
+        OUTPUT="${ARGS[i+1]}"
+        ((i++))
     fi
 done
 
 if pgrep wf-recorder > /dev/null; then
     notify-send "Recording Stopped" "Stopped" -a 'Recorder' &
-    pkill wf-recorder &
+    pkill -INT -x wf-recorder
 else
-    if [[ $FULLSCREEN_FLAG -eq 1 ]]; then
-        notify-send "Starting recording" 'recording_'"$(getdate)"'.mp4' -a 'Recorder' & disown
-        if [[ $SOUND_FLAG -eq 1 ]]; then
-            wf-recorder -o "$(getactivemonitor)" --pixel-format yuv420p -f './recording_'"$(getdate)"'.mp4' -t --audio="$(getaudiooutput)"
-        else
-            wf-recorder -o "$(getactivemonitor)" --pixel-format yuv420p -f './recording_'"$(getdate)"'.mp4' -t
+    filename="./recording_$(getdate).mp4"
+    recorder_args=(--pixel-format yuv420p -f "$filename")
+    if [[ $SOUND_FLAG -eq 1 ]]; then
+        if ! audio_source=$(getaudiooutput); then
+            notify-send "Recording failed" "Could not find the default audio output" -a 'Recorder'
+            exit 1
         fi
+        recorder_args+=(--audio="$audio_source" --audio-codec aac)
+    fi
+    if [[ $FULLSCREEN_FLAG -eq 1 ]]; then
+        recorder_args+=(-o "${OUTPUT:-$(getactivemonitor)}")
     else
         # If a manual region was provided via --region, use it; otherwise run slurp as before.
         if [[ -n "$MANUAL_REGION" ]]; then
@@ -68,11 +80,8 @@ else
             fi
         fi
 
-        notify-send "Starting recording" 'recording_'"$(getdate)"'.mp4' -a 'Recorder' & disown
-        if [[ $SOUND_FLAG -eq 1 ]]; then
-            wf-recorder --pixel-format yuv420p -f './recording_'"$(getdate)"'.mp4' -t --geometry "$region" --audio="$(getaudiooutput)"
-        else
-            wf-recorder --pixel-format yuv420p -f './recording_'"$(getdate)"'.mp4' -t --geometry "$region"
-        fi
+        recorder_args+=(--geometry "$region")
     fi
+    notify-send "Starting recording" "${filename#./}" -a 'Recorder' & disown
+    wf-recorder "${recorder_args[@]}"
 fi

@@ -42,8 +42,8 @@ Panel {
     // The one entry point for screenshot, record and record with sound.
     // Opens in screenshot mode; the toolbar (or Tab) switches mode before the region is picked.
     // If a recording is running, this stops it instead of opening.
-    function capture() {
-        root.action = RegionSelection.SnipAction.Copy
+    function capture(action = RegionSelection.SnipAction.Copy) {
+        root.action = action
         // If already open then re-trigger so a running recording gets stopped
         if (root.opened) root.opened = false
         root.open()
@@ -64,6 +64,10 @@ Panel {
 
         function onRegionCaptureRequested() {
             root.capture()
+        }
+
+        function onRegionRecordRequested() {
+            root.capture(RegionSelection.SnipAction.RecordWithSound)
         }
 
         function onRegionSearchRequested() {

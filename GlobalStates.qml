@@ -42,6 +42,7 @@ Singleton {
     property bool workspaceShowNumbers: false
 
     signal regionCaptureRequested()
+    signal regionRecordRequested()
     signal regionSearchRequested()
 
     GlobalShortcut {

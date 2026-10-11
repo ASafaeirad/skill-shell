@@ -50,10 +50,10 @@ StyledOverlayWidget {
                 M3.Fab {
                     variant: "secondary"
                     iconText: "screen_record"
-                    tooltip: "Record region"
+                    tooltip: "Record region with audio"
                     onClicked: {
                         OverlayContext.overlayOpen = false;
-                        GlobalStates.regionCaptureRequested();
+                        GlobalStates.regionRecordRequested();
                     }
                 }
                 

@@ -22,9 +22,11 @@ M3.Toolbar {
     property var action
     // Whether the current action is one of the switchable capture modes
     property bool captureModes: false
+    property bool fullscreen: false
     // Signals
     signal dismiss()
     signal captureModeSelected(int index)
+    signal captureRequested()
 
     M3.Tabs {
         id: captureModeTabBar
@@ -43,5 +45,13 @@ M3.Toolbar {
         // Guarded: this also fires while the tab bar initializes, which would otherwise
         // knock a search/ocr overlay into screenshot mode
         onCurrentIndexChanged: if (root.captureModes) root.captureModeSelected(currentIndex)
+    }
+
+    M3.Button {
+        visible: root.fullscreen
+        variant: "filled"
+        text: root.action === RegionSelection.SnipAction.Copy ? "Capture" : "Start recording"
+        materialIcon: root.action === RegionSelection.SnipAction.Copy ? "photo_camera" : "videocam"
+        onClicked: root.captureRequested()
     }
 }
