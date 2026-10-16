@@ -15,11 +15,12 @@ import Quickshell.Hyprland
 
 PanelWindow {
     id: root
-    visible: false
+    // A mapped, transparent window lets ScreencopyView receive its first frame.
+    visible: true
     color: "transparent"
     WlrLayershell.namespace: "quickshell:regionSelector"
     WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: phase === RegionSelection.Phase.Select ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+    WlrLayershell.keyboardFocus: screenshotReady && phase === RegionSelection.Phase.Select ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
     exclusionMode: ExclusionMode.Ignore
     anchors {
         left: true
@@ -53,7 +54,11 @@ PanelWindow {
         root.action = root.captureModeActions[index];
     }
     signal dismiss()
-    Component.onDestruction: screenshotProc.restoreCursor()
+    Component.onDestruction: {
+        screenshotProc.restoreCursor();
+        if (!root.screenshotActionStarted)
+            Quickshell.execDetached(["rm", "-f", root.screenshotPath]);
+    }
 
     function dismissAndRestoreCursor() {
         screenshotProc.restoreCursor();
@@ -89,7 +94,23 @@ PanelWindow {
     readonly property real monitorOffsetX: hyprlandMonitor.x
     readonly property real monitorOffsetY: hyprlandMonitor.y
     property int activeWorkspaceId: hyprlandMonitor.activeWorkspace?.id ?? 0
-    property string screenshotPath: `${root.screenshotDir}/image-${screen.name}`
+    // Uncompressed scratch frames avoid PNG encoding on the shell's UI thread.
+    // ScreenshotAction encodes the selected region as PNG after selection.
+    property string screenshotPath: `${root.screenshotDir}/image-${screen.name}-${Date.now()}.ppm`
+    property bool screenshotReady: false
+    property bool captureFailed: false
+    property bool screenshotActionStarted: false
+    readonly property real captureStartedAt: Date.now()
+    property int captureElapsedMs: 0
+
+    function failCapture(reason) {
+        if (root.captureFailed) return;
+        root.captureFailed = true;
+        screenshotProc.running = false;
+        screenshotProc.restoreCursor();
+        root.visible = false;
+        console.warn("[Region Selector] Capture failed for", root.screen.name, reason);
+    }
     property real dragStartX: 0
     property real dragStartY: 0
     property real draggingX: 0
@@ -211,10 +232,21 @@ PanelWindow {
         screenshotDir: root.screenshotDir
         screenshotPath: root.screenshotPath
         keepCursorHidden: true
+        captureToFile: false
         onExited: (exitCode, exitStatus) => {
-            if (root.enableContentRegions) imageDetectionProcess.running = true;
+            if (exitCode !== 0 || exitStatus !== 0) {
+                root.failCapture("preparation failed");
+                return;
+            }
             root.preparationDone = !checkRecordingProc.running;
         }
+    }
+    // A stalled output must not leave an invisible selector or a hidden cursor.
+    // Fail only this monitor so another monitor can still finish opening.
+    Timer {
+        interval: 3000
+        running: !root.screenshotReady && !root.captureFailed
+        onTriggered: root.failCapture("timed out waiting for a screen frame")
     }
     property bool recordingShouldStop: false
     Process {
@@ -248,6 +280,7 @@ PanelWindow {
         stdout: StdioCollector {
             id: imageDimensionCollector
             onStreamFinished: {
+                if (!text.trim()) return;
                 imageRegions = RegionFunctions.filterImageRegions(
                     JSON.parse(imageDimensionCollector.text),
                     root.windowRegions
@@ -279,6 +312,7 @@ PanelWindow {
 
     // Execution after selection
     function snip() {
+        if (!root.screenshotReady) return;
         if (root.fullscreen) {
             root.regionX = 0;
             root.regionY = 0;
@@ -320,6 +354,7 @@ PanelWindow {
             screenshotAction, //
             screenshotDir
         )
+        root.screenshotActionStarted = !isRecording;
         Quickshell.execDetached(command);
         if (root.fullscreen && isRecording) {
             root.dismissAndRestoreCursor();
@@ -338,23 +373,33 @@ PanelWindow {
 
     // Only clickable in Selection phase
     mask: Region {
-        item: switch(root.phase) {
-            case RegionSelection.Phase.Select: return mouseArea;
-            case RegionSelection.Phase.Post: return null;
-        }
+        item: root.screenshotReady && root.phase === RegionSelection.Phase.Select ? mouseArea : null
     }
 
     ScreencopyView { // For freezing
         id: screencopyView
         anchors.fill: parent
         live: false
-        captureSource: root.preparationDone ? root.screen : null
+        paintCursor: false
+        captureSource: root.preparationDone && !root.captureFailed ? root.screen : null
         visible: root.phase === RegionSelection.Phase.Select
 
         onHasContentChanged: {
             if (!hasContent) return;
-            screenshotProc.restoreCursor();
-            root.visible = true;
+            // Save exactly the frame shown by the selector. grim -o can wait on
+            // unrelated outputs when their logical monitor rectangles overlap.
+            const started = grabToImage(result => {
+                if (root.captureFailed) return;
+                if (!result.saveToFile(root.screenshotPath)) {
+                    root.failCapture("could not save the frozen frame");
+                    return;
+                }
+                root.screenshotReady = true;
+                root.captureElapsedMs = Date.now() - root.captureStartedAt;
+                screenshotProc.restoreCursor();
+                if (root.enableContentRegions) imageDetectionProcess.running = true;
+            }, sourceSize);
+            if (!started) root.failCapture("could not read the frozen frame");
         }
 
         focus: root.visible
@@ -377,6 +422,7 @@ PanelWindow {
     MouseArea {
         id: mouseArea
         anchors.fill: parent
+        visible: root.screenshotReady
         cursorShape: Qt.CrossCursor
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         hoverEnabled: true
@@ -533,8 +579,8 @@ PanelWindow {
             opacity: 0
             Connections {
                 target: root
-                function onVisibleChanged() {
-                    if (!visible) return;
+                function onScreenshotReadyChanged() {
+                    if (!root.screenshotReady) return;
                     regionSelectionControls.anchors.bottomMargin = Appearance.spacing.s;
                     regionSelectionControls.opacity = 1;
                 }

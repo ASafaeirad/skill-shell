@@ -11,6 +11,8 @@ Process {
     required property ShellScreen screen
     property string screenshotPath: `${screenshotDir}/image-${screen.name}`
     property bool keepCursorHidden: false
+    // RegionSelection saves its native frozen frame instead of capturing twice.
+    property bool captureToFile: true
     property bool cursorRestored: false
     readonly property bool cursorHidden: keepCursorHidden && !running && !cursorRestored
 
@@ -26,9 +28,9 @@ Process {
         hyprctl eval 'hl.config({ cursor = { invisible = true } })' || exit 1
         sleep ${Appearance.animation.elementMoveFast.duration / 1000}
         mkdir -p '${StringUtils.shellSingleQuoteEscape(screenshotDir)}' \
-            && grim -o '${StringUtils.shellSingleQuoteEscape(screen.name)}' '${StringUtils.shellSingleQuoteEscape(screenshotPath)}'
+            ${captureToFile ? `&& timeout --kill-after=1s 3s grim -o '${StringUtils.shellSingleQuoteEscape(screen.name)}' '${StringUtils.shellSingleQuoteEscape(screenshotPath)}'` : ""}
         captureStatus=$?
-        if [[ '${keepCursorHidden}' != 'true' ]]; then
+        if [[ '${keepCursorHidden}' != 'true' || "$captureStatus" != 0 ]]; then
             hyprctl eval "hl.config({ cursor = { invisible = $cursorWasInvisible } })"
         fi
         exit "$captureStatus"

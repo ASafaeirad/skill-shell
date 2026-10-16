@@ -25,6 +25,7 @@ Panel {
     property var action: RegionSelection.SnipAction.Copy
 
     Variants {
+        id: regionSelectors
         model: Quickshell.screens
         delegate: Loader {
             id: regionSelectorLoader
@@ -77,6 +78,18 @@ Panel {
 
     IpcHandler {
         target: "region"
+
+        function status(): string {
+            return JSON.stringify({
+                opened: root.opened,
+                screens: regionSelectors.instances.map(loader => ({
+                    name: loader.modelData.name,
+                    ready: loader.item?.screenshotReady ?? false,
+                    failed: loader.item?.captureFailed ?? false,
+                    elapsedMs: loader.item?.captureElapsedMs ?? 0
+                }))
+            });
+        }
 
         function capture() {
             root.capture()

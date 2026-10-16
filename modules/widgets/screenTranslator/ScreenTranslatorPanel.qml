@@ -48,7 +48,12 @@ PanelWindow {
         screen: root.screen
         screenshotDir: root.screenshotDir
         screenshotPath: root.screenshotPath
-        onExited: (_, __) => {
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode !== 0 || exitStatus !== 0) {
+                console.warn("[Screen Translator] Screenshot capture failed for", root.screen.name);
+                root.dismiss();
+                return;
+            }
             root.visible = true;
             root.performTranslation();
         }

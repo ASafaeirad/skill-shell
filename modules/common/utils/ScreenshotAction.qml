@@ -33,9 +33,10 @@ Singleton {
         const rh = Math.round(height);
         const cropBase = `magick ${StringUtils.shellSingleQuoteEscape(screenshotPath)} `
             + `-crop ${rw}x${rh}+${rx}+${ry} +repage`
-        const cropToStdout = `${cropBase} -`
-        const cropInPlace = `${cropBase} '${StringUtils.shellSingleQuoteEscape(screenshotPath)}'`
-        const cleanup = `rm '${StringUtils.shellSingleQuoteEscape(screenshotPath)}'`
+        const cropToStdout = `${cropBase} png:-`
+        const croppedPath = `${screenshotPath}.png`
+        const cropInPlace = `${cropBase} '${StringUtils.shellSingleQuoteEscape(croppedPath)}'`
+        const cleanup = `rm -f '${StringUtils.shellSingleQuoteEscape(screenshotPath)}' '${StringUtils.shellSingleQuoteEscape(croppedPath)}'`
         const slurpRegion = `${rx},${ry} ${rw}x${rh}`
         const uploadAndGetUrl = (filePath) => {
             return `curl -sF files[]=@'${StringUtils.shellSingleQuoteEscape(filePath)}' ${root.fileUploadApiEndpoint} | jq -r '.files[0].url'`
@@ -62,10 +63,10 @@ Singleton {
                 return ["bash", "-c", `${cropToStdout} | ${annotationCommand} && ${cleanup}`]
                 break;
             case ScreenshotAction.Action.Search:
-                return ["bash", "-c", `${cropInPlace} && xdg-open "${root.imageSearchEngineBaseUrl}$(${uploadAndGetUrl(screenshotPath)})" && ${cleanup}`]
+                return ["bash", "-c", `${cropInPlace} && xdg-open "${root.imageSearchEngineBaseUrl}$(${uploadAndGetUrl(croppedPath)})" && ${cleanup}`]
                 break;
             case ScreenshotAction.Action.CharRecognition:
-                return ["bash", "-c", `${cropInPlace} && tesseract '${StringUtils.shellSingleQuoteEscape(screenshotPath)}' stdout -l $(tesseract --list-langs | awk 'NR>1{print $1}' | tr '\\n' '+' | sed 's/\\+$/\\n/') | wl-copy && ${cleanup}`]
+                return ["bash", "-c", `${cropInPlace} && tesseract '${StringUtils.shellSingleQuoteEscape(croppedPath)}' stdout -l $(tesseract --list-langs | awk 'NR>1{print $1}' | tr '\\n' '+' | sed 's/\\+$/\\n/') | wl-copy && ${cleanup}`]
                 break;
             case ScreenshotAction.Action.Record:
                 return ["bash", "-c", `${Directories.recordScriptPath} --region '${slurpRegion}'`]
