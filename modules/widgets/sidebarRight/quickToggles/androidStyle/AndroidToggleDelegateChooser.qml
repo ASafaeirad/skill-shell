@@ -29,6 +29,7 @@ AndroidQuickToggleButton {
     readonly property var modelMap: ({
         "audio": audioComp,
         "bluetooth": bluetoothComp,
+        "camera": cameraComp,
         "colorPicker": colorPickerComp,
         "darkMode": darkModeComp,
         "easyEffects": easyEffectsComp,
@@ -44,6 +45,7 @@ AndroidQuickToggleButton {
 
     Component { id: audioComp; AudioToggle {} }
     Component { id: bluetoothComp; BluetoothToggle {} }
+    Component { id: cameraComp; CameraToggle {} }
     Component { id: colorPickerComp; ColorPickerToggle {} }
     Component { id: darkModeComp; DarkModeToggle {} }
     Component { id: easyEffectsComp; EasyEffectsToggle {} }
