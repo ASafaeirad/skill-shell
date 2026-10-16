@@ -69,8 +69,8 @@ ContentPage {
             required property var modelData
             // ---- Local editable state, seeded from the live monitor ----
             property bool selEnabled: !modelData.disabled
-            property string selRes: `${modelData.width}x${modelData.height}`
-            property string selRefresh: Number(modelData.refreshRate).toFixed(2)
+            property string selRes: card.snapResolution(`${modelData.width}x${modelData.height}`)
+            property string selRefresh: card.snapRefresh(card.selRes, Number(modelData.refreshRate))
             property var selScale: modelData.scale
             property int selTransform: modelData.transform ?? 0
             property string selMirror: (modelData.mirrorOf && modelData.mirrorOf !== "none") ? modelData.mirrorOf : "none"
@@ -80,17 +80,8 @@ ContentPage {
             // ---- Derived option lists from availableModes ("2560x1600@240.00Hz") ----
             readonly property var modeList: modelData.availableModes ?? []
             readonly property var resolutions: {
-                let seen = [];
-                for (const m of card.modeList) {
-                    const res = m.split("@")[0];
-                    if (!seen.includes(res))
-                        seen.push(res);
-
-                }
-                if (seen.length === 0)
-                    seen.push(card.selRes);
-
-                return seen;
+                const seen = card.modeResolutions();
+                return seen.length > 0 ? seen : [card.selRes];
             }
             readonly property var refreshes: refreshesFor(card.selRes)
             readonly property var scaleOptions: [{
@@ -159,7 +150,21 @@ ContentPage {
                 return opts;
             }
 
-            function refreshesFor(res) {
+            // Resolutions advertised in availableModes. Pure on purpose: seeding
+            // selRes must not read selRes back through the `resolutions` fallback.
+            function modeResolutions() {
+                let seen = [];
+                for (const m of card.modeList) {
+                    const res = m.split("@")[0];
+                    if (!seen.includes(res))
+                        seen.push(res);
+
+                }
+                return seen;
+            }
+
+            // Refresh rates advertised for `res`. Pure for the same reason.
+            function modeRefreshes(res) {
                 let out = [];
                 for (const m of card.modeList) {
                     const parts = m.split("@");
@@ -168,10 +173,46 @@ ContentPage {
 
                     out.push(parts[1].replace("Hz", ""));
                 }
-                if (out.length === 0)
-                    out.push(card.selRefresh);
-
                 return out;
+            }
+
+            function refreshesFor(res) {
+                const out = card.modeRefreshes(res);
+                return out.length > 0 ? out : [card.selRefresh];
+            }
+
+            function snapResolution(res) {
+                const options = card.modeResolutions();
+                if (options.length === 0 || options.includes(res))
+                    return res;
+
+                return options[0];
+            }
+
+            // Hyprland reports the *live* refresh rate as a float (59.939) while
+            // availableModes carries its own rounded strings ("60.00", "59.94").
+            // Rounding the float can name a mode that is not on the list at all,
+            // which Hyprland then fails to modeset -- and because currentIndex
+            // uses Math.max(0, indexOf(...)), the dropdown would quietly display
+            // a different rate than the one Save writes. Snap onto a real option
+            // instead. Near-ties prefer the higher rate, so a synthesized
+            // pulldown mode (59.94) never wins over its native sibling (60.00).
+            function snapRefresh(res, rate) {
+                const options = card.modeRefreshes(res);
+                if (options.length === 0)
+                    return Number(rate).toFixed(2);
+
+                const tolerance = 0.2;
+                let best = options[0];
+                for (const option of options) {
+                    const delta = Math.abs(Number(option) - rate);
+                    const bestDelta = Math.abs(Number(best) - rate);
+                    const tied = Math.abs(delta - bestDelta) <= tolerance;
+                    if (delta < bestDelta - tolerance || (tied && Number(option) > Number(best)))
+                        best = option;
+
+                }
+                return best;
             }
 
             function rule() {
@@ -263,7 +304,8 @@ ContentPage {
                             currentIndex: Math.max(0, card.resolutions.indexOf(card.selRes))
                             onActivated: (index) => {
                                 card.selRes = card.resolutions[index];
-                                // Reset refresh to the fastest available for the new resolution
+                                // Reset refresh to the first mode Hyprland advertises for the
+                                // new resolution, which is its preferred one.
                                 card.selRefresh = card.refreshesFor(card.selRes)[0];
                             }
                         }
