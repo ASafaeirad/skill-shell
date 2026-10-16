@@ -325,6 +325,7 @@ Singleton {
                             { "size": 2, "type": "bluetooth"  },
                             { "size": 1, "type": "idleInhibitor" },
                             { "size": 1, "type": "mic" },
+                            { "size": 1, "type": "camera" },
                             { "size": 2, "type": "audio" },
                             { "size": 2, "type": "nightLight" }
                         ]
