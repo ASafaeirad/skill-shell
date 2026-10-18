@@ -14,6 +14,7 @@ RowLayout {
     property bool animateWidth: false
     property alias searchInput: searchInput
     property string searchingText
+    signal accepted()
 
     function forceFocus() {
         searchInput.forceActiveFocus();
@@ -49,15 +50,7 @@ RowLayout {
 
         onTextChanged: LauncherSearch.query = text
 
-        onAccepted: {
-            if (appResults.count > 0) {
-                // Get the first visible delegate and trigger its click
-                let firstItem = appResults.itemAtIndex(0);
-                if (firstItem && firstItem.clicked) {
-                    firstItem.clicked();
-                }
-            }
-        }
+        onAccepted: root.accepted()
 
         Keys.onPressed: event => {
             if (event.key === Qt.Key_Tab) {

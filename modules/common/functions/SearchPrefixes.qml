@@ -16,7 +16,8 @@ QtObject {
         Action,
         App,
         Clipboard,
-        Emojis
+        Emojis,
+        Web
     }
 
     readonly property var defaultRecord: ({
@@ -29,6 +30,26 @@ QtObject {
     })
 
     readonly property var prefixes: [
+        {
+            character: "?",
+            prefix: "?",
+            kind: SearchPrefixes.PrefixKind.Web,
+            icon: "travel_explore",
+            shape: MaterialShape.Shape.Cookie7Sided,
+            provider: (query, resultComp, ctx) => {
+                const searchString = root.strip(query).trim();
+                if (!searchString) return [];
+                const make = props => resultComp ? resultComp.createObject(null, props) : root.createResult(props);
+                return [make({
+                    name: searchString,
+                    type: "Web search",
+                    verb: "Search",
+                    iconName: "travel_explore",
+                    iconType: LauncherSearchResult.IconType.Material,
+                    execute: () => Qt.openUrlExternally("https://www.google.com/search?q=" + encodeURIComponent(searchString))
+                })];
+            }
+        },
         {
             character: "/",
             prefix: "/",

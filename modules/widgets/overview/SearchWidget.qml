@@ -22,6 +22,9 @@ Item { // Wrapper
 
     property string searchingText: LauncherSearch.query
     property bool showResults: searchingText != ""
+    readonly property bool noResults: showResults && LauncherSearch.results.length === 0
+    readonly property bool searchingApps: searchBar.searchPrefixType === SearchPrefixes.PrefixKind.DefaultSearch
+        || searchBar.searchPrefixType === SearchPrefixes.PrefixKind.App
     implicitWidth: searchWidgetContent.implicitWidth + Appearance.sizes.elevationMargin * 2
     implicitHeight: searchWidgetContent.implicitHeight + searchBar.verticalPadding * 2 + Appearance.sizes.elevationMargin * 2
 
@@ -149,15 +152,69 @@ Item { // Wrapper
                 Synchronizer on searchingText {
                     property alias source: root.searchingText
                 }
+                onAccepted: {
+                    if (!root.showResults || root.noResults)
+                        return;
+                    const firstItem = appResults.itemAtIndex(0);
+                    if (firstItem)
+                        firstItem.clicked();
+                }
             }
 
             M3.Divider {
                 visible: root.showResults
+                Layout.fillWidth: true
+                Layout.leftMargin: Appearance.spacing.m
+                Layout.rightMargin: Appearance.spacing.m
+            }
+
+            Item {
+                visible: root.noResults
+                Layout.fillWidth: true
+                implicitHeight: emptyState.implicitHeight + (Appearance.spacing.xxl + Appearance.spacing.s) * 2
+
+                ColumnLayout {
+                    id: emptyState
+                    anchors.centerIn: parent
+                    width: parent.width - Appearance.spacing.xxl * 2
+                    spacing: Appearance.spacing.s
+
+                    MaterialSymbol {
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.bottomMargin: Appearance.spacing.xxs
+                        text: "search_off"
+                        iconSize: Appearance.sizes.m3IconButtonIconSizeMedium
+                        color: Appearance.colors.colSubtext
+                    }
+
+                    StyledText {
+                        Layout.fillWidth: true
+                        text: (root.searchingApps ? 'No apps match "%1"' : 'No results for "%1"')
+                            .arg(SearchPrefixes.strip(root.searchingText).trim())
+                        textFormat: Text.PlainText
+                        horizontalAlignment: Text.AlignHCenter
+                        elide: Text.ElideRight
+                        font.pixelSize: Appearance.font.pixelSize.normal
+                        color: Appearance.colors.colOnLayer1
+                    }
+
+                    StyledText {
+                        Layout.fillWidth: true
+                        text: root.searchingApps
+                            ? "Try a shorter name, or prefix with ? to search the web"
+                            : "Try a shorter search or a different spelling"
+                        textFormat: Text.PlainText
+                        horizontalAlignment: Text.AlignHCenter
+                        wrapMode: Text.WordWrap
+                        font.pixelSize: Appearance.font.pixelSize.smallie
+                        color: Appearance.colors.colSubtext
+                    }
+                }
             }
 
             ListView { // App results
                 id: appResults
-                visible: root.showResults
+                visible: root.showResults && !root.noResults
                 Layout.fillWidth: true
                 implicitHeight: Math.min(600, appResults.contentHeight + topMargin + bottomMargin)
                 clip: true
