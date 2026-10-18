@@ -128,6 +128,7 @@ Scope {
                 screen: modelData
                 layerNamespace: root.layerNamespace
                 keyboardFocus: root.keyboardFocus
+                inputActive: dialogWindow.showing
                 dismissOnFocusGrab: root.dismissOnFocusGrab
                 // Dim everything behind the dialog and fade the scrim with it.
                 scrimOpacity: cardLoader.item?.opacity ?? 0

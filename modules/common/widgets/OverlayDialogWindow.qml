@@ -19,6 +19,9 @@ PanelWindow {
 
     property string layerNamespace: "quickshell:overlayDialog"
     property var keyboardFocus: WlrKeyboardFocus.OnDemand
+    // The exit animation keeps the window mapped after the dialog closes.
+    // Release keyboard focus and the shared grab before that window is unloaded.
+    property bool inputActive: true
     // Fade the scrim together with the card; bind to the card's opacity.
     property real scrimOpacity: 1
     // Also dismiss when something else in the shell grabs focus.
@@ -30,7 +33,7 @@ PanelWindow {
     color: "transparent"
     WlrLayershell.namespace: root.layerNamespace
     WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: root.keyboardFocus
+    WlrLayershell.keyboardFocus: root.inputActive ? root.keyboardFocus : WlrKeyboardFocus.None
 
     anchors {
         top: true
@@ -39,12 +42,21 @@ PanelWindow {
         right: true
     }
 
-    Component.onCompleted: if (root.dismissOnFocusGrab) GlobalFocusGrab.addDismissable(root)
-    Component.onDestruction: if (root.dismissOnFocusGrab) GlobalFocusGrab.removeDismissable(root)
+    function syncFocusGrab(): void {
+        if (root.inputActive && root.dismissOnFocusGrab)
+            GlobalFocusGrab.addDismissable(root);
+        else
+            GlobalFocusGrab.removeDismissable(root);
+    }
+
+    onInputActiveChanged: root.syncFocusGrab()
+    onDismissOnFocusGrabChanged: root.syncFocusGrab()
+    Component.onCompleted: root.syncFocusGrab()
+    Component.onDestruction: GlobalFocusGrab.removeDismissable(root)
 
     Connections {
         target: GlobalFocusGrab
-        enabled: root.dismissOnFocusGrab
+        enabled: root.inputActive && root.dismissOnFocusGrab
         function onDismissed() {
             root.dismissed();
         }
