@@ -14,7 +14,8 @@ import qs.modules.common.widgets
  * variant "indicator": shell workspace dot, with a transparent container so
  *   the workspace group's occupied and animated active markers remain visible.
  * occupied: indicator dot uses on-secondary-container instead of inactive text.
- *   selected uses on-primary. Geometry comes from the m3Workspace tokens.
+ *   selected uses on-primary. Geometry comes from the m3Workspace tokens;
+ *   state layers stay within the marker height while the hit area fills the bar.
  * shape: "round" (default) | "square"; M3's square shape keeps small corners,
  *   for a button that sits in a grid of equal cells (a calendar day).
  * selected: toggle-button state; a selected button uses selectedVariant colours.
@@ -89,6 +90,8 @@ RippleButton {
 
     implicitWidth: variant === "indicator" ? Appearance.sizes.m3WorkspaceButtonWidth : implicitContentWidth + leftPadding + rightPadding
     implicitHeight: variant === "indicator" ? Appearance.sizes.barHeight : tileLayout ? Appearance.sizes.m3QuickTileHeight : Appearance.sizes.m3ButtonHeight
+    topInset: variant === "indicator" ? Math.max(0, (height - Appearance.sizes.m3WorkspaceButtonWidth) / 2) : 0
+    bottomInset: topInset
     leftPadding: variant === "indicator" ? 0 : tileLayout ? Appearance.spacing.xs : (materialIcon.length > 0 ? Appearance.spacing.lg : Appearance.spacing.xl)
     rightPadding: variant === "indicator" ? 0 : tileLayout ? Appearance.spacing.xs : Appearance.spacing.xl
     buttonRadius: tileLayout ? Appearance.rounding.large
