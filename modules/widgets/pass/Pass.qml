@@ -37,8 +37,15 @@ Panel {
         id: dialog
 
         layerNamespace: "quickshell:pass"
-        keyboardFocus: WlrKeyboardFocus.Exclusive
+        // While an entry is decrypting, gpg may raise the pinentry dialog.
+        // Let it take the keyboard; Exclusive comes back once the load ends.
+        keyboardFocus: PassService.loading ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.Exclusive
         onDismissed: {
+            // The pinentry window clears the shared focus grab, which lands
+            // here. Closing now would kill `pass show` and drop the pending
+            // copy, so stay open until the unlock finishes or fails.
+            if (PassService.loading)
+                return;
             PassService.cancelAutotype();
             root.close();
         }
