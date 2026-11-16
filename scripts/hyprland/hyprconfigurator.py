@@ -4,6 +4,7 @@ import re
 import os
 import tempfile
 import json
+import subprocess
 
 def format_value(value):
     """Format value: quote strings, leave numbers and booleans as-is"""
@@ -106,6 +107,15 @@ def edit_hyprland_config(file_path, set_args, reset_args):
             os.chmod(temp_path, os.stat(file_path).st_mode)
         else:
             os.chmod(temp_path, 0o644)
+
+        # Hyprland only updates pointer enabled state when a device block exists.
+        # Re-enable before removing it, then let the reload apply the base config
+        # (including an explicit enabled=false, if the user configured one).
+        for key in reset_set - set(set_dict):
+            if key.startswith('device:') and key.endswith(':enabled'):
+                subprocess.run(
+                    ['hyprctl', 'eval', generate_config_line(key, 'true').strip()],
+                    check=True, capture_output=True, text=True)
 
         os.replace(temp_path, file_path)
     except Exception as e:
