@@ -3,6 +3,7 @@ import argparse
 import re
 import os
 import tempfile
+import json
 
 def format_value(value):
     """Format value: quote strings, leave numbers and booleans as-is"""
@@ -23,6 +24,9 @@ def build_nested_structure(key_parts, value):
 
 def generate_config_line(key, value):
     """Generate hl.config line for given key and value"""
+    if key.startswith('device:'):
+        name, option = key[len('device:'):].rsplit(':', 1)
+        return f'hl.device({{name={json.dumps(name)}, {option}={format_value(value)}}})\n'
     key_parts = key.split(':')
     nested_structure = build_nested_structure(key_parts, value)
     return f'hl.config({{{nested_structure}}})\n'
@@ -42,6 +46,11 @@ def edit_hyprland_config(file_path, set_args, reset_args):
 
     patterns = {}
     for k in list(set_dict.keys()) + list(reset_set):
+        if k.startswith('device:'):
+            name, option = k[len('device:'):].rsplit(':', 1)
+            patterns[k] = re.compile(
+                rf'^hl\.device\(\{{name={re.escape(json.dumps(name))}, {re.escape(option)}=')
+            continue
         key_parts = k.split(':')
         main_key = key_parts[0]
         if len(key_parts) > 1:
